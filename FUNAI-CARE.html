@@ -156,6 +156,28 @@
             margin-bottom: 15px;
         }
 
+        /* --- 新增：正方形圖片區塊樣式 --- */
+        .char-img-container {
+            width: 100%;
+            aspect-ratio: 0 / 0; /* 強制正方形 */
+            overflow: hidden;
+            border-radius: 12px;
+            margin: 0 0 15px 0;
+            background-color: #f0f0f0;
+        }
+
+        .char-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 圖片自動填滿不變形 */
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .card:hover .char-img-container img {
+            transform: scale(1.05); /* 滑鼠懸停時圖片微放大 */
+        }
+
         .card-content p {
             font-size: 0.95rem;
             color: var(--text-light);
@@ -242,6 +264,10 @@
             font-size: 1.2rem;
             color: var(--text-dark);
         }
+        
+        .action-list li {
+            margin-bottom: 10px;
+        }
 
         /* --- 頁尾 --- */
         footer {
@@ -274,7 +300,7 @@
         <span class="subtitle">🛡️ FUNAI CARE 2026</span>
         <h1>守護者聯盟</h1>
         <p>品牌 IP 宇宙計畫：啟動你的內在英雄</p>
-		<p style="font-size:0.85rem; color:#999; margin-bottom:0;">Design & Text by 家葦</p>
+        <p style="font-size:0.85rem; color:#999; margin-bottom:0;">Design & Text by 家葦</p>
     </header>
 
     <section>
@@ -303,6 +329,11 @@
                 <span class="role-badge">總指揮官 / 代謝管理</span>
                 <h3>Burner 姐</h3>
                 <span class="alias">那個超酷的女生</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
                     <div class="skill-box">
@@ -316,6 +347,11 @@
                 <span class="role-badge">重裝火力 / 舒緩大師</span>
                 <h3>MJ 機器人</h3>
                 <span class="alias">自帶 BGM 的節奏戰神</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>不愛說話，喜歡用音樂解決問題。只要音樂一響，壞蛋就會被震得受不了。</p>
                     <div class="skill-box">
@@ -329,6 +365,11 @@
                 <span class="role-badge">建設隊長 / 骨骼強化</span>
                 <h3>萌牛阿哞</h3>
                 <span class="alias">力大無窮的大姊頭</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>穿著可愛乳牛裝，力氣卻大得嚇人！負責保護城市的地基不被壓垮。</p>
                     <div class="skill-box">
@@ -342,6 +383,11 @@
                 <span class="role-badge">皇家騎士 / 視力守護</span>
                 <h3>葉寶 EX</h3>
                 <span class="alias">對抗藍光的劍士</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>熱血又正直，手拿聖劍與盾牌，誓言保護大家的「靈魂之窗」。</p>
                     <div class="skill-box">
@@ -355,6 +401,11 @@
                 <span class="role-badge">巡邏小隊 / 兒童守護</span>
                 <h3>果凍三兄妹</h3>
                 <span class="alias">盞哥、美莓、葉寶</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>活潑好動的三胞胎。口號是：「陪小朋友一起『出凍』打擊壞蛋！」</p>
                     <div class="skill-box">
@@ -368,6 +419,11 @@
                 <span class="role-badge">城市清潔隊 / 營養均衡</span>
                 <h3>野菜小將</h3>
                 <span class="alias">綠色盾牌衛兵</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>一絲不苟的清潔達人，最討厭城市裡堆滿垃圾。</p>
                     <div class="skill-box">
@@ -381,6 +437,11 @@
                 <span class="role-badge">神秘先知 / 預警系統</span>
                 <h3>守望者 Oracle</h3>
                 <span class="alias">幻影水精靈</span>
+                
+                <div class="char-img-container">
+                    <img src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle">
+                </div>
+
                 <div class="card-content">
                     <p><strong>性格：</strong>半透明的水做的身體，能看見未來的危機，隨時準備修補破洞。</p>
                     <div class="skill-box">
@@ -389,6 +450,7 @@
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aaox9" target="_blank" class="btn-link">召喚裝備：3C葉黃素飲</a>
             </div>
+
         </div>
     </section>
 
@@ -414,77 +476,77 @@
         </ul>
     </section>
 
-<section class="script-section">
-    <h2>四、核心故事：Bio-City 覺醒時刻</h2>
-    <div class="story-timeline">
-        
-        <div class="story-step villain-phase">
-            <div class="story-header">
-                <span class="step-num">01</span>
-                <div class="story-title">序幕：失去光芒的城市</div>
+    <section class="script-section">
+        <h2>四、核心故事：Bio-City 覺醒時刻</h2>
+        <div class="story-timeline">
+            
+            <div class="story-step villain-phase">
+                <div class="story-header">
+                    <span class="step-num">01</span>
+                    <div class="story-title">序幕：失去光芒的城市</div>
+                </div>
+                <div class="story-content">
+                    <p><strong>【場景】</strong> Bio-City 變得灰濛濛的，就像很久沒擦的窗戶，街道上一閃一閃，電力很不穩。</p>
+                    <p><strong>【鏡頭】</strong> 看看市民們（你的細胞），每個人的肩膀上都騎著一隻重重的<strong>「酸痛幽靈」</strong>，大家無精打采，走路拖拖拉拉。</p>
+                    <p><strong>【危機】</strong> 天空上，<strong>「藍光巨龍」</strong>正在咆哮，發出滋滋的電流聲，把最後一點光亮都吃掉了。</p>
+                    <p><strong>【旁白】</strong> 「當壓力讓身體變成了石頭，當螢幕偷走了眼裡的光...這座城市，累壞了。」</p>
+                </div>
             </div>
-            <div class="story-content">
-                <p><strong>【場景】</strong> Bio-City 變得灰濛濛的，就像很久沒擦的窗戶，街道上一閃一閃，電力很不穩。</p>
-                <p><strong>【鏡頭】</strong> 看看市民們（你的細胞），每個人的肩膀上都騎著一隻重重的<strong>「酸痛幽靈」</strong>，大家無精打采，走路拖拖拉拉。</p>
-                <p><strong>【危機】</strong> 天空上，<strong>「藍光巨龍」</strong>正在咆哮，發出滋滋的電流聲，把最後一點光亮都吃掉了。</p>
-                <p><strong>【旁白】</strong> 「當壓力讓身體變成了石頭，當螢幕偷走了眼裡的光...這座城市，累壞了。」</p>
+
+            <div class="story-step hero-entry">
+                <div class="story-header">
+                    <span class="step-num">02</span>
+                    <div class="story-title">轉折：那道紅色的閃電</div>
+                </div>
+                <div class="story-content">
+                    <p><strong>【音效】</strong> <em>喀噠...喀噠...</em> 這是充滿自信的高跟鞋聲。</p>
+                    <p><strong>【動作】</strong> 咻——！一道紅光射穿了濃霧。<strong>Burner 姐</strong> 帥氣地站在最高的廣告看板上，推了一下墨鏡，披風在風中飛舞。</p>
+                    <p><strong>【金句】</strong> 她笑著說：「一直低頭滑手機，是看不見星星的喔。想找回自信嗎？跟著我來！」</p>
+                    <p><strong>【指令】</strong> 她按下手錶上的按鈕：<strong>「守護者聯盟，全體集合！開工啦！」</strong></p>
+                </div>
             </div>
+
+            <div class="story-step climax-battle">
+                <div class="story-header">
+                    <span class="step-num">03</span>
+                    <div class="story-title">高潮：英雄們的大反擊</div>
+                </div>
+                <div class="story-content">
+                    <ul class="action-list">
+                        <li>
+                            <strong>🎵 音樂攻撃：</strong> 天上掉下來一個大音響！<strong>MJ 機器人</strong> 落地，動感音樂開始（酸痛掰掰舞 Remix）。
+                            <br><em>動作：</em> 他的 8 個貼片發出震動波，MJ 跳起超酷的抖肩舞，把黏人的「酸痛幽靈」全部震得粉碎！
+                        </li>
+                        <li>
+                            <strong>🛡️ 力量對決：</strong> 地面在震動！<strong>萌牛阿哞</strong> 像小坦克一樣衝出來。
+                            <br><em>動作：</em> 「敢欺負我的人？」她揮動巨大的牛奶瓶戰鎚，把那個想偷懶的「體脂魔王」一棒打飛到外太空！
+                        </li>
+                        <li>
+                            <strong>⚔️ 光之劍舞：</strong> <strong>葉寶 EX</strong> 和果凍三兄妹像流星雨一樣飛過。
+                            <br><em>動作：</em> 葉寶 EX 拔出聖劍，在空中畫出一個金色的「X」，瞬間切斷了藍光巨龍的雷射，天空變回漂亮的藍色。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="story-step epilogue">
+                <div class="story-header">
+                    <span class="step-num">04</span>
+                    <div class="story-title">尾聲：守護你的每一天</div>
+                </div>
+                <div class="story-content">
+                    <p><strong>【畫面】</strong> 溫暖的陽光重新照亮街道。市民們伸個懶腰，眼睛變得亮晶晶，走路都輕快了起來。</p>
+                    <p><strong>【定格】</strong> 英雄們站在總部頂樓看著日出。野菜小將舉著盾牌傻笑，Burner 姐酷酷地插著腰。</p>
+                    <p><strong>【結語】</strong> Burner 姐回頭看著你（對，就是正在看的你）：</p>
+                    <p class="final-quote">「健康這場仗，我們每天都要贏。放心，我們會罩你！」</p>
+                    <p><strong>【Logo】</strong> 畫面浮現 <strong>FUNAI CARE 守護者聯盟</strong> —— 你的隨身健康保鑣。</p>
+                </div>
+            </div>
+
         </div>
+    </section>
 
-        <div class="story-step hero-entry">
-            <div class="story-header">
-                <span class="step-num">02</span>
-                <div class="story-title">轉折：那道紅色的閃電</div>
-            </div>
-            <div class="story-content">
-                <p><strong>【音效】</strong> <em>喀噠...喀噠...</em> 這是充滿自信的高跟鞋聲。</p>
-                <p><strong>【動作】</strong> 咻——！一道紅光射穿了濃霧。<strong>Burner 姐</strong> 帥氣地站在最高的廣告看板上，推了一下墨鏡，披風在風中飛舞。</p>
-                <p><strong>【金句】</strong> 她笑著說：「一直低頭滑手機，是看不見星星的喔。想找回自信嗎？跟著我來！」</p>
-                <p><strong>【指令】</strong> 她按下手錶上的按鈕：<strong>「守護者聯盟，全體集合！開工啦！」</strong></p>
-            </div>
-        </div>
-
-        <div class="story-step climax-battle">
-            <div class="story-header">
-                <span class="step-num">03</span>
-                <div class="story-title">高潮：英雄們的大反擊</div>
-            </div>
-            <div class="story-content">
-                <ul class="action-list">
-                    <li>
-                        <strong>🎵 音樂攻撃：</strong> 天上掉下來一個大音響！<strong>MJ 機器人</strong> 落地，動感音樂開始（酸痛掰掰舞 Remix）。
-                        <br><em>動作：</em> 他的 8 個貼片發出震動波，MJ 跳起超酷的抖肩舞，把黏人的「酸痛幽靈」全部震得粉碎！
-                    </li>
-                    <li>
-                        <strong>🛡️ 力量對決：</strong> 地面在震動！<strong>萌牛阿哞</strong> 像小坦克一樣衝出來。
-                        <br><em>動作：</em> 「敢欺負我的人？」她揮動巨大的牛奶瓶戰鎚，把那個想偷懶的「體脂魔王」一棒打飛到外太空！
-                    </li>
-                    <li>
-                        <strong>⚔️ 光之劍舞：</strong> <strong>葉寶 EX</strong> 和果凍三兄妹像流星雨一樣飛過。
-                        <br><em>動作：</em> 葉寶 EX 拔出聖劍，在空中畫出一個金色的「X」，瞬間切斷了藍光巨龍的雷射，天空變回漂亮的藍色。
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="story-step epilogue">
-            <div class="story-header">
-                <span class="step-num">04</span>
-                <div class="story-title">尾聲：守護你的每一天</div>
-            </div>
-            <div class="story-content">
-                <p><strong>【畫面】</strong> 溫暖的陽光重新照亮街道。市民們伸個懶腰，眼睛變得亮晶晶，走路都輕快了起來。</p>
-                <p><strong>【定格】</strong> 英雄們站在總部頂樓看著日出。野菜小將舉著盾牌傻笑，Burner 姐酷酷地插著腰。</p>
-                <p><strong>【結語】</strong> Burner 姐回頭看著你（對，就是正在看的你）：</p>
-                <p class="final-quote">「健康這場仗，我們每天都要贏。放心，我們會罩你！」</p>
-                <p><strong>【Logo】</strong> 畫面浮現 <strong>FUNAI CARE 守護者聯盟</strong> —— 你的隨身健康保鑣。</p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-<section>
+    <section>
         <h2>五、未來計畫：讓健康變好玩 (IP 應用)</h2>
         <div class="worldview-box">
             
@@ -551,5 +613,3 @@
 
 </body>
 </html>
-
-```
