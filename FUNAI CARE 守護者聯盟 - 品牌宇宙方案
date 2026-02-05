@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUNAI CARE 守護者聯盟 - 品牌宇宙方案</title>
+    <style>
+        /* --- 全局設定 --- */
+        :root {
+            --primary-color: #004e92; /* 船井藍 */
+            --secondary-color: #e63946; /* 活力紅 */
+            --accent-color: #00b4d8; /* 科技亮藍 */
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* --- 標題區 --- */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            background: rgba(230, 57, 70, 0.1);
+            padding: 5px 15px;
+            border-radius: 50px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 50px 0 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- 世界觀區塊 --- */
+        .worldview-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .worldview-item {
+            margin-bottom: 20px;
+        }
+
+        .worldview-item h3 {
+            color: var(--text-dark);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        /* --- 角色卡片網格 --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .role-badge {
+            font-size: 0.8rem;
+            background: #eef2f5;
+            color: var(--text-light);
+            padding: 4px 10px;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .card .alias {
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .card-content p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .skill-box {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .btn-link {
+            margin-top: auto;
+            display: inline-block;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-link:hover {
+            background-color: #003366;
+        }
+
+        /* --- 反派列表 --- */
+        .villain-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+            gap: 20px;
+        }
+
+        .villain-item {
+            background: #fff0f1; /* 淡紅背景 */
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #c0392b;
+        }
+
+        .villain-name {
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* --- 劇本時間軸 --- */
+        .story-timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 3px solid #ddd;
+        }
+
+        .story-step {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .story-step::before {
+            content: '';
+            position: absolute;
+            left: -38px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px var(--secondary-color);
+        }
+
+        .story-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        /* --- 頁尾 --- */
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            padding: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: var(--radius);
+        }
+
+        footer h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        /* --- RWD 手機適配 --- */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .grid-container { grid-template-columns: 1fr; }
+            .villain-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <span class="subtitle">🛡️ FUNAI CARE 2026</span>
+        <h1>守護者聯盟</h1>
+        <p>品牌 IP 宇宙計畫：啟動你的內在英雄</p>
+		<p style="font-size:0.85rem; color:#999; margin-bottom:0;">Design & Text by 家葦</p>
+    </header>
+
+    <section>
+        <h2>一、世界觀：Bio-City (生命之城)</h2>
+        <div class="worldview-box">
+            <div class="worldview-item">
+                <h3>🏙️ 這裡，是你的身體城市</h3>
+                <p>想像一下，你的身體其實是一座從不休息的<strong>「Bio-City 超級城市」</strong>。這裡有忙碌的交通（代謝）、堅固的大樓（骨骼），還有精密的雷達系統（視覺），需要隨時維護才能順利運轉。</p>
+            </div>
+            <div class="worldview-item">
+                <h3>⚠️ 危機出現：搗蛋的熵能軍團</h3>
+                <p>但是，現代人太常低頭滑手機、久坐不動，還愛吃垃圾食物！這些壞習慣生出了<strong>「熵能軍團」</strong>，它們專門在城市裡製造塞車、關掉電力，讓你的身體變得灰暗又遲鈍。</p>
+            </div>
+            <div class="worldview-item">
+                <h3>🚀 英雄集結：船井協議啟動</h3>
+                <p>為了拯救這座城市，傳奇指揮官 <span class="highlight">Burner 姐</span> 按下了緊急按鈕「船井協議 (FUNAI Protocol)」，喚醒潛伏在各個角落的超級守護者，準備展開一場身體大掃除！</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>二、守護者聯盟：英雄圖鑑</h2>
+        <div class="grid-container">
+            
+            <div class="card">
+                <span class="role-badge">總指揮官 / 代謝管理</span>
+                <h3>Burner 姐</h3>
+                <span class="alias">那個超酷的女生</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
+                    <div class="skill-box">
+                        ⚡ <strong>極纖雷射：</strong>專門對付「卡住不動」的壞東西，讓城市交通瞬間順暢。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/burner-sr15x5" target="_blank" class="btn-link">召喚裝備：極纖錠</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">重裝火力 / 舒緩大師</span>
+                <h3>MJ 機器人</h3>
+                <span class="alias">自帶 BGM 的節奏戰神</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>不愛說話，喜歡用音樂解決問題。只要音樂一響，壞蛋就會被震得受不了。</p>
+                    <div class="skill-box">
+                        🎵 <strong>8 點共震波：</strong>跳起「酸痛掰掰舞」，把硬梆梆的石頭怪全部震碎。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/care-mj" target="_blank" class="btn-link">召喚裝備：酸痛按摩機</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">建設隊長 / 骨骼強化</span>
+                <h3>萌牛阿哞</h3>
+                <span class="alias">力大無窮的大姊頭</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>穿著可愛乳牛裝，力氣卻大得嚇人！負責保護城市的地基不被壓垮。</p>
+                    <div class="skill-box">
+                        🔨 <strong>骨力重鎚：</strong>一鎚下去，讓大樓（骨骼）穩得像山一樣。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/funcare-aap60x3" target="_blank" class="btn-link">召喚裝備：牛奶鈣魚膠原</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">皇家騎士 / 視力守護</span>
+                <h3>葉寶 EX</h3>
+                <span class="alias">對抗藍光的劍士</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>熱血又正直，手拿聖劍與盾牌，誓言保護大家的「靈魂之窗」。</p>
+                    <div class="skill-box">
+                        ⚔️ <strong>藍光聖劍：</strong>揮劍斬斷刺眼的藍光射線，還給城市一片藍天。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/funcare-aawx90" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍EX</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">巡邏小隊 / 兒童守護</span>
+                <h3>果凍三兄妹</h3>
+                <span class="alias">盞哥、美莓、葉寶</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>活潑好動的三胞胎。口號是：「陪小朋友一起『出凍』打擊壞蛋！」</p>
+                    <div class="skill-box">
+                        🛡️ <strong>超級合體技：</strong>盞哥負責找壞人，美莓負責補水，葉寶負責擋子彈。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/funcare-aaex100" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">城市清潔隊 / 營養均衡</span>
+                <h3>野菜小將</h3>
+                <span class="alias">綠色盾牌衛兵</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>一絲不苟的清潔達人，最討厭城市裡堆滿垃圾。</p>
+                    <div class="skill-box">
+                        🛡️ <strong>高纖盾牌：</strong>擋住想偷吃能量的壞蛋，把髒東西通通掃出城外。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/funcare-aac" target="_blank" class="btn-link">召喚裝備：野菜小將</a>
+            </div>
+
+            <div class="card">
+                <span class="role-badge">神秘先知 / 預警系統</span>
+                <h3>守望者 Oracle</h3>
+                <span class="alias">幻影水精靈</span>
+                <div class="card-content">
+                    <p><strong>性格：</strong>半透明的水做的身體，能看見未來的危機，隨時準備修補破洞。</p>
+                    <div class="skill-box">
+                        💧 <strong>液態魔法：</strong>像水一樣流動，快速灌溉乾枯的視線。
+                    </div>
+                </div>
+                <a href="https://www.funaicare.com/item/funcare-aaox9" target="_blank" class="btn-link">召喚裝備：3C葉黃素飲</a>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>三、通緝名單：生活中的搗蛋鬼</h2>
+        <ul class="villain-list">
+            <li class="villain-item">
+                <span class="villain-name">👻 酸痛幽靈 (Ache Phantom)</span>
+                像黏黏的紫色口香糖，最愛黏在你的肩膀和背上，讓你覺得身體像石頭一樣重。
+            </li>
+            <li class="villain-item">
+                <span class="villain-name">🐉 藍光巨龍 (Blue-ray Dragon)</span>
+                躲在手機螢幕裡的惡龍，眼睛會射出藍色雷射光，把城市的電力（視力）通通吸乾。
+            </li>
+            <li class="villain-item">
+                <span class="villain-name">🧟‍♂️ 體脂魔王 (Fat-Doom)</span>
+                巨大又懶惰的泥巴怪，會發射「懶惰光波」，讓你只想癱在沙發上不想動。
+            </li>
+            <li class="villain-item">
+                <span class="villain-name">🕳️ 營養黑洞獸 (Gluttony Void)</span>
+                一張貪吃的大嘴巴，專門偷吃新鮮蔬菜的能量，讓城市沒有材料可以蓋房子。
+            </li>
+        </ul>
+    </section>
+
+<section class="script-section">
+    <h2>四、核心故事：Bio-City 覺醒時刻</h2>
+    <div class="story-timeline">
+        
+        <div class="story-step villain-phase">
+            <div class="story-header">
+                <span class="step-num">01</span>
+                <div class="story-title">序幕：失去光芒的城市</div>
+            </div>
+            <div class="story-content">
+                <p><strong>【場景】</strong> Bio-City 變得灰濛濛的，就像很久沒擦的窗戶，街道上一閃一閃，電力很不穩。</p>
+                <p><strong>【鏡頭】</strong> 看看市民們（你的細胞），每個人的肩膀上都騎著一隻重重的<strong>「酸痛幽靈」</strong>，大家無精打采，走路拖拖拉拉。</p>
+                <p><strong>【危機】</strong> 天空上，<strong>「藍光巨龍」</strong>正在咆哮，發出滋滋的電流聲，把最後一點光亮都吃掉了。</p>
+                <p><strong>【旁白】</strong> 「當壓力讓身體變成了石頭，當螢幕偷走了眼裡的光...這座城市，累壞了。」</p>
+            </div>
+        </div>
+
+        <div class="story-step hero-entry">
+            <div class="story-header">
+                <span class="step-num">02</span>
+                <div class="story-title">轉折：那道紅色的閃電</div>
+            </div>
+            <div class="story-content">
+                <p><strong>【音效】</strong> <em>喀噠...喀噠...</em> 這是充滿自信的高跟鞋聲。</p>
+                <p><strong>【動作】</strong> 咻——！一道紅光射穿了濃霧。<strong>Burner 姐</strong> 帥氣地站在最高的廣告看板上，推了一下墨鏡，披風在風中飛舞。</p>
+                <p><strong>【金句】</strong> 她笑著說：「一直低頭滑手機，是看不見星星的喔。想找回自信嗎？跟著我來！」</p>
+                <p><strong>【指令】</strong> 她按下手錶上的按鈕：<strong>「守護者聯盟，全體集合！開工啦！」</strong></p>
+            </div>
+        </div>
+
+        <div class="story-step climax-battle">
+            <div class="story-header">
+                <span class="step-num">03</span>
+                <div class="story-title">高潮：英雄們的大反擊</div>
+            </div>
+            <div class="story-content">
+                <ul class="action-list">
+                    <li>
+                        <strong>🎵 音樂攻撃：</strong> 天上掉下來一個大音響！<strong>MJ 機器人</strong> 落地，動感音樂開始（酸痛掰掰舞 Remix）。
+                        <br><em>動作：</em> 他的 8 個貼片發出震動波，MJ 跳起超酷的抖肩舞，把黏人的「酸痛幽靈」全部震得粉碎！
+                    </li>
+                    <li>
+                        <strong>🛡️ 力量對決：</strong> 地面在震動！<strong>萌牛阿哞</strong> 像小坦克一樣衝出來。
+                        <br><em>動作：</em> 「敢欺負我的人？」她揮動巨大的牛奶瓶戰鎚，把那個想偷懶的「體脂魔王」一棒打飛到外太空！
+                    </li>
+                    <li>
+                        <strong>⚔️ 光之劍舞：</strong> <strong>葉寶 EX</strong> 和果凍三兄妹像流星雨一樣飛過。
+                        <br><em>動作：</em> 葉寶 EX 拔出聖劍，在空中畫出一個金色的「X」，瞬間切斷了藍光巨龍的雷射，天空變回漂亮的藍色。
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="story-step epilogue">
+            <div class="story-header">
+                <span class="step-num">04</span>
+                <div class="story-title">尾聲：守護你的每一天</div>
+            </div>
+            <div class="story-content">
+                <p><strong>【畫面】</strong> 溫暖的陽光重新照亮街道。市民們伸個懶腰，眼睛變得亮晶晶，走路都輕快了起來。</p>
+                <p><strong>【定格】</strong> 英雄們站在總部頂樓看著日出。野菜小將舉著盾牌傻笑，Burner 姐酷酷地插著腰。</p>
+                <p><strong>【結語】</strong> Burner 姐回頭看著你（對，就是正在看的你）：</p>
+                <p class="final-quote">「健康這場仗，我們每天都要贏。放心，我們會罩你！」</p>
+                <p><strong>【Logo】</strong> 畫面浮現 <strong>FUNAI CARE 守護者聯盟</strong> —— 你的隨身健康保鑣。</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section>
+        <h2>五、未來計畫：讓健康變好玩 (IP 應用)</h2>
+        <div class="worldview-box">
+            
+            <div class="worldview-item">
+                <h3>🎥 影音內容｜打造專屬頻道</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 15px;">
+                        <strong>🔴 直播秀「Burner 姐的宵夜突擊」：</strong><br>
+                        化身虛擬網紅 (VTuber)，在深夜開直播陪你聊天，毒舌點評萬惡宵夜，順便告訴你怎麼吃才不會後悔。
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <strong>🎵 TikTok 挑戰「#殭屍退散舞」：</strong><br>
+                        用 MJ 的洗腦電音做成濾鏡，邀請上班族和學生一起跳 15 秒抖肩舞，把僵硬通通甩掉！
+                    </li>
+                    <li>
+                        <strong>📺 卡通動畫「Bio-City 戰記」：</strong><br>
+                        把很難懂的營養知識，變成「葉寶大戰藍光龍」的熱血卡通，讓小朋友看了就知道為什麼要保護眼睛。
+                    </li>
+                </ul>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+            <div class="worldview-item">
+                <h3>📱 手機裡的健康管家 (會員互動)</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 15px;">
+                        <strong>🆔 LINE 官方帳號「市民身分證」：</strong><br>
+                        加入會員就是 Bio-City 的市民！每天回報「我有乖乖吃」，就能累積積分升級，從流浪市民變成榮譽守護官。
+                    </li>
+                    <li>
+                        <strong>📸 IG 趣味濾鏡：</strong><br>
+                        打開「雙下巴警報」濾鏡，只要你一低頭，Burner 姐就會跑出來吼你：「抬頭挺胸！」絕對醒腦。
+                    </li>
+                </ul>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+            <div class="worldview-item">
+                <h3>🛍️ 實體體驗｜把能量帶回家</h3>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 15px;">
+                        <strong>🃏 AR 魔法卡牌包裝：</strong><br>
+                        買產品送「英雄戰鬥卡」，用手機掃一掃，角色就會跳到桌上跟你說話！集滿全套還能換神祕大禮。
+                    </li>
+                    <li>
+                        <strong>🏥 快閃店「身體維修中心」：</strong><br>
+                        不只是賣東西，更是幫你「維修」身體！現場有 MJ 按摩區讓你桑一下，還有果凍補給吧給小朋友試吃。
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <h3>FUNAI CARE 守護者聯盟</h3>
+        <p>不只是保健品，更是陪你一起打怪升級的好夥伴。</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">© 2026 Brand IP Universe</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
+
+```
