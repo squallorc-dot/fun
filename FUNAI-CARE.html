@@ -96,27 +96,42 @@
         .voice-player p { font-size: 0.95rem; color: var(--primary-color); font-weight: 700; margin-bottom: 10px; }
         .voice-player audio { width: 100%; height: 40px; outline: none; }
 
-        /* --- OST 播放器與歌詞 --- */
-        .ost-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        /* --- OST 音樂播放清單 (優化為上下排列) --- */
+        .ost-container { display: flex; flex-direction: column; gap: 15px; }
         .ost-player-card {
-            background: var(--card-bg); padding: 25px; border-radius: var(--radius);
-            box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0;
+            background: var(--card-bg); padding: 20px 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0; 
+            display: flex; flex-direction: column; transition: all 0.3s ease;
         }
-        .ost-player-card h4 { color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; font-size: 1.1rem; }
-        .ost-player-card audio { width: 100%; margin-bottom: 15px; outline: none; }
+        .ost-player-card:hover {
+            border-color: rgba(2, 132, 199, 0.4); box-shadow: var(--shadow-lg); transform: translateY(-2px);
+        }
+        .ost-player-card h4 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.05rem; line-height: 1.5; }
+        .ost-player-card audio { width: 100%; margin-bottom: 15px; outline: none; height: 35px; }
         .suno-link { font-size: 0.85rem; color: var(--accent-color); text-decoration: none; font-weight: 600; transition: color 0.3s; display: inline-block; }
         .suno-link:hover { color: #1e3a8a; text-decoration: underline; }
 
+        /* OST 電腦版橫向音軌設計 */
+        @media (min-width: 768px) {
+            .ost-player-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 15px 25px;}
+            .ost-player-card h4 { margin-bottom: 0; min-width: 250px; }
+            .ost-player-card audio { margin-bottom: 0; flex-grow: 1; margin: 0 25px; }
+            .suno-link { margin-bottom: 0; white-space: nowrap; }
+        }
+
+        .lyrics-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px; }
         .lyrics-box {
-            background: #1D1D1F; color: #A1A1A6; padding: 20px; border-radius: 12px;
-            height: 250px; overflow-y: auto; font-size: 0.95rem; line-height: 1.9;
+            background: #1D1D1F; color: #A1A1A6; padding: 25px; border-radius: 12px;
+            height: 350px; overflow-y: auto; font-size: 0.95rem; line-height: 1.9;
             font-family: monospace; border-left: 4px solid var(--accent-color);
         }
+        .lyrics-box h4 { color: var(--accent-color); margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px;}
         .lyrics-box::-webkit-scrollbar { width: 6px; }
         .lyrics-box::-webkit-scrollbar-track { background: #2d2d2d; }
         .lyrics-box::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
         .lyrics-box .chorus { color: #FFFFFF; font-weight: bold; }
         .lyrics-box .pre-chorus { color: #ff8787; } 
+        .lyrics-box .romaji { font-size: 0.8rem; opacity: 0.6; display: block; margin-top: -5px; margin-bottom: 10px; font-style: italic;}
 
         /* --- 英雄卡片網格 --- */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
@@ -153,6 +168,8 @@
         }
         .step-num { color: #CBD5E1; font-weight: 900; font-size: 2.5rem; position: absolute; left: -100px; top: -15px; opacity: 0.5; font-family: 'Montserrat', sans-serif;}
         .story-title { font-weight: 800; font-size: 1.3rem; color: var(--primary-color); margin-bottom: 10px; }
+        .action-list { padding-left: 20px; margin-top: 10px; }
+        .action-list li { margin-bottom: 8px; }
 
         /* --- 檢測站 (Quiz) 區塊 --- */
         .quiz-section {
@@ -227,7 +244,7 @@
             color: white; border-radius: var(--radius); box-shadow: var(--shadow-lg);
         }
 
-        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } .ost-container, .villain-list { grid-template-columns: 1fr; } .step-num { display: none; } }
+        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } .step-num { display: none; } }
     </style>
 </head>
 <body>
@@ -244,7 +261,7 @@
     <section class="vision-box">
         <h3>💡 品牌 IP 戰略：創作理念</h3>
         <p><strong>「打破單點行銷，建構可持續累積的品牌資產。」</strong></p>
-        <p>過去，船井擁有許多極具潛力的角色與內容元素（如 Burner 姐的狂語錄、過往外部拍攝我剪輯後製的酸痛掰掰舞素材）。本次企劃的核心，是由內部將這些獨立的資產，透過重新企劃，系統化地整合入<strong>「Bio-City (生物大都會)」</strong>的統一世界觀中。</p>
+        <p>過去，船井擁有許多極具潛力的角色與內容元素（如 Burner 姐的狂語錄、過往外部拍攝未釋出的酸痛掰掰舞素材）。本次企劃的核心，是由內部將這些獨立的資產，透過重新企劃，系統化地整合入<strong>「Bio-City (生物大都會)」</strong>的統一世界觀中。</p>
         <p>我們將人體運作轉化為運轉的城市，將久坐、藍光轉化為「生活惡勢力」。產品不再只是功效說明，而是化身為「守護城市的英雄」。每個角色皆具備專屬的個性、金句與節奏。</p>
         <p>未來在社群佈局上，我們將採用「內容先行」策略——透過角色短劇、洗腦音樂梗帶動流量與記憶點，再順理成章地引導至產品轉化，讓健康溝通更具連續性與傳染力。</p>
     </section>
@@ -294,11 +311,11 @@
 
     <section>
         <h2>🎵 聯盟專屬 OST 數位原聲帶</h2>
-        <p style="margin-bottom: 25px; color: var(--text-light);">音樂是靈魂的記憶點。透過 AI 生成專屬角色主題曲，建立強大聽覺制約。</p>
+        <p style="margin-bottom: 25px; color: var(--text-light);">音樂是靈魂的記憶點。中/日文雙版本發行，打造深植人心的動漫級熱血聽覺制約。</p>
         
         <div class="ost-container">
             <div class="ost-player-card">
-                <h4>🎙️ Bio-City 覺醒時刻 (熱血女聲版)</h4>
+                <h4>🎙️ Bio-City 覺醒時刻<br><span style="font-size:0.85rem; color:#6E6E73; font-weight:normal;">(熱血女聲版)</span></h4>
                 <audio controls>
                     <source src="https://squallorc-dot.github.io/fun/Music/Bio-City%20%E8%A6%BA%E9%86%92%20by%20TERRY-2.mp3" type="audio/mpeg">
                     您的瀏覽器不支援播放音訊。
@@ -307,68 +324,147 @@
             </div>
 
             <div class="ost-player-card">
-                <h4>🎙️ Burner 姐召喚 (搖滾男聲版)</h4>
+                <h4>🎙️ Burner 姐召喚<br><span style="font-size:0.85rem; color:#6E6E73; font-weight:normal;">(搖滾男聲版)</span></h4>
                 <audio controls>
                     <source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">
                     您的瀏覽器不支援播放音訊。
                 </audio>
                 <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
+
+            <div class="ost-player-card">
+                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.85rem; color:#6E6E73; font-weight:normal;">(日文版 Ver. A)</span></h4>
+                <audio controls>
+                    <source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY.mp3" type="audio/mpeg">
+                    您的瀏覽器不支援播放音訊。
+                </audio>
+                <a href="https://suno.com/s/VDz9xCjHm7DNKOJ1" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+
+            <div class="ost-player-card">
+                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.85rem; color:#6E6E73; font-weight:normal;">(日文版 Ver. B)</span></h4>
+                <audio controls>
+                    <source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY_2.mp3" type="audio/mpeg">
+                    您的瀏覽器不支援播放音訊。
+                </audio>
+                <a href="https://suno.com/s/eodMbRDrxAsSEH7W" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
         </div>
 
-        <div class="lyrics-box" style="margin-top: 20px;">
-            <p>[Intro]<br>
-            (Electronic siren sound)<br>
-            Warning... Warning... <br>
-            熵能軍團入侵！船井協議，啟動！</p>
-            <p>[Verse 1]<br>
-            灰濛濛的 Bio-City 警報在閃爍<br>
-            細胞們無精打采 能量被封鎖<br>
-            酸痛幽靈黏在肩上 沉重如枷鎖<br>
-            藍光巨龍咆哮 奪走螢幕的光</p>
-            <p class="pre-chorus">[Pre-Chorus]<br>
-            「絕不低頭！」<br>
-            聽見 Burner 姐的呼喚<br>
-            紅色閃電劃破迷霧 拯救這混亂<br>
-            守護者聯盟 就在此刻全體集結！</p>
-            <p class="chorus">[Chorus]<br>
-            覺醒吧 Bio-City！迎接大反擊！<br>
-            MJ 機器人 帶來震動的節拍<br>
-            萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
-            葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
-            健康這場仗 我們每天都要贏！<br>
-            We are FUNAI CARE，罩你到天明！</p>
-            <p>[Verse 2]<br>
-            體脂魔王黑洞獸 別想來搗蛋<br>
-            野菜小將舉起盾牌 守住防線<br>
-            Oracle 的液態魔法 灌溉了雙眼<br>
-            果凍三兄妹合體 快樂不設限</p>
-            <p class="pre-chorus">[Pre-Chorus]<br>
-            「抬頭挺胸！」<br>
-            找回自信的瞬間<br>
-            紅色披風迎風飛舞 衝破了極限<br>
-            守護者聯盟 就在此刻全體集結！</p>
-            <p class="chorus">[Chorus]<br>
-            覺醒吧 Bio-City！迎接大反擊！<br>
-            MJ 機器人 帶來震動的節拍<br>
-            萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
-            葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
-            健康這場仗 我們每天都要贏！<br>
-            We are FUNAI CARE，罩你到天明！</p>
-            <p>[Bridge]<br>
-            (Guitar Solo / Heavy Beat)<br>
-            告別久坐 告別痠痛<br>
-            把壞習慣通通掃出外太空<br>
-            你的身體 是一座偉大的宇宙<br>
-            讓我們一起守護 絕不退縮！</p>
-            <p>[Outro]<br>
-            健康這場仗 我們每天都要贏！<br>
-            守護你的每一天 你的專屬保鑣<br>
-            Bio-City 閃耀榮耀...<br>
-            FUNAI CARE！(End)</p>
+        <div class="lyrics-wrapper">
+            <div class="lyrics-box">
+                <h4>🇹🇼 中文版歌詞</h4>
+                <p>[Intro]<br>
+                (Electronic siren sound)<br>
+                Warning... Warning... <br>
+                熵能軍團入侵！船井協議，啟動！</p>
+                <p>[Verse 1]<br>
+                灰濛濛的 Bio-City 警報在閃爍<br>
+                細胞們無精打采 能量被封鎖<br>
+                酸痛幽靈黏在肩上 沉重如枷鎖<br>
+                藍光巨龍咆哮 奪走螢幕的光</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>
+                「絕不低頭！」<br>
+                聽見 Burner 姐的呼喚<br>
+                紅色閃電劃破迷霧 拯救這混亂<br>
+                守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>
+                覺醒吧 Bio-City！迎接大反擊！<br>
+                MJ 機器人 帶來震動的節拍<br>
+                萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
+                葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
+                健康這場仗 我們每天都要贏！<br>
+                We are FUNAI CARE，罩你到天明！</p>
+                <p>[Verse 2]<br>
+                體脂魔王黑洞獸 別想來搗蛋<br>
+                野菜小將舉起盾牌 守住防線<br>
+                Oracle 的液態魔法 灌溉了雙眼<br>
+                果凍三兄妹合體 快樂不設限</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>
+                「抬頭挺胸！」<br>
+                找回自信的瞬間<br>
+                紅色披風迎風飛舞 衝破了極限<br>
+                守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>
+                覺醒吧 Bio-City！迎接大反擊！<br>
+                MJ 機器人 帶來震動的節拍<br>
+                萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
+                葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
+                健康這場仗 我們每天都要贏！<br>
+                We are FUNAI CARE，罩你到天明！</p>
+                <p>[Bridge]<br>
+                (Guitar Solo / Heavy Beat)<br>
+                告別久坐 告別痠痛<br>
+                把壞習慣通通掃出外太空<br>
+                你的身體 是一座偉大的宇宙<br>
+                讓我們一起守護 絕不退縮！</p>
+                <p>[Outro]<br>
+                健康這場仗 我們每天都要贏！<br>
+                守護你的每一天 你的專屬保鑣<br>
+                Bio-City 閃耀榮耀...<br>
+                FUNAI CARE！(End)</p>
+            </div>
+
+            <div class="lyrics-box">
+                <h4>🇯🇵 日文版歌詞 (Japanese Ver.)</h4>
+                <p>[Intro]<br>
+                (Electronic siren sound)<br>
+                Warning... Warning... <br>
+                エントロピー軍団、侵入！フナイ・プロトコル、起動！<br>
+                <span class="romaji">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</span></p>
+                <p>[Verse 1]<br>
+                灰色に染まる Bio-City 鳴り響くアラーム<br>
+                覇気を失う細胞たち 封鎖されたエナジー<br>
+                肩に憑りつくペイン・ファントム 枷のように重く<br>
+                ブルーライト・ドラゴンが咆哮し 光を奪い去る</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>
+                「絶対にうつむかない！」<br>
+                バーナー姐さん(Neesan)の声が響く<br>
+                赤い稲妻が霧を裂き 混沌から救い出す<br>
+                ガーディアンズ・アライアンス、今ここに集結せよ！</p>
+                <p class="chorus">[Chorus]<br>
+                覚醒せよ Bio-City！大反撃の幕開けだ！<br>
+                MJロボットが刻む 震えるビート<br>
+                モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>
+                葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ<br>
+                健康という名の戦い 毎日勝ち抜くんだ！<br>
+                We are FUNAI CARE、夜明けまで君を守る！</p>
+                <p>[Verse 2]<br>
+                ファット・ドゥームにブラックホール獣 邪魔はさせない<br>
+                野菜ソルジャーが盾を構え 防衛線を死守する<br>
+                オラクルのリキッド・マジック 瞳を潤して<br>
+                ゼリー三兄妹、合体！ 限界なきスマイル</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>
+                「顔を上げて！」<br>
+                自信を取り戻す瞬間<br>
+                赤いマントが風に舞い 限界を突破する<br>
+                ガーディアンズ・アライアンス、今ここに集結せよ！</p>
+                <p class="chorus">[Chorus]<br>
+                覚醒せよ Bio-City！大反撃の幕開けだ！<br>
+                MJロボットが刻む 震えるビート<br>
+                モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>
+                葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ<br>
+                健康という名の戦い 毎日勝ち抜くんだ！<br>
+                We are FUNAI CARE、夜明けまで君を守る！</p>
+                <p>[Bridge]<br>
+                (Guitar Solo / Heavy Beat)<br>
+                座りっぱなしにサヨナラ 痛みにもグッバイ<br>
+                悪い習慣はすべて 宇宙の彼方へ吹き飛ばせ<br>
+                君の身体は ひとつの偉大な小宇宙(コスモ)<br>
+                共に守り抜こう 決して退かない！</p>
+                <p class="chorus">[Chorus]<br>
+                覚醒せよ Bio-City！大反撃の幕開けだ！<br>
+                MJロボットが刻む 震えるビート<br>
+                モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>
+                葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ</p>
+                <p>[Outro]<br>
+                健康という名の戦い 毎日勝ち抜くんだ！<br>
+                毎日を君と歩む 専属のボディガード<br>
+                Bio-Cityよ、栄光に輝け...<br>
+                FUNAI CARE！(End)</p>
+            </div>
         </div>
     </section>
-
 
     <section>
         <h2>二、守護者聯盟：英雄圖鑑</h2>
