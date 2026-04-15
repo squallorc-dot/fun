@@ -3,293 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUNAI CARE 守護者聯盟 - 品牌宇宙方案</title>
+    <title>FUNAI CARE 守護者聯盟 - 品牌宇宙戰略</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- 全局設定 --- */
+        /* --- 全局與變數設定 --- */
         :root {
-            --primary-color: #004e92; /* 船井藍 */
-            --secondary-color: #e63946; /* 活力紅 */
-            --accent-color: #00b4d8; /* 科技亮藍 */
-            --text-dark: #2d3436;
-            --text-light: #636e72;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --radius: 16px;
+            --primary-color: #0A2540; 
+            --secondary-color: #E63946; 
+            --accent-color: #0284c7; 
+            --text-dark: #1D1D1F;
+            --text-light: #6E6E73;
+            --bg-color: #F5F5F7;
+            --card-bg: #FFFFFF;
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 40px rgba(10, 37, 64, 0.08);
+            --radius: 20px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-family: 'Noto Sans TC', 'Montserrat', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-dark);
-            line-height: 1.7;
+            line-height: 1.8;
             padding: 40px 20px;
+            background-image: radial-gradient(circle at top right, rgba(2, 132, 199, 0.03), transparent 50%);
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1050px; margin: 0 auto; }
 
-        /* --- 標題區 --- */
+        /* --- 標題與視覺區 --- */
         header {
-            text-align: center;
-            margin-bottom: 60px;
-            position: relative;
+            text-align: center; margin-bottom: 70px; padding: 60px 20px;
+            background: linear-gradient(135deg, var(--primary-color), #1a365d);
+            border-radius: var(--radius); color: white; box-shadow: var(--shadow-lg);
+            position: relative; overflow: hidden;
         }
+
+        header::after {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, transparent 60%);
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
         header h1 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
+            font-size: 3.2rem; font-weight: 900; margin-bottom: 15px; letter-spacing: 2px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; z-index: 2;
         }
 
         header .subtitle {
-            font-size: 1.1rem;
-            color: var(--secondary-color);
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-block;
-            background: rgba(230, 57, 70, 0.1);
-            padding: 5px 15px;
-            border-radius: 50px;
+            font-size: 1.1rem; color: #7dd3fc; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2px; display: inline-block; background: rgba(255, 255, 255, 0.1);
+            padding: 8px 20px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px; position: relative; z-index: 2;
         }
 
         h2 {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            border-left: 5px solid var(--secondary-color);
-            padding-left: 15px;
-            margin: 50px 0 30px;
-            display: flex;
-            align-items: center;
+            font-size: 2rem; color: var(--primary-color); border-left: 6px solid var(--secondary-color);
+            padding-left: 18px; margin: 70px 0 35px; font-weight: 800; display: flex; align-items: center;
         }
 
-        /* --- 世界觀區塊 --- */
+        /* --- 創作理念區塊 --- */
+        .vision-box {
+            background: linear-gradient(145deg, #ffffff, #f0f4f8); padding: 40px;
+            border-radius: var(--radius); box-shadow: var(--shadow-lg);
+            border-left: 6px solid var(--primary-color); margin-bottom: 40px;
+        }
+        .vision-box h3 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.4rem; }
+        .vision-box p { color: #4a5568; margin-bottom: 15px; font-size: 1.05rem; }
+
+        /* --- 世界觀與通用卡片 --- */
         .worldview-box {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            border-top: 4px solid var(--accent-color);
+            background: var(--card-bg); padding: 40px; border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); border-top: 4px solid var(--accent-color);
         }
+        .worldview-item { margin-bottom: 25px; }
+        .worldview-item h3 { font-size: 1.35rem; margin-bottom: 10px; color: var(--primary-color); }
+        .highlight { color: var(--secondary-color); font-weight: 800; }
 
-        .worldview-item {
-            margin-bottom: 20px;
+        /* --- 影音與音訊 --- */
+        .video-promotion { margin-bottom: 30px; }
+        .video-promotion iframe { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; box-shadow: var(--shadow-lg); border: none; }
+        .voice-player {
+            background: #f8fafc; padding: 15px 20px; border-radius: 12px;
+            margin-top: 20px; border-left: 4px solid var(--accent-color);
         }
+        .voice-player p { font-size: 0.95rem; color: var(--primary-color); font-weight: 700; margin-bottom: 10px; }
+        .voice-player audio { width: 100%; height: 40px; outline: none; }
 
-        .worldview-item h3 {
-            color: var(--text-dark);
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+        /* --- OST 播放器與歌詞 --- */
+        .ost-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .ost-player-card {
+            background: var(--card-bg); padding: 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0;
         }
+        .ost-player-card h4 { color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; font-size: 1.1rem; }
+        .ost-player-card audio { width: 100%; margin-bottom: 15px; outline: none; }
+        .suno-link { font-size: 0.85rem; color: var(--accent-color); text-decoration: none; font-weight: 600; transition: color 0.3s; display: inline-block; }
+        .suno-link:hover { color: #1e3a8a; text-decoration: underline; }
 
-        .highlight {
-            color: var(--secondary-color);
-            font-weight: bold;
+        .lyrics-box {
+            background: #1D1D1F; color: #A1A1A6; padding: 20px; border-radius: 12px;
+            height: 250px; overflow-y: auto; font-size: 0.95rem; line-height: 1.9;
+            font-family: monospace; border-left: 4px solid var(--accent-color);
         }
+        .lyrics-box::-webkit-scrollbar { width: 6px; }
+        .lyrics-box::-webkit-scrollbar-track { background: #2d2d2d; }
+        .lyrics-box::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+        .lyrics-box .chorus { color: #FFFFFF; font-weight: bold; }
+        .lyrics-box .pre-chorus { color: #ff8787; } 
 
-        /* --- 角色卡片網格 --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
+        /* --- 英雄卡片網格 --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(0,0,0,0.05);
-            position: relative;
-            overflow: hidden;
+            background: var(--card-bg); border-radius: var(--radius); padding: 30px 25px;
+            box-shadow: var(--shadow-sm); transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); display: flex; flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.03); position: relative;
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-        }
-
-        .role-badge {
-            font-size: 0.8rem;
-            background: #eef2f5;
-            color: var(--text-light);
-            padding: 4px 10px;
-            border-radius: 4px;
-            align-self: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            color: var(--primary-color);
-        }
-
-        .card .alias {
-            font-size: 0.95rem;
-            color: var(--secondary-color);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        /* --- 新增：正方形圖片區塊樣式 --- */
-        .char-img-container {
-            width: 100%;
-            aspect-ratio: 0 / 0; /* 強制正方形 */
-            overflow: hidden;
-            border-radius: 12px;
-            margin: 0 0 15px 0;
-            background-color: #f0f0f0;
-        }
-
-        .char-img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 圖片自動填滿不變形 */
-            display: block;
-            transition: transform 0.5s ease;
-        }
+        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: rgba(2, 132, 199, 0.2); }
+        .role-badge { font-size: 0.8rem; background: #F1F5F9; color: var(--primary-color); padding: 6px 12px; border-radius: 50px; font-weight: 700; align-self: flex-start; margin-bottom: 15px; }
+        .card h3 { font-size: 1.6rem; color: var(--primary-color); margin-bottom: 5px; font-weight: 900;}
+        .card .alias { font-size: 1rem; color: var(--secondary-color); font-weight: 700; margin-bottom: 20px; }
+        .char-img-container { width: 100%; height: auto; border-radius: 12px; margin: 0 0 20px 0; background-color: transparent; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .char-img-container img { width: 100%; height: auto; object-fit: contain; transition: transform 0.6s ease; display: block; }
+        .card:hover .char-img-container img { transform: scale(1.05); }
+        .card-content p { color: var(--text-light); margin-bottom: 15px; }
+        .skill-box { background: #f0f9ff; padding: 15px; border-radius: 12px; font-size: 0.95rem; margin: 15px 0 25px; border-left: 3px solid var(--accent-color); color: #2c3e50; }
         
-        .card:hover .char-img-container img {
-            transform: scale(1.05); /* 滑鼠懸停時圖片微放大 */
-        }
-
-        .card-content p {
-            font-size: 0.95rem;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-
-        .skill-box {
-            background: #f0f8ff;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin: 15px 0;
-            border-left: 3px solid var(--accent-color);
-        }
-
-        .btn-link {
-            margin-top: auto;
-            display: inline-block;
-            text-align: center;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: background 0.3s;
-        }
-
-        .btn-link:hover {
-            background-color: #003366;
-        }
+        /* 共用按鈕樣式 */
+        .btn-link { margin-top: auto; text-align: center; background-color: var(--primary-color); color: white; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; transition: all 0.3s; box-shadow: 0 4px 6px rgba(10, 37, 64, 0.1); border: none; cursor: pointer; display: inline-block; width: 100%;}
+        .btn-link:hover { background-color: #1e3a8a; color: white; box-shadow: 0 6px 15px rgba(10, 37, 64, 0.2); }
 
         /* --- 反派列表 --- */
-        .villain-list {
-            list-style: none;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
-            gap: 20px;
-        }
-
-        .villain-item {
-            background: #fff0f1; /* 淡紅背景 */
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid #c0392b;
-        }
-
-        .villain-name {
-            font-weight: bold;
-            color: #c0392b;
-            font-size: 1.1rem;
-            display: block;
-            margin-bottom: 5px;
-        }
+        .villain-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; list-style: none; }
+        .villain-item { background: #FFF5F5; padding: 25px; border-radius: 16px; border-left: 5px solid var(--secondary-color); box-shadow: var(--shadow-sm); }
+        .villain-name { font-weight: 900; color: var(--secondary-color); font-size: 1.2rem; display: block; margin-bottom: 8px; }
 
         /* --- 劇本時間軸 --- */
-        .story-timeline {
-            position: relative;
-            padding-left: 30px;
-            border-left: 3px solid #ddd;
-        }
-
-        .story-step {
-            margin-bottom: 30px;
-            position: relative;
-        }
-
+        .story-timeline { position: relative; padding-left: 40px; border-left: 3px solid #E2E8F0; margin-top: 30px; }
+        .story-step { margin-bottom: 40px; position: relative; }
         .story-step::before {
-            content: '';
-            position: absolute;
-            left: -38px;
-            top: 5px;
-            width: 14px;
-            height: 14px;
-            background: var(--secondary-color);
-            border-radius: 50%;
-            border: 3px solid #fff;
-            box-shadow: 0 0 0 2px var(--secondary-color);
+            content: ''; position: absolute; left: -48px; top: 5px; width: 16px; height: 16px;
+            background: var(--accent-color); border-radius: 50%; border: 4px solid var(--bg-color); box-shadow: 0 0 0 2px var(--accent-color);
         }
+        .step-num { color: #CBD5E1; font-weight: 900; font-size: 2.5rem; position: absolute; left: -100px; top: -15px; opacity: 0.5; font-family: 'Montserrat', sans-serif;}
+        .story-title { font-weight: 800; font-size: 1.3rem; color: var(--primary-color); margin-bottom: 10px; }
 
-        .story-title {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--text-dark);
+        /* --- 檢測站 (Quiz) 區塊 --- */
+        .quiz-section {
+            background: var(--card-bg); padding: 40px; border-radius: var(--radius);
+            box-shadow: var(--shadow-lg); text-align: center; margin: 40px 0; border-top: 4px solid var(--secondary-color);
         }
+        .quiz-title { font-size: 1.8rem; font-weight: 900; color: var(--primary-color); margin-bottom: 10px; }
+        .quiz-desc { color: var(--text-light); margin-bottom: 30px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; min-height: 250px; display: flex; flex-direction: column; justify-content: center;}
+        .quiz-progress { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 25px; overflow: hidden; }
+        .quiz-progress-fill { height: 100%; background: var(--secondary-color); width: 0%; transition: width 0.4s ease; }
+        .quiz-question { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); margin-bottom: 25px; }
+        .quiz-option {
+            background: #f8fafc; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px;
+            margin-bottom: 12px; cursor: pointer; transition: all 0.2s; font-weight: 600; color: var(--text-dark);
+        }
+        .quiz-option:hover { background: #fff1f2; border-color: var(--secondary-color); transform: translateX(5px); color: var(--secondary-color); }
+        .quiz-result-img { width: 120px; height: 120px; object-fit: contain; margin: 0 auto 15px; animation: popIn 0.5s; }
         
-        .action-list li {
-            margin-bottom: 10px;
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- 未來計畫 (戰略版) --- */
+        .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .strategy-card {
+            background: var(--card-bg); padding: 35px 25px; border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); border-top: 4px solid var(--primary-color); position: relative;
         }
+        .strategy-phase {
+            position: absolute; top: -15px; left: 25px; background: var(--primary-color); color: white;
+            padding: 4px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
+        }
+        .strategy-card h3 { font-size: 1.25rem; color: var(--primary-color); margin-bottom: 15px; margin-top: 10px;}
+        .strategy-card ul { padding-left: 20px; color: var(--text-light); }
+        .strategy-card li { margin-bottom: 12px; }
+        .strategy-card strong { color: var(--text-dark); }
+
+        /* --- 遊戲區塊 (Canvas 原生化) --- */
+        .game-wrapper {
+            background: #020617; border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); margin: 30px auto 0; max-width: 450px; height: 700px;
+            position: relative; border: 1px solid #1e293b;
+        }
+        .game-header {
+            position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(5px); z-index: 10; justify-content: space-between; align-items: center;
+            padding: 0 15px; border-bottom: 1px solid rgba(45, 212, 191, 0.3); display: none;
+        }
+        .game-header .hp, .game-header .score { color: #fff; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+        .game-header .energy-bar-bg { width: 120px; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; }
+        .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #2dd4bf, #0ea5e9); width: 0%; transition: width 0.2s; }
+        
+        canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+        
+        #game-ui-select, #game-ui-gameover {
+            position: absolute; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 20;
+            display: flex; flex-direction: column; align-items: center; padding: 30px 20px; overflow-y: auto;
+        }
+        .game-ui-title { color: #2dd4bf; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 15px rgba(45, 212, 191, 0.5); }
+        .hero-btn {
+            width: 100%; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px;
+            padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+            cursor: pointer; transition: all 0.2s; color: white; text-align: left;
+        }
+        .hero-btn:hover { border-color: #2dd4bf; transform: scale(1.02); background: #1e293b; }
+        .hero-btn .emoji-box { font-size: 2rem; width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; justify-content: center; align-items: center; }
+        .hero-btn h4 { font-size: 1.1rem; margin-bottom: 3px; color: #fff; }
+        .hero-btn p { font-size: 0.75rem; color: #94a3b8; margin:0;}
 
         /* --- 頁尾 --- */
         footer {
-            margin-top: 80px;
-            text-align: center;
-            padding: 40px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: var(--radius);
+            margin-top: 100px; text-align: center; padding: 50px; background: var(--primary-color);
+            color: white; border-radius: var(--radius); box-shadow: var(--shadow-lg);
         }
 
-        footer h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        /* --- RWD 手機適配 --- */
-        @media (max-width: 768px) {
-            header h1 { font-size: 2rem; }
-            .grid-container { grid-template-columns: 1fr; }
-            .villain-list { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } .ost-container, .villain-list { grid-template-columns: 1fr; } .step-num { display: none; } }
     </style>
 </head>
 <body>
@@ -297,70 +235,47 @@
 <div class="container">
 
     <header>
-        <span class="subtitle">🛡️ FUNAI CARE 2026</span>
-        <h1>守護者聯盟</h1>
-        <p>品牌 IP 宇宙計畫：啟動你的內在英雄</p>
-        <p style="font-size:0.85rem; color:#999; margin-bottom:0;">Design & Text by 家葦</p>
+        <span class="subtitle">🛡️ Brand IP Strategy 2026</span>
+        <h1>FUNAI CARE 守護者聯盟</h1>
+        <p style="font-size: 1.2rem; opacity: 0.9;">啟動內在英雄：從產品力到品牌宇宙的進化</p>
+        <p style="font-size:0.9rem; opacity: 0.6; margin-top:15px; font-family: 'Montserrat', sans-serif;">Design & Text by 家葦</p>
     </header>
 
-	<section class="video-promotion" style="margin-bottom: 40px;">
-    <div style="
-        position: relative; 
-        padding-bottom: 56.25%; 
-        height: 0; 
-        overflow: hidden; 
-        border-radius: var(--radius); 
-        box-shadow: var(--shadow); 
-        background: #000;
-        border: 1px solid rgba(0,0,0,0.05);
-    ">
-        <iframe 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-            src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1" 
-            title="FUNAI CARE 守護者聯盟 - 品牌預告片"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    </div>
-    <p style="text-align: center; font-size: 0.85rem; color: var(--text-light); margin-top: 12px;">
-        🎬 點擊播放：【FUNAI CARE 守護者聯盟】Bio-City 覺醒時刻 - 英雄們的大反擊
-    </p>
-</section>
-	
-	
+    <section class="vision-box">
+        <h3>💡 品牌 IP 戰略：創作理念</h3>
+        <p><strong>「打破單點行銷，建構可持續累積的品牌資產。」</strong></p>
+        <p>過去，船井擁有許多極具潛力的角色與內容元素（如 Burner 姐的狂語錄、過往外部拍攝我剪輯後製的酸痛掰掰舞素材）。本次企劃的核心，是由內部將這些獨立的資產，透過重新企劃，系統化地整合入<strong>「Bio-City (生物大都會)」</strong>的統一世界觀中。</p>
+        <p>我們將人體運作轉化為運轉的城市，將久坐、藍光轉化為「生活惡勢力」。產品不再只是功效說明，而是化身為「守護城市的英雄」。每個角色皆具備專屬的個性、金句與節奏。</p>
+        <p>未來在社群佈局上，我們將採用「內容先行」策略——透過角色短劇、洗腦音樂梗帶動流量與記憶點，再順理成章地引導至產品轉化，讓健康溝通更具連續性與傳染力。</p>
+    </section>
+
+    <section style="margin-bottom: 60px;">
+        <div class="video-promotion">
+            <iframe src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1" title="FUNAI CARE 守護者聯盟 - 品牌預告片" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; color: var(--text-light); margin-top: 15px; font-weight: bold;">
+            🎬 首映預告：【FUNAI CARE 守護者聯盟】Bio-City 覺醒時刻 - 英雄們的大反擊
+        </p>
+    </section>
+    
     <section>
         <h2>一、世界觀：Bio-City (生命之城)</h2>
-<section class="video-promotion" style="margin-bottom: 40px;">
-    <div style="
-        position: relative; 
-        padding-bottom: 56.25%; 
-        height: 0; 
-        overflow: hidden; 
-        border-radius: var(--radius); 
-        box-shadow: var(--shadow); 
-        background: #000;
-        border: 1px solid rgba(0,0,0,0.05);
-    ">
-        <iframe 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-            src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1" 
-            title="FUNAI CARE 守護者聯盟 - 品牌預告片"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    </div>
-    <p style="text-align: center; font-size: 0.85rem; color: var(--text-light); margin-top: 12px;">
-        🎬 點擊播放：Bio-City 覺醒時刻 - 品牌前導預告
-    </p>
-</section>
-<div class="voice-player" style="margin-top: 15px;">
-    <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">🔊 聽聽守護者的聲音：</p>
-    <audio controls style="height: 30px; width: 100%;">
-        <source src="https://squallorc-dot.github.io/fun/Music/%E6%8A%8A%E4%BD%A0%E7%9A%84%E8%BA%AB%E9%AB%94%E8%AE%8A%E6%88%90%E8%B6%85%E7%B4%9A%E8%8B%B1%E9%9B%84%E5%AE%87%E5%AE%99.mp3
-" type="audio/mpeg">
-        您的瀏覽器不支援播放音訊。
-    </audio>
-</div>		
+        
+        <div class="video-promotion">
+            <iframe src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1" title="Bio-City 前導預告" allowfullscreen></iframe>
+        </div>
+        <p style="text-align: center; font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">
+            🎬 點擊播放：Bio-City 覺醒時刻 - 品牌前導預告
+        </p>
+        
+        <div class="voice-player">
+            <p>🔊 聽聽守護者的聲音：</p>
+            <audio controls>
+                <source src="https://squallorc-dot.github.io/fun/Music/%E6%8A%8A%E4%BD%A0%E7%9A%84%E8%BA%AB%E9%AB%94%E8%AE%8A%E6%88%90%E8%B6%85%E7%B4%9A%E8%8B%B1%E9%9B%84%E5%AE%87%E5%AE%99.mp3" type="audio/mpeg">
+                您的瀏覽器不支援播放音訊。
+            </audio>
+        </div>
+        
         <div class="worldview-box">
             <div class="worldview-item">
                 <h3>🏙️ 這裡，是你的身體城市</h3>
@@ -368,7 +283,7 @@
             </div>
             <div class="worldview-item">
                 <h3>⚠️ 危機出現：搗蛋的熵能軍團</h3>
-                <p>但是，現代人太常低頭滑手機、久坐不動，還愛吃垃圾食物！這些壞習慣生出了<strong>「熵能軍團」</strong>，它們專門在城市裡製造塞車、關掉電力，讓你的身體變得灰暗又遲鈍。</p>
+                <p>但是，現代人太常低頭滑手機、久坐不動，還愛吃垃圾食物！這些壞習慣生出了<strong>「生活惡勢力」</strong>，它們專門在城市裡製造塞車、關掉電力，讓你的身體變得灰暗又遲鈍。</p>
             </div>
             <div class="worldview-item">
                 <h3>🚀 英雄集結：船井協議啟動</h3>
@@ -378,6 +293,84 @@
     </section>
 
     <section>
+        <h2>🎵 聯盟專屬 OST 數位原聲帶</h2>
+        <p style="margin-bottom: 25px; color: var(--text-light);">音樂是靈魂的記憶點。透過 AI 生成專屬角色主題曲，建立強大聽覺制約。</p>
+        
+        <div class="ost-container">
+            <div class="ost-player-card">
+                <h4>🎙️ Bio-City 覺醒時刻 (熱血女聲版)</h4>
+                <audio controls>
+                    <source src="https://squallorc-dot.github.io/fun/Music/Bio-City%20%E8%A6%BA%E9%86%92%20by%20TERRY-2.mp3" type="audio/mpeg">
+                    您的瀏覽器不支援播放音訊。
+                </audio>
+                <a href="https://suno.com/song/b728362c-ff8c-4455-8f8a-d328cb897fc9" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+
+            <div class="ost-player-card">
+                <h4>🎙️ Burner 姐召喚 (搖滾男聲版)</h4>
+                <audio controls>
+                    <source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">
+                    您的瀏覽器不支援播放音訊。
+                </audio>
+                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+        </div>
+
+        <div class="lyrics-box" style="margin-top: 20px;">
+            <p>[Intro]<br>
+            (Electronic siren sound)<br>
+            Warning... Warning... <br>
+            熵能軍團入侵！船井協議，啟動！</p>
+            <p>[Verse 1]<br>
+            灰濛濛的 Bio-City 警報在閃爍<br>
+            細胞們無精打采 能量被封鎖<br>
+            酸痛幽靈黏在肩上 沉重如枷鎖<br>
+            藍光巨龍咆哮 奪走螢幕的光</p>
+            <p class="pre-chorus">[Pre-Chorus]<br>
+            「絕不低頭！」<br>
+            聽見 Burner 姐的呼喚<br>
+            紅色閃電劃破迷霧 拯救這混亂<br>
+            守護者聯盟 就在此刻全體集結！</p>
+            <p class="chorus">[Chorus]<br>
+            覺醒吧 Bio-City！迎接大反擊！<br>
+            MJ 機器人 帶來震動的節拍<br>
+            萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
+            葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
+            健康這場仗 我們每天都要贏！<br>
+            We are FUNAI CARE，罩你到天明！</p>
+            <p>[Verse 2]<br>
+            體脂魔王黑洞獸 別想來搗蛋<br>
+            野菜小將舉起盾牌 守住防線<br>
+            Oracle 的液態魔法 灌溉了雙眼<br>
+            果凍三兄妹合體 快樂不設限</p>
+            <p class="pre-chorus">[Pre-Chorus]<br>
+            「抬頭挺胸！」<br>
+            找回自信的瞬間<br>
+            紅色披風迎風飛舞 衝破了極限<br>
+            守護者聯盟 就在此刻全體集結！</p>
+            <p class="chorus">[Chorus]<br>
+            覺醒吧 Bio-City！迎接大反擊！<br>
+            MJ 機器人 帶來震動的節拍<br>
+            萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>
+            葉寶 EX 聖劍出鞘 藍天為我們敞開<br>
+            健康這場仗 我們每天都要贏！<br>
+            We are FUNAI CARE，罩你到天明！</p>
+            <p>[Bridge]<br>
+            (Guitar Solo / Heavy Beat)<br>
+            告別久坐 告別痠痛<br>
+            把壞習慣通通掃出外太空<br>
+            你的身體 是一座偉大的宇宙<br>
+            讓我們一起守護 絕不退縮！</p>
+            <p>[Outro]<br>
+            健康這場仗 我們每天都要贏！<br>
+            守護你的每一天 你的專屬保鑣<br>
+            Bio-City 閃耀榮耀...<br>
+            FUNAI CARE！(End)</p>
+        </div>
+    </section>
+
+
+    <section>
         <h2>二、守護者聯盟：英雄圖鑑</h2>
         <div class="grid-container">
             
@@ -385,16 +378,10 @@
                 <span class="role-badge">總指揮官 / 代謝管理</span>
                 <h3>Burner 姐</h3>
                 <span class="alias">那個超酷的女生</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
-                    <div class="skill-box">
-                        ⚡ <strong>極纖雷射：</strong>專門對付「卡住不動」的壞東西，讓城市交通瞬間順暢。
-                    </div>
+                    <div class="skill-box">⚡ <strong>極纖雷射：</strong>專門對付「卡住不動」的壞東西，讓城市交通瞬間順暢。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/burner-sr15x5" target="_blank" class="btn-link">召喚裝備：極纖錠</a>
             </div>
@@ -403,16 +390,10 @@
                 <span class="role-badge">重裝火力 / 舒緩大師</span>
                 <h3>MJ 機器人</h3>
                 <span class="alias">自帶 BGM 的節奏戰神</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>不愛說話，喜歡用音樂解決問題。只要音樂一響，壞蛋就會被震得受不了。</p>
-                    <div class="skill-box">
-                        🎵 <strong>8 點共震波：</strong>跳起「酸痛掰掰舞」，把硬梆梆的石頭怪全部震碎。
-                    </div>
+                    <div class="skill-box">🎵 <strong>8 點共震波：</strong>跳起「酸痛掰掰舞」，把硬梆梆的石頭怪全部震碎。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/care-mj" target="_blank" class="btn-link">召喚裝備：酸痛按摩機</a>
             </div>
@@ -421,16 +402,10 @@
                 <span class="role-badge">建設隊長 / 骨骼強化</span>
                 <h3>萌牛阿哞</h3>
                 <span class="alias">力大無窮的大姊頭</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>穿著可愛乳牛裝，力氣卻大得嚇人！負責保護城市的地基不被壓垮。</p>
-                    <div class="skill-box">
-                        🔨 <strong>骨力重鎚：</strong>一鎚下去，讓大樓（骨骼）穩得像山一樣。
-                    </div>
+                    <div class="skill-box">🔨 <strong>骨力重鎚：</strong>一鎚下去，讓大樓（骨骼）穩得像山一樣。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aap60x3" target="_blank" class="btn-link">召喚裝備：牛奶鈣魚膠原</a>
             </div>
@@ -439,34 +414,22 @@
                 <span class="role-badge">皇家騎士 / 視力守護</span>
                 <h3>葉寶 EX</h3>
                 <span class="alias">對抗藍光的劍士</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>熱血又正直，手拿聖劍與盾牌，誓言保護大家的「靈魂之窗」。</p>
-                    <div class="skill-box">
-                        ⚔️ <strong>藍光聖劍：</strong>揮劍斬斷刺眼的藍光射線，還給城市一片藍天。
-                    </div>
+                    <div class="skill-box">⚔️ <strong>藍光聖劍：</strong>揮劍斬斷刺眼的藍光射線，還給城市一片藍天。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aawx90" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍EX</a>
             </div>
-
+            
             <div class="card">
                 <span class="role-badge">巡邏小隊 / 兒童守護</span>
                 <h3>果凍三兄妹</h3>
                 <span class="alias">盞哥、美莓、葉寶</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>活潑好動的三胞胎。口號是：「陪小朋友一起『出凍』打擊壞蛋！」</p>
-                    <div class="skill-box">
-                        🛡️ <strong>超級合體技：</strong>盞哥負責找壞人，美莓負責補水，葉寶負責擋子彈。
-                    </div>
+                    <div class="skill-box">🛡️ <strong>超級合體技：</strong>盞哥負責找壞人，美莓負責補水，葉寶負責擋子彈。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aaex100" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍</a>
             </div>
@@ -475,16 +438,10 @@
                 <span class="role-badge">城市清潔隊 / 營養均衡</span>
                 <h3>野菜小將</h3>
                 <span class="alias">綠色盾牌衛兵</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>一絲不苟的清潔達人，最討厭城市裡堆滿垃圾。</p>
-                    <div class="skill-box">
-                        🛡️ <strong>高纖盾牌：</strong>擋住想偷吃能量的壞蛋，把髒東西通通掃出城外。
-                    </div>
+                    <div class="skill-box">🛡️ <strong>高纖盾牌：</strong>擋住想偷吃能量的壞蛋，把髒東西通通掃出城外。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aac" target="_blank" class="btn-link">召喚裝備：野菜小將</a>
             </div>
@@ -493,210 +450,440 @@
                 <span class="role-badge">神秘先知 / 預警系統</span>
                 <h3>守望者 Oracle</h3>
                 <span class="alias">幻影水精靈</span>
-                
-                <div class="char-img-container">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle">
-                </div>
-
+                <div class="char-img-container"><img src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle"></div>
                 <div class="card-content">
                     <p><strong>性格：</strong>半透明的水做的身體，能看見未來的危機，隨時準備修補破洞。</p>
-                    <div class="skill-box">
-                        💧 <strong>液態魔法：</strong>像水一樣流動，快速灌溉乾枯的視線。
-                    </div>
+                    <div class="skill-box">💧 <strong>液態魔法：</strong>像水一樣流動，快速灌溉乾枯的視線。</div>
                 </div>
                 <a href="https://www.funaicare.com/item/funcare-aaox9" target="_blank" class="btn-link">召喚裝備：3C葉黃素飲</a>
             </div>
-
         </div>
     </section>
 
     <section>
         <h2>三、通緝名單：生活中的搗蛋鬼</h2>
         <ul class="villain-list">
-            <li class="villain-item">
-                <span class="villain-name">👻 酸痛幽靈 (Ache Phantom)</span>
-                像黏黏的紫色口香糖，最愛黏在你的肩膀和背上，讓你覺得身體像石頭一樣重。
-            </li>
-            <li class="villain-item">
-                <span class="villain-name">🐉 藍光巨龍 (Blue-ray Dragon)</span>
-                躲在手機螢幕裡的惡龍，眼睛會射出藍色雷射光，把城市的電力（視力）通通吸乾。
-            </li>
-            <li class="villain-item">
-                <span class="villain-name">🧟‍♂️ 體脂魔王 (Fat-Doom)</span>
-                巨大又懶惰的泥巴怪，會發射「懶惰光波」，讓你只想癱在沙發上不想動。
-            </li>
-            <li class="villain-item">
-                <span class="villain-name">🕳️ 營養黑洞獸 (Gluttony Void)</span>
-                一張貪吃的大嘴巴，專門偷吃新鮮蔬菜的能量，讓城市沒有材料可以蓋房子。
-            </li>
+            <li class="villain-item"><span class="villain-name">👻 酸痛幽靈 (Ache Phantom)</span>像黏黏的紫色口香糖，最愛黏在你的肩膀和背上，讓你覺得身體像石頭一樣重。</li>
+            <li class="villain-item"><span class="villain-name">🐉 藍光巨龍 (Blue-ray Dragon)</span>躲在手機螢幕裡的惡龍，眼睛會射出藍色雷射光，把城市的電力（視力）通通吸乾。</li>
+            <li class="villain-item"><span class="villain-name">🧟‍♂️ 體脂魔王 (Fat-Doom)</span>巨大又懶惰的泥巴怪，會發射「懶惰光波」，讓你只想癱在沙發上不想動。</li>
+            <li class="villain-item"><span class="villain-name">🕳️ 營養黑洞獸 (Gluttony Void)</span>一張貪吃的大嘴巴，專門偷吃新鮮蔬菜的能量，讓城市沒有材料可以蓋房子。</li>
         </ul>
     </section>
 
     <section class="script-section">
         <h2>四、核心故事：Bio-City 覺醒時刻</h2>
-	<section class="video-promotion" style="margin-bottom: 40px;">
-    <div style="
-        position: relative; 
-        padding-bottom: 56.25%; 
-        height: 0; 
-        overflow: hidden; 
-        border-radius: var(--radius); 
-        box-shadow: var(--shadow); 
-        background: #000;
-        border: 1px solid rgba(0,0,0,0.05);
-    ">
-        <iframe 
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-            src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1" 
-            title="FUNAI CARE：你的身體守護者 - Bio-City 覺醒時刻"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    </div>
-    <p style="text-align: center; font-size: 0.85rem; color: var(--text-light); margin-top: 12px;">
-        🎬 點擊播放：Bio-City 覺醒時刻 - 英雄們的大反擊
-    </p>
-</section>
-<div class="voice-player" style="margin-top: 15px;">
-    <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">🔊 聽聽英雄們的聲音：</p>
-    <audio controls style="height: 30px; width: 100%;">
-        <source src="https://squallorc-dot.github.io/fun/Music/%E4%BD%A0%E7%9A%84%E8%BA%AB%E9%AB%94%E6%98%AF%E4%B8%80%E5%BA%A7%E5%9F%8E%E5%B8%82.mp3
-" type="audio/mpeg">
-        您的瀏覽器不支援播放音訊。
-    </audio>
-</div>				
+        <div class="video-promotion">
+            <iframe src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
+        </div>
         <div class="story-timeline">
-            
-            <div class="story-step villain-phase">
-                <div class="story-header">
-                    <span class="step-num">01</span>
-                    <div class="story-title">序幕：失去光芒的城市</div>
-                </div>
+            <div class="story-step">
+                <span class="step-num">01</span>
+                <div class="story-title">序幕：失去光芒的城市</div>
                 <div class="story-content">
                     <p><strong>【場景】</strong> Bio-City 變得灰濛濛的，就像很久沒擦的窗戶，街道上一閃一閃，電力很不穩。</p>
-                    <p><strong>【鏡頭】</strong> 看看市民們（你的細胞），每個人的肩膀上都騎著一隻重重的<strong>「酸痛幽靈」</strong>，大家無精打采，走路拖拖拉拉。</p>
-                    <p><strong>【危機】</strong> 天空上，<strong>「藍光巨龍」</strong>正在咆哮，發出滋滋的電流聲，把最後一點光亮都吃掉了。</p>
+                    <p><strong>【鏡頭】</strong> 看看市民們（你的細胞），每個人的肩膀上都騎著一隻重重的「酸痛幽靈」，大家無精打采，走路拖拖拉拉。</p>
+                    <p><strong>【危機】</strong> 天空上，「藍光巨龍」正在咆哮，發出滋滋的電流聲，把最後一點光亮都吃掉了。</p>
                     <p><strong>【旁白】</strong> 「當壓力讓身體變成了石頭，當螢幕偷走了眼裡的光...這座城市，累壞了。」</p>
                 </div>
             </div>
-
-            <div class="story-step hero-entry">
-                <div class="story-header">
-                    <span class="step-num">02</span>
-                    <div class="story-title">轉折：那道紅色的閃電</div>
-                </div>
+            <div class="story-step">
+                <span class="step-num">02</span>
+                <div class="story-title">轉折：那道紅色的閃電</div>
                 <div class="story-content">
-                    <p><strong>【音效】</strong> <em>喀噠...喀噠...</em> 這是充滿自信的高跟鞋聲。</p>
-                    <p><strong>【動作】</strong> 咻——！一道紅光射穿了濃霧。<strong>Burner 姐</strong> 帥氣地站在最高的廣告看板上，推了一下墨鏡，披風在風中飛舞。</p>
+                    <p><strong>【音效】</strong> 喀噠...喀噠... 這是充滿自信的高跟鞋聲。</p>
+                    <p><strong>【動作】</strong> 咻——！一道紅光射穿了濃霧。Burner 姐 帥氣地站在最高的廣告看板上，推了一下墨鏡，披風在風中飛舞。</p>
                     <p><strong>【金句】</strong> 她笑著說：「一直低頭滑手機，是看不見星星的喔。想找回自信嗎？跟著我來！」</p>
-                    <p><strong>【指令】</strong> 她按下手錶上的按鈕：<strong>「守護者聯盟，全體集合！開工啦！」</strong></p>
+                    <p><strong>【指令】</strong> 她按下手錶上的按鈕：「守護者聯盟，全體集合！開工啦！」</p>
                 </div>
             </div>
-
-            <div class="story-step climax-battle">
-                <div class="story-header">
-                    <span class="step-num">03</span>
-                    <div class="story-title">高潮：英雄們的大反擊</div>
-                </div>
+            <div class="story-step">
+                <span class="step-num">03</span>
+                <div class="story-title">高潮：英雄們的大反擊</div>
                 <div class="story-content">
                     <ul class="action-list">
-                        <li>
-                            <strong>🎵 音樂攻撃：</strong> 天上掉下來一個大音響！<strong>MJ 機器人</strong> 落地，動感音樂開始（酸痛掰掰舞 Remix）。
-                            <br><em>動作：</em> 他的 8 個貼片發出震動波，MJ 跳起超酷的抖肩舞，把黏人的「酸痛幽靈」全部震得粉碎！
-                        </li>
-                        <li>
-                            <strong>🛡️ 力量對決：</strong> 地面在震動！<strong>萌牛阿哞</strong> 像小坦克一樣衝出來。
-                            <br><em>動作：</em> 「敢欺負我的人？」她揮動巨大的牛奶瓶戰鎚，把那個想偷懶的「體脂魔王」一棒打飛到外太空！
-                        </li>
-                        <li>
-                            <strong>⚔️ 光之劍舞：</strong> <strong>葉寶 EX</strong> 和果凍三兄妹像流星雨一樣飛過。
-                            <br><em>動作：</em> 葉寶 EX 拔出聖劍，在空中畫出一個金色的「X」，瞬間切斷了藍光巨龍的雷射，天空變回漂亮的藍色。
-                        </li>
+                        <li><strong>🎵 音樂攻撃：</strong> 天上掉下來一個大音響！MJ 機器人 落地，動感音樂開始（酸痛掰掰舞 Remix）。<br><em>動作：</em> 他的 8 個貼片發出震動波，MJ 跳起超酷的抖肩舞，把黏人的「酸痛幽靈」全部震得粉碎！</li>
+                        <li><strong>🛡️ 力量對決：</strong> 地面在震動！萌牛阿哞 像小坦克一樣衝出來。<br><em>動作：</em> 「敢欺負我的人？」她揮動巨大的牛奶瓶戰鎚，把那個想偷懶的「體脂魔王」一棒打飛到外太空！</li>
+                        <li><strong>⚔️ 光之劍舞：</strong> 葉寶 EX 和果凍三兄妹像流星雨一樣飛過。<br><em>動作：</em> 葉寶 EX 拔出聖劍，在空中畫出一個金色的「X」，瞬間切斷了藍光巨龍的雷射，天空變回漂亮的藍色。</li>
                     </ul>
                 </div>
             </div>
-
-            <div class="story-step epilogue">
-                <div class="story-header">
-                    <span class="step-num">04</span>
-                    <div class="story-title">尾聲：守護你的每一天</div>
-                </div>
+            <div class="story-step">
+                <span class="step-num">04</span>
+                <div class="story-title">尾聲：守護你的每一天</div>
                 <div class="story-content">
                     <p><strong>【畫面】</strong> 溫暖的陽光重新照亮街道。市民們伸個懶腰，眼睛變得亮晶晶，走路都輕快了起來。</p>
                     <p><strong>【定格】</strong> 英雄們站在總部頂樓看著日出。野菜小將舉著盾牌傻笑，Burner 姐酷酷地插著腰。</p>
-                    <p><strong>【結語】</strong> Burner 姐回頭看著你（對，就是正在看的你）：</p>
-                    <p class="final-quote">「健康這場仗，我們每天都要贏。放心，我們會罩你！」</p>
-                    <p><strong>【Logo】</strong> 畫面浮現 <strong>FUNAI CARE 守護者聯盟</strong> —— 你的隨身健康保鑣。</p>
+                    <p><strong>【結語】</strong> Burner 姐回頭看著你（對，就是正在看的你）：<br>「健康這場仗，我們每天都要贏。放心，我們會罩你！」</p>
+                    <p><strong>【Logo】</strong> 畫面浮現 FUNAI CARE 守護者聯盟 —— 你的隨身健康保鑣。</p>
                 </div>
             </div>
+        </div>
+    </section>
 
+    <section class="quiz-section">
+        <div class="quiz-title">🔍 Bio-City 守護者專屬檢測站</div>
+        <div class="quiz-desc">讓客觀數據為您自動匹配最適合的英雄裝備。</div>
+        
+        <div class="quiz-container">
+            <div id="quiz-start">
+                <button class="btn-link" style="padding: 15px 40px; font-size: 1.1rem; border:none;" onclick="startQuiz()">⚡ 啟動健康掃描</button>
+                <p style="margin-top:20px; font-size:0.85rem; color:#94a3b8;">本檢測結果僅供健康管理參考，不具醫療診斷效力。如有疑慮請尋求專業醫師協助。</p>
+            </div>
+
+            <div id="quiz-play" style="display:none;">
+                <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+                <div class="quiz-question" id="quiz-question-text">載入中...</div>
+                <div id="quiz-options"></div>
+            </div>
+
+            <div id="quiz-loading" style="display:none;">
+                <h3 style="color:var(--primary-color);">正在分析 Bio-City 數據...</h3>
+                <p style="color:var(--text-light); margin-bottom: 20px;">比對守護者基因中</p>
+            </div>
+
+            <div id="quiz-result" style="display:none;">
+                <h3 style="color:var(--text-light); font-size:1.1rem; margin-bottom:10px;">掃描完成！最適合您的守護者是：</h3>
+                <img id="quiz-res-img" src="" class="quiz-result-img" alt="守護者">
+                <div style="font-size: 1.5rem; color: var(--primary-color); font-weight: 800; margin-bottom: 10px;" id="quiz-res-title"></div>
+                <div style="color: var(--text-light); margin-bottom: 25px;" id="quiz-res-desc"></div>
+                <a id="quiz-res-link" href="#" target="_blank" class="btn-link" style="width: auto; padding: 12px 30px;">領取召喚裝備</a>
+                <br>
+                <button onclick="resetQuiz()" style="margin-top:20px; background:none; border:none; color:var(--accent-color); font-weight:bold; cursor:pointer; text-decoration:underline;">重新檢測</button>
+            </div>
         </div>
     </section>
 
     <section>
-        <h2>五、未來計畫：讓健康變好玩 (IP 應用)</h2>
-        <div class="worldview-box">
-            
-            <div class="worldview-item">
-                <h3>🎥 影音內容｜打造專屬頻道</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 15px;">
-                        <strong>🔴 直播秀「Burner 姐的宵夜突擊」：</strong><br>
-                        化身虛擬網紅 (VTuber)，在深夜開直播陪你聊天，毒舌點評萬惡宵夜，順便告訴你怎麼吃才不會後悔。
-                    </li>
-                    <li style="margin-bottom: 15px;">
-                        <strong>🎵 TikTok 挑戰「#殭屍退散舞」：</strong><br>
-                        用 MJ 的洗腦電音做成濾鏡，邀請上班族和學生一起跳 15 秒抖肩舞，把僵硬通通甩掉！
-                    </li>
-                    <li>
-                        <strong>📺 卡通動畫「Bio-City 戰記」：</strong><br>
-                        把很難懂的營養知識，變成「葉寶大戰藍光龍」的熱血卡通，讓小朋友看了就知道為什麼要保護眼睛。
-                    </li>
+        <h2>五、戰略發展：IP 生態系與數位行銷佈局</h2>
+        <p style="margin-bottom: 30px; color: var(--text-light); font-size: 1.05rem;">
+            本企劃以「聽得懂、玩得深、可變現」為核心，無縫融入數位戰略與 CRM 框架，建構一套「引流、留存、變現」的行銷飛輪：
+        </p>
+        
+        <div class="strategy-grid">
+            <div class="strategy-card">
+                <span class="strategy-phase">Phase 1</span>
+                <h3>📱 影音矩陣與社群裂變</h3>
+                <p style="font-size: 0.9rem; margin-bottom:15px;">以高互動短影音迎戰演算法，突破廣告視覺疲乏。</p>
+                <ul>
+                    <li><strong>短片挑戰賽：</strong>利用 MJ 機器人洗腦電音打造專屬濾鏡，發起 #殭屍退散舞 挑戰。</li>
+                    <li><strong>VTuber 直播企劃：</strong>Burner 姐深夜開播點評宵夜，將痛點關鍵字綁定生成式搜尋 (GEO)。</li>
+                    <li><strong>影音導購模組：</strong>將生硬知識轉為「Bio-City 戰記」動畫，並串接 YouTube Shopping。</li>
                 </ul>
             </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-
-            <div class="worldview-item">
-                <h3>📱 手機裡的健康管家 (會員互動)</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 15px;">
-                        <strong>🆔 LINE 官方帳號「市民身分證」：</strong><br>
-                        加入會員就是 Bio-City 的市民！每天回報「我有乖乖吃」，就能累積積分升級，從流浪市民變成榮譽守護官。
-                    </li>
-                    <li>
-                        <strong>📸 IG 趣味濾鏡：</strong><br>
-                        打開「雙下巴警報」濾鏡，只要你一低頭，Burner 姐就會跑出來吼你：「抬頭挺胸！」絕對醒腦。
-                    </li>
+            <div class="strategy-card">
+                <span class="strategy-phase">Phase 2</span>
+                <h3>🛒 互動變現與會員私域</h3>
+                <p style="font-size: 0.9rem; margin-bottom:15px;">運用互動檢測工具精準匹配產品，並結合標籤化提升留存。</p>
+                <ul>
+                    <li><strong>Bio-City 檢測站 (官網流量變現)：</strong>擴充「互動式自我檢測工具」(如兒童成長預測、用眼疲勞等)。依運算結果自動匹配英雄裝備，實現精準導購。</li>
+                    <li><strong>CDP 標籤與遊戲化：</strong>將 LINE 官方帳號升級為數位市民證。透過 IP 檢測行為於 CDP 系統貼標，並以「每日打卡」解鎖裝備提升黏著度。</li>
+                    <li><strong>跨線聯合促銷：</strong>將產品頁升級為裝備庫，推動內服外用聯合銷售（如 Burner 姐 x 纖維粉），拉升平均客單價。</li>
                 </ul>
             </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-
-            <div class="worldview-item">
-                <h3>🛍️ 實體體驗｜把能量帶回家</h3>
-                <ul style="list-style: none; padding-left: 0;">
-                    <li style="margin-bottom: 15px;">
-                        <strong>🃏 AR 魔法卡牌包裝：</strong><br>
-                        買產品送「英雄戰鬥卡」，用手機掃一掃，角色就會跳到桌上跟你說話！集滿全套還能換神祕大禮。
-                    </li>
-                    <li>
-                        <strong>🏥 快閃店「身體維修中心」：</strong><br>
-                        不只是賣東西，更是幫你「維修」身體！現場有 MJ 按摩區讓你桑一下，還有果凍補給吧給小朋友試吃。
-                    </li>
+            <div class="strategy-card">
+                <span class="strategy-phase">Phase 3</span>
+                <h3>🌐 OMO 虛實整合與出海</h3>
+                <p style="font-size: 0.9rem; margin-bottom:15px;">結合 AR 與實體快閃店，並以 IP 視覺跨越語言隔閡拓展海外。</p>
+                <ul>
+                    <li><strong>AR 智慧卡牌包裝：</strong>購買產品即贈「戰鬥卡」，手機掃描解鎖 3D 對話與專屬折扣，創造實體開箱儀式感。</li>
+                    <li><strong>實體維修快閃店：</strong>於重點商圈打造體驗店，提供實機按摩與果凍補給，將衛教轉為實體商機。</li>
+                    <li><strong>東南亞 (SEA) 登陸：</strong>以無國界的 IP 視覺與動感音樂，作為進軍香港、新馬市場的最強突破口。</li>
                 </ul>
             </div>
+        </div>
+    </section>
 
+    <section>
+        <h2>🎮 Bio-City 守護者特訓模擬器</h2>
+        <p style="text-align: center; color: var(--text-light); margin-bottom: 10px;">操作說明：滑鼠/手指左右滑動控制英雄。能量滿百將自動釋放全域淨化大招！</p>
+        
+        <div class="game-wrapper">
+            <div class="game-header" id="game-header">
+                <div class="hp">HP: <span id="ui-hp" style="color:#f43f5e">5</span></div>
+                <div class="energy-bar-bg"><div class="energy-bar-fill" id="ui-energy"></div></div>
+                <div class="score">SCORE: <span id="ui-score" style="color:#fbbf24">0</span></div>
+            </div>
+            <canvas id="gameCanvas" width="450" height="700"></canvas>
+            <div id="game-ui-select">
+                <div class="game-ui-title" style="margin-top:40px;">選擇你的守護者</div>
+                <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:30px;">準備迎戰熵能軍團</p>
+                <div style="width:100%;">
+                    <button class="hero-btn" onclick="startCanvasGame('burner')">
+                        <div class="emoji-box" style="background: linear-gradient(135deg, #f43f5e, #be123c);">👩‍🎤</div>
+                        <div><h4>Burner 姐</h4><p>武器:⚡ ｜極纖雷射：高射速</p></div>
+                    </button>
+                    <button class="hero-btn" onclick="startCanvasGame('mj')">
+                        <div class="emoji-box" style="background: linear-gradient(135deg, #0ea5e9, #0369a1);">🤖</div>
+                        <div><h4>MJ 機器人</h4><p>武器:🎵 ｜8點共震：穩定輸出</p></div>
+                    </button>
+                    <button class="hero-btn" onclick="startCanvasGame('yebao')">
+                        <div class="emoji-box" style="background: linear-gradient(135deg, #f59e0b, #b45309);">🦸‍♂️</div>
+                        <div><h4>葉寶 EX</h4><p>武器:⚔️ ｜藍光聖劍：高爆發</p></div>
+                    </button>
+                </div>
+            </div>
+            <div id="game-ui-gameover" style="display:none;">
+                <div style="font-size:4rem; margin-top:80px;">💀</div>
+                <div class="game-ui-title" style="color:#f43f5e; text-shadow:0 0 15px rgba(244,63,94,0.5);">英雄倒下</div>
+                <p style="color:#94a3b8; margin-bottom:30px;">城市被生活惡勢力佔領了...</p>
+                <div style="background:#0f172a; padding:20px; border-radius:15px; text-align:center; width:80%; margin-bottom:40px; border:1px solid #1e293b;">
+                    <div style="color:#94a3b8; font-size:0.9rem;">本次擊殺積分</div>
+                    <div id="final-score" style="font-size:3rem; font-weight:900; color:#fbbf24;">0</div>
+                </div>
+                <button class="hero-btn" style="justify-content:center; background:#1e293b;" onclick="resetToCanvasMenu()">
+                    <h4 style="margin:0;">🔄 重新選擇英雄</h4>
+                </button>
+            </div>
         </div>
     </section>
 
     <footer>
         <h3>FUNAI CARE 守護者聯盟</h3>
-        <p>不只是保健品，更是陪你一起打怪升級的好夥伴。</p>
-        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">© 2026 Brand IP Universe</p>
+        <p>Your Bio-City, We Protect. 從產品力到品牌宇宙的進化之路。</p>
+        <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.6; font-family: 'Montserrat', sans-serif;">© 2026 FUNAI Digital Marketing Group</p>
     </footer>
 
 </div>
+
+<script>
+    /* =========================================
+       1. 檢測站 (Quiz) 邏輯
+       ========================================= */
+    const quizQuestions = [
+        {
+            q: "最近覺得身體哪裡最不對勁？",
+            options: [
+                { text: "肩頸僵硬，像背著石頭", type: "mj" },
+                { text: "眼睛乾澀，螢幕看久就想流淚", type: "yebao" },
+                { text: "體態沉重，代謝好像停滯了", type: "burner" }
+            ]
+        },
+        {
+            q: "你平常的休閒活動最接近哪一項？",
+            options: [
+                { text: "癱在沙發上完全不想動", type: "mj" },
+                { text: "瘋狂追劇打遊戲", type: "yebao" },
+                { text: "吃大餐犒賞自己", type: "burner" }
+            ]
+        }
+    ];
+
+    const quizResultsData = {
+        mj: { title: "MJ 機器人", desc: "你需要『節奏戰神』！8點共震波為你震碎僵硬。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
+        yebao: { title: "葉寶 EX", desc: "藍光巨龍盯上你了！讓葉寶守護你的靈魂之窗。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
+        burner: { title: "Burner 姐", desc: "代謝危機！讓指揮官幫你找回輕盈與自信。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
+    };
+
+    let currentQuizQ = 0;
+    let quizScores = { mj: 0, yebao: 0, burner: 0 };
+
+    function startQuiz() {
+        document.getElementById('quiz-start').style.display = 'none';
+        document.getElementById('quiz-play').style.display = 'block';
+        currentQuizQ = 0; quizScores = { mj: 0, yebao: 0, burner: 0 };
+        showQuizQuestion();
+    }
+
+    function showQuizQuestion() {
+        const q = quizQuestions[currentQuizQ];
+        document.getElementById('quiz-question-text').innerText = q.q;
+        document.getElementById('quiz-progress-fill').style.width = (currentQuizQ / quizQuestions.length) * 100 + '%';
+        let html = '';
+        q.options.forEach(opt => {
+            html += `<div class="quiz-option" onclick="answerQuiz('${opt.type}')">${opt.text}</div>`;
+        });
+        document.getElementById('quiz-options').innerHTML = html;
+    }
+
+    function answerQuiz(type) {
+        quizScores[type]++; currentQuizQ++;
+        if (currentQuizQ < quizQuestions.length) {
+            showQuizQuestion();
+        } else {
+            document.getElementById('quiz-progress-fill').style.width = '100%';
+            document.getElementById('quiz-play').style.display = 'none';
+            document.getElementById('quiz-loading').style.display = 'block';
+            setTimeout(showQuizResult, 1200);
+        }
+    }
+
+    function showQuizResult() {
+        document.getElementById('quiz-loading').style.display = 'none';
+        document.getElementById('quiz-result').style.display = 'block';
+        let maxType = Object.keys(quizScores).reduce((a, b) => quizScores[a] > quizScores[b] ? a : b);
+        let res = quizResultsData[maxType];
+        document.getElementById('quiz-res-img').src = res.img;
+        document.getElementById('quiz-res-title').innerText = res.title;
+        document.getElementById('quiz-res-desc').innerText = res.desc;
+        document.getElementById('quiz-res-link').href = res.link;
+    }
+
+    function resetQuiz() {
+        document.getElementById('quiz-result').style.display = 'none';
+        document.getElementById('quiz-start').style.display = 'block';
+    }
+
+
+    /* =========================================
+       2. 特訓模擬器 (Canvas Game) 邏輯
+       ========================================= */
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let animationId; let lastTime = 0;
+    const G_W = 450, G_H = 700, P_SIZE = 60, E_SIZE = 50, P_Y = G_H - 100;
+
+    const HEROES = {
+        'burner': { emoji: '👩‍🎤', color: '#f43f5e', weapon: '⚡', fireRate: 300, dmg: 1, speed: 6 },
+        'mj': { emoji: '🤖', color: '#0ea5e9', weapon: '🎵', fireRate: 600, dmg: 2, speed: 4 },
+        'yebao': { emoji: '🦸‍♂️', color: '#f59e0b', weapon: '⚔️', fireRate: 1000, dmg: 4, speed: 8 }
+    };
+    const ENEMIES = [
+        { emoji: '👻', hp: 1, speed: 2.5, score: 10, energy: 5 },
+        { emoji: '🐉', hp: 3, speed: 1.5, score: 30, energy: 10 },
+        { emoji: '🧟‍♂️', hp: 8, speed: 0.8, score: 80, energy: 20 }
+    ];
+
+    let gState = {
+        status: 'select', hero: null, x: G_W/2, score: 0, hp: 5, energy: 0,
+        enemies: [], proj: [], particles: [], lastSpawn: 0, lastFire: 0, protocol: false
+    };
+
+    const uiH = document.getElementById('game-header');
+    const elHpG = document.getElementById('ui-hp');
+    const elScoreG = document.getElementById('ui-score');
+    const elEnergyG = document.getElementById('ui-energy');
+
+    window.startCanvasGame = function(heroId) {
+        gState.status = 'playing'; gState.hero = HEROES[heroId]; gState.x = G_W/2;
+        gState.score = 0; gState.hp = 5; gState.energy = 0; gState.protocol = false;
+        gState.enemies = []; gState.proj = []; gState.particles = [];
+        
+        document.getElementById('game-ui-select').style.display = 'none';
+        document.getElementById('game-ui-gameover').style.display = 'none';
+        uiH.style.display = 'flex';
+        updateGameDOM();
+
+        if(animationId) cancelAnimationFrame(animationId);
+        lastTime = performance.now();
+        animationId = requestAnimationFrame(gameLoop);
+    };
+
+    window.resetToCanvasMenu = function() {
+        gState.status = 'select';
+        document.getElementById('game-ui-gameover').style.display = 'none';
+        document.getElementById('game-ui-select').style.display = 'flex';
+        ctx.clearRect(0,0,G_W,G_H);
+    };
+
+    function handleGameMove(clientX) {
+        if (gState.status !== 'playing' || gState.protocol) return;
+        const rect = canvas.getBoundingClientRect();
+        let x = (clientX - rect.left) * (G_W / rect.width);
+        gState.x = Math.max(P_SIZE/2, Math.min(x, G_W - P_SIZE/2));
+    }
+    canvas.addEventListener('mousemove', e => handleGameMove(e.clientX));
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); handleGameMove(e.touches[0].clientX); }, {passive: false});
+
+    function spawnParticles(x, y, color) {
+        for(let i=0; i<8; i++) gState.particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, life: 1, color: color });
+    }
+
+    function gameLoop(time) {
+        if(gState.status !== 'playing') return;
+        const dt = time - lastTime; lastTime = time;
+        updateGame(dt, time);
+        drawGame();
+        if (gState.status === 'playing') animationId = requestAnimationFrame(gameLoop);
+        else if (gState.status === 'gameover') {
+            uiH.style.display = 'none';
+            document.getElementById('game-ui-gameover').style.display = 'flex';
+            document.getElementById('final-score').innerText = gState.score;
+        }
+    }
+
+    function updateGame(dt, time) {
+        if (gState.protocol) return; 
+        const ts = Math.min(dt/16.6, 3);
+
+        if (time - gState.lastFire > gState.hero.fireRate) {
+            gState.proj.push({ x: gState.x, y: P_Y - P_SIZE/2, dmg: gState.hero.dmg, speed: gState.hero.speed });
+            gState.lastFire = time;
+        }
+
+        if (time - gState.lastSpawn > Math.max(400, 1500 - gState.score * 2)) {
+            const r = Math.random();
+            let tmpl = r > 0.9 ? ENEMIES[2] : (r > 0.7 ? ENEMIES[1] : ENEMIES[0]);
+            gState.enemies.push({ x: Math.random()*(G_W-E_SIZE) + E_SIZE/2, y: -E_SIZE, ...tmpl, hp: tmpl.hp });
+            gState.lastSpawn = time;
+        }
+
+        for (let i = gState.proj.length-1; i>=0; i--) {
+            gState.proj[i].y -= gState.proj[i].speed * ts;
+            if (gState.proj[i].y < -30) gState.proj.splice(i,1);
+        }
+
+        for (let i = gState.enemies.length-1; i>=0; i--) {
+            let e = gState.enemies[i]; e.y += e.speed * ts;
+            if (Math.hypot(e.x - gState.x, e.y - P_Y) < (E_SIZE+P_SIZE)/2 * 0.7 || e.y > G_H) {
+                gState.hp -= 1; gState.enemies.splice(i,1); updateGameDOM();
+                if (gState.hp <= 0) gState.status = 'gameover';
+                continue;
+            }
+            for (let j = gState.proj.length-1; j>=0; j--) {
+                let p = gState.proj[j];
+                if (Math.hypot(e.x - p.x, e.y - p.y) < (E_SIZE+24)/2) {
+                    e.hp -= p.dmg; gState.proj.splice(j,1);
+                    if (e.hp <= 0) {
+                        gState.score += e.score; gState.energy += e.energy;
+                        spawnParticles(e.x, e.y, '#2dd4bf');
+                        gState.enemies.splice(i,1); updateGameDOM();
+                        if (gState.energy >= 100) {
+                            gState.energy = 0; gState.protocol = true;
+                            setTimeout(() => {
+                                gState.enemies.forEach(ex => gState.score += ex.score);
+                                gState.enemies = []; gState.protocol = false; updateGameDOM();
+                            }, 1000);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (let i = gState.particles.length-1; i>=0; i--) {
+            let pt = gState.particles[i]; pt.x+=pt.vx; pt.y+=pt.vy; pt.life-=0.05;
+            if(pt.life<=0) gState.particles.splice(i,1);
+        }
+    }
+
+    function updateGameDOM() {
+        elHpG.innerText = Math.max(0, gState.hp);
+        elScoreG.innerText = gState.score;
+        elEnergyG.style.width = Math.min(100, gState.energy) + '%';
+    }
+
+    function drawGame() {
+        ctx.fillStyle = '#020617'; ctx.fillRect(0,0,G_W,G_H);
+        ctx.strokeStyle = 'rgba(45, 212, 191, 0.1)'; ctx.lineWidth = 1;
+        for(let i=0; i<G_H; i+=40) { ctx.beginPath(); ctx.moveTo(0, i+((Date.now()/20)%40)); ctx.lineTo(G_W, i+((Date.now()/20)%40)); ctx.stroke(); }
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        
+        ctx.font = '24px Arial'; gState.proj.forEach(p => ctx.fillText(gState.hero.weapon, p.x, p.y));
+        ctx.font = '40px Arial'; gState.enemies.forEach(e => {
+            ctx.fillText(e.emoji, e.x, e.y);
+            if(e.hp > 1) { ctx.fillStyle = '#f43f5e'; ctx.fillRect(e.x-20, e.y-30, 40*(e.hp/(e.hp+2)), 4); }
+        });
+        ctx.font = '50px Arial'; ctx.shadowColor = gState.hero.color; ctx.shadowBlur = 15;
+        ctx.fillText(gState.hero.emoji, gState.x, P_Y); ctx.shadowBlur = 0;
+        
+        gState.particles.forEach(pt => { ctx.fillStyle=pt.color; ctx.globalAlpha=pt.life; ctx.beginPath(); ctx.arc(pt.x,pt.y,4,0,Math.PI*2); ctx.fill(); });
+        ctx.globalAlpha = 1;
+        if(gState.protocol) {
+            ctx.fillStyle = 'rgba(45,212,191,0.4)'; ctx.fillRect(0,0,G_W,G_H);
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 36px monospace'; ctx.fillText('FUNAI PROTOCOL', G_W/2, G_H/2);
+        }
+    }
+</script>
 
 </body>
 </html>
