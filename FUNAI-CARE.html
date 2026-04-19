@@ -16,9 +16,9 @@
             --cyan: #00d5ff;
             --cyan-glow: rgba(0, 213, 255, 0.25);
             --white: #ffffff;
-            --muted: #cbd5e1; /* [優化] 提亮次要文字，增加深色背景下的易讀性 */
+            --muted: #cbd5e1;
             --card-bg: rgba(15, 28, 53, 0.85);
-            --border: rgba(0, 213, 255, 0.2); /* [優化] 邊框稍微加亮 */
+            --border: rgba(0, 213, 255, 0.2); 
             --radius-lg: 24px;
             --radius-md: 16px;
             --radius-sm: 10px;
@@ -97,14 +97,18 @@
             content: ''; width: 6px; height: 6px; border-radius: 50%;
             background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation: pulse-glow 2s ease infinite;
         }
+        
+        /* [修正] 強制標題不換行 */
         header h1 {
             font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif;
-            font-size: clamp(3.2rem, 9vw, 6.5rem); font-weight: 500; letter-spacing: 4px; line-height: 1.1;
+            font-size: clamp(2.8rem, 8vw, 6.5rem); font-weight: 500; letter-spacing: 4px; line-height: 1.1;
             position: relative; z-index: 2;
             background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, #fff 100%);
             background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: shimmer 5s linear infinite, fadeUp 0.8s 0.2s ease both;
+            white-space: nowrap; /* 強制文字與標點不換行 */
         }
+        
         header .tagline {
             font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--muted);
             margin-top: 20px; margin-bottom: 8px; position: relative; z-index: 2;
@@ -163,7 +167,7 @@
         .video-wrap {
             border-radius: var(--radius-md); overflow: hidden;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
-            margin-bottom: 16px;
+            margin-bottom: 16px; position: relative;
         }
         .video-wrap iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
         .video-caption { text-align: center; color: var(--muted); font-size: 0.95rem; font-family: 'Space Mono', monospace; margin-bottom: 40px; }
@@ -174,7 +178,6 @@
         }
         .voice-player p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--cyan); margin-bottom: 10px; }
         
-        /* [優化] 讓 Audio 播放器對比更高更清晰 */
         audio { width: 100%; outline: none; border-radius: 8px; filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.2); }
 
         /* ══ OST CARDS ══ */
@@ -216,9 +219,8 @@
         /* ══ HERO CARDS ══ */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; overflow: visible; }
         .card {
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: var(--radius-lg);
-            padding: 28px 24px; display: flex; flex-direction: column;
+            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 28px 24px; display: flex; flex-direction: column;
             position: relative; overflow: visible;
             transition: transform 0.4s cubic-bezier(0.165,0.84,0.44,1), border-color 0.3s, box-shadow 0.3s;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 1;
@@ -290,15 +292,12 @@
             content: ''; position: absolute; left: -44px; top: 8px; width: 16px; height: 16px;
             background: var(--navy); border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 12px rgba(0,213,255,0.6);
         }
-        
-        /* [重點優化] 讓 01, 02 數字清晰可見，並帶有科技感發光 */
         .step-num {
             font-family: 'Bebas Neue', monospace; font-size: 3.5rem;
             color: rgba(0, 213, 255, 0.45); 
             text-shadow: 0 0 12px rgba(0, 213, 255, 0.4); 
             position: absolute; left: -120px; top: -16px; line-height: 1;
         }
-        
         .story-title { font-weight: 800; font-size: 1.3rem; color: var(--white); margin-bottom: 12px; }
         .story-content { color: #e2e8f0; font-size: 1.05rem; }
         .story-content strong { color: var(--cyan); font-weight: 700; }
@@ -335,21 +334,19 @@
         /* ══ STRATEGY GRID ══ */
         .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
         .strategy-card {
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: var(--radius-lg);
+            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-lg);
             padding: 40px 28px 32px; position: relative; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
         }
         .strategy-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-color: rgba(0,213,255,0.4); }
         .strategy-phase {
-            position: absolute; top: -14px; left: 24px;
-            background: linear-gradient(135deg, var(--navy-light), var(--navy-mid)); color: var(--cyan);
+            position: absolute; top: -14px; left: 24px; background: linear-gradient(135deg, var(--navy-light), var(--navy-mid)); color: var(--cyan);
             padding: 6px 18px; border-radius: 50px; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
             border: 1px solid rgba(0,213,255,0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .strategy-card h3 { font-size: 1.25rem; font-weight: 800; color: var(--white); margin-bottom: 12px; margin-top: 8px; }
         .strategy-card > p { font-size: 0.95rem; color: var(--muted); margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
         .strategy-card ul { padding-left: 18px; color: #cbd5e1; }
-        .strategy-card li { margin-bottom: 12px; font-size: 0.98rem; }
+        .strategy-card li { margin-bottom: 10px; font-size: 0.98rem; }
         .strategy-card strong { color: #fff; }
 
         /* ══ GAME ══ */
@@ -367,6 +364,7 @@
         .game-header .energy-bar-bg { width: 100px; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #00d5ff, #ff3b53); width: 0%; transition: width 0.2s; }
         canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+        
         #game-ui-select, #game-ui-gameover {
             position: absolute; inset: 0; background: rgba(4,10,24,0.96); z-index: 20;
             display: flex; flex-direction: column; align-items: center; padding: 40px 20px; overflow-y: auto;
@@ -399,6 +397,7 @@
         footer .copy { margin-top: 24px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: rgba(160,174,192,0.5); letter-spacing: 2px; }
 
         @media (max-width: 768px) {
+            header h1 { font-size: clamp(2.8rem, 8vw, 4rem); } /* 確保手機版不會過大 */
             .section-wrap { padding: 40px 0; }
             .step-num { display: none; }
             .villain-list { grid-template-columns: 1fr; }
@@ -445,6 +444,7 @@
 
     <section class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>一、世界觀：Bio-City (生命之城)</h2>
+
         <div class="video-wrap">
             <iframe src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1" title="Bio-City 前導預告" allowfullscreen></iframe>
         </div>
@@ -854,7 +854,7 @@
         let res = quizResultsData[maxType];
         document.getElementById('quiz-res-img').src = res.img;
         document.getElementById('quiz-res-title').innerText = res.title;
-        document.getElementById('quiz-res-title').style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:#f0f4ff;margin-bottom:10px;";
+        document.getElementById('quiz-res-title').style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;color:#f0f4ff;margin-bottom:10px;text-shadow:0 0 15px rgba(0,213,255,0.3);";
         document.getElementById('quiz-res-desc').innerText = res.desc;
         document.getElementById('quiz-res-link').href = res.link;
     }
