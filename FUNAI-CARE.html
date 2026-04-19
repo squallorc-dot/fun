@@ -96,7 +96,7 @@
         .voice-player p { font-size: 0.95rem; color: var(--primary-color); font-weight: 700; margin-bottom: 10px; }
         .voice-player audio { width: 100%; height: 40px; outline: none; }
 
-        /* --- OST 音樂播放清單 (優化為上下排列) --- */
+        /* --- OST 音樂播放清單 --- */
         .ost-container { display: flex; flex-direction: column; gap: 15px; }
         .ost-player-card {
             background: var(--card-bg); padding: 20px 25px; border-radius: var(--radius);
@@ -111,7 +111,6 @@
         .suno-link { font-size: 0.85rem; color: var(--accent-color); text-decoration: none; font-weight: 600; transition: color 0.3s; display: inline-block; }
         .suno-link:hover { color: #1e3a8a; text-decoration: underline; }
 
-        /* OST 電腦版橫向音軌設計 */
         @media (min-width: 768px) {
             .ost-player-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 15px 25px;}
             .ost-player-card h4 { margin-bottom: 0; min-width: 250px; }
@@ -150,14 +149,27 @@
         .card-content p { color: var(--text-light); margin-bottom: 15px; }
         .skill-box { background: #f0f9ff; padding: 15px; border-radius: 12px; font-size: 0.95rem; margin: 15px 0 25px; border-left: 3px solid var(--accent-color); color: #2c3e50; }
         
-        /* 共用按鈕樣式 */
         .btn-link { margin-top: auto; text-align: center; background-color: var(--primary-color); color: white; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: 700; transition: all 0.3s; box-shadow: 0 4px 6px rgba(10, 37, 64, 0.1); border: none; cursor: pointer; display: inline-block; width: 100%;}
         .btn-link:hover { background-color: #1e3a8a; color: white; box-shadow: 0 6px 15px rgba(10, 37, 64, 0.2); }
 
-        /* --- 反派列表 --- */
-        .villain-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; list-style: none; }
-        .villain-item { background: #FFF5F5; padding: 25px; border-radius: 16px; border-left: 5px solid var(--secondary-color); box-shadow: var(--shadow-sm); }
-        .villain-name { font-weight: 900; color: var(--secondary-color); font-size: 1.2rem; display: block; margin-bottom: 8px; }
+        /* --- 反派列表 (更新視覺色系與電腦版 2x2 對齊) --- */
+        .villain-list { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; /* 電腦版強制兩欄對齊 */
+            gap: 25px; 
+            list-style: none; 
+        }
+        .villain-item { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 16px; 
+            border-left: 5px solid var(--primary-color); 
+            box-shadow: var(--shadow-sm); 
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .villain-name { font-weight: 900; color: var(--primary-color); font-size: 1.2rem; display: block; margin-bottom: 8px; }
 
         /* --- 劇本時間軸 --- */
         .story-timeline { position: relative; padding-left: 40px; border-left: 3px solid #E2E8F0; margin-top: 30px; }
@@ -244,7 +256,13 @@
             color: white; border-radius: var(--radius); box-shadow: var(--shadow-lg);
         }
 
-        @media (max-width: 768px) { header h1 { font-size: 2.2rem; } .step-num { display: none; } }
+        /* --- 手機版自適應修正 --- */
+        @media (max-width: 768px) { 
+            header h1 { font-size: 2.2rem; } 
+            .step-num { display: none; } 
+            /* 手機版將通緝名單轉為單行直排，防止超出寬度 */
+            .villain-list { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -673,7 +691,7 @@
                 <ul>
                     <li><strong>Bio-City 檢測站 (官網流量變現)：</strong>擴充「互動式自我檢測工具」(如兒童成長預測、用眼疲勞等)。依運算結果自動匹配英雄裝備，實現精準導購。</li>
                     <li><strong>CDP 標籤與遊戲化：</strong>將 LINE 官方帳號升級為數位市民證。透過 IP 檢測行為於 CDP 系統貼標，並以「每日打卡」解鎖裝備提升黏著度。</li>
-                    <li><strong>跨線聯合促銷：</strong>將產品頁升級為裝備庫，推動內服外用聯合銷售（如 Burner 姐 x 纖維粉），拉升平均客單價。</li>
+                    <li><strong>跨線聯合促銷：</strong>將產品頁升級為裝備庫，推動內服外用聯合銷售（如 Burner 姐 x 極纖錠），拉升平均客單價。</li>
                 </ul>
             </div>
             <div class="strategy-card">
