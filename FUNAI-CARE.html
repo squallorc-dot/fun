@@ -264,7 +264,7 @@
         }
         .btn-link:hover { background: var(--cyan); color: var(--navy); box-shadow: 0 0 20px rgba(0,213,255,0.5); }
 
-        /* ══ 英雄召喚震動特效 (方案 A) ══ */
+        /* ══ 英雄召喚震動特效 ══ */
         @keyframes hero-summon-shake {
             0% { transform: scale(1.5) translateY(-15px) rotate(0deg); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.8)) brightness(1.2); }
             25% { transform: scale(1.5) translateY(-15px) rotate(-3deg); filter: drop-shadow(0 15px 30px rgba(255,59,83,0.8)) brightness(1.3); }
@@ -317,7 +317,7 @@
             box-shadow: inset 0 0 20px rgba(0, 213, 255, 0.1);
         }
 
-        /* 優化 1：手機版預設展開台本，避免觸控無法 Hover 的問題 */
+        /* 手機版預設展開台本 */
         @media (hover: none) {
             .hero-lyrics-hologram {
                 max-height: 250px;
@@ -328,7 +328,7 @@
                 background: rgba(0, 213, 255, 0.03);
             }
             .char-img-clickable::after {
-                opacity: 1; /* 手機版常駐提示 */
+                opacity: 1;
                 background: rgba(0, 213, 255, 0.1);
                 bottom: -20px;
             }
@@ -347,6 +347,65 @@
 
         .tag-sys { color: var(--cyan); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
         .tag-atk { color: var(--red); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
+
+        /* 🌟 恢復：單一暫停鍵的懸浮音樂控制器 🌟 */
+        .floating-audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 28, 53, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--cyan);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0, 213, 255, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+        .floating-audio-player.is-visible {
+            transform: translateX(0);
+        }
+        .f-audio-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .f-audio-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .f-audio-name {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .f-audio-btn {
+            background: rgba(255, 59, 83, 0.1);
+            border: 1px solid var(--red);
+            color: var(--red);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .f-audio-btn:hover {
+            background: var(--red);
+            color: var(--white);
+            box-shadow: 0 0 15px rgba(255, 59, 83, 0.5);
+            transform: scale(1.1);
+        }
 
         /* ══ VILLAIN LIST ══ */
         .villain-list { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; list-style: none; }
@@ -442,7 +501,6 @@
         .game-header .energy-bar-bg { width: 100px; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #00d5ff, #ff3b53); width: 0%; transition: width 0.2s; }
         
-        /* 優化 3: 確保小遊戲區域的滑動不會導致手機版網頁跟著滑動 */
         canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         
         #game-ui-select, #game-ui-gameover {
@@ -506,6 +564,14 @@
         <p class="tagline">啟動內在英雄：從產品力到品牌宇宙的進化</p>
         <p class="header-credit">Design & Text by 家葦</p>
     </header>
+
+    <div id="global-audio-player" class="floating-audio-player">
+        <div class="f-audio-info">
+            <span class="f-audio-label">NOW PLAYING</span>
+            <span id="f-audio-name" class="f-audio-name">Burner 姐</span>
+        </div>
+        <button class="f-audio-btn" onclick="stopAllHeroAudio()" title="暫停播放">⏸</button>
+    </div>
 
     <section class="section-wrap">
         <div class="vision-box">
@@ -619,7 +685,7 @@
                 <h3>Burner 姐</h3>
                 <span class="alias">那個超酷的女生</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-burner', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-burner', 'Burner 姐', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
                 </div>
                 
@@ -629,7 +695,7 @@
                 </div>
                 
                 <audio id="audio-burner">
-                    <source src="https://squallorc-dot.github.io/fun/Music/ burner.mp3" type="audio/mpeg">
+                    <source src="https://squallorc-dot.github.io/fun/Music/burner.mp3" type="audio/mpeg">
                 </audio>
                 
                 <div class="hero-lyrics-hologram">
@@ -649,7 +715,7 @@
                 <h3>MJ 機器人</h3>
                 <span class="alias">自帶 BGM 的節奏戰神</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-mj', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-mj', 'MJ 機器人', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人">
                 </div>
                 
@@ -680,7 +746,7 @@
                 <h3>萌牛阿哞</h3>
                 <span class="alias">力大無窮的大姊頭</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-amou', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-amou', '萌牛阿哞', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞">
                 </div>
                 
@@ -711,7 +777,7 @@
                 <h3>葉寶 EX</h3>
                 <span class="alias">對抗藍光的劍士</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-yebao', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-yebao', '葉寶 EX', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX">
                 </div>
                 
@@ -742,7 +808,7 @@
                 <h3>果凍三兄妹</h3>
                 <span class="alias">盞哥、美莓、葉寶</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-jelly', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-jelly', '果凍三兄妹', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹">
                 </div>
                 
@@ -774,7 +840,7 @@
                 <h3>野菜小將</h3>
                 <span class="alias">綠色盾牌衛兵</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-veggie', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-veggie', '野菜小將', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將">
                 </div>
                 
@@ -806,7 +872,7 @@
                 <h3>守望者 Oracle</h3>
                 <span class="alias">幻影水精靈</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-oracle', this)">
+                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-oracle', '守望者 Oracle', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle">
                 </div>
                 
@@ -1026,15 +1092,16 @@
 </div>
 
 <script>
-    /* ── HERO AUDIO CONTROLLER (方案 A：點擊圖片播放並震動) ── */
-    function playHeroAudio(audioId, imgContainer) {
+    /* ── HERO AUDIO CONTROLLER (方案 A + 懸浮面板) ── */
+    function playHeroAudio(audioId, heroName, imgContainer) {
         const allAudios = document.querySelectorAll('.card audio');
         const targetAudio = document.getElementById(audioId);
+        const floatingPlayer = document.getElementById('global-audio-player');
+        const floatingName = document.getElementById('f-audio-name');
 
         // 防呆：如果該音樂正在播放，再次點擊則暫停
         if (!targetAudio.paused) {
-            targetAudio.pause();
-            imgContainer.classList.remove('is-playing');
+            stopAllHeroAudio();
             return;
         }
 
@@ -1046,7 +1113,7 @@
             }
         });
 
-        // 優化 2：移除所有圖片的震動狀態並強制重置動畫
+        // 移除所有圖片的震動狀態並強制重置動畫
         document.querySelectorAll('.char-img-container').forEach(container => {
             container.classList.remove('is-playing');
             container.style.animation = 'none';
@@ -1057,13 +1124,35 @@
         // 播放點擊的音樂並加上震動特效
         targetAudio.play().then(() => {
             imgContainer.classList.add('is-playing');
-            // 音樂播完後移除特效
+            
+            // 🌟 顯示懸浮面板 🌟
+            floatingName.innerText = heroName;
+            floatingPlayer.classList.add('is-visible');
+
+            // 音樂播完後移除特效與面板
             targetAudio.onended = function() {
                 imgContainer.classList.remove('is-playing');
+                floatingPlayer.classList.remove('is-visible');
             };
         }).catch(error => {
             console.log("播放失敗，請檢查音檔路徑或瀏覽器權限", error);
         });
+    }
+
+    // 🌟 點擊懸浮面板的暫停按鈕 🌟
+    function stopAllHeroAudio() {
+        const allAudios = document.querySelectorAll('.card audio');
+        const floatingPlayer = document.getElementById('global-audio-player');
+        
+        allAudios.forEach(audio => {
+            audio.pause();
+        });
+        
+        document.querySelectorAll('.char-img-container').forEach(container => {
+            container.classList.remove('is-playing');
+        });
+        
+        floatingPlayer.classList.remove('is-visible');
     }
 
     /* ── QUIZ ── */
