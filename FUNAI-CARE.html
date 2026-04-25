@@ -118,6 +118,65 @@
         .orb-1 { width: 400px; height: 400px; background: var(--red); top: -100px; right: -100px; animation: float 8s ease-in-out infinite; }
         .orb-2 { width: 300px; height: 300px; background: var(--cyan); bottom: -50px; left: -80px; animation: float 10s 2s ease-in-out infinite; }
 
+        /* 🌟 懸浮音樂控制器 🌟 */
+        .floating-audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 28, 53, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--cyan);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0, 213, 255, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+        }
+        .floating-audio-player.is-visible {
+            transform: translateX(0);
+        }
+        .f-audio-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .f-audio-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .f-audio-name {
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .f-audio-btn {
+            background: rgba(255, 59, 83, 0.1);
+            border: 1px solid var(--red);
+            color: var(--red);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .f-audio-btn:hover {
+            background: var(--red);
+            color: var(--white);
+            box-shadow: 0 0 15px rgba(255, 59, 83, 0.5);
+            transform: scale(1.1);
+        }
+
         /* ══ SECTION TITLES ══ */
         .section-wrap { padding: 60px 0; }
         h2.section-title {
@@ -251,11 +310,46 @@
         .card:hover .char-img-container img {
             transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)); z-index: 20;
         }
+        
+        /* 🌟 優化：真實產品功效排版 🌟 */
+        .card-content { flex-grow: 1; display: flex; flex-direction: column; }
         .card-content p { color: #e2e8f0; margin-bottom: 14px; font-size: 0.95rem; }
         .skill-box {
             background: rgba(0,213,255,0.08); border: 1px solid rgba(0,213,255,0.2); border-left: 3px solid var(--cyan);
             padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; color: #f8fafc; margin: 14px 0 20px;
         }
+        .real-benefits-box {
+            background: rgba(255, 59, 83, 0.05);
+            border: 1px dashed rgba(255, 59, 83, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+        .real-benefits-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--red);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .real-benefits-title::before { content: '🛡️'; }
+        .real-benefits-list {
+            list-style: none; padding-left: 0; margin: 0;
+        }
+        .real-benefits-list li {
+            position: relative; padding-left: 14px; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4;
+        }
+        .real-benefits-list li::before {
+            content: '•'; position: absolute; left: 0; color: var(--red); font-weight: bold;
+        }
+        .real-benefits-list strong { color: #fff; }
+        .patent-tag {
+            display: inline-block; background: rgba(0, 213, 255, 0.1); color: var(--cyan);
+            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-family: 'Space Mono', monospace; margin: 0 2px;
+        }
+
         .btn-link {
             text-align: center; background: rgba(0,213,255,0.15); color: var(--cyan);
             padding: 12px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 700;
@@ -278,11 +372,10 @@
             filter: drop-shadow(0 15px 30px rgba(0,213,255,0.8));
             z-index: 20;
         }
-        .char-img-clickable {
-            cursor: pointer; position: relative;
-        }
+        .char-img-clickable { cursor: pointer; position: relative; }
         .char-img-clickable img { cursor: pointer; }
         .char-img-clickable::after {
+
             content: '▶ 點擊召喚 (播放專屬音效)';
             position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 213, 255, 0.2); color: var(--cyan);
@@ -320,92 +413,19 @@
         /* 手機版預設展開台本 */
         @media (hover: none) {
             .hero-lyrics-hologram {
-                max-height: 250px;
-                opacity: 1;
-                padding: 10px;
-                margin-top: 15px;
-                margin-bottom: 20px;
-                background: rgba(0, 213, 255, 0.03);
+                max-height: 250px; opacity: 1; padding: 10px; margin-top: 15px; margin-bottom: 20px; background: rgba(0, 213, 255, 0.03);
             }
-            .char-img-clickable::after {
-                opacity: 1;
-                background: rgba(0, 213, 255, 0.1);
-                bottom: -20px;
-            }
+            .char-img-clickable::after { opacity: 1; background: rgba(0, 213, 255, 0.1); bottom: -20px; }
         }
         
         .hologram-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            border-bottom: 1px dashed rgba(0, 213, 255, 0.3);
-            padding-bottom: 4px;
-            display: inline-block;
+            font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted);
+            margin-bottom: 8px; letter-spacing: 1px; border-bottom: 1px dashed rgba(0, 213, 255, 0.3);
+            padding-bottom: 4px; display: inline-block;
         }
 
         .tag-sys { color: var(--cyan); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
         .tag-atk { color: var(--red); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
-
-        /* 🌟 恢復：單一暫停鍵的懸浮音樂控制器 🌟 */
-        .floating-audio-player {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(15, 28, 53, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--cyan);
-            border-radius: 50px;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 10px 30px rgba(0, 213, 255, 0.3);
-            transform: translateX(150%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-        }
-        .floating-audio-player.is-visible {
-            transform: translateX(0);
-        }
-        .f-audio-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .f-audio-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--cyan);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .f-audio-name {
-            font-family: 'Noto Sans TC', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--white);
-        }
-        .f-audio-btn {
-            background: rgba(255, 59, 83, 0.1);
-            border: 1px solid var(--red);
-            color: var(--red);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-        .f-audio-btn:hover {
-            background: var(--red);
-            color: var(--white);
-            box-shadow: 0 0 15px rgba(255, 59, 83, 0.5);
-            transform: scale(1.1);
-        }
 
         /* ══ VILLAIN LIST ══ */
         .villain-list { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; list-style: none; }
@@ -692,9 +712,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
                     <div class="skill-box">⚡ <strong>極纖雷射：</strong>專門對付「卡住不動」的壞東西，讓城市交通瞬間順暢。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">極纖錠 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>衛福部核准健康食品：<strong>不易形成體脂肪</strong></li>
+                            <li>獨家 E.F.T. 三重黃金代謝配方</li>
+                            <li><span class="patent-tag">綠瑪黛</span> / <span class="patent-tag">藤黃果</span> / <span class="patent-tag">L-肉酸</span> 強化動能</li>
+                        </ul>
+                    </div>
                 </div>
                 
-                <audio id="audio-burner">
+                <audio id="audio-burner" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/burner.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -722,9 +751,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>不愛說話，喜歡用音樂解決問題。只要音樂一響，壞蛋就會被震得受不了。</p>
                     <div class="skill-box">🎵 <strong>8 點共震波：</strong>跳起「酸痛掰掰舞」，把硬梆梆的石頭怪全部震碎。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">酸痛按摩機 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>衛部醫器製字第006927號核可</li>
+                            <li>雙頻道輸出，<strong>15段力度調整</strong></li>
+                            <li>12組不同模式 (包含TENS與EMS)</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-mj">
+                <audio id="audio-mj" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/mj.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -753,9 +791,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>穿著可愛乳牛裝，力氣卻大得嚇人！負責保護城市的地基不被壓垮。</p>
                     <div class="skill-box">🔨 <strong>骨力重鎚：</strong>一鎚下去，讓大樓（骨骼）穩得像山一樣。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">牛奶鈣魚膠原 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>衛福部核准<strong>「骨質保健」</strong>健康食品</li>
+                            <li>三大成長要素：優質牛奶鈣＋魚膠原蛋白＋維生素D3</li>
+                            <li>小分子水解配方，好吸收零負擔</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-amou">
+                <audio id="audio-amou" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/amou.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -784,9 +831,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>熱血又正直，手拿聖劍與盾牌，誓言保護大家的「靈魂之窗」。</p>
                     <div class="skill-box">⚔️ <strong>藍光聖劍：</strong>揮劍斬斷刺眼的藍光射線，還給城市一片藍天。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">3C葉黃素凍EX 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>葉黃素提升180%，最高劑量9mg</li>
+                            <li>使用<span class="patent-tag">美國藍光專利</span>游離型葉黃素</li>
+                            <li>葉黃素與玉米黃素黃金比例10:2</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-yebao">
+                <audio id="audio-yebao" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/yebao.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -815,9 +871,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>活潑好動的三胞胎。口號是：「陪小朋友一起『出凍』打擊壞蛋！」</p>
                     <div class="skill-box">🛡️ <strong>超級合體技：</strong>盞哥負責找壞人，美莓負責補水，葉寶負責擋子彈。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">3C葉黃素凍 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>專為兒童設計，添加足量 <strong>5MG 葉黃素</strong></li>
+                            <li>4 大明星成分 ＋ 10 種野菜蔬果萃取</li>
+                            <li>每包均含維生素D 440IU，加強防護力</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-jelly">
+                <audio id="audio-jelly" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/jelly.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -847,9 +912,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>一絲不苟的清潔達人，最討厭城市裡堆滿垃圾。</p>
                     <div class="skill-box">🛡️ <strong>高纖盾牌：</strong>擋住想偷吃能量的壞蛋，把髒東西通通掃出城外。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">野菜小將纖維粉 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>衛福部核准健康食品：胃腸功能改善、調節血脂血糖</li>
+                            <li><span class="patent-tag">日本專利Fibersol-2</span> 與 菊苣萃取纖維 Inulin</li>
+                            <li>添加牛乳蛋白胜肽 Peptone，幫助營養吸收</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-veggie">
+                <audio id="audio-veggie" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/veggie.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -879,9 +953,18 @@
                 <div class="card-content">
                     <p><strong>性格：</strong>半透明的水做的身體，能看見未來的危機，隨時準備修補破洞。</p>
                     <div class="skill-box">💧 <strong>液態魔法：</strong>像水一樣流動，快速灌溉乾枯的視線。</div>
+                    
+                    <div class="real-benefits-box">
+                        <div class="real-benefits-title">3C葉黃素飲 裝備功效</div>
+                        <ul class="real-benefits-list">
+                            <li>每包含 <strong>葉黃素 6MG</strong>，啟動液態防護</li>
+                            <li>添加 藻油 DHA 與 神經鞘磷脂，支持學習力</li>
+                            <li><span class="patent-tag">專利微囊球包覆</span>技術，液態好吸收</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <audio id="audio-oracle">
+                <audio id="audio-oracle" preload="metadata">
                     <source src="https://squallorc-dot.github.io/fun/Music/oracle.mp3" type="audio/mpeg">
                 </audio>
                 
@@ -975,12 +1058,12 @@
     </section>
 
     <div class="quiz-section">
-        <div class="quiz-title">🔍 Bio-City 守護者專屬檢測站</div>
-        <div class="quiz-desc">讓客觀數據為您自動匹配最適合的英雄裝備。</div>
+        <div class="quiz-title">🔍 Bio-City 雲端大數據掃描站</div>
+        <div class="quiz-desc">透過生活型態大數據演算法，為您的身體城市匹配專屬的防禦專利科技。</div>
         <div class="quiz-container">
             <div id="quiz-start">
-                <button class="btn-link" style="padding:15px 40px; font-size:1.1rem; max-width:280px; margin:0 auto; display:block;" onclick="startQuiz()">⚡ 啟動健康掃描</button>
-                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">本檢測結果僅供健康管理參考，不具醫療診斷效力。如有疑慮請尋求專業醫師協助。</p>
+                <button class="btn-link" style="padding:15px 40px; font-size:1.1rem; max-width:280px; margin:0 auto; display:block;" onclick="startQuiz()">⚡ 啟動健康數據掃描</button>
+                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">本檢測數據分析結果僅供健康管理裝備推薦參考，不具醫療診斷效力。如有疑慮請尋求專業醫師協助。</p>
             </div>
             <div id="quiz-play" style="display:none;">
                 <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
@@ -988,17 +1071,17 @@
                 <div id="quiz-options"></div>
             </div>
             <div id="quiz-loading" style="display:none;">
-                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">正在分析 Bio-City 數據...</h3>
-                <p style="color:var(--muted);">比對守護者基因中</p>
+                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">正在分析大數據特徵...</h3>
+                <p style="color:var(--muted);">與超過 1300 人次臨床數據比對中...</p>
             </div>
             <div id="quiz-result" style="display:none;">
-                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">掃描完成！最適合您的守護者是：</h3>
+                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">掃描完成！最適合您的守護者與科技是：</h3>
                 <img id="quiz-res-img" src="" class="quiz-result-img" alt="守護者">
                 <div id="quiz-res-title"></div>
-                <div id="quiz-res-desc" style="color:var(--muted); margin-bottom:28px;"></div>
-                <a id="quiz-res-link" href="#" target="_blank" class="btn-link" style="max-width:200px; margin:0 auto;">領取召喚裝備</a>
+                <div id="quiz-res-desc" style="color:var(--muted); margin-bottom:28px; line-height: 1.6;"></div>
+                <a id="quiz-res-link" href="#" target="_blank" class="btn-link" style="max-width:200px; margin:0 auto;">領取專利裝備</a>
                 <br>
-                <button onclick="resetQuiz()" style="margin-top:20px; background:none; border:none; color:var(--cyan); font-family:'Space Mono',monospace; font-size:0.85rem; cursor:pointer; letter-spacing:1px;">↺ 重新檢測</button>
+                <button onclick="resetQuiz()" style="margin-top:20px; background:none; border:none; color:var(--cyan); font-family:'Space Mono',monospace; font-size:0.85rem; cursor:pointer; letter-spacing:1px;">↺ 重新掃描數據</button>
             </div>
         </div>
     </div>
@@ -1022,7 +1105,7 @@
                 <h3>🛒 互動變現與會員私域</h3>
                 <p>運用互動檢測工具精準匹配產品，並結合標籤化提升留存。</p>
                 <ul>
-                    <li><strong>Bio-City 檢測站 (官網流量變現)：</strong>擴充「互動式自我檢測工具」(如兒童成長預測、用眼疲勞等)。依運算結果自動匹配英雄裝備，實現精準導購。</li>
+                    <li><strong>Bio-City 檢測站 (官網流量變現)：</strong>擴充「互動式大數據檢測」。依運算結果自動匹配具備專利成分的英雄裝備，實現精準導購。</li>
                     <li><strong>CDP 標籤與遊戲化：</strong>將 LINE 官方帳號升級為數位市民證。透過 IP 檢測行為於 CDP 系統貼標，並以「每日打卡」解鎖裝備提升黏著度。</li>
                     <li><strong>跨線聯合促銷：</strong>將產品頁升級為裝備庫，推動內服外用聯合銷售（如 Burner 姐 x 極纖錠），拉升平均客單價。</li>
                 </ul>
@@ -1092,86 +1175,119 @@
 </div>
 
 <script>
-    /* ── HERO AUDIO CONTROLLER (方案 A + 懸浮面板) ── */
+    /* ── HERO AUDIO CONTROLLER (極致升級版：含進度與音量) ── */
+    let currentPlayingAudio = null;
+    let currentImgContainer = null;
+
     function playHeroAudio(audioId, heroName, imgContainer) {
-        const allAudios = document.querySelectorAll('.card audio');
         const targetAudio = document.getElementById(audioId);
         const floatingPlayer = document.getElementById('global-audio-player');
         const floatingName = document.getElementById('f-audio-name');
+        const playBtn = document.getElementById('f-play-btn');
 
-        // 防呆：如果該音樂正在播放，再次點擊則暫停
-        if (!targetAudio.paused) {
-            stopAllHeroAudio();
+        if (currentPlayingAudio === targetAudio && !targetAudio.paused) {
+            togglePlayPause();
             return;
         }
 
-        // 把其他音樂都暫停並歸零
-        allAudios.forEach(audio => {
-            if (audio.id !== audioId) {
-                audio.pause();
-                audio.currentTime = 0; 
-            }
-        });
+        if (currentPlayingAudio && currentPlayingAudio !== targetAudio) {
+            currentPlayingAudio.pause();
+            currentPlayingAudio.currentTime = 0; 
+            if (currentImgContainer) currentImgContainer.classList.remove('is-playing');
+        }
 
-        // 移除所有圖片的震動狀態並強制重置動畫
+        currentPlayingAudio = targetAudio;
+        currentImgContainer = imgContainer;
+
         document.querySelectorAll('.char-img-container').forEach(container => {
             container.classList.remove('is-playing');
             container.style.animation = 'none';
-            container.offsetHeight; /* trigger reflow */
+            container.offsetHeight; 
             container.style.animation = null;
         });
 
-        // 播放點擊的音樂並加上震動特效
         targetAudio.play().then(() => {
             imgContainer.classList.add('is-playing');
             
-            // 🌟 顯示懸浮面板 🌟
             floatingName.innerText = heroName;
             floatingPlayer.classList.add('is-visible');
+            playBtn.innerText = '⏸';
 
-            // 音樂播完後移除特效與面板
+            targetAudio.addEventListener('timeupdate', updateProgressBar);
+
             targetAudio.onended = function() {
                 imgContainer.classList.remove('is-playing');
                 floatingPlayer.classList.remove('is-visible');
+                playBtn.innerText = '▶';
+                targetAudio.removeEventListener('timeupdate', updateProgressBar);
+                document.getElementById('f-audio-progress-fill').style.width = '0%';
             };
-        }).catch(error => {
-            console.log("播放失敗，請檢查音檔路徑或瀏覽器權限", error);
-        });
+        }).catch(error => console.log("播放失敗", error));
     }
 
-    // 🌟 點擊懸浮面板的暫停按鈕 🌟
-    function stopAllHeroAudio() {
-        const allAudios = document.querySelectorAll('.card audio');
-        const floatingPlayer = document.getElementById('global-audio-player');
-        
-        allAudios.forEach(audio => {
-            audio.pause();
-        });
-        
-        document.querySelectorAll('.char-img-container').forEach(container => {
-            container.classList.remove('is-playing');
-        });
-        
-        floatingPlayer.classList.remove('is-visible');
+    function updateProgressBar() {
+        if (!currentPlayingAudio) return;
+        const progressFill = document.getElementById('f-audio-progress-fill');
+        const percentage = (currentPlayingAudio.currentTime / currentPlayingAudio.duration) * 100;
+        progressFill.style.width = percentage + '%';
     }
 
-    /* ── QUIZ ── */
+    function seekAudio(event) {
+
+        if (!currentPlayingAudio) return;
+        const container = event.currentTarget;
+        const rect = container.getBoundingClientRect();
+        const clickRatio = (event.clientX - rect.left) / rect.width;
+        currentPlayingAudio.currentTime = clickRatio * currentPlayingAudio.duration;
+    }
+
+    function togglePlayPause() {
+        if (!currentPlayingAudio) return;
+        const playBtn = document.getElementById('f-play-btn');
+        
+        if (currentPlayingAudio.paused) {
+            currentPlayingAudio.play();
+            playBtn.innerText = '⏸';
+            if (currentImgContainer) currentImgContainer.classList.add('is-playing');
+        } else {
+            currentPlayingAudio.pause();
+            playBtn.innerText = '▶';
+            if (currentImgContainer) currentImgContainer.classList.remove('is-playing');
+        }
+    }
+
+    function toggleMute() {
+        if (!currentPlayingAudio) return;
+        const volBtn = document.getElementById('f-volume-btn');
+        
+        currentPlayingAudio.muted = !currentPlayingAudio.muted;
+        
+        if (currentPlayingAudio.muted) {
+            volBtn.innerText = '🔇';
+            volBtn.style.color = 'var(--red)';
+        } else {
+            volBtn.innerText = '🔊';
+            volBtn.style.color = 'var(--muted)';
+        }
+    }
+
+    /* ── QUIZ (大數據升級版) ── */
     const quizQuestions = [
-        { q: "最近覺得身體哪裡最不對勁？", options: [
-            { text: "肩頸僵硬，像背著石頭", type: "mj" },
+        { q: "分析系統提問：您最近覺得身體哪裡最需要修復？", options: [
+            { text: "肩頸僵硬，像背著石頭般沉重", type: "mj" },
             { text: "眼睛乾澀，螢幕看久就想流淚", type: "yebao" },
-            { text: "體態沉重，代謝好像停滯了", type: "burner" }
+            { text: "體態沉重，基礎代謝好像停滯了", type: "burner" }
         ]},
-        { q: "你平常的休閒活動最接近哪一項？", options: [
-            { text: "癱在沙發上完全不想動", type: "mj" },
-            { text: "瘋狂追劇打遊戲", type: "yebao" },
-            { text: "吃大餐犒賞自己", type: "burner" }
+        { q: "大數據關聯特徵：您平常的休閒活動最接近哪一項？", options: [
+            { text: "癱在沙發上，完全不想活動筋骨", type: "mj" },
+            { text: "瘋狂追劇打遊戲，長時間緊盯螢幕", type: "yebao" },
+            { text: "經常吃大餐犒賞自己，難以克制食慾", type: "burner" }
         ]}
     ];
     const quizResultsData = {
-        mj: { title: "MJ 機器人", desc: "你需要『節奏戰神』！8點共震波為你震碎僵硬。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
-        yebao: { title: "葉寶 EX", desc: "藍光巨龍盯上你了！讓葉寶守護你的靈魂之窗。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
-        burner: { title: "Burner 姐", desc: "代謝危機！讓指揮官幫你找回輕盈與自信。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
+        mj: { title: "MJ 機器人", desc: "大數據分析顯示：您正面臨高強度的「肌肉緊繃風險」。\n建議配備【酸痛按摩機】，透過衛福部核可的 15 段雙頻道電流，啟動 8 點共震波，深層震碎僵硬。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
+        yebao: { title: "葉寶 EX", desc: "大數據分析顯示：藍光巨龍已嚴重威脅您的「靈魂之窗」。\n建議配備【3C葉黃素凍EX】，其含有美國藍光專利游離型葉黃素，高達 18 倍吸收率，為您啟動晶亮防護罩。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
+        burner: { title: "Burner 姐", desc: "大數據分析顯示：您的「基礎代謝率」有顯著下降趨勢。\n建議配備【極纖錠】，透過專利菸鹼酸鉻與獨家 E.F.T. 黃金代謝配方，穩定醣類代謝，經實驗證實有助不易形成體脂肪。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
     };
     let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 };
 
@@ -1196,7 +1312,7 @@
             document.getElementById('quiz-progress-fill').style.width = '100%';
             document.getElementById('quiz-play').style.display = 'none';
             document.getElementById('quiz-loading').style.display = 'block';
-            setTimeout(showQuizResult, 1200);
+            setTimeout(showQuizResult, 1500);
         }
     }
     function showQuizResult() {
@@ -1207,7 +1323,7 @@
         document.getElementById('quiz-res-img').src = res.img;
         document.getElementById('quiz-res-title').innerText = res.title;
         document.getElementById('quiz-res-title').style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;color:#f0f4ff;margin-bottom:10px;text-shadow:0 0 15px rgba(0,213,255,0.3);";
-        document.getElementById('quiz-res-desc').innerText = res.desc;
+        document.getElementById('quiz-res-desc').innerHTML = res.desc.replace(/\n/g, '<br>');
         document.getElementById('quiz-res-link').href = res.link;
     }
     function resetQuiz() {
