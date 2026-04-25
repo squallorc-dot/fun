@@ -118,7 +118,7 @@
         .orb-1 { width: 400px; height: 400px; background: var(--red); top: -100px; right: -100px; animation: float 8s ease-in-out infinite; }
         .orb-2 { width: 300px; height: 300px; background: var(--cyan); bottom: -50px; left: -80px; animation: float 10s 2s ease-in-out infinite; }
 
-        /* 🌟 懸浮音樂控制器 🌟 */
+        /* 🌟 純淨穩定版：全域懸浮音樂控制器 🌟 */
         .floating-audio-player {
             position: fixed;
             bottom: 20px;
@@ -311,7 +311,7 @@
             transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)); z-index: 20;
         }
         
-        /* 🌟 優化：真實產品功效排版 🌟 */
+        /* 🌟 真實產品功效排版 🌟 */
         .card-content { flex-grow: 1; display: flex; flex-direction: column; }
         .card-content p { color: #e2e8f0; margin-bottom: 14px; font-size: 0.95rem; }
         .skill-box {
@@ -375,7 +375,6 @@
         .char-img-clickable { cursor: pointer; position: relative; }
         .char-img-clickable img { cursor: pointer; }
         .char-img-clickable::after {
-
             content: '▶ 點擊召喚 (播放專屬音效)';
             position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 213, 255, 0.2); color: var(--cyan);
@@ -716,7 +715,7 @@
                     <div class="real-benefits-box">
                         <div class="real-benefits-title">極纖錠 裝備功效</div>
                         <ul class="real-benefits-list">
-                            <li>衛福部核准健康食品：<strong>不易形成體脂肪</strong></li>
+                            <li>國家健字號核准：<strong>不易形成體脂肪</strong></li>
                             <li>獨家 E.F.T. 三重黃金代謝配方</li>
                             <li><span class="patent-tag">綠瑪黛</span> / <span class="patent-tag">藤黃果</span> / <span class="patent-tag">L-肉酸</span> 強化動能</li>
                         </ul>
@@ -797,7 +796,7 @@
                         <ul class="real-benefits-list">
                             <li>衛福部核准<strong>「骨質保健」</strong>健康食品</li>
                             <li>三大成長要素：優質牛奶鈣＋魚膠原蛋白＋維生素D3</li>
-                            <li>小分子水解配方，好吸收零負擔</li>
+                            <li><span class="patent-tag">小分子水解配方</span>好吸收零負擔</li>
                         </ul>
                     </div>
                 </div>
@@ -916,7 +915,7 @@
                     <div class="real-benefits-box">
                         <div class="real-benefits-title">野菜小將纖維粉 裝備功效</div>
                         <ul class="real-benefits-list">
-                            <li>衛福部核准健康食品：胃腸功能改善、調節血脂血糖</li>
+                            <li>衛福部核准：胃腸功能改善、調節血脂血糖</li>
                             <li><span class="patent-tag">日本專利Fibersol-2</span> 與 菊苣萃取纖維 Inulin</li>
                             <li>添加牛乳蛋白胜肽 Peptone，幫助營養吸收</li>
                         </ul>
@@ -1175,29 +1174,24 @@
 </div>
 
 <script>
-    /* ── HERO AUDIO CONTROLLER (極致升級版：含進度與音量) ── */
-    let currentPlayingAudio = null;
-    let currentImgContainer = null;
-
+    /* ── HERO AUDIO CONTROLLER (單純穩定版) ── */
     function playHeroAudio(audioId, heroName, imgContainer) {
+        const allAudios = document.querySelectorAll('.card audio');
         const targetAudio = document.getElementById(audioId);
         const floatingPlayer = document.getElementById('global-audio-player');
         const floatingName = document.getElementById('f-audio-name');
-        const playBtn = document.getElementById('f-play-btn');
 
-        if (currentPlayingAudio === targetAudio && !targetAudio.paused) {
-            togglePlayPause();
+        if (!targetAudio.paused) {
+            stopAllHeroAudio();
             return;
         }
 
-        if (currentPlayingAudio && currentPlayingAudio !== targetAudio) {
-            currentPlayingAudio.pause();
-            currentPlayingAudio.currentTime = 0; 
-            if (currentImgContainer) currentImgContainer.classList.remove('is-playing');
-        }
-
-        currentPlayingAudio = targetAudio;
-        currentImgContainer = imgContainer;
+        allAudios.forEach(audio => {
+            if (audio.id !== audioId) {
+                audio.pause();
+                audio.currentTime = 0; 
+            }
+        });
 
         document.querySelectorAll('.char-img-container').forEach(container => {
             container.classList.remove('is-playing');
@@ -1211,64 +1205,29 @@
             
             floatingName.innerText = heroName;
             floatingPlayer.classList.add('is-visible');
-            playBtn.innerText = '⏸';
-
-            targetAudio.addEventListener('timeupdate', updateProgressBar);
 
             targetAudio.onended = function() {
                 imgContainer.classList.remove('is-playing');
                 floatingPlayer.classList.remove('is-visible');
-                playBtn.innerText = '▶';
-                targetAudio.removeEventListener('timeupdate', updateProgressBar);
-                document.getElementById('f-audio-progress-fill').style.width = '0%';
             };
-        }).catch(error => console.log("播放失敗", error));
+        }).catch(error => {
+            console.log("播放失敗，請檢查音檔路徑或瀏覽器權限", error);
+        });
     }
 
-    function updateProgressBar() {
-        if (!currentPlayingAudio) return;
-        const progressFill = document.getElementById('f-audio-progress-fill');
-        const percentage = (currentPlayingAudio.currentTime / currentPlayingAudio.duration) * 100;
-        progressFill.style.width = percentage + '%';
-    }
-
-    function seekAudio(event) {
-
-        if (!currentPlayingAudio) return;
-        const container = event.currentTarget;
-        const rect = container.getBoundingClientRect();
-        const clickRatio = (event.clientX - rect.left) / rect.width;
-        currentPlayingAudio.currentTime = clickRatio * currentPlayingAudio.duration;
-    }
-
-    function togglePlayPause() {
-        if (!currentPlayingAudio) return;
-        const playBtn = document.getElementById('f-play-btn');
+    function stopAllHeroAudio() {
+        const allAudios = document.querySelectorAll('.card audio');
+        const floatingPlayer = document.getElementById('global-audio-player');
         
-        if (currentPlayingAudio.paused) {
-            currentPlayingAudio.play();
-            playBtn.innerText = '⏸';
-            if (currentImgContainer) currentImgContainer.classList.add('is-playing');
-        } else {
-            currentPlayingAudio.pause();
-            playBtn.innerText = '▶';
-            if (currentImgContainer) currentImgContainer.classList.remove('is-playing');
-        }
-    }
-
-    function toggleMute() {
-        if (!currentPlayingAudio) return;
-        const volBtn = document.getElementById('f-volume-btn');
+        allAudios.forEach(audio => {
+            audio.pause();
+        });
         
-        currentPlayingAudio.muted = !currentPlayingAudio.muted;
+        document.querySelectorAll('.char-img-container').forEach(container => {
+            container.classList.remove('is-playing');
+        });
         
-        if (currentPlayingAudio.muted) {
-            volBtn.innerText = '🔇';
-            volBtn.style.color = 'var(--red)';
-        } else {
-            volBtn.innerText = '🔊';
-            volBtn.style.color = 'var(--muted)';
-        }
+        floatingPlayer.classList.remove('is-visible');
     }
 
     /* ── QUIZ (大數據升級版) ── */
@@ -1468,3 +1427,4 @@
 </script>
 </body>
 </html>
+
