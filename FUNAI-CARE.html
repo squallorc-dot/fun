@@ -316,6 +316,23 @@
             margin-bottom: 24px;
             box-shadow: inset 0 0 20px rgba(0, 213, 255, 0.1);
         }
+
+        /* 優化 1：手機版預設展開台本，避免觸控無法 Hover 的問題 */
+        @media (hover: none) {
+            .hero-lyrics-hologram {
+                max-height: 250px;
+                opacity: 1;
+                padding: 10px;
+                margin-top: 15px;
+                margin-bottom: 20px;
+                background: rgba(0, 213, 255, 0.03);
+            }
+            .char-img-clickable::after {
+                opacity: 1; /* 手機版常駐提示 */
+                background: rgba(0, 213, 255, 0.1);
+                bottom: -20px;
+            }
+        }
         
         .hologram-title {
             font-family: 'Space Mono', monospace;
@@ -424,6 +441,8 @@
         .game-header .hp, .game-header .score { color: #fff; font-weight: bold; font-family: 'Space Mono', monospace; font-size: 1rem; }
         .game-header .energy-bar-bg { width: 100px; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #00d5ff, #ff3b53); width: 0%; transition: width 0.2s; }
+        
+        /* 優化 3: 確保小遊戲區域的滑動不會導致手機版網頁跟著滑動 */
         canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         
         #game-ui-select, #game-ui-gameover {
@@ -610,7 +629,7 @@
                 </div>
                 
                 <audio id="audio-burner">
-                    <source src="https://squallorc-dot.github.io/fun/Music/burner.mp3" type="audio/mpeg">
+                    <source src="https://squallorc-dot.github.io/fun/Music/ burner.mp3" type="audio/mpeg">
                 </audio>
                 
                 <div class="hero-lyrics-hologram">
@@ -1009,7 +1028,6 @@
 <script>
     /* ── HERO AUDIO CONTROLLER (方案 A：點擊圖片播放並震動) ── */
     function playHeroAudio(audioId, imgContainer) {
-        // 抓取所有卡片內的 audio (確保不會抓錯)
         const allAudios = document.querySelectorAll('.card audio');
         const targetAudio = document.getElementById(audioId);
 
@@ -1028,9 +1046,12 @@
             }
         });
 
-        // 移除所有圖片的震動狀態
+        // 優化 2：移除所有圖片的震動狀態並強制重置動畫
         document.querySelectorAll('.char-img-container').forEach(container => {
             container.classList.remove('is-playing');
+            container.style.animation = 'none';
+            container.offsetHeight; /* trigger reflow */
+            container.style.animation = null;
         });
 
         // 播放點擊的音樂並加上震動特效
