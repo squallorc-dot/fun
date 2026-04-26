@@ -270,6 +270,28 @@
         .lyrics-box .pre-chorus { color: #ff8a95; font-weight: 500;}
         .lyrics-box .romaji { font-size: 0.8rem; opacity: 0.6; display: block; margin-top: -5px; margin-bottom: 10px; font-style: italic; }
 
+        /* 🌟 假名 (Furigana) 樣式 🌟 */
+        rt { font-size: 0.65rem; color: var(--cyan); opacity: 0.8; font-family: 'Noto Sans TC', sans-serif; letter-spacing: 0; }
+        ruby { ruby-align: center; }
+        
+        .lyrics-header-jp {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(0,213,255,0.25); padding-bottom: 12px; margin-bottom: 16px;
+        }
+        .lyrics-header-jp h4 {
+            border-bottom: none; padding-bottom: 0; margin-bottom: 0;
+        }
+        .furigana-btn {
+            background: rgba(0, 213, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan);
+            font-family: 'Space Mono', monospace; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .furigana-btn:hover { background: var(--cyan); color: var(--navy); }
+        .furigana-btn.is-off {
+            border-color: rgba(255, 255, 255, 0.2); color: var(--muted); background: transparent;
+        }
+        .hide-furigana rt { display: none; }
+
         /* ══ HERO CARDS ══ */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; overflow: visible; }
         .card {
@@ -302,8 +324,6 @@
             width: 100%; border-radius: var(--radius-md); margin-bottom: 20px;
             display: flex; justify-content: center; align-items: center; padding: 10px; overflow: visible;
         }
-
-
         .char-img-container img {
             width: 100%; height: auto; object-fit: contain;
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease;
@@ -313,7 +333,7 @@
             transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)); z-index: 20;
         }
         
-        /* 🌟 優化：真實產品功效排版 🌟 */
+        /* 🌟 真實產品功效排版 🌟 */
         .card-content { flex-grow: 1; display: flex; flex-direction: column; }
         .card-content p { color: #e2e8f0; margin-bottom: 14px; font-size: 0.95rem; }
         .skill-box {
@@ -403,7 +423,7 @@
             padding: 0 14px;
         }
         
-        /* 🌟 改為：當圖片處於 is-playing (播放中) 狀態時，才展開下方的台本 🌟 */
+        /* 當圖片處於 is-playing 狀態時，展開下方的台本 */
         .char-img-container.is-playing ~ .hero-lyrics-hologram {
             max-height: 250px; 
             opacity: 1;
@@ -412,7 +432,7 @@
             box-shadow: inset 0 0 20px rgba(0, 213, 255, 0.1);
         }
 
-        /* 手機版：保留常駐的點擊提示字即可，台本等點擊後再展開 */
+        /* 手機版保留點擊提示字 */
         @media (hover: none) {
             .char-img-clickable::after { opacity: 1; background: rgba(0, 213, 255, 0.1); bottom: -20px; }
         }
@@ -652,7 +672,7 @@
             <div class="ost-player-card">
                 <h4>🎙️ Burner 姐召喚<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(搖滾男聲版)</span></h4>
                 <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/song/5a39cd9f-26b3-4350-b3c0-610ef72c66b2?sh=x3NKJYDSq6sUNt3l" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
             <div class="ost-player-card">
                 <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. A)</span></h4>
@@ -679,18 +699,31 @@
                 <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br>告別久坐 告別痠痛<br>把壞習慣通通掃出外太空<br>你的身體 是一座偉大的宇宙<br>讓我們一起守護 絕不退縮！</p>
                 <p>[Outro]<br>健康這場仗 我們每天都要贏！<br>守護你的每一天 你的專屬保鑣<br>Bio-City 閃耀榮耀...<br>FUNAI CARE！(End)</p>
             </div>
-            <div class="lyrics-box">
-                <h4>🇯🇵 日文版歌詞 (Japanese Ver.)</h4>
-                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー軍団、侵入！フナイ・プロトコル、起動！<br><span class="romaji">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</span></p>
-                <p>[Verse 1]<br>灰色に染まる Bio-City 鳴り響くアラーム<br>覇気を失う細胞たち 封鎖されたエナジー<br>肩に憑りつくペイン・ファントム 枷のように重く<br>ブルーライト・ドラゴンが咆哮し 光を奪い去る</p>
-                <p class="pre-chorus">[Pre-Chorus]<br>「絶対にうつむかない！」<br>バーナー姐さん(Neesan)の声が響く<br>赤い稲妻が霧を裂き 混沌から救い出す<br>ガーディアンズ・アライアンス、今ここに集結せよ！</p>
-                <p class="chorus">[Chorus]<br>覚醒せよ Bio-City！大反撃の幕開けだ！<br>MJロボットが刻む 震えるビート<br>モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ<br>健康という名の戦い 毎日勝ち抜くんだ！<br>We are FUNAI CARE、夜明けまで君を守る！</p>
-                <p>[Verse 2]<br>ファット・ドゥームにブラックホール獣 邪魔はさせない<br>野菜ソルジャーが盾を構え 防衛線を死守する<br>オラクルのリキッド・マジック 瞳を潤して<br>ゼリー三兄妹、合体！ 限界なきスマイル</p>
-                <p class="pre-chorus">[Pre-Chorus]<br>「顔を上げて！」<br>自信を取り戻す瞬間<br>赤いマントが風に舞い 限界を突破する<br>ガーディアンズ・アライアンス、今ここに集結せよ！</p>
-                <p class="chorus">[Chorus]<br>覚醒せよ Bio-City！大反撃の幕開けだ！<br>MJロボットが刻む 震えるビート<br>モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ<br>健康という名の戦い 毎日勝ち抜くんだ！<br>We are FUNAI CARE、夜明けまで君を守る！</p>
-                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br>座りっぱなしにサヨナラ 痛みにもグッバイ<br>悪い習慣はすべて 宇宙の彼方へ吹き飛ばせ<br>君の身体は ひとつの偉大な小宇宙(コスモ)<br>共に守り抜こう 決して退かない！</p>
-                <p class="chorus">[Chorus]<br>覚醒せよ Bio-City！大反撃の幕開けだ！<br>MJロボットが刻む 震えるビート<br>モーモー阿哞(Amou)の重槌が 怠惰な塵を打ち砕く<br>葉宝(Youhou)EX 聖剣を抜け 青空を取り戻せ</p>
-                <p>[Outro]<br>健康という名の戦い 毎日勝ち抜くんだ！<br>毎日を君と歩む 専属のボディガード<br>Bio-Cityよ、栄光に輝け...<br>FUNAI CARE！(End)</p>
+            
+            <div class="lyrics-box" id="jp-lyrics-box">
+                <div class="lyrics-header-jp">
+                    <h4>🇯🇵 日文版歌詞 (Japanese Ver.)</h4>
+                    <button id="furigana-toggle" class="furigana-btn" onclick="toggleFurigana()">假名: ON</button>
+                </div>
+                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー<ruby>軍団<rt>ぐんだん</rt></ruby>、<ruby>侵入<rt>しんにゅう</rt></ruby>！フナイ・プロトコル、<ruby>起動<rt>きどう</rt></ruby>！<br><small style="opacity: 0.7; color: var(--cyan);">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</small></p>
+                
+                <p>[Verse 1]<br><ruby>灰色<rt>はいいろ</rt></ruby>に<ruby>染<rt>そ</rt></ruby>まる Bio-City <ruby>鳴<rt>な</rt></ruby>り<ruby>響<rt>ひび</rt></ruby>くアラーム<br><ruby>覇気<rt>はき</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>う<ruby>細胞<rt>さいぼう</rt></ruby>たち <ruby>封鎖<rt>ふうさ</rt></ruby>されたエナジー<br><ruby>肩<rt>かた</rt></ruby>に<ruby>憑<rt>と</rt></ruby>りつくペイン・ファントム <ruby>枷<rt>かせ</rt></ruby>のように<ruby>重<rt>おも</rt></ruby>く<br>ブルーライト・ドラゴンが<ruby>咆哮<rt>ほうこう</rt></ruby>し <ruby>光<rt>ひかり</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>い<ruby>去<rt>さ</rt></ruby>る</p>
+                
+                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>絶対<rt>ぜったい</rt></ruby>にうつむかない！」<br>バーナー<ruby>姐<rt>ねえ</rt></ruby>さん <small style="opacity: 0.7; color: var(--cyan);">(Neesan)</small> の<ruby>声<rt>こえ</rt></ruby>が<ruby>響<rt>ひび</rt></ruby>く<br><ruby>赤<rt>あか</rt></ruby>い<ruby>稲妻<rt>いなずま</rt></ruby>が<ruby>霧<rt>きり</rt></ruby>を<ruby>裂<rt>さ</rt></ruby>き <ruby>混沌<rt>こんとん</rt></ruby>から<ruby>救<rt>すく</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>ようほう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
+                
+                <p>[Verse 2]<br>ファット・ドゥームにブラックホール<ruby>獣<rt>じゅう</rt></ruby> <ruby>邪魔<rt>じゃま</rt></ruby>はさせない<br><ruby>野菜<rt>やさい</rt></ruby>ソルジャーが<ruby>盾<rt>たて</rt></ruby>を<ruby>構<rt>かま</rt></ruby>え <ruby>防衛線<rt>ぼうえいせん</rt></ruby>を<ruby>死守<rt>ししゅ</rt></ruby>する<br>オラクルのリキッド・マジック <ruby>瞳<rt>ひとみ</rt></ruby>を<ruby>潤<rt>うるお</rt></ruby>して<br>ゼリー<ruby>三兄妹<rt>さんきょうだい</rt></ruby>、<ruby>合体<rt>がったい</rt></ruby>！ <ruby>限界<rt>げんかい</rt></ruby>なきスマイル</p>
+                
+                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>顔<rt>かお</rt></ruby>を<ruby>上<rt>あ</rt></ruby>げて！」<br><ruby>自信<rt>じしん</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>す<ruby>瞬間<rt>しゅんかん</rt></ruby><br><ruby>赤<rt>あか</rt></ruby>いマントが<ruby>風<rt>かぜ</rt></ruby>に<ruby>舞<rt>ま</rt></ruby>い <ruby>限界<rt>げんかい</rt></ruby>を<ruby>突破<rt>とっぱ</rt></ruby>する<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>ようほう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
+                
+                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br><ruby>座<rt>すわ</rt></ruby>りっぱなしにサヨナラ <ruby>痛<rt>いた</rt></ruby>みにもグッバイ<br><ruby>悪<rt>わる</rt></ruby>い<ruby>習慣<rt>しゅうかん</rt></ruby>はすべて <ruby>宇宙<rt>うちゅう</rt></ruby>の<ruby>彼方<rt>かなた</rt></ruby>へ<ruby>吹<rt>ふ</rt></ruby>き<ruby>飛<rt>と</rt></ruby>ばせ<br><ruby>君<rt>きみ</rt></ruby>の<ruby>身体<rt>からだ</rt></ruby>は ひとつの<ruby>偉大<rt>いだい</rt></ruby>な<ruby>小宇宙<rt>コスモ</rt></ruby><br><ruby>共<rt>とも</rt></ruby>に<ruby>守<rt>まも</rt></ruby>り<ruby>抜<rt>ぬ</rt></ruby>こう <ruby>決<rt>けっ</rt></ruby>して<ruby>退<rt>しりぞ</rt></ruby>かない！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>ようほう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ</p>
+
+                <p>[Outro]<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br><ruby>毎日<rt>まいにち</rt></ruby>を<ruby>君<rt>きみ</rt></ruby>と<ruby>歩<rt>あゆ</rt></ruby>む <ruby>専属<rt>せんぞく</rt></ruby>のボディガード<br>Bio-Cityよ、<ruby>栄光<rt>えいこう</rt></ruby>に<ruby>輝<rt>かがや</rt></ruby>け...<br>FUNAI CARE！(End)</p>
             </div>
         </div>
     </section>
@@ -1228,6 +1261,22 @@
         });
         
         floatingPlayer.classList.remove('is-visible');
+    }
+
+    /* 🌟 假名開關功能 🌟 */
+    function toggleFurigana() {
+        const box = document.getElementById('jp-lyrics-box');
+        const btn = document.getElementById('furigana-toggle');
+        
+        if (box.classList.contains('hide-furigana')) {
+            box.classList.remove('hide-furigana');
+            btn.innerText = '假名: ON';
+            btn.classList.remove('is-off');
+        } else {
+            box.classList.add('hide-furigana');
+            btn.innerText = '假名: OFF';
+            btn.classList.add('is-off');
+        }
     }
 
     /* ── QUIZ (大數據升級版) ── */
