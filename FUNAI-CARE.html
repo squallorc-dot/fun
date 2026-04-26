@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUNAI CARE 守護者聯盟 - 品牌宇宙戰略</title>
+    <meta name="description" content="FUNAI CARE 守護者聯盟 - 啟動內在英雄：從產品力到品牌宇宙的進化。">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- 全局與變數設定 --- */
@@ -35,6 +36,40 @@
             color: var(--white);
             line-height: 1.8;
             overflow-x: hidden;
+        }
+
+        /* ── LANGUAGE SWITCHER ── */
+        .lang-switcher {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-btn {
+            background: rgba(0, 213, 255, 0.1);
+            border: 1px solid rgba(0, 213, 255, 0.3);
+            color: var(--cyan);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+        .lang-btn:hover {
+            background: var(--cyan);
+            color: var(--navy);
+            box-shadow: 0 0 15px rgba(0, 213, 255, 0.4);
+        }
+        .lang-btn.active {
+            background: var(--cyan);
+            color: var(--navy);
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(0, 213, 255, 0.4);
         }
 
         /* ── BACKGROUND WRAPPER ── */
@@ -439,6 +474,7 @@
         
         .hologram-title {
             font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted);
+
             margin-bottom: 8px; letter-spacing: 1px; border-bottom: 1px dashed rgba(0, 213, 255, 0.3);
             padding-bottom: 4px; display: inline-block;
         }
@@ -579,6 +615,7 @@
             .step-num { display: none; }
             .villain-list { grid-template-columns: 1fr; }
             .vision-box, .quiz-section { padding: 30px 20px; }
+            .lang-switcher { top: 15px; right: 15px; }
         }
     </style>
 </head>
@@ -587,6 +624,11 @@
 <div class="bg-layer">
     <div class="bg-noise"></div>
     <div class="bg-grid"></div>
+</div>
+
+<div class="lang-switcher">
+    <a href="FUNAI-CARE.html" class="lang-btn active">🇹🇼 中文</a>
+    <a href="FUNAI-CARE_jp.html" class="lang-btn">🇯🇵 日本語</a>
 </div>
 
 <div class="container">
@@ -702,10 +744,10 @@
             
             <div class="lyrics-box" id="jp-lyrics-box">
                 <div class="lyrics-header-jp">
-                    <h4>🇯🇵 日文版歌詞 (Japanese Ver.)</h4>
-                    <button id="furigana-toggle" class="furigana-btn" onclick="toggleFurigana()">假名: ON</button>
+                    <h4>🇯🇵 日本語歌詞 (Japanese Ver.)</h4>
+                    <button id="furigana-toggle" class="furigana-btn" onclick="toggleFurigana()">ふりがな: ON</button>
                 </div>
-                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー<ruby>軍団<rt>ぐんだん</rt></ruby>、<ruby>侵入<rt>しんにゅう</rt></ruby>！フナイ・プロトコル、<ruby>起動<rt>きどう</rt></ruby>！<br><small style="opacity: 0.7; color: var(--cyan);">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</small></p>
+                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー<ruby>軍団<rt>ぐんだん</rt></ruby>、<ruby>侵入<rt>しんにゅう</rt></ruby>！<ruby>船井<rt>ふない</rt></ruby>・プロトコル、<ruby>起動<rt>きどう</rt></ruby>！<br><small style="opacity: 0.7; color: var(--cyan);">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</small></p>
                 
                 <p>[Verse 1]<br><ruby>灰色<rt>はいいろ</rt></ruby>に<ruby>染<rt>そ</rt></ruby>まる Bio-City <ruby>鳴<rt>な</rt></ruby>り<ruby>響<rt>ひび</rt></ruby>くアラーム<br><ruby>覇気<rt>はき</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>う<ruby>細胞<rt>さいぼう</rt></ruby>たち <ruby>封鎖<rt>ふうさ</rt></ruby>されたエナジー<br><ruby>肩<rt>かた</rt></ruby>に<ruby>憑<rt>と</rt></ruby>りつくペイン・ファントム <ruby>枷<rt>かせ</rt></ruby>のように<ruby>重<rt>おも</rt></ruby>く<br>ブルーライト・ドラゴンが<ruby>咆哮<rt>ほうこう</rt></ruby>し <ruby>光<rt>ひかり</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>い<ruby>去<rt>さ</rt></ruby>る</p>
                 
@@ -740,6 +782,7 @@
                 <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-burner', 'Burner 姐', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
                 </div>
+
                 
                 <div class="card-content">
                     <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
