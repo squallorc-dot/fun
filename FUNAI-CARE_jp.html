@@ -1307,6 +1307,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         floatingPlayer.classList.remove('is-visible');
     }
 
+    /* 🌟 補強：追蹤 OST 原聲帶播放器的點擊 🌟 */
+    document.addEventListener('play', function(e){
+        const parentCard = e.target.closest('.ost-player-card');
+        if (parentCard) {
+            const ostTitle = parentCard.querySelector('h4').innerText.split('\n')[0];
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'play_ost_audio',
+                'ost_name': ostTitle
+            });
+        }
+    }, true);
+
     /* 🌟 假名開關功能 🌟 */
     function toggleFurigana() {
         const box = document.getElementById('jp-lyrics-box');
@@ -1447,7 +1460,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             document.getElementById('game-ui-gameover').style.display = 'flex';
             document.getElementById('final-score').innerText = gState.score;
 
-            // 🌟 埋設：發送遊戲結束與分數事件到 GA4 🌟
+            // 🌟 埋設：GA4 遊戲追蹤 🌟
             if (!gState.gaSent) {
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
