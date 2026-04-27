@@ -13,7 +13,6 @@
     })(window,document,'script','dataLayer','GTM-5M4KVKNX');</script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- 全局與變數設定 --- */
         :root {
             --navy: #040a18;
             --navy-mid: #0f1c35;
@@ -78,7 +77,7 @@
             box-shadow: 0 0 15px rgba(0, 213, 255, 0.4);
         }
 
-        /* ── BACKGROUND WRAPPER ── */
+        /* ── BACKGROUND ── */
         .bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
         .bg-noise {
             position: absolute; inset: 0; opacity: 0.25;
@@ -160,90 +159,43 @@
         .orb-1 { width: 400px; height: 400px; background: var(--red); top: -100px; right: -100px; animation: float 8s ease-in-out infinite; }
         .orb-2 { width: 300px; height: 300px; background: var(--cyan); bottom: -50px; left: -80px; animation: float 10s 2s ease-in-out infinite; }
 
-        /* 🌟 純淨穩定版：全域懸浮音樂控制器 🌟 */
+        /* 🌟 懸浮音樂控制器 🌟 */
         .floating-audio-player {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(15, 28, 53, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--cyan);
-            border-radius: 50px;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(15, 28, 53, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid var(--cyan); border-radius: 50px;
+            padding: 10px 20px; display: flex; align-items: center; gap: 15px;
             box-shadow: 0 10px 30px rgba(0, 213, 255, 0.3);
-            transform: translateX(150%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 1000;
         }
-        .floating-audio-player.is-visible {
-            transform: translateX(0);
-        }
-        .f-audio-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .f-audio-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--cyan);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .f-audio-name {
-            font-family: 'Noto Sans JP', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--white);
-        }
+        .floating-audio-player.is-visible { transform: translateX(0); }
+        .f-audio-info { display: flex; flex-direction: column; }
+        .f-audio-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--cyan); letter-spacing: 1px; text-transform: uppercase; }
+        .f-audio-name { font-family: 'Noto Sans JP', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--white); }
         .f-audio-btn {
-            background: rgba(255, 59, 83, 0.1);
-            border: 1px solid var(--red);
-            color: var(--red);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9rem;
+            background: rgba(255, 59, 83, 0.1); border: 1px solid var(--red); color: var(--red);
+            width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
         }
-        .f-audio-btn:hover {
-            background: var(--red);
-            color: var(--white);
-            box-shadow: 0 0 15px rgba(255, 59, 83, 0.5);
-            transform: scale(1.1);
-        }
+        .f-audio-btn:hover { background: var(--red); color: var(--white); box-shadow: 0 0 15px rgba(255, 59, 83, 0.5); transform: scale(1.1); }
 
         /* ══ SECTION TITLES ══ */
         .section-wrap { padding: 60px 0; }
         h2.section-title {
             font-family: 'Bebas Neue', 'Noto Sans JP', sans-serif;
             font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: 2px;
-            color: var(--white); display: flex; align-items: center; gap: 16px;
-            margin-bottom: 40px;
+            color: var(--white); display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
         }
-        h2.section-title::after {
-            content: ''; flex: 1; height: 1px;
-            background: linear-gradient(90deg, var(--border), transparent);
-        }
-        .title-accent {
-            display: inline-block; width: 4px; height: 1.5em;
-            background: linear-gradient(180deg, var(--red), var(--cyan));
-            border-radius: 2px; flex-shrink: 0;
-        }
+        h2.section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+        .title-accent { display: inline-block; width: 4px; height: 1.5em; background: linear-gradient(180deg, var(--red), var(--cyan)); border-radius: 2px; flex-shrink: 0; }
 
         /* ══ VISION / WORLDVIEW BOXES ══ */
         .vision-box, .worldview-box {
             background: var(--card-bg); backdrop-filter: blur(20px);
             border: 1px solid var(--border); border-left: 3px solid var(--cyan);
             border-radius: var(--radius-lg); padding: 40px; margin-bottom: 40px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .vision-box::before {
             content: ''; position: absolute; top: 0; right: 0; width: 250px; height: 250px;
@@ -270,10 +222,9 @@
         
         .voice-player {
             background: rgba(0,213,255,0.05); border: 1px solid rgba(0,213,255,0.3);
-            border-radius: var(--radius-md); padding: 20px; margin-top: 20px;
+            border-radius: var(--radius-md); padding: 20px; margin-top: 20px; display: flex; flex-direction: column; gap: 10px;
         }
-        .voice-player p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--cyan); margin-bottom: 10px; }
-        
+        .voice-player p { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--cyan); margin-bottom: 0; }
         audio { width: 100%; outline: none; border-radius: 8px; filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.2); }
 
         /* ══ OST CARDS ══ */
@@ -310,119 +261,51 @@
         .lyrics-box::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
         .lyrics-box .chorus { color: #ffffff; font-weight: 700; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
         .lyrics-box .pre-chorus { color: #ff8a95; font-weight: 500;}
-        .lyrics-box .romaji { font-size: 0.8rem; opacity: 0.6; display: block; margin-top: -5px; margin-bottom: 10px; font-style: italic; }
-
-        /* 🌟 假名 (Furigana) 樣式 🌟 */
+        
         rt { font-size: 0.65rem; color: var(--cyan); opacity: 0.8; font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0; }
         ruby { ruby-align: center; }
         
-        .lyrics-header-jp {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(0,213,255,0.25); padding-bottom: 12px; margin-bottom: 16px;
-        }
-        .lyrics-header-jp h4 {
-            border-bottom: none; padding-bottom: 0; margin-bottom: 0;
-        }
-        .furigana-btn {
-            background: rgba(0, 213, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan);
-            font-family: 'Space Mono', monospace; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px;
-            cursor: pointer; transition: all 0.3s;
-        }
+        .lyrics-header-jp { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,213,255,0.25); padding-bottom: 12px; margin-bottom: 16px; }
+        .lyrics-header-jp h4 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .furigana-btn { background: rgba(0, 213, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-family: 'Space Mono', monospace; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.3s; }
         .furigana-btn:hover { background: var(--cyan); color: var(--navy); }
-        .furigana-btn.is-off {
-            border-color: rgba(255, 255, 255, 0.2); color: var(--muted); background: transparent;
-        }
+        .furigana-btn.is-off { border-color: rgba(255, 255, 255, 0.2); color: var(--muted); background: transparent; }
         .hide-furigana rt { display: none; }
 
         /* ══ HERO CARDS ══ */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; overflow: visible; }
         .card {
-            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 28px 24px; display: flex; flex-direction: column;
-            position: relative; overflow: visible;
-            transition: transform 0.4s cubic-bezier(0.165,0.84,0.44,1), border-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 1;
+            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 28px 24px; display: flex; flex-direction: column; position: relative; overflow: visible;
+            transition: transform 0.4s cubic-bezier(0.165,0.84,0.44,1), border-color 0.3s, box-shadow 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 1;
         }
         .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-            opacity: 0; transition: opacity 0.3s;
-            border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0; transition: opacity 0.3s; border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg);
         }
-        .card:hover {
-            transform: translateY(-10px); border-color: rgba(0,213,255,0.5);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--shadow-cyan);
-            z-index: 10;
-        }
+        .card:hover { transform: translateY(-10px); border-color: rgba(0,213,255,0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--shadow-cyan); z-index: 10; }
         .card:hover::before { opacity: 1; }
-        .role-badge {
-            display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase;
-            color: var(--cyan); background: rgba(0,213,255,0.1); border: 1px solid rgba(0,213,255,0.3);
-            padding: 4px 12px; border-radius: 50px; align-self: flex-start; margin-bottom: 15px;
-        }
+        .role-badge { display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); background: rgba(0,213,255,0.1); border: 1px solid rgba(0,213,255,0.3); padding: 4px 12px; border-radius: 50px; align-self: flex-start; margin-bottom: 15px; }
         .card h3 { font-family: 'Bebas Neue', 'Noto Sans JP', sans-serif; font-size: 2rem; color: var(--white); letter-spacing: 1px; margin-bottom: 2px; }
         .card .alias { font-size: 0.95rem; color: var(--red); font-weight: 700; margin-bottom: 20px; }
-        .char-img-container {
-            width: 100%; border-radius: var(--radius-md); margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center; padding: 10px; overflow: visible;
-        }
-        .char-img-container img {
-            width: 100%; height: auto; object-fit: contain;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease;
-            transform-origin: bottom center; display: block; position: relative; z-index: 2;
-        }
-        .card:hover .char-img-container img {
-            transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)); z-index: 20;
-        }
+        .char-img-container { width: 100%; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; justify-content: center; align-items: center; padding: 10px; overflow: visible; }
+        .char-img-container img { width: 100%; height: auto; object-fit: contain; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease; transform-origin: bottom center; display: block; position: relative; z-index: 2; }
+        .card:hover .char-img-container img { transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)); z-index: 20; }
         
-        /* 🌟 真實產品功效排版 🌟 */
         .card-content { flex-grow: 1; display: flex; flex-direction: column; }
         .card-content p { color: #e2e8f0; margin-bottom: 14px; font-size: 0.95rem; }
-        .skill-box {
-            background: rgba(0,213,255,0.08); border: 1px solid rgba(0,213,255,0.2); border-left: 3px solid var(--cyan);
-            padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; color: #f8fafc; margin: 14px 0 20px;
-        }
-        .real-benefits-box {
-            background: rgba(255, 59, 83, 0.05);
-            border: 1px dashed rgba(255, 59, 83, 0.3);
-            border-radius: var(--radius-sm);
-            padding: 14px;
-            margin-bottom: 20px;
-        }
-        .real-benefits-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--red);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .skill-box { background: rgba(0,213,255,0.08); border: 1px solid rgba(0,213,255,0.2); border-left: 3px solid var(--cyan); padding: 14px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; color: #f8fafc; margin: 14px 0 20px; }
+        .real-benefits-box { background: rgba(255, 59, 83, 0.05); border: 1px dashed rgba(255, 59, 83, 0.3); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px; }
+        .real-benefits-title { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--red); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .real-benefits-title::before { content: '🛡️'; }
-        .real-benefits-list {
-            list-style: none; padding-left: 0; margin: 0;
-        }
-        .real-benefits-list li {
-            position: relative; padding-left: 14px; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4;
-        }
-        .real-benefits-list li::before {
-            content: '•'; position: absolute; left: 0; color: var(--red); font-weight: bold;
-        }
+        .real-benefits-list { list-style: none; padding-left: 0; margin: 0; }
+        .real-benefits-list li { position: relative; padding-left: 14px; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4; }
+        .real-benefits-list li::before { content: '•'; position: absolute; left: 0; color: var(--red); font-weight: bold; }
         .real-benefits-list strong { color: #fff; }
-        .patent-tag {
-            display: inline-block; background: rgba(0, 213, 255, 0.1); color: var(--cyan);
-            padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-family: 'Space Mono', monospace; margin: 0 2px;
-        }
-
-        .btn-link {
-            text-align: center; background: rgba(0,213,255,0.15); color: var(--cyan);
-            padding: 12px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 700;
-            font-family: 'Space Mono', monospace; font-size: 0.9rem; letter-spacing: 1px;
-            border: 1px solid rgba(0,213,255,0.4); transition: all 0.3s; display: block; width: 100%; cursor: pointer;
-        }
+        .patent-tag { display: inline-block; background: rgba(0, 213, 255, 0.1); color: var(--cyan); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-family: 'Space Mono', monospace; margin: 0 2px; }
+        .btn-link { text-align: center; background: rgba(0,213,255,0.15); color: var(--cyan); padding: 12px; border-radius: var(--radius-sm); text-decoration: none; font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.9rem; letter-spacing: 1px; border: 1px solid rgba(0,213,255,0.4); transition: all 0.3s; display: block; width: 100%; cursor: pointer; }
         .btn-link:hover { background: var(--cyan); color: var(--navy); box-shadow: 0 0 20px rgba(0,213,255,0.5); }
 
-        /* ══ 英雄召喚震動特效 ══ */
         @keyframes hero-summon-shake {
             0% { transform: scale(1.5) translateY(-15px) rotate(0deg); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.8)) brightness(1.2); }
             25% { transform: scale(1.5) translateY(-15px) rotate(-3deg); filter: drop-shadow(0 15px 30px rgba(255,59,83,0.8)) brightness(1.3); }
@@ -430,92 +313,33 @@
             75% { transform: scale(1.5) translateY(-15px) rotate(-3deg); filter: drop-shadow(0 15px 30px rgba(255,59,83,0.8)) brightness(1.3); }
             100% { transform: scale(1.5) translateY(-15px) rotate(0deg); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.5)) brightness(1); }
         }
-        .char-img-container.is-playing img {
-            animation: hero-summon-shake 0.5s ease-in-out;
-            transform: scale(1.5) translateY(-15px);
-            filter: drop-shadow(0 15px 30px rgba(0,213,255,0.8));
-            z-index: 20;
-        }
+        .char-img-container.is-playing img { animation: hero-summon-shake 0.5s ease-in-out; transform: scale(1.5) translateY(-15px); filter: drop-shadow(0 15px 30px rgba(0,213,255,0.8)); z-index: 20; }
         .char-img-clickable { cursor: pointer; position: relative; }
         .char-img-clickable img { cursor: pointer; }
-        .char-img-clickable::after {
-            content: '▶ クリックで召喚 (BGM再生)';
-            position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 213, 255, 0.2); color: var(--cyan);
-            font-family: 'Space Mono', monospace; font-size: 0.75rem;
-            padding: 4px 12px; border-radius: 50px; border: 1px solid rgba(0, 213, 255, 0.4);
-            opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 30;
-        }
+        .char-img-clickable::after { content: '▶ クリックで召喚 (BGM再生)'; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: rgba(0, 213, 255, 0.2); color: var(--cyan); font-family: 'Space Mono', monospace; font-size: 0.75rem; padding: 4px 12px; border-radius: 50px; border: 1px solid rgba(0, 213, 255, 0.4); opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; z-index: 30; }
         .card:hover .char-img-clickable::after { opacity: 1; }
 
-        /* ══ HERO CARD LYRICS (點擊播放時全息展開樣式) ══ */
-        .hero-lyrics-hologram {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.4s ease, padding 0.4s ease;
-            background: linear-gradient(to right, rgba(4, 10, 24, 0.8), rgba(0, 213, 255, 0.05));
-            border-left: 3px solid var(--cyan);
-            border-radius: 0 8px 8px 0;
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            line-height: 1.6;
-            margin-top: auto; 
-            margin-bottom: 0; 
-            padding: 0 14px;
-        }
+        .hero-lyrics-hologram { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.4s ease, padding 0.4s ease; background: linear-gradient(to right, rgba(4, 10, 24, 0.8), rgba(0, 213, 255, 0.05)); border-left: 3px solid var(--cyan); border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #e2e8f0; line-height: 1.6; margin-top: auto; margin-bottom: 0; padding: 0 14px; }
+        .char-img-container.is-playing ~ .hero-lyrics-hologram { max-height: 250px; opacity: 1; padding: 14px; margin-bottom: 24px; box-shadow: inset 0 0 20px rgba(0, 213, 255, 0.1); }
+        @media (hover: none) { .char-img-clickable::after { opacity: 1; background: rgba(0, 213, 255, 0.1); bottom: -20px; } }
         
-        /* 當圖片處於 is-playing 狀態時，才展開下方的台本 */
-        .char-img-container.is-playing ~ .hero-lyrics-hologram {
-            max-height: 250px; 
-            opacity: 1;
-            padding: 14px;
-            margin-bottom: 24px;
-            box-shadow: inset 0 0 20px rgba(0, 213, 255, 0.1);
-        }
-
-        /* 手機版：保留常駐的點擊提示字 */
-        @media (hover: none) {
-            .char-img-clickable::after { opacity: 1; background: rgba(0, 213, 255, 0.1); bottom: -20px; }
-        }
-        
-        .hologram-title {
-            font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted);
-            margin-bottom: 8px; letter-spacing: 1px; border-bottom: 1px dashed rgba(0, 213, 255, 0.3);
-            padding-bottom: 4px; display: inline-block;
-        }
-
+        .hologram-title { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; border-bottom: 1px dashed rgba(0, 213, 255, 0.3); padding-bottom: 4px; display: inline-block; }
         .tag-sys { color: var(--cyan); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
         .tag-atk { color: var(--red); font-weight: 700; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; }
 
         /* ══ VILLAIN LIST ══ */
         .villain-list { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; list-style: none; }
-        .villain-item {
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-left: 4px solid var(--red);
-            border-radius: var(--radius-md); padding: 24px;
-            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-        }
+        .villain-item { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: var(--radius-md); padding: 24px; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
         .villain-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-red); border-color: rgba(255,59,83,0.4); }
         .villain-name { font-weight: 900; color: var(--red); font-size: 1.15rem; display: block; margin-bottom: 8px; font-family: 'Space Mono', monospace; }
         .villain-item p { color: #e2e8f0; font-size: 0.98rem; }
 
         /* ══ STORY TIMELINE ══ */
         .story-timeline { position: relative; padding-left: 50px; margin-top: 30px; }
-        .story-timeline::before {
-            content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px;
-            background: linear-gradient(180deg, var(--cyan), var(--red), transparent);
-        }
+        .story-timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--cyan), var(--red), transparent); }
         .story-step { margin-bottom: 50px; position: relative; }
-        .story-step::before {
-            content: ''; position: absolute; left: -44px; top: 8px; width: 16px; height: 16px;
-            background: var(--navy); border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 12px rgba(0,213,255,0.6);
-        }
-        .step-num {
-            font-family: 'Bebas Neue', monospace; font-size: 3.5rem;
-            color: rgba(0, 213, 255, 0.45); text-shadow: 0 0 12px rgba(0, 213, 255, 0.4); 
-            position: absolute; left: -120px; top: -16px; line-height: 1;
-        }
+        .story-step::before { content: ''; position: absolute; left: -44px; top: 8px; width: 16px; height: 16px; background: var(--navy); border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 12px rgba(0,213,255,0.6); }
+        .step-num { font-family: 'Bebas Neue', monospace; font-size: 3.5rem; color: rgba(0, 213, 255, 0.45); text-shadow: 0 0 12px rgba(0, 213, 255, 0.4); position: absolute; left: -120px; top: -16px; line-height: 1; }
         .story-title { font-weight: 800; font-size: 1.3rem; color: var(--white); margin-bottom: 12px; }
         .story-content { color: #e2e8f0; font-size: 1.05rem; }
         .story-content strong { color: var(--cyan); font-weight: 700; }
@@ -524,43 +348,23 @@
         .action-list em { color: var(--muted); font-size: 0.95rem; }
 
         /* ══ QUIZ ══ */
-        .quiz-section {
-            background: var(--card-bg); backdrop-filter: blur(30px);
-            border: 1px solid var(--border); border-top: 3px solid var(--red);
-            border-radius: var(--radius-lg); padding: 50px 40px; text-align: center; margin: 60px 0;
-            position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-        }
-        .quiz-section::before {
-            content: ''; position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px;
-            background: radial-gradient(circle, var(--red-glow), transparent 70%); pointer-events: none;
-        }
+        .quiz-section { background: var(--card-bg); backdrop-filter: blur(30px); border: 1px solid var(--border); border-top: 3px solid var(--red); border-radius: var(--radius-lg); padding: 50px 40px; text-align: center; margin: 60px 0; position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .quiz-section::before { content: ''; position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, var(--red-glow), transparent 70%); pointer-events: none; }
         .quiz-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 2px; color: var(--white); margin-bottom: 10px; }
         .quiz-desc { color: var(--muted); margin-bottom: 36px; font-size: 1rem; }
         .quiz-container { max-width: 600px; margin: 0 auto; min-height: 260px; display: flex; flex-direction: column; justify-content: center; }
         .quiz-progress { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 30px; overflow: hidden; }
         .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--red)); width: 0%; transition: width 0.4s ease; }
         .quiz-question { font-size: 1.3rem; font-weight: 700; color: var(--white); margin-bottom: 28px; }
-        .quiz-option {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 16px 20px; border-radius: var(--radius-sm);
-            margin-bottom: 14px; cursor: pointer; transition: all 0.25s;
-            font-weight: 600; color: #e2e8f0; text-align: left; font-size: 1.05rem;
-        }
+        .quiz-option { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 16px 20px; border-radius: var(--radius-sm); margin-bottom: 14px; cursor: pointer; transition: all 0.25s; font-weight: 600; color: #e2e8f0; text-align: left; font-size: 1.05rem; }
         .quiz-option:hover { background: rgba(255,59,83,0.15); border-color: rgba(255,59,83,0.5); transform: translateX(8px); color: var(--white); box-shadow: 0 0 15px rgba(255,59,83,0.2); }
         .quiz-result-img { width: 140px; height: 140px; object-fit: contain; margin: 0 auto 16px; display: block; animation: popIn 0.5s ease both; filter: drop-shadow(0 0 25px rgba(0,213,255,0.4)); }
 
         /* ══ STRATEGY GRID ══ */
         .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .strategy-card {
-            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-lg);
-            padding: 40px 28px 32px; position: relative; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-        }
+        .strategy-card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px 28px 32px; position: relative; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
         .strategy-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); border-color: rgba(0,213,255,0.4); }
-        .strategy-phase {
-            position: absolute; top: -14px; left: 24px; background: linear-gradient(135deg, var(--navy-light), var(--navy-mid)); color: var(--cyan);
-            padding: 6px 18px; border-radius: 50px; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
-            border: 1px solid rgba(0,213,255,0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+        .strategy-phase { position: absolute; top: -14px; left: 24px; background: linear-gradient(135deg, var(--navy-light), var(--navy-mid)); color: var(--cyan); padding: 6px 18px; border-radius: 50px; font-family: 'Space Mono', monospace; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; border: 1px solid rgba(0,213,255,0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .strategy-card h3 { font-size: 1.25rem; font-weight: 800; color: var(--white); margin-bottom: 12px; margin-top: 8px; }
         .strategy-card > p { font-size: 0.95rem; color: var(--muted); margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
         .strategy-card ul { padding-left: 18px; color: #cbd5e1; }
@@ -568,49 +372,23 @@
         .strategy-card strong { color: #fff; }
 
         /* ══ GAME ══ */
-        .game-wrapper {
-            background: #020617; border-radius: var(--radius-lg); overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,213,255,0.2), 0 0 60px rgba(0,213,255,0.1);
-            margin: 20px auto 0; max-width: 450px; height: 700px; position: relative;
-        }
-        .game-header {
-            position: absolute; top: 0; left: 0; right: 0; height: 50px;
-            background: rgba(2,6,23,0.85); backdrop-filter: blur(8px); z-index: 10;
-            justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid rgba(0,213,255,0.3); display: none;
-        }
+        .game-wrapper { background: #020617; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,213,255,0.2), 0 0 60px rgba(0,213,255,0.1); margin: 20px auto 0; max-width: 450px; height: 700px; position: relative; }
+        .game-header { position: absolute; top: 0; left: 0; right: 0; height: 50px; background: rgba(2,6,23,0.85); backdrop-filter: blur(8px); z-index: 10; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid rgba(0,213,255,0.3); display: none; }
         .game-header .hp, .game-header .score { color: #fff; font-weight: bold; font-family: 'Space Mono', monospace; font-size: 1rem; }
         .game-header .energy-bar-bg { width: 100px; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #00d5ff, #ff3b53); width: 0%; transition: width 0.2s; }
-        
         canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
-        
-        #game-ui-select, #game-ui-gameover {
-            position: absolute; inset: 0; background: rgba(4,10,24,0.96); z-index: 20;
-            display: flex; flex-direction: column; align-items: center; padding: 40px 20px; overflow-y: auto;
-        }
+        #game-ui-select, #game-ui-gameover { position: absolute; inset: 0; background: rgba(4,10,24,0.96); z-index: 20; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; overflow-y: auto; }
         .game-ui-title { color: var(--cyan); font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 3px; margin-bottom: 6px; text-shadow: 0 0 20px rgba(0,213,255,0.5); }
-        .hero-btn {
-            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,213,255,0.25);
-            border-radius: var(--radius-sm); padding: 18px; margin-bottom: 16px;
-            display: flex; align-items: center; gap: 18px; cursor: pointer; transition: all 0.2s; color: white; text-align: left;
-        }
+        .hero-btn { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,213,255,0.25); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 18px; cursor: pointer; transition: all 0.2s; color: white; text-align: left; }
         .hero-btn:hover { border-color: var(--cyan); transform: scale(1.03); background: rgba(0,213,255,0.1); box-shadow: 0 0 20px rgba(0,213,255,0.2); }
         .hero-btn .emoji-box { font-size: 2.2rem; width: 56px; height: 56px; background: rgba(0,0,0,0.4); border-radius: 12px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
         .hero-btn h4 { font-size: 1.15rem; margin-bottom: 4px; color: #fff; font-family: 'Space Mono', monospace; }
         .hero-btn p { font-size: 0.85rem; color: var(--muted); margin: 0; }
 
         /* ══ FOOTER ══ */
-        footer {
-            margin-top: 120px; padding: 60px 40px; text-align: center;
-            background: linear-gradient(135deg, var(--navy-mid), var(--navy));
-            border-radius: var(--radius-lg); border: 1px solid var(--border);
-            border-top: 2px solid rgba(0,213,255,0.3); position: relative; overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        footer::before {
-            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 400px; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-        }
+        footer { margin-top: 120px; padding: 60px 40px; text-align: center; background: linear-gradient(135deg, var(--navy-mid), var(--navy)); border-radius: var(--radius-lg); border: 1px solid var(--border); border-top: 2px solid rgba(0,213,255,0.3); position: relative; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 400px; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
         footer h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 4px; color: var(--white); margin-bottom: 12px; }
         footer p { color: var(--muted); font-size: 1rem; }
         footer .copy { margin-top: 24px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: rgba(160,174,192,0.5); letter-spacing: 2px; }
@@ -741,6 +519,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="lyrics-wrapper">
+            <div class="lyrics-box">
+                <h4>🇹🇼 台湾華語オリジナル歌詞 (Original Ver.)</h4>
+                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>熵能軍團入侵！船井協議，啟動！</p>
+                <p>[Verse 1]<br>灰濛濛的 Bio-City 警報在閃爍<br>細胞們無精打采 能量被封鎖<br>酸痛幽靈黏在肩上 沉重如枷鎖<br>藍光巨龍咆哮 奪走螢幕的光</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>「絕不低頭！」<br>聽見 Burner 姐的呼喚<br>紅色閃電劃破迷霧 拯救這混亂<br>守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
+                <p>[Verse 2]<br>體脂魔王黑洞獸 別想來搗蛋<br>野菜小將舉起盾牌 守住防線<br>Oracle 的液態魔法 灌溉了雙眼<br>果凍三兄妹合體 快樂不設限</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>「抬頭挺胸！」<br>找回自信的瞬間<br>紅色披風迎風飛舞 衝破了極限<br>守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
+                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br>告別久坐 告別痠痛<br>把壞習慣通通掃出外太空<br>你的身體 是一座偉大的宇宙<br>讓我們一起守護 絕不退縮！</p>
+                <p>[Outro]<br>健康這場仗 我們每天都要贏！<br>守護你的每一天 你的專屬保鑣<br>Bio-City 閃耀榮耀...<br>FUNAI CARE！(End)</p>
+            </div>
+            
             <div class="lyrics-box" id="jp-lyrics-box">
                 <div class="lyrics-header-jp">
                     <h4>🇯🇵 日本語歌詞 (Japanese Ver.)</h4>
@@ -1280,7 +1071,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             floatingName.innerText = heroName;
             floatingPlayer.classList.add('is-visible');
 
-            // 🌟 埋設：發送播放音樂事件到 GA4 🌟
+            // 🌟 埋設：發送 GA4 英雄音效追蹤 🌟
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
                 'event': 'play_hero_audio',
@@ -1380,7 +1171,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const q = quizQuestions[currentQuizQ];
         document.getElementById('quiz-question-text').innerText = q.q;
         document.getElementById('quiz-progress-fill').style.width = (currentQuizQ / quizQuestions.length * 100) + '%';
-
         document.getElementById('quiz-options').innerHTML = q.options.map(o =>
             `<div class="quiz-option" onclick="answerQuiz('${o.type}')">${o.text}</div>`
         ).join('');
@@ -1406,7 +1196,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('quiz-res-desc').innerHTML = res.desc.replace(/\n/g, '<br>');
         document.getElementById('quiz-res-link').href = res.link;
 
-        // 🌟 埋設：發送測驗完成與推薦結果事件到 GA4 🌟
+        // 🌟 埋設：發送 GA4 測驗追蹤 🌟
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
             'event': 'quiz_completed',
@@ -1475,7 +1265,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             document.getElementById('game-ui-gameover').style.display = 'flex';
             document.getElementById('final-score').innerText = gState.score;
 
-            // 🌟 埋設：發送遊戲結束與分數事件到 GA4 🌟
+            // 🌟 埋設：發送 GA4 遊戲追蹤 🌟
             if (!gState.gaSent) {
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
