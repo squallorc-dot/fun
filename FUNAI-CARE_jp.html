@@ -132,12 +132,13 @@
         }
         header h1 {
             font-family: 'Bebas Neue', 'Noto Sans JP', sans-serif;
-            font-size: clamp(2.8rem, 8vw, 6.5rem); font-weight: 500; letter-spacing: 4px; line-height: 1.1;
+            font-size: clamp(2.5rem, 8vw, 6.5rem); /* 優化：調整最小字體大小 */
+            font-weight: 500; letter-spacing: 4px; line-height: 1.1;
             position: relative; z-index: 2;
             background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, #fff 100%);
             background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: shimmer 5s linear infinite, fadeUp 0.8s 0.2s ease both;
-            white-space: nowrap; 
+            word-break: keep-all; /* 優化：允許日文單字完整保留並自然換行，解決跑版 */
         }
         header .tagline {
             font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--muted);
@@ -575,6 +576,7 @@
         .game-header .energy-bar-bg { width: 100px; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
         .game-header .energy-bar-fill { height: 100%; background: linear-gradient(90deg, #00d5ff, #ff3b53); width: 0%; transition: width 0.2s; }
         
+        /* 防滑跳出 */
         canvas#gameCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         
         #game-ui-select, #game-ui-gameover {
@@ -609,7 +611,7 @@
         footer .copy { margin-top: 24px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: rgba(160,174,192,0.5); letter-spacing: 2px; }
 
         @media (max-width: 768px) {
-            header h1 { font-size: clamp(2.8rem, 8vw, 4rem); } 
+            header h1 { font-size: clamp(2rem, 8vw, 4rem); } /* 解決日文標題跑版 */
             .section-wrap { padding: 40px 0; }
             .step-num { display: none; }
             .villain-list { grid-template-columns: 1fr; }
@@ -657,7 +659,7 @@
         <div class="vision-box">
             <h3>💡 ブランド IP 戦略：クリエイティブ・コンセプト</h3>
             <p><strong>「点でのマーケティングを打破し、持続可能なブランド資産を構築する。」</strong></p>
-            <p>これまで、<ruby>船井<rt>ふない</rt></ruby>にはポテンシャルの高いキャラクターやコンテンツ要素（バーナー姐さんの名言、過去に制作した筋肉痛バイバイダンス動画など）が多数存在していました。本プロジェクトの核心は、これら独立した資産を再企画し、統一された世界観<strong>「Bio-City（バイオ・シティ）」</strong>へとシステム化して統合することです。</p>
+            <p>これまで、船井にはポテンシャルの高いキャラクターやコンテンツ要素（バーナー姐さんの名言、過去に制作した筋肉痛バイバイダンス動画など）が多数存在していました。本プロジェクトの核心は、これら独立した資産を再企画し、統一された世界観<strong>「Bio-City（バイオ・シティ）」</strong>へとシステム化して統合することです。</p>
             <p>人体の働きを稼働する都市に見立て、座りっぱなしやブルーライトを「生活の悪の勢力」へと変換します。プロダクトは単なる効能説明ではなく、「都市を守るヒーロー」へと姿を変えます。各キャラクターには、それぞれ固有の個性、決め台詞、そしてリズムが備わっています。</p>
             <p>今後のソーシャルメディア展開においては、「コンテンツ先行」戦略を採用します。キャラクターのショートドラマや、耳に残る音楽ミームでトラフィックと記憶を喚起し、自然な流れで製品のコンバージョンへと導くことで、健康コミュニケーションに連続性と伝播力を持たせます。</p>
         </div>
@@ -694,8 +696,8 @@
                 <p>しかし、現代人はスマホを見るためにうつむきがちで、座りっぱなしで動かず、ジャンクフードが大好きです！これらの悪い習慣が<strong>「生活の悪の勢力」</strong>を生み出しました。彼らは都市で渋滞を起こし、電力を切り、あなたの身体を暗く鈍くさせることを専門としています。</p>
             </div>
             <div class="worldview-item">
-                <h3>🚀 ヒーロー集結：<ruby>船井<rt>ふない</rt></ruby>・プロトコル起動</h3>
-                <p>この都市を救うため、伝説の司令官 <span class="highlight">バーナー姐さん</span> が緊急ボタン「<ruby>船井<rt>ふない</rt></ruby>・プロトコル (FUNAI Protocol)」を押し、あらゆる片隅に潜むスーパーガーディアンたちを目覚めさせ、身体の大掃除を展開する準備を整えました！</p>
+                <h3>🚀 ヒーロー集結：船井・プロトコル起動</h3>
+                <p>この都市を救うため、伝説の司令官 <span class="highlight">バーナー姐さん</span> が緊急ボタン「船井・プロトコル (FUNAI Protocol)」を押し、あらゆる片隅に潜むスーパーガーディアンたちを目覚めさせ、身体の大掃除を展開する準備を整えました！</p>
             </div>
         </div>
     </section>
