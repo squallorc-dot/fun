@@ -687,8 +687,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div class="voice-player">
             <p>🔊 ガーディアンたちの声を聞く：</p>
-            <audio controls>
+            <audio controls data-title="あなたの身体をスーパーヒーロー宇宙に変える">
                 <source src="https://squallorc-dot.github.io/fun/Music/%E6%8A%8A%E4%BD%A0%E7%9A%84%E8%BA%AB%E9%AB%94%E8%AE%8A%E6%88%90%E8%B6%85%E7%B4%9A%E8%8B%B1%E9%9B%84%E5%AE%87%E5%AE%99.mp3" type="audio/mpeg">
+                お使いのブラウザは音声再生をサポートしていません。
+            </audio>
+            <audio controls data-title="あなたの身体は一つの都市" style="margin-top: 10px;">
+                <source src="https://squallorc-dot.github.io/fun/Music/%E4%BD%A0%E7%9A%84%E8%BA%AB%E9%AB%94%E6%98%AF%E4%B8%80%E5%BA%A7%E5%9F%8E%E5%B8%82.mp3" type="audio/mpeg">
                 お使いのブラウザは音声再生をサポートしていません。
             </audio>
         </div>
@@ -1307,15 +1311,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         floatingPlayer.classList.remove('is-visible');
     }
 
-    /* 🌟 補強：追蹤 OST 原聲帶播放器的點擊 🌟 */
+    /* 🌟 補強：全域追蹤 OST 原聲帶與守護者語音播放 🌟 */
     document.addEventListener('play', function(e){
-        const parentCard = e.target.closest('.ost-player-card');
-        if (parentCard) {
-            const ostTitle = parentCard.querySelector('h4').innerText.split('\n')[0];
+        let audioTitle = "未知音軌";
+        
+        // 1. 檢查是否為 OST 播放器卡片
+        const ostCard = e.target.closest('.ost-player-card');
+        if (ostCard) {
+            audioTitle = "OST: " + ostCard.querySelector('h4').innerText.split('\n')[0];
+        } 
+        // 2. 檢查是否為守護者語音播放器
+        else if (e.target.closest('.voice-player') && e.target.getAttribute('data-title')) {
+            audioTitle = "Voice: " + e.target.getAttribute('data-title');
+        }
+
+        if (audioTitle !== "未知音軌") {
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
                 'event': 'play_ost_audio',
-                'ost_name': ostTitle
+                'ost_name': audioTitle
             });
         }
     }, true);
@@ -1366,6 +1380,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const q = quizQuestions[currentQuizQ];
         document.getElementById('quiz-question-text').innerText = q.q;
         document.getElementById('quiz-progress-fill').style.width = (currentQuizQ / quizQuestions.length * 100) + '%';
+
         document.getElementById('quiz-options').innerHTML = q.options.map(o =>
             `<div class="quiz-option" onclick="answerQuiz('${o.type}')">${o.text}</div>`
         ).join('');
@@ -1460,7 +1475,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             document.getElementById('game-ui-gameover').style.display = 'flex';
             document.getElementById('final-score').innerText = gState.score;
 
-            // 🌟 埋設：GA4 遊戲追蹤 🌟
+            // 🌟 埋設：發送遊戲結束與分數事件到 GA4 🌟
             if (!gState.gaSent) {
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
