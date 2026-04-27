@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUNAI CARE 守護者聯盟 - 品牌宇宙戰略</title>
     <meta name="description" content="FUNAI CARE 守護者聯盟 - 啟動內在英雄：從產品力到品牌宇宙的進化。">
+    
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5M4KVKNX');</script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- 全局與變數設定 --- */
@@ -474,7 +480,6 @@
         
         .hologram-title {
             font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted);
-
             margin-bottom: 8px; letter-spacing: 1px; border-bottom: 1px dashed rgba(0, 213, 255, 0.3);
             padding-bottom: 4px; display: inline-block;
         }
@@ -621,6 +626,8 @@
 </head>
 <body>
 
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5M4KVKNX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="bg-layer">
     <div class="bg-noise"></div>
     <div class="bg-grid"></div>
@@ -664,7 +671,7 @@
         </div>
 
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1" title="FUNAI CARE 守護者聯盟 - 品牌預告片" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 守護者聯盟 - 品牌預告片" allowfullscreen></iframe>
         </div>
         <p class="video-caption">🎬 首映預告：【FUNAI CARE 守護者聯盟】Bio-City 覺醒時刻 - 英雄們的大反擊</p>
     </section>
@@ -673,7 +680,7 @@
         <h2 class="section-title"><span class="title-accent"></span>一、世界觀：Bio-City (生命之城)</h2>
 
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1" title="Bio-City 前導預告" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="Bio-City 前導預告" allowfullscreen></iframe>
         </div>
         <p class="video-caption">🎬 點擊播放：Bio-City 覺醒時刻 - 品牌前導預告</p>
 
@@ -782,7 +789,6 @@
                 <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-burner', 'Burner 姐', this)">
                     <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
                 </div>
-
                 
                 <div class="card-content">
                     <p><strong>性格：</strong>說話有點毒舌，但其實超關心大家。「絕不低頭，因為雙下巴會跑出來！」是她的口頭禪。</p>
@@ -1085,7 +1091,7 @@
     <section class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>四、核心故事：Bio-City 覺醒時刻</h2>
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
         </div>
         <div class="story-timeline">
             <div class="story-step">
@@ -1282,6 +1288,13 @@
             floatingName.innerText = heroName;
             floatingPlayer.classList.add('is-visible');
 
+            // 🌟 埋設：發送播放音樂事件到 GA4 🌟
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                'event': 'play_hero_audio',
+                'hero_name': heroName 
+            });
+
             targetAudio.onended = function() {
                 imgContainer.classList.remove('is-playing');
                 floatingPlayer.classList.remove('is-visible');
@@ -1376,6 +1389,13 @@
         document.getElementById('quiz-res-title').style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;color:#f0f4ff;margin-bottom:10px;text-shadow:0 0 15px rgba(0,213,255,0.3);";
         document.getElementById('quiz-res-desc').innerHTML = res.desc.replace(/\n/g, '<br>');
         document.getElementById('quiz-res-link').href = res.link;
+
+        // 🌟 埋設：發送測驗完成與推薦結果事件到 GA4 🌟
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            'event': 'quiz_completed',
+            'recommended_hero': res.title 
+        });
     }
     function resetQuiz() {
         document.getElementById('quiz-result').style.display = 'none';
@@ -1397,14 +1417,14 @@
         { emoji:'🐉', hp:3, speed:1.5, score:30, energy:10 },
         { emoji:'🧟‍♂️', hp:8, speed:0.8, score:80, energy:20 }
     ];
-    let gState = { status:'select', hero:null, x:G_W/2, score:0, hp:5, energy:0, enemies:[], proj:[], particles:[], lastSpawn:0, lastFire:0, protocol:false };
+    let gState = { status:'select', hero:null, x:G_W/2, score:0, hp:5, energy:0, enemies:[], proj:[], particles:[], lastSpawn:0, lastFire:0, protocol:false, gaSent:false }; // 加入 gaSent
     const uiH = document.getElementById('game-header');
     const elHpG = document.getElementById('ui-hp');
     const elScoreG = document.getElementById('ui-score');
     const elEnergyG = document.getElementById('ui-energy');
 
     window.startCanvasGame = function(heroId) {
-        gState = { status:'playing', hero:HEROES[heroId], x:G_W/2, score:0, hp:5, energy:0, enemies:[], proj:[], particles:[], lastSpawn:0, lastFire:0, protocol:false };
+        gState = { status:'playing', hero:HEROES[heroId], x:G_W/2, score:0, hp:5, energy:0, enemies:[], proj:[], particles:[], lastSpawn:0, lastFire:0, protocol:false, gaSent:false };
         document.getElementById('game-ui-select').style.display = 'none';
         document.getElementById('game-ui-gameover').style.display = 'none';
         uiH.style.display = 'flex'; updateGameDOM();
@@ -1438,6 +1458,17 @@
             uiH.style.display = 'none';
             document.getElementById('game-ui-gameover').style.display = 'flex';
             document.getElementById('final-score').innerText = gState.score;
+
+            // 🌟 埋設：發送遊戲結束與分數事件到 GA4 🌟
+            if (!gState.gaSent) {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'game_completed',
+                    'hero_used': gState.hero.emoji, 
+                    'final_score': gState.score     
+                });
+                gState.gaSent = true;
+            }
         }
     }
     function updateGame(dt, time) {
