@@ -36,6 +36,12 @@ try{
    await page.locator('#game-list .game-card').first().waitFor();
    check(await page.locator('[data-launch]').count()===6,label+' six cards');
    check(await page.locator('.hero-chip').count()===7||await page.locator('#hero-choices').count()===1,label+' seven hero selector');
+   // Existing shooter records must survive migration into the new game lobby.
+   await page.evaluate(()=>localStorage.setItem('bio-city-arcade-high-v1','321'));
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.locator('#best-g02').waitFor();
+   check((await page.locator('#best-g02').textContent()).includes('321'),label+' legacy G02 high score preserved');
+   await page.evaluate(()=>{window.dataLayer=[];});
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
    const open=async(id)=>{
     await page.locator('[data-launch="'+id+'"]').click();
@@ -69,9 +75,31 @@ try{
     check(await page.locator('#stage-dialog-layer.show').count()===1,label+' '+id+' paused');
     await page.locator('#pause-resume').click();
     check(await page.locator('#stage-dialog-layer.show').count()===0,label+' '+id+' resumed');
+    if(id==='g05'){
+      // Persistence integration test: force a synthetic result through the public
+      // finish callback; engine win/loss fairness is tested separately.
+      await page.evaluate(()=>window.BioSuiteHub.finish(true,987,'test pong'));
+      check(await page.locator('#stage-dialog-layer.show').count()===1,label+' G05 result UI shown');
+      check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='987',label+' G05 Pong stores independent score');
+    }
     await page.locator('#stage-back').click();
     await inLobby();
    }
+   // Volleyball and Pong use different persistent records.
+   await page.locator('[data-launch="g05"]').click();
+   await page.locator('[data-mode="volley"]').click();
+   await page.locator('#setup-play').click();
+   await page.locator('#hub-canvas').waitFor();
+   await page.evaluate(()=>window.BioSuiteHub.finish(true,432,'test volley'));
+   const scores=await page.evaluate(()=>({
+     volley:localStorage.getItem('bio_arcade_best_g05-volley'),
+     pong:localStorage.getItem('bio_arcade_best_g05-pong'),
+     startEvents:window.dataLayer.filter(x=>x.event==='arcade_game_start').length,
+     finishEvents:window.dataLayer.filter(x=>x.event==='arcade_game_finish').length
+   }));
+   check(scores.volley==='432'&&scores.pong==='987',label+' G05 modes retain independent best');
+   check(scores.startEvents>=6&&scores.finishEvents>=2,label+' unified game start/finish events');
+   await page.locator('#stage-back').click();await inLobby();
    check(!pageErrors.length,label+' JS errors: '+pageErrors.join(' | ').slice(0,500));
    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+4),label+' lobby no horizontal overflow');
   }catch(error){failures.push(label+': '+String(error).slice(0,800)+' errors='+pageErrors.join(' | ').slice(0,350));}
