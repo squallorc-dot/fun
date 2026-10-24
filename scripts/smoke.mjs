@@ -31,6 +31,12 @@ try{
     const state=await page.evaluate(()=>({w:document.documentElement.scrollWidth,v:innerWidth,h:document.querySelectorAll('h1').length,main:!!document.querySelector('#main-content'),nav:!!document.querySelector('nav')}));
     verify(state.w<=state.v+3,file+' @'+width+' horizontal overflow '+state.w+'/'+state.v);
     verify(state.h===1&&state.main&&state.nav,file+' @'+width+' missing structure');
+    if(width>=768){
+      await page.evaluate(()=>scrollTo(0,900));
+      await page.waitForTimeout(80);
+      const arrow=await page.evaluate(()=>{const b=document.querySelector('.backtop'),r=b.getBoundingClientRect();return {right:innerWidth-r.right,left:r.left,visible:getComputedStyle(b).opacity!=='0'}});
+      verify(arrow.right>=0&&arrow.right<=30&&arrow.visible,file+' @'+width+' desktop back-to-top pinned right '+JSON.stringify(arrow));
+    }
 
     if(width<=430){
      const state=await page.evaluate(()=>{
