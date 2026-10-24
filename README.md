@@ -94,3 +94,14 @@ GTM 的內部事件參數對應及 GA4 實際接收，需使用預覽模式與 D
 - 不改動任何 PNG 或 MP3 內容；Git 內沿用相同檔案 blob，僅更動路徑。
 - 任何對外發布過的舊媒體直連結在移除原路徑後會失效；舊版完整保存於 `backup/pre-asset-rename-20261024`。
 - 往後新增圖片請同步提供可讀的 alt 文字；音檔需維持播放器標題及對應場景語意，不以檔名取代內容描述。
+
+
+## 2026-10-24 主動畫敘事版型（v20261024.8）
+
+- 首頁結構：品牌主視覺 → 官方主動畫 → Bio-City 四大探索入口 → 七組守護者集結 → 品牌 IP 企劃理念 → 延伸內容。
+- 主動畫 YouTube ID 為 `Tbmg2LKTQVI`，首頁及核心故事頁共用；原故事頁影片 `A-2X3iLnUTI` 保留為延伸影片。
+- 影片使用 YouTube 封面延遲載入：點擊後才建立 `youtube-nocookie.com` iframe；不在進站時自動播放或載入多個播放器。
+- 原有四幕劇情逐幕保留，商品、音樂與角色 PNG 全部維持。
+- 中日文內容分別由 `content/zh`、`content/ja` 維護；CSS 共用 `assets/site.css`，播放器由 `assets/site.js` 共用。
+- 播放主動畫互動增加資料層事件 `story_video_play`，目前僅推送 dataLayer，正式 GA4 事件需另外檢查 GTM，僅使用本展示站資源 `534706548`。
+- 備份：`backup/pre-main-film-redesign-20261024`。切勿改動其他網站的追蹤設定。

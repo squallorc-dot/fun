@@ -35,6 +35,20 @@ try{
   }
   await page.close();
  }
+ for(const [home,story] of [['FUNAI-CARE.html','zh/story.html'],['FUNAI-CARE_jp.html','ja/story.html']]){
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+  try{
+   await page.goto(origin+'/'+home,{waitUntil:'domcontentloaded'});
+   const order=await page.evaluate(()=>[...document.querySelectorAll('main>section')].map(x=>x.classList[0]));
+   verify(order[0]==='home-hero'&&order[1]==='main-film'&&order[2]==='home-highlights',home+' section order');
+   await page.locator('#main-film .film-activate').click();
+   verify(await page.locator('#main-film iframe[src*="youtube-nocookie.com"]').count()===1,home+' video click to load');
+   await page.goto(origin+'/'+story,{waitUntil:'domcontentloaded'});
+   verify(await page.locator('.story-step').count()===4,story+' original four acts');
+   verify(await page.locator('.film-activate').count()===2,story+' main plus supplemental movie');
+  }catch(e){errors.push(home+' film flow '+e.message)}finally{await page.close()}
+ }
  for(const lang of locales){
   const page=await browser.newPage({viewport:{width:390,height:844}});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
