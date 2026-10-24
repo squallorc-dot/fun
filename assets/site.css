@@ -1020,3 +1020,31 @@ body[data-page="strategy"] .creative-closing strong{display:block;color:#fff;lin
 
 /* Tablet widths: collapse editorial split layouts before minimum content widths cause overflow. */
 @media (max-width: 900px){body[data-page="strategy"] .creative-vision-layout,body[data-page="strategy"] .creative-project-row{grid-template-columns:minmax(0,1fr)}body[data-page="strategy"] .creative-vision-copy,body[data-page="strategy"] .creative-project-copy,body[data-page="strategy"] .creative-project-art,body[data-page="strategy"] .creative-section-heading{min-width:0}body[data-page="strategy"] .creative-vision-media{min-width:0;max-width:100%}body[data-page="strategy"] .creative-vision-media img{max-width:100%}body[data-page="strategy"] .creative-project-art{max-width:100%}}
+
+
+/* Hero gallery desktop readability, 2026-10-24 — intentionally scoped. */
+@media (min-width:1024px){
+ body[data-page="heroes"] .grid-container{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;align-items:stretch}
+ body[data-page="heroes"] .card{padding:clamp(25px,2.35vw,36px);border-radius:23px;min-width:0}
+ body[data-page="heroes"] .role-badge{font-size:.86rem;padding:7px 14px;margin-bottom:13px;line-height:1.45}
+ body[data-page="heroes"] .card h3{font-size:clamp(2rem,2.5vw,2.4rem);line-height:1.25;margin-bottom:6px}
+ body[data-page="heroes"] .card .alias{font-size:1.06rem;margin-bottom:20px}
+ body[data-page="heroes"] .char-img-container{height:clamp(290px,26vw,380px);padding:13px;margin:5px 0 23px}
+ body[data-page="heroes"] .card-content>p{font-size:1.02rem;line-height:1.85;margin-bottom:17px}
+ body[data-page="heroes"] .hero-more summary{font-size:1rem;min-height:48px;padding:11px 0}
+ body[data-page="heroes"] .hero-more .skill-box{font-size:.98rem;line-height:1.75;padding:14px 16px}
+ body[data-page="heroes"] .hero-more .real-benefits-title{font-size:.88rem}
+ body[data-page="heroes"] .hero-more .real-benefits-list li{font-size:.96rem;line-height:1.75}
+ body[data-page="heroes"] .card>.btn-link{font-size:1rem;padding:14px 16px;min-height:48px}
+ body[data-page="heroes"] .char-img-clickable::after{font-size:.85rem;padding:6px 12px}
+ body[data-page="heroes"] .hero-lyrics-hologram{font-size:.93rem;line-height:1.7}
+ body[data-page="heroes"] .grid-container>.card:last-child:nth-child(odd){grid-column:1/-1;width:min(100%,580px);justify-self:center}
+}
+@media (min-width:680px) and (max-width:1023px){
+ body[data-page="heroes"] .grid-container{gap:20px}
+ body[data-page="heroes"] .card{padding:23px}
+ body[data-page="heroes"] .char-img-container{height:255px}
+ body[data-page="heroes"] .card-content>p{font-size:.96rem;line-height:1.76}
+ body[data-page="heroes"] .hero-more summary{font-size:.9rem}
+ body[data-page="heroes"] .card>.btn-link{font-size:.9rem}
+}
