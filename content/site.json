@@ -2,7 +2,7 @@
   "base": "https://squallorc-dot.github.io/fun/",
   "ogImage": "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png",
   "gtm": "GTM-5M4KVKNX",
-  "version": "20261024.10",
+  "version": "20261024.11",
   "locales": {
     "zh": {
       "htmlLang": "zh-TW",
@@ -108,12 +108,12 @@
     },
     "strategy": {
       "zh": {
-        "title": "從角色到故事｜Bio-City 創作與內容應用｜FUNAI CARE",
-        "desc": "了解 Bio-City 守護者聯盟的創作理念、角色與世界觀、原創動畫及 AI 音樂製作、雙語互動網站與未來內容應用。"
+        "title": "Bio-City｜從創作實作到數位應用｜FUNAI CARE",
+        "desc": "從 Bio-City 品牌角色與世界觀出發，探索 AI 影音、原創音樂、中日文互動網站，以及數位資產、內容傳播與商品探索的應用。"
       },
       "ja": {
-        "title": "キャラクターから物語へ｜Bio-City 制作・活用｜FUNAI CARE",
-        "desc": "Bio-City ガーディアンズの制作コンセプト、キャラクター、アニメーション、AIツールを活用した音楽、日中2言語のWeb体験と展開の可能性をご紹介します。"
+        "title": "Bio-City｜創作からデジタル活用へ｜FUNAI CARE",
+        "desc": "Bio-Cityの世界観とヒーローを出発点に、AIを活用した映像、音楽、日中2言語のWeb体験、デジタル資産とブランドへの接点を紹介。"
       }
     }
   }
