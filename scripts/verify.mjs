@@ -50,6 +50,9 @@ for(const lang of ['zh','ja'])for(const key of keys){
  if(!html.includes('assets/site.css?v='+config.version))fail(file,'outdated CSS version');
  if(!html.includes('assets/site.js?v='+config.version))fail(file,'outdated JS version');
  if(/ui-refine-20261024\.css/.test(html))fail(file,'unused legacy stylesheet linked');
+ if(html.includes('footer-top-link')||html.includes('foot-links'))fail(file,'obsolete duplicate footer navigation');
+ if(!html.includes('class="backtop"'))fail(file,'missing return-to-top button');
+ if(/<footer class="app-footer">[\s\S]*?<\/footer>/.test(html) && /<footer class="app-footer">[\s\S]*?<a\b/.test(html))fail(file,'footer still contains redundant navigation');
  if(key==='heroes'&&(html.match(/onclick="playHeroAudio/g)||[]).length!==7)fail(file,'expected 7 hero players');
  if(key==='music'&&(html.match(/<audio\b/g)||[]).length!==4)fail(file,'expected 4 OST tracks');
  checked++;
