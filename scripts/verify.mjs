@@ -63,5 +63,24 @@ catch(e){fail('build','14 pages out of sync: '+(e.stderr?.toString()||e.message)
 const scripts=['assets/site.js','assets/zh-play.js','assets/ja-play.js'].map(x=>fs.readFileSync(path.join(root,x),'utf8')).join('\n');
 for(const name of ['play_hero_audio','play_ost_audio','quiz_completed','game_completed','product_link_click'])
  if(!scripts.includes(name))fail('tracking','missing '+name);
+// Asset URL naming contract: exact ASCII, lowercase kebab-case, no old paths.
+for(const folder of ['images','music']){
+ if(!exists(folder)){fail(folder,'required media directory missing');continue}
+ for(const filename of fs.readdirSync(path.join(root,folder))){
+  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|mp3)$/.test(filename))
+   fail(folder,'invalid media filename '+filename);
+ }
+}
+if(exists('Music'))fail('Music','legacy uppercase directory must be migrated');
+for(const lang of ['zh','ja']){
+ for(const key of keys){
+  const html=fs.readFileSync(path.join(root,route(lang,key)),'utf8');
+  const source=fs.readFileSync(path.join(root,'content',lang,key+'.html'),'utf8');
+  for(const body of [html,source]){
+   if(/\/Music\//.test(body))fail(lang+'/'+key,'outdated Music URL');
+   if(/\/images\/(?:%[0-9A-Fa-f]{2})/.test(body))fail(lang+'/'+key,'old encoded character image URL');
+  }
+ }
+}
 if(errors.length){console.error('FAIL '+errors.length+'\n'+errors.join('\n'));process.exitCode=1}
 else console.log('PASS '+checked+' pages, '+internalCount+' links/assets, build synchronization, syntax, metadata, locale and event contracts.');

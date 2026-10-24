@@ -37,9 +37,9 @@
     }
 ];
     const quizResultsData = {
-        mj: { title: "MJ 機器人", desc: "你的生活型態守護者是 MJ 機器人！工作與生活之餘，也別忘了安排放鬆的時間。想了解對應的按摩機，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
-        yebao: { title: "葉寶 EX", desc: "你的生活型態守護者是葉寶 EX！長時間使用螢幕，記得適時休息、留意用眼習慣。想認識相關營養產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
-        burner: { title: "Burner 姐", desc: "你的生活型態守護者是 Burner 姐！從日常飲食與運動習慣開始，逐步累積自己的節奏。想認識相關產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
+        mj: { title: "MJ 機器人", desc: "你的生活型態守護者是 MJ 機器人！工作與生活之餘，也別忘了安排放鬆的時間。想了解對應的按摩機，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/funai-care-mj-robot.png", link: "https://www.funaicare.com/item/care-mj" },
+        yebao: { title: "葉寶 EX", desc: "你的生活型態守護者是葉寶 EX！長時間使用螢幕，記得適時休息、留意用眼習慣。想認識相關營養產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/funai-care-ye-bao-ex.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
+        burner: { title: "Burner 姐", desc: "你的生活型態守護者是 Burner 姐！從日常飲食與運動習慣開始，逐步累積自己的節奏。想認識相關產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
     };
     let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 }, quizAnswers = [];
 

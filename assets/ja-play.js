@@ -37,9 +37,9 @@
     }
 ];
     const quizResultsData = {
-        mj: { title: "MJ ロボット", desc: "あなたに合う守護者はMJロボット！デスクワークの合間に、気分転換やリラックスの時間も取り入れましょう。製品の仕様や説明は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
-        yebao: { title: "葉宝 EX", desc: "あなたに合う守護者は葉宝 EX！画面を長く見る日は、こまめな休憩を意識しましょう。製品の詳細は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
-        burner: { title: "バーナー姐さん", desc: "あなたに合う守護者はBurner姐さん！食事や運動など、毎日の習慣を少しずつ整えてみましょう。製品の詳細は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
+        mj: { title: "MJ ロボット", desc: "あなたに合う守護者はMJロボット！デスクワークの合間に、気分転換やリラックスの時間も取り入れましょう。製品の仕様や説明は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/funai-care-mj-robot.png", link: "https://www.funaicare.com/item/care-mj" },
+        yebao: { title: "葉宝 EX", desc: "あなたに合う守護者は葉宝 EX！画面を長く見る日は、こまめな休憩を意識しましょう。製品の詳細は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/funai-care-ye-bao-ex.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
+        burner: { title: "バーナー姐さん", desc: "あなたに合う守護者はBurner姐さん！食事や運動など、毎日の習慣を少しずつ整えてみましょう。製品の詳細は公式商品ページをご確認ください。", img: "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
     };
         let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 }, quizAnswers = [];
 
