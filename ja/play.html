@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ヒーローマッチングとミニゲーム｜FUNAI CARE</title>
+<title>Bio-City Protocol｜都市の意思決定と防衛｜FUNAI CARE</title>
 <meta name="description" content="ヒーローマッチングと Bio-City ミニゲームを体験。">
 <meta name="theme-color" content="#061423">
 <meta property="og:type" content="website">
@@ -22,10 +22,10 @@
 <link rel="alternate" hreflang="ja" href="https://squallorc-dot.github.io/fun/ja/play.html">
 <link rel="alternate" hreflang="x-default" href="https://squallorc-dot.github.io/fun/zh/play.html">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/site.css?v=20261024.20">
+<link rel="stylesheet" href="../assets/site.css?v=20261024.22">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"ヒーローマッチングとミニゲーム｜FUNAI CARE","url":"https://squallorc-dot.github.io/fun/ja/play.html","inLanguage":"ja","description":"ヒーローマッチングと Bio-City ミニゲームを体験。"}</script>
 <script>(function(w,d,s,n,i){w[n]=w[n]||[];w[n].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer','GTM-5M4KVKNX');</script>
-</head>
+<link rel="stylesheet" href="../assets/protocol.css?v=20261024.22"></head>
 <body data-page="play">
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5M4KVKNX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <a class="skip-link" href="#main-content">本文へ移動</a>
@@ -39,77 +39,15 @@
 </div>
 </div><nav id="mobile-explore-panel" class="mobile-explore-panel" aria-label="その他のページを探す" hidden><a href="../ja/world.html"><span class="mobile-explore-icon" aria-hidden="true">◎</span><span><strong>世界観</strong><small>Bio-City の世界観</small></span><span class="mobile-explore-chevron" aria-hidden="true">›</span></a><a href="../ja/play.html" aria-current="page"><span class="mobile-explore-icon" aria-hidden="true">◇</span><span><strong>体験</strong><small>ヒーロー診断・ミニゲーム</small></span><span class="mobile-explore-chevron" aria-hidden="true">›</span></a><a href="../ja/strategy.html"><span class="mobile-explore-icon" aria-hidden="true">✦</span><span><strong>制作・活用</strong><small>制作・デジタル活用</small></span><span class="mobile-explore-chevron" aria-hidden="true">›</span></a></nav><div class="reading-progress"></div></header>
 <nav class="bottom-nav" aria-label="ショートカット"><a href="../FUNAI-CARE_jp.html"><span>⌂</span>ホーム</a><a href="../ja/heroes.html"><span>♛</span>ヒーロー</a><a href="../ja/story.html"><span>▶</span>ストーリー</a><a href="../ja/music.html"><span>♫</span>音楽</a></nav>
-<main id="main-content" class="app-width"><div class="breadcrumb"><a href="../FUNAI-CARE_jp.html">ホーム</a><span>›</span>体験</div><div class="page-heading"><span class="eyebrow">BIO-CITY / PLAY</span><h1>ヒーローマッチングとミニゲーム</h1><p>ヒーローマッチングと Bio-City ミニゲームを体験。</p></div><section class="page-content"><div class="story-note">ヒーローマッチングは娯楽であり、健康診断ではありません。</div><div id="quiz" class="quiz-section">
-        <div class="quiz-title">🔍 Bio-City ヒーローマッチング</div>
-        <div class="quiz-desc">２つの質問で、今のあなたにぴったりの守護者を見つけよう。医療的な診断ではありません。</div>
-        <div class="quiz-container">
-            <div id="quiz-start">
-                <button class="btn-link" style="padding:15px 40px; font-size:1.1rem; max-width:280px; margin:0 auto; display:block;" onclick="startQuiz()">⚡ ヒーローマッチングを始める</button>
-                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">キャラクターとの相性を楽しむための2問のマッチングです。健康状態の測定・診断ではありません。</p>
-            </div>
-            <div id="quiz-play" style="display:none;">
-                <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
-                <div class="quiz-question" id="quiz-question-text">読み込み中...</div>
-                <div id="quiz-options" role="group" aria-live="polite"></div>
-            </div>
-            <div id="quiz-loading" style="display:none;">
-                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">ヒーローを探しています...</h3>
-                <p style="color:var(--muted);">回答からヒーローを選んでいます...</p>
-            </div>
-            <div id="quiz-result" style="display:none;">
-                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">あなたの守護者はこちら：</h3>
-                <img id="quiz-res-img" src="" class="quiz-result-img" alt="守護者">
-                <div id="quiz-res-title"></div>
-                <div id="quiz-res-desc" style="color:var(--muted); margin-bottom:28px; line-height: 1.6;"></div>
-                <a id="quiz-res-link" href="#" target="_blank" class="btn-link" style="max-width:200px; margin:0 auto;">特許装備を受け取る</a>
-                <br>
-                <button onclick="resetQuiz()" style="margin-top:20px; background:none; border:none; color:var(--cyan); font-family:'Space Mono',monospace; font-size:0.85rem; cursor:pointer; letter-spacing:1px;">↺ もう一度マッチング</button>
-            </div>
-        </div>
-    </div><div class="game-panel"><section id="game" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>🎮 Bio-City ガーディアンズ特訓シミュレーター</h2>
-        <p style="text-align:center; color:var(--muted); margin-bottom:12px;">操作説明：マウス/指で左右にスワイプしてヒーローを操作します。エネルギーが100になると、自動的に全域浄化の必殺技が発動します！</p>
-        <div class="game-wrapper">
-            <div class="game-header" id="game-header">
-                <div class="hp">HP: <span id="ui-hp" style="color:#f43f5e">5</span></div>
-                <div class="energy-bar-bg"><div class="energy-bar-fill" id="ui-energy"></div></div>
-                <div class="score">SCORE: <span id="ui-score" style="color:#f5c518">0</span></div>
-            </div>
-            <canvas id="gameCanvas" width="450" height="700"></canvas>
-            <div id="game-ui-select">
-                <div class="game-ui-title" style="margin-top:40px;">ヒーローを選択</div>
-                <p style="color:var(--muted); font-size:0.9rem; margin-bottom:30px; font-family:'Space Mono',monospace;">エントロピー軍団の迎撃準備</p>
-                <div style="width:100%;">
-                    <button class="hero-btn" onclick="startCanvasGame('burner')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#f43f5e,#be123c);">👩‍🎤</div>
-                        <div><h4>バーナー姐さん</h4><p>武器:⚡ ｜極繊レーザー：高連射</p></div>
-                    </button>
-                    <button class="hero-btn" onclick="startCanvasGame('mj')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#0ea5e9,#0369a1);">🤖</div>
-                        <div><h4>MJ ロボット</h4><p>武器:🎵 ｜8点共振：安定出力</p></div>
-                    </button>
-                    <button class="hero-btn" onclick="startCanvasGame('yebao')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#f59e0b,#b45309);">🦸‍♂️</div>
-                        <div><h4>葉宝 EX</h4><p>武器:⚔️ ｜ブルーライト聖剣：高バースト</p></div>
-                    </button>
-                </div>
-            </div>
-            <div id="game-ui-gameover" style="display:none;">
-                <div style="font-size:4rem; margin-top:80px;">💀</div>
-                <div class="game-ui-title" style="color:#f43f5e; text-shadow:0 0 15px rgba(244,63,94,0.5);">ヒーローが倒れた</div>
-                <p style="color:var(--muted); margin-bottom:30px; font-family:'Space Mono',monospace; font-size:0.85rem;">都市は生活の悪の勢力に占領されてしまった...</p>
-                <div style="background:#0f172a; padding:24px; border-radius:16px; text-align:center; width:80%; margin-bottom:40px; border:1px solid rgba(0,213,255,0.1);">
-                    <div style="color:var(--muted); font-size:0.78rem; font-family:'Space Mono',monospace; letter-spacing:2px;">今回の撃破スコア</div>
-                    <div id="final-score" style="font-size:3.5rem; font-weight:900; color:#f5c518; font-family:'Bebas Neue',sans-serif; letter-spacing:4px;">0</div>
-                </div>
-                <button class="hero-btn" style="justify-content:center; background:#1e293b;" onclick="resetToCanvasMenu()">
-                    <h4 style="margin:0;">🔄 ヒーローを再選択</h4>
-                </button>
-            </div>
-        </div>
-    </section></div></section><section class="related"><span class="eyebrow">DISCOVER MORE</span><h2>ほかのコンテンツも見る</h2><div class="related-grid"><a href="../ja/heroes.html"><strong>ヒーロー</strong><small>7組のヒーローの個性、テーマ音楽、製品情報を紹介します。</small><span>↗</span></a><a href="../ja/story.html"><strong>ストーリー</strong><small>光を失った都市からヒーローたちの反撃まで、4幕で描くストーリー。</small><span>↗</span></a><a href="../ja/strategy.html"><strong>制作・活用</strong><small>キャラクターと映像、音楽、Web体験の制作について。</small><span>↗</span></a></div></section></main>
+<main id="main-content" class="app-width"><div class="breadcrumb"><a href="../FUNAI-CARE_jp.html">ホーム</a><span>›</span>体験</div>
+<div class="page-heading protocol-page-heading"><span class="eyebrow">BIO-CITY / PROTOCOL</span><h1>Bio-City Protocol｜都市の意思決定と防衛</h1><p>あなたの判断が、都市の次の一手を決める。日常にあるトレードオフを考える意思決定分析、または7組のガーディアンと挑む都市防衛に参加しましょう。</p></div>
+<div class="protocol-intro-banner" role="img" aria-label="エネルギー中枢が都市を照らす近未来のBio-City"><div><span class="eyebrow">THE LIVING CITY / COMMAND SYSTEM</span><strong>THINK. DECIDE. DEFEND.</strong><p>スコアだけでなく、選択の意味を考える。</p></div></div>
+<div class="protocol-entry" aria-label="体験モード"><a href="#protocol-quiz"><span>01 / DECISION LAB</span><strong>日常の意思決定ラボ</strong><small>8つのシナリオ｜意思決定レポート</small><b aria-hidden="true">↗</b></a><a href="#protocol-game"><span>02 / COMMAND CENTER</span><strong>都市危機コマンドセンター</strong><small>7組のガーディアン｜4地区｜3ミッション</small><b aria-hidden="true">↗</b></a></div>
+<section class="protocol-module" id="protocol-quiz" aria-labelledby="protocol-quiz-heading"><div class="protocol-module-heading"><span class="eyebrow">01 / DECISION LAB</span><h2 id="protocol-quiz-heading">意思決定｜日常のトレードオフを考える</h2><p>仕事の負荷、時間、画面作業、生活のペース、情報の信頼性。一つだけの正解はありません。自分の判断の傾向を振り返りましょう。</p></div><div class="protocol-surface" id="protocol-quiz-root"><p>分析を読み込み中…</p></div><p class="protocol-disclaimer">本コンテンツは架空の世界観に基づく意思決定体験です。医療診断、健康リスク評価、心理検査、製品効能の推奨ではありません。</p></section>
+<section class="protocol-module" id="protocol-game" aria-labelledby="protocol-game-heading"><div class="protocol-module-heading"><span class="eyebrow">02 / COMMAND CENTER</span><h2 id="protocol-game-heading">都市防衛｜限られた資源で判断する</h2><p>左右に動くだけの自動射撃ではありません。エネルギー、ガーディアンの得意分野、再使用までの時間、対処を先延ばしするリスクを考えて行動します。</p></div><div class="protocol-surface" id="protocol-game-root"><p>司令システムを読み込み中…</p></div><p class="protocol-disclaimer">ゲーム内の地区、事件、スキルは架空の設定です。実際の身体や健康リスクを予測するものではありません。</p></section>
+<section class="related"><span class="eyebrow">DISCOVER MORE</span><h2>Bio-Cityをもっと楽しむ</h2><div class="related-grid"><a href="../ja/heroes.html"><strong>ヒーロー</strong><small>7組のガーディアンの物語、個性、能力。</small><span>↗</span></a><a href="../ja/story.html"><strong>ストーリー</strong><small>光を失った都市からヒーロー集結までの4幕。</small><span>↗</span></a><a href="../ja/strategy.html"><strong>制作・活用</strong><small>世界観、映像、音楽、Web体験をつなぐ構想。</small><span>↗</span></a></div></section></main>
 <footer class="app-footer"><div class="app-width"><strong>FUNAI CARE ガーディアンズ</strong><p class="footer-credit">企画・クリエイティブ・Webサイト制作｜家葦</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
 <button type="button" class="backtop" aria-label="ページ上部へ">↑</button>
 <div id="global-audio-player" class="floating-audio-player" aria-live="polite"><div class="f-audio-info"><span class="f-audio-label">NOW PLAYING</span><span id="f-audio-name" class="f-audio-name">FUNAI CARE</span></div><button class="f-audio-btn" onclick="stopAllHeroAudio()" type="button" aria-label="音楽を停止">⏸</button></div>
-<script defer src="../assets/site.js?v=20261024.20"></script><script defer src="../assets/ja-play.js?v=20261024.20"></script>
+<script defer src="../assets/site.js?v=20261024.22"></script><script defer src="../assets/protocol-engine.js?v=20261024.22"></script><script defer src="../assets/ja-play.js?v=20261024.22"></script>
 </body></html>

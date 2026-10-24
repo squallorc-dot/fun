@@ -2,7 +2,7 @@
   "base": "https://squallorc-dot.github.io/fun/",
   "ogImage": "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png",
   "gtm": "GTM-5M4KVKNX",
-  "version": "20261024.20",
+  "version": "20261024.22",
   "locales": {
     "zh": {
       "htmlLang": "zh-TW",
@@ -98,12 +98,12 @@
     },
     "play": {
       "zh": {
-        "title": "角色配對與守護者特訓｜FUNAI CARE",
-        "desc": "從生活型態的趣味角色配對，到 Bio-City 守護者遊戲。"
+        "title": "Bio-City Protocol｜城市決策與防衛｜FUNAI CARE",
+        "desc": "8 道現實情境的決策分析與七組守護者的回合制城市防衛。"
       },
       "ja": {
-        "title": "ヒーローマッチングとミニゲーム｜FUNAI CARE",
-        "desc": "ヒーローマッチングと Bio-City ミニゲームを体験。"
+        "title": "Bio-City Protocol｜都市の意思決定と防衛｜FUNAI CARE",
+        "desc": "8つの日常の意思決定シナリオと7組のガーディアンによる都市防衛。"
       }
     },
     "strategy": {

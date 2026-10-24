@@ -1,69 +1,7 @@
-<div class="breadcrumb"><a href="../FUNAI-CARE.html">首頁</a><span>›</span>互動體驗</div><div class="page-heading"><span class="eyebrow">BIO-CITY / PLAY</span><h1>角色配對與守護者特訓</h1><p>從生活型態的趣味角色配對，到 Bio-City 守護者遊戲。</p></div><section class="page-content"><div class="story-note">角色配對為趣味互動，不是健康風險測量或醫療診斷。</div><div id="quiz" class="quiz-section">
-        <div class="quiz-title">🔍 Bio-City 守護者配對站</div>
-        <div class="quiz-desc">回答兩個生活習慣問題，找出與你最有共鳴的 Bio-City 守護者。這是趣味角色配對，不是健康診斷。</div>
-        <div class="quiz-container">
-            <div id="quiz-start">
-                <button class="btn-link" style="padding:15px 40px; font-size:1.1rem; max-width:280px; margin:0 auto; display:block;" onclick="startQuiz()">⚡ 開始守護者配對</button>
-                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">此為趣味角色配對，非健康風險評估或醫療診斷。產品資訊請以官方頁面為準。</p>
-            </div>
-            <div id="quiz-play" style="display:none;">
-                <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
-                <div class="quiz-question" id="quiz-question-text">載入中...</div>
-                <div id="quiz-options" role="group" aria-live="polite"></div>
-            </div>
-            <div id="quiz-loading" style="display:none;">
-                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">正在尋找適合你的守護者...</h3>
-                <p style="color:var(--muted);">正在整理你的回答，尋找相符的角色...</p>
-            </div>
-            <div id="quiz-result" style="display:none;">
-                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">你的 Bio-City 守護者是：</h3>
-                <img id="quiz-res-img" src="" class="quiz-result-img" alt="守護者">
-                <div id="quiz-res-title"></div>
-                <div id="quiz-res-desc" style="color:var(--muted); margin-bottom:28px; line-height: 1.6;"></div>
-                <a id="quiz-res-link" href="#" target="_blank" class="btn-link" style="max-width:200px; margin:0 auto;">領取專利裝備</a>
-                <br>
-                <button onclick="resetQuiz()" style="margin-top:20px; background:none; border:none; color:var(--cyan); font-family:'Space Mono',monospace; font-size:0.85rem; cursor:pointer; letter-spacing:1px;">↺ 重新配對角色</button>
-            </div>
-        </div>
-    </div><div class="game-panel"><section id="game" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>🎮 Bio-City 守護者特訓模擬器</h2>
-        <p style="text-align:center; color:var(--muted); margin-bottom:12px;">操作說明：滑鼠/手指左右滑動控制英雄。能量滿百將自動釋放全域淨化大招！</p>
-        <div class="game-wrapper">
-            <div class="game-header" id="game-header">
-                <div class="hp">HP: <span id="ui-hp" style="color:#f43f5e">5</span></div>
-                <div class="energy-bar-bg"><div class="energy-bar-fill" id="ui-energy"></div></div>
-                <div class="score">SCORE: <span id="ui-score" style="color:#f5c518">0</span></div>
-            </div>
-            <canvas id="gameCanvas" width="450" height="700"></canvas>
-            <div id="game-ui-select">
-                <div class="game-ui-title" style="margin-top:40px;">選擇你的守護者</div>
-                <p style="color:var(--muted); font-size:0.9rem; margin-bottom:30px; font-family:'Space Mono',monospace;">準備迎戰熵能軍團</p>
-                <div style="width:100%;">
-                    <button class="hero-btn" onclick="startCanvasGame('burner')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#f43f5e,#be123c);">👩‍🎤</div>
-                        <div><h4>Burner 姐</h4><p>武器:⚡ ｜極纖雷射：高射速</p></div>
-                    </button>
-                    <button class="hero-btn" onclick="startCanvasGame('mj')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#0ea5e9,#0369a1);">🤖</div>
-                        <div><h4>MJ 機器人</h4><p>武器:🎵 ｜8點共震：穩定輸出</p></div>
-                    </button>
-                    <button class="hero-btn" onclick="startCanvasGame('yebao')">
-                        <div class="emoji-box" style="background:linear-gradient(135deg,#f59e0b,#b45309);">🦸‍♂️</div>
-                        <div><h4>葉寶 EX</h4><p>武器:⚔️ ｜藍光聖劍：高爆發</p></div>
-                    </button>
-                </div>
-            </div>
-            <div id="game-ui-gameover" style="display:none;">
-                <div style="font-size:4rem; margin-top:80px;">💀</div>
-                <div class="game-ui-title" style="color:#f43f5e; text-shadow:0 0 15px rgba(244,63,94,0.5);">英雄倒下</div>
-                <p style="color:var(--muted); margin-bottom:30px; font-family:'Space Mono',monospace; font-size:0.85rem;">城市被生活惡勢力佔領了...</p>
-                <div style="background:#0f172a; padding:24px; border-radius:16px; text-align:center; width:80%; margin-bottom:40px; border:1px solid rgba(0,213,255,0.1);">
-                    <div style="color:var(--muted); font-size:0.78rem; font-family:'Space Mono',monospace; letter-spacing:2px;">本次擊殺積分</div>
-                    <div id="final-score" style="font-size:3.5rem; font-weight:900; color:#f5c518; font-family:'Bebas Neue',sans-serif; letter-spacing:4px;">0</div>
-                </div>
-                <button class="hero-btn" style="justify-content:center; background:#1e293b;" onclick="resetToCanvasMenu()">
-                    <h4 style="margin:0;">🔄 重新選擇英雄</h4>
-                </button>
-            </div>
-        </div>
-    </section></div></section><section class="related"><span class="eyebrow">DISCOVER MORE</span><h2>探索更多內容</h2><div class="related-grid"><a href="../zh/heroes.html"><strong>英雄圖鑑</strong><small>七組守護者完整角色圖鑑，包含性格、音樂與對應產品資訊。</small><span>↗</span></a><a href="../zh/story.html"><strong>核心故事</strong><small>從失去光芒的城市到英雄們的大反擊，一起認識 Bio-City 的四幕主線。</small><span>↗</span></a><a href="../zh/strategy.html"><strong>創作與應用</strong><small>角色、動畫、音樂與網站互動的創作成果。</small><span>↗</span></a></div></section>
+<div class="breadcrumb"><a href="../FUNAI-CARE.html">首頁</a><span>›</span>互動體驗</div>
+<div class="page-heading protocol-page-heading"><span class="eyebrow">BIO-CITY / PROTOCOL</span><h1>Bio-City Protocol｜城市決策與防衛</h1><p>你的判斷，將影響這座城市的下一步。走進具備真實生活情境的決策分析，或指揮七組守護者，處理城市中的多重危機。</p></div>
+<div class="protocol-intro-banner" role="img" aria-label="科幻生命之城全景，中央能源核心照亮城市"><div><span class="eyebrow">THE LIVING CITY / COMMAND SYSTEM</span><strong>THINK. DECIDE. DEFEND.</strong><p>思考取捨，不只追求更高的分數。</p></div></div>
+<div class="protocol-entry" aria-label="互動體驗模式"><a href="#protocol-quiz"><span>01 / DECISION LAB</span><strong>現實情境決策分析</strong><small>8 道生活情境｜決策風格報告</small><b aria-hidden="true">↗</b></a><a href="#protocol-game"><span>02 / COMMAND CENTER</span><strong>城市危機指揮中心</strong><small>7 組守護者｜4 個城市區域｜3 種任務</small><b aria-hidden="true">↗</b></a></div>
+<section class="protocol-module" id="protocol-quiz" aria-labelledby="protocol-quiz-heading"><div class="protocol-module-heading"><span class="eyebrow">01 / DECISION LAB</span><h2 id="protocol-quiz-heading">決策分析｜面對真實生活的取捨</h2><p>在工作壓力、時間限制、螢幕使用、日常節奏與資訊判斷之間，沒有完美的單一解答。看看自己習慣如何權衡不同條件。</p></div><div class="protocol-surface" id="protocol-quiz-root"><p>正在載入決策分析…</p></div><p class="protocol-disclaimer">本互動為虛構世界觀中的決策體驗，不構成健康風險評估、心理測驗、醫療診斷或產品功效建議。</p></section>
+<section class="protocol-module" id="protocol-game" aria-labelledby="protocol-game-heading"><div class="protocol-module-heading"><span class="eyebrow">02 / COMMAND CENTER</span><h2 id="protocol-game-heading">城市防衛｜在有限資源中做出決策</h2><p>不再只是左右移動、自動射擊。每回合都有新的城市危機，你需要衡量能源、守護者專長、冷卻時間，以及延後處理的後果。</p></div><div class="protocol-surface" id="protocol-game-root"><p>正在載入城市防衛系統…</p></div><p class="protocol-disclaimer">遊戲中的地區狀態、危機事件與角色技能均為虛構設定，並非身體狀況或健康風險的模擬預測。</p></section>
+<section class="related"><span class="eyebrow">DISCOVER MORE</span><h2>延伸探索 Bio-City</h2><div class="related-grid"><a href="../zh/heroes.html"><strong>英雄圖鑑</strong><small>認識七組守護者的故事、個性與代表能力。</small><span>↗</span></a><a href="../zh/story.html"><strong>核心故事</strong><small>從失去光芒的城市，到守護者集結的四幕主線。</small><span>↗</span></a><a href="../zh/strategy.html"><strong>創作與應用</strong><small>探索品牌 IP 世界觀、影音創作與數位互動的整合理念。</small><span>↗</span></a></div></section>
