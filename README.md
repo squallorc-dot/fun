@@ -41,6 +41,15 @@ GTM 的內部事件參數對應及 GA4 實際接收，需使用預覽模式與 D
 - 中日語系必須維持相同路由結構、標籤用途和功能。
 - 實際執行的數位策略需與規劃中的項目清楚區隔。
 
+## 2026-10-24 維護整理
+
+- 內容統一由 `content/zh/`、`content/ja/` 與 `content/site.json` 維護；使用 `node scripts/build.mjs` 產生 14 頁，`node scripts/build.mjs --check` 驗證一致性。
+- 樣式：`assets/site.css` 為共用基礎，首頁與英雄卡片細節由 `assets/ui-refine-20261024.css` 補強；暫不刪除仍可能被使用的舊規則。
+- 英雄圖片的鍵盤操作統一由 `assets/site.js` 控制；同步停止角色音訊時的播放狀態、假名按鈕語系。
+- 展示站唯一 GA4 資源是 `534706548`，與 BV 購物網 `280518889` 不混用。
+- 本輪維護前備份：`backup/pre-maintenance-20261024`。
+- 桌機／手機、音樂影片及 GA4 DebugView 實際驗收仍待進行。
+
 ## 改版備份與還原
 
 - 改版前保留分支：`backup/pre-redesign-20261024`。

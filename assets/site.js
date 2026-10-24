@@ -7,6 +7,13 @@
  const audio=()=>[...document.querySelectorAll("audio")];
  document.addEventListener("play",e=>{if(!(e.target instanceof HTMLAudioElement))return;audio().forEach(x=>{if(x!==e.target&&!x.paused)x.pause()})},true);
  document.querySelectorAll(".char-img-clickable").forEach(el=>{el.setAttribute("tabindex","0");el.setAttribute("role","button");el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}})});
+ document.addEventListener("pause",e=>{
+ if(!(e.target instanceof HTMLAudioElement)||!e.target.closest(".card"))return;
+ const card=e.target.closest(".card");
+ card.querySelectorAll(".char-img-container.is-playing").forEach(el=>el.classList.remove("is-playing"));
+ if(!document.querySelector(".char-img-container.is-playing"))
+  document.getElementById("global-audio-player")?.classList.remove("is-visible");
+},true);
  document.querySelectorAll("a[target=_blank]").forEach(a=>a.setAttribute("rel","noopener noreferrer"));
 })();
     /* ── HERO AUDIO CONTROLLER (單純穩定版) ── */
@@ -36,6 +43,7 @@
         });
 
         targetAudio.play().then(() => {
+            if (targetAudio.paused) return; // Another track replaced this one before playback settled.
             imgContainer.classList.add('is-playing');
             
             floatingName.innerText = heroName;
@@ -58,7 +66,7 @@
     }
 
     function stopAllHeroAudio() {
-        const allAudios = document.querySelectorAll('.card audio');
+        const allAudios = document.querySelectorAll('audio');
         const floatingPlayer = document.getElementById('global-audio-player');
         
         allAudios.forEach(audio => {
@@ -99,14 +107,17 @@
     function toggleFurigana() {
         const box = document.getElementById('jp-lyrics-box');
         const btn = document.getElementById('furigana-toggle');
+        const furiganaLabel = document.documentElement.lang === 'ja' ? 'ふりがな' : '假名';
         
         if (box.classList.contains('hide-furigana')) {
             box.classList.remove('hide-furigana');
-            btn.innerText = '假名: ON';
+            btn.innerText = furiganaLabel + ': ON';
+            btn.setAttribute('aria-pressed', 'true');
             btn.classList.remove('is-off');
         } else {
             box.classList.add('hide-furigana');
-            btn.innerText = '假名: OFF';
+            btn.innerText = furiganaLabel + ': OFF';
+            btn.setAttribute('aria-pressed', 'false');
             btn.classList.add('is-off');
         }
     }
