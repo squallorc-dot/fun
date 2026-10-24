@@ -1,7 +1,7 @@
 name: FUNAI CARE bilingual quality gate
 on:
   push:
-    branches: [main]
+    branches: [main, development/bio-city-arcade-six-games]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -30,3 +30,17 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Test bilingual layouts and user interactions
         run: node scripts/smoke.mjs
+
+  arcade-engines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate arcade modules and bilingual integration
+        run: |
+          node scripts/build.mjs --check
+          node scripts/verify.mjs
+          node scripts/verify-arcade.mjs
+          node scripts/test-arcade-engines.cjs

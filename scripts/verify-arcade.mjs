@@ -9,10 +9,13 @@ for(const id of ['g01','g03','g04','g05','g06']){assert(games.includes(`R.${id}=
 assert(hub.includes("arcade-engine.js"),'G02 must reuse existing tested Guardian Assault');
 assert(hub.includes('shooter.html'),'G02 iframe adapter path missing');
 assert(!hub.includes("script.src='../../assets/arcade-engine.js"),'G02 must not dynamically reinject global engine');
+assert(hub.includes("msg.type==='ready'"),'G02 parent must wait for child readiness');
 for(const lang of ['zh','ja']){
  const shooter=read(`arcade/${lang}/shooter.html`);
  assert(shooter.includes('arcade-engine.js'),'G02 isolated shooter engine missing for '+lang);
  assert(shooter.includes('bio-city-shooter'),'G02 parent event relay missing for '+lang);
+ assert(shooter.includes("type:'ready'"),'G02 readiness handshake missing for '+lang);
+ assert(shooter.includes("dispatchEvent(new Event('change'"),'G02 selected difficulty not applied for '+lang);
  const page=read(`arcade/${lang}/index.html`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
