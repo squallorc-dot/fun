@@ -67,7 +67,7 @@ for(const name of ['play_hero_audio','play_ost_audio','quiz_completed','game_com
 for(const folder of ['images','music']){
  if(!exists(folder)){fail(folder,'required media directory missing');continue}
  for(const filename of fs.readdirSync(path.join(root,folder))){
-  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|mp3)$/.test(filename))
+  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|mp3|svg)$/.test(filename))
    fail(folder,'invalid media filename '+filename);
  }
 }
