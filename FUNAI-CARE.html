@@ -675,6 +675,79 @@
           html { scroll-behavior:auto; }
           *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
         }
+
+/* === FUNAI CARE 2026 UX Phase 2: structured editorial layout === */
+:root { --content-width:1120px; --reading-width:840px; }
+.container { max-width:var(--content-width); }
+.site-nav { box-shadow:0 4px 20px rgba(0,0,0,.24); }
+.site-nav-inner { max-width:var(--content-width); }
+.site-nav-links { scrollbar-width:none; }
+.site-nav-links::-webkit-scrollbar { display:none; }
+.site-nav-logo { letter-spacing:.07em; }
+.lang-switcher { position:static; top:auto; right:auto; z-index:auto; gap:4px; margin-left:auto; flex-shrink:0; }
+.lang-btn { padding:6px 9px; letter-spacing:0; font-size:.72rem; white-space:nowrap; }
+header { min-height:70vh; padding:84px 20px 80px; }
+header h1 { white-space:normal; line-height:1.16; font-size:clamp(2.5rem,6.9vw,5.7rem); }
+.header-badge { font-size:.68rem; letter-spacing:.08em; }
+.header-subtitle { color:#d6e3f3; font-size:clamp(.92rem,2vw,1.12rem); line-height:1.75; max-width:720px; margin:8px auto 18px; position:relative; z-index:2; }
+.hero-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:25px; position:relative; z-index:2; }
+.hero-action { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; padding:10px 19px; border:1px solid rgba(0,213,255,.42); border-radius:999px; background:rgba(15,28,53,.75); color:#f4f9ff; font-size:.93rem; font-weight:700; transition:background .2s,transform .2s; }
+.hero-action:hover { background:rgba(0,213,255,.2); transform:translateY(-2px); }
+.hero-action.primary { background:var(--cyan); color:#031320; border-color:var(--cyan); }
+.hero-action.tertiary { border-color:rgba(255,255,255,.24); color:var(--muted); }
+.project-overview { position:relative; margin:-16px auto 52px; padding:34px; border:1px solid rgba(0,213,255,.2); background:linear-gradient(150deg,rgba(18,36,66,.97),rgba(8,16,30,.97)); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.27); }
+.overview-top { max-width:var(--reading-width); }
+.overview-eyebrow { font:700 .7rem 'Space Mono',monospace; color:var(--cyan); letter-spacing:.14em; }
+.overview-top h2 { font-size:clamp(1.35rem,3vw,1.9rem); color:#fff; margin:9px 0 12px; line-height:1.35; }
+.overview-top p { color:#d3e0ed; font-size:.98rem; line-height:1.85; }
+.overview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; margin-top:24px; }
+.overview-card { position:relative; padding:20px 20px 38px; display:flex; flex-direction:column; gap:6px; min-width:0; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.12); border-radius:16px; color:#d3e0ed; text-decoration:none; transition:background .2s,border-color .2s,transform .2s; }
+.overview-card:hover { background:rgba(0,213,255,.07); border-color:rgba(0,213,255,.5); transform:translateY(-3px); }
+.overview-number { color:var(--cyan); font-size:.69rem; letter-spacing:.08em; font-family:'Space Mono',monospace; }
+.overview-card strong { font-size:1.08rem; line-height:1.35; color:#fff; }
+.overview-card>span:not(.overview-number):not(.overview-arrow) { font-size:.87rem; line-height:1.7; }
+.overview-arrow { position:absolute; right:16px; bottom:9px; color:var(--cyan); font-size:1.2rem; }
+#main-content { display:block; }
+#main-content .section-wrap, #main-content #quiz { scroll-margin-top:84px; content-visibility:visible; contain-intrinsic-size:none; }
+#concept .vision-box { max-width:1020px; margin-inline:auto; }
+#concept .vision-box p { line-height:1.95; }
+.section-title { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.35; letter-spacing:.01em; }
+.strategy-lead { max-width:880px; color:var(--muted); margin:0 0 28px; font-size:1.02rem; line-height:1.85; }
+.strategy-disclaimer { margin-top:19px; color:var(--muted); font-size:.82rem; }
+.strategy-phase { font-size:.72rem; letter-spacing:.02em; }
+.floating-audio-player { min-width:0; }
+#gameCanvas { touch-action:none; }
+#quiz-options button.quiz-option { display:block; width:100%; font:600 1.03rem 'Noto Sans TC','Noto Sans JP',sans-serif; }
+#main-content :focus-visible, .hero-action:focus-visible, .overview-card:focus-visible, .lang-btn:focus-visible { outline:3px solid var(--cyan); outline-offset:3px; }
+@media(max-width:960px){
+.site-nav-inner { display:grid; grid-template-columns:1fr auto; gap:3px 12px; padding:8px 16px 0; }
+.site-nav-logo { grid-column:1; grid-row:1; }
+.lang-switcher { grid-column:2; grid-row:1; }
+.site-nav-links { grid-column:1/-1; grid-row:2; width:100%; padding:2px 0 8px; }
+#main-content .section-wrap,#main-content #quiz { scroll-margin-top:115px; }
+}
+@media(max-width:650px){
+.container { padding-inline:15px; }
+header { min-height:auto; padding:76px 8px 58px; }
+header h1 { font-size:clamp(2.2rem,9.2vw,3.7rem); letter-spacing:.02em; }
+.header-subtitle { font-size:.91rem; }
+.header-badge { margin-bottom:25px; padding:8px 13px; }
+.header-credit { letter-spacing:.05em; }
+.hero-actions { gap:8px; }
+.hero-action { padding:9px 14px; font-size:.82rem; }
+.project-overview { padding:22px 18px; margin:-4px auto 30px; }
+.overview-grid { grid-template-columns:1fr; gap:9px; }
+.overview-card { padding:14px 38px 14px 15px; }
+.overview-top h2 { font-size:1.36rem; }
+.site-nav-inner { padding-inline:12px; }
+.site-nav-links { position:relative; }
+.site-nav-links a { font-size:.78rem; }
+.lang-btn { padding:5px 8px; font-size:.7rem; }
+header .tagline { font-size:1.03rem; }
+#game .game-wrapper { height:auto; aspect-ratio:450/700; }
+#game .game-ui-title { font-size:1.9rem; }
+}
+
     </style>
 </head>
 <body>
@@ -686,13 +759,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="bg-grid"></div>
 </div>
 
-<div class="lang-switcher">
-    <a href="FUNAI-CARE.html" class="lang-btn active">🇹🇼 中文</a>
+<a class="skip-link" href="#main-content">跳至主要內容</a>
+<nav class="site-nav" aria-label="站內章節導覽"><div class="site-nav-inner"><a class="site-nav-logo" href="#top" aria-label="回到頁首">FUNAI CARE</a><div class="site-nav-links"><a href="#concept" data-section="concept">企劃理念</a><a href="#world" data-section="world">生命之城</a><a href="#heroes" data-section="heroes">英雄圖鑑</a><a href="#villains" data-section="villains">反派圖鑑</a><a href="#story" data-section="story">核心劇情</a><a href="#soundtrack" data-section="soundtrack">原創音樂</a><a href="#quiz" data-section="quiz">角色配對</a><a href="#strategy" data-section="strategy">數位策略</a><a href="#game" data-section="game">互動遊戲</a></div><div class="lang-switcher" aria-label="切換語言">
+    <a href="FUNAI-CARE.html" class="lang-btn active" aria-current="page">🇹🇼 中文</a>
     <a href="FUNAI-CARE_jp.html" class="lang-btn">🇯🇵 日本語</a>
-</div>
-
-<a class="skip-link" href="#concept">跳至主要內容</a>
-<nav class="site-nav" aria-label="站內章節導覽"><div class="site-nav-inner"><a class="site-nav-logo" href="#top">FUNAI CARE</a><div class="site-nav-links"><a href="#concept" data-section="concept">企劃理念</a><a href="#world" data-section="world">世界觀</a><a href="#soundtrack" data-section="soundtrack">原聲帶</a><a href="#heroes" data-section="heroes">英雄圖鑑</a><a href="#villains" data-section="villains">反派</a><a href="#story" data-section="story">核心故事</a><a href="#quiz" data-section="quiz">角色配對</a><a href="#strategy" data-section="strategy">數位策略</a><a href="#game" data-section="game">互動遊戲</a></div></div></nav>
+</div></div></nav>
 <div class="container" id="top">
 
     <header>
@@ -702,9 +773,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="orb orb-2"></div>
         </div>
         <div class="header-scanline"></div>
-        <span class="header-badge">🛡️ Brand IP Strategy 2026</span>
+        <span class="header-badge">✦ 品牌 IP 企劃 / 數位內容應用</span>
         <h1>FUNAI CARE<br>守護者聯盟</h1>
-        <p class="tagline">啟動內在英雄：從產品力到品牌宇宙的進化</p>
+        <p class="tagline">讓品牌角色，成為能持續發展的故事。</p><p class="header-subtitle">整合既有角色、原創影音與數位體驗，打造可長期累積的品牌 IP 世界。</p>
+        <div class="hero-actions"><a class="hero-action primary" href="#story">觀看故事 →</a><a class="hero-action" href="#heroes">認識守護者</a><a class="hero-action tertiary" href="#strategy">查看應用規劃</a></div>
         <p class="header-credit">Design & Text by 家葦</p>
     </header>
 
@@ -716,13 +788,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="f-audio-btn" onclick="stopAllHeroAudio()" title="暫停播放">⏸</button>
     </div>
 
+    <div class="project-overview" aria-label="專案概要">
+  <div class="overview-top"><span class="overview-eyebrow">PROJECT OVERVIEW</span><h2>從既有內容出發，建立能持續累積的品牌資產。</h2><p>FUNAI CARE 守護者聯盟不是從零創造一批新角色，而是將既有角色、過往影像與原創音樂重新整理，以 Bio-City 為共同舞台，串起角色、故事與數位行銷的長期應用。</p></div>
+  <div class="overview-grid">
+  <a class="overview-card" href="#world"><span class="overview-number">01 / WORLD</span><strong>統一世界觀</strong><span>建立 Bio-City 故事主線、角色關係與反派設定，讓內容不再各自獨立。</span><span class="overview-arrow" aria-hidden="true">↗</span></a>
+<a class="overview-card" href="#soundtrack"><span class="overview-number">02 / CONTENT</span><strong>影音內容延伸</strong><span>結合既有素材與原創音樂，發展短影音、動畫及不同長度的內容。</span><span class="overview-arrow" aria-hidden="true">↗</span></a>
+<a class="overview-card" href="#strategy"><span class="overview-number">03 / MEASURE</span><strong>互動與成效驗證</strong><span>以影音觀看、角色互動、商品連結點擊等行為，作為後續優化依據。</span><span class="overview-arrow" aria-hidden="true">↗</span></a>
+  </div>
+</div>
+    <main id="main-content">
     <section id="concept" class="section-wrap">
         <div class="vision-box">
-            <h3>💡 品牌 IP 戰略：創作理念</h3>
+            <h3>💡 創作理念｜既有資產的全新連結</h3>
             <p><strong>「打破單點行銷，建構可持續累積的品牌資產。」</strong></p>
-            <p>過去，船井擁有許多極具潛力的角色與內容元素（如 Burner 姐的狂語錄、過往外部拍攝我剪輯後製的酸痛掰掰舞影音）。本次企劃的核心，是由內部將這些獨立的資產，透過重新企劃，系統化地整合入<strong>「Bio-City (生物大都會)」</strong>的統一世界觀中。</p>
-            <p>我們將人體運作轉化為運轉的城市，將久坐、藍光轉化為「生活惡勢力」。產品不再只是功效說明，而是化身為「守護城市的英雄」。每個角色皆具備專屬的個性、金句與節奏。</p>
-            <p>未來在社群佈局上，我們將採用「內容先行」策略——透過角色短劇、洗腦音樂梗帶動流量與記憶點，再順理成章地引導至產品轉化，讓健康溝通更具連續性與傳染力。</p>
+            <p>船井過去已有 Burner 姐、果凍三兄妹、野菜小將等角色，以及〈酸痛掰掰舞〉等影音素材。這次不是全部重新創造，而是將既有資產整理到同一套 Bio-City 世界觀，再補上角色定位、故事發展與跨平台運用方式。</p>
+            <p>Bio-City 將人體的日常運作想像成一座城市，久坐、螢幕使用與生活壓力則化成故事中的反派。透過固定的英雄設定、音樂節奏與劇情，讓消費者對角色產生記憶，而不必每次看到內容都重新認識品牌。</p>
+            <p>實際應用會以內容測試為起點：先透過 TikTok、YouTube Shorts 等短影音觀察接受度，再逐步延伸至 YouTube 故事、音樂、官網互動與商品連結。重點是建立可重複使用、持續優化的品牌內容，而不是一次性的活動素材。</p>
         </div>
 
         <div class="video-wrap">
@@ -732,7 +813,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <section id="world" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>一、世界觀：Bio-City (生命之城)</h2>
+        <h2 class="section-title"><span class="title-accent"></span>世界觀｜Bio-City 生命之城</h2>
 
         <div class="video-wrap">
             <iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="Bio-City 前導預告" allowfullscreen></iframe>
@@ -767,77 +848,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <section id="soundtrack" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>🎵 聯盟專屬 OST 數位原聲帶</h2>
-        <p style="margin-bottom: 28px; color: var(--muted);">音樂是靈魂的記憶點。中/日文雙版本發行，打造深植人心的動漫級熱血聽覺制約。</p>
-        
-        <div class="ost-container">
-            <div class="ost-player-card">
-                <h4>🎙️ Bio-City 覺醒時刻<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(熱血女聲版)</span></h4>
-                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Bio-City%20%E8%A6%BA%E9%86%92%20by%20TERRY-2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/song/b728362c-ff8c-4455-8f8a-d328cb897fc9" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
-            </div>
-            <div class="ost-player-card">
-                <h4>🎙️ Burner 姐召喚<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(搖滾男聲版)</span></h4>
-                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
-            </div>
-            <div class="ost-player-card">
-                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. A)</span></h4>
-                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/s/VDz9xCjHm7DNKOJ1" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
-            </div>
-            <div class="ost-player-card">
-                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. B)</span></h4>
-                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY_2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/s/eodMbRDrxAsSEH7W" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
-            </div>
-        </div>
-
-        <div class="lyrics-wrapper">
-            <div class="lyrics-box">
-                <h4>🇹🇼 中文版歌詞</h4>
-                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>熵能軍團入侵！船井協議，啟動！</p>
-                <p>[Verse 1]<br>灰濛濛的 Bio-City 警報在閃爍<br>細胞們無精打采 能量被封鎖<br>酸痛幽靈黏在肩上 沉重如枷鎖<br>藍光巨龍咆哮 奪走螢幕的光</p>
-                <p class="pre-chorus">[Pre-Chorus]<br>「絕不低頭！」<br>聽見 Burner 姐的呼喚<br>紅色閃電劃破迷霧 拯救這混亂<br>守護者聯盟 就在此刻全體集結！</p>
-                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
-                <p>[Verse 2]<br>體脂魔王黑洞獸 別想來搗蛋<br>野菜小將舉起盾牌 守住防線<br>Oracle 的液態魔法 灌溉了雙眼<br>果凍三兄妹合體 快樂不設限</p>
-                <p class="pre-chorus">[Pre-Chorus]<br>「抬頭挺胸！」<br>找回自信的瞬間<br>紅色披風迎風飛舞 衝破了極限<br>守護者聯盟 就在此刻全體集結！</p>
-                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
-                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br>告別久坐 告別痠痛<br>把壞習慣通通掃出外太空<br>你的身體 是一座偉大的宇宙<br>讓我們一起守護 絕不退縮！</p>
-                <p>[Outro]<br>健康這場仗 我們每天都要贏！<br>守護你的每一天 你的專屬保鑣<br>Bio-City 閃耀榮耀...<br>FUNAI CARE！(End)</p>
-            </div>
-            
-            <div class="lyrics-box" id="jp-lyrics-box">
-                <div class="lyrics-header-jp">
-                    <h4>🇯🇵 日本語歌詞 (Japanese Ver.)</h4>
-                    <button id="furigana-toggle" class="furigana-btn" onclick="toggleFurigana()">ふりがな: ON</button>
-                </div>
-                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー<ruby>軍団<rt>ぐんだん</rt></ruby>、<ruby>侵入<rt>しんにゅう</rt></ruby>！<ruby>船井<rt>ふない</rt></ruby>・プロトコル、<ruby>起動<rt>きどう</rt></ruby>！<br><small style="opacity: 0.7; color: var(--cyan);">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</small></p>
-                
-                <p>[Verse 1]<br><ruby>灰色<rt>はいいろ</rt></ruby>に<ruby>染<rt>そ</rt></ruby>まる Bio-City <ruby>鳴<rt>な</rt></ruby>り<ruby>響<rt>ひび</rt></ruby>くアラーム<br><ruby>覇気<rt>はき</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>う<ruby>細胞<rt>さいぼう</rt></ruby>たち <ruby>封鎖<rt>ふうさ</rt></ruby>されたエナジー<br><ruby>肩<rt>かた</rt></ruby>に<ruby>憑<rt>と</rt></ruby>りつくペイン・ファントム <ruby>枷<rt>かせ</rt></ruby>のように<ruby>重<rt>おも</rt></ruby>く<br>ブルーライト・ドラゴンが<ruby>咆哮<rt>ほうこう</rt></ruby>し <ruby>光<rt>ひかり</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>い<ruby>去<rt>さ</rt></ruby>る</p>
-                
-                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>絶対<rt>ぜったい</rt></ruby>にうつむかない！」<br>バーナー<ruby>姐<rt>ねえ</rt></ruby>さん <small style="opacity: 0.7; color: var(--cyan);">(Neesan)</small> の<ruby>声<rt>こえ</rt></ruby>が<ruby>響<rt>ひび</rt></ruby>く<br><ruby>赤<rt>あか</rt></ruby>い<ruby>稲妻<rt>いなずま</rt></ruby>が<ruby>霧<rt>きり</rt></ruby>を<ruby>裂<rt>さ</rt></ruby>き <ruby>混沌<rt>こんとん</rt></ruby>から<ruby>救<rt>すく</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
-                
-                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
-                
-                <p>[Verse 2]<br>ファット・ドゥームにブラックホール<ruby>獣<rt>じゅう</rt></ruby> <ruby>邪魔<rt>じゃま</rt></ruby>はさせない<br><ruby>野菜<rt>やさい</rt></ruby>ソルジャーが<ruby>盾<rt>たて</rt></ruby>を<ruby>構<rt>かま</rt></ruby>え <ruby>防衛線<rt>ぼうえいせん</rt></ruby>を<ruby>死守<rt>ししゅ</rt></ruby>する<br>オラクルのリキッド・マジック <ruby>瞳<rt>ひとみ</rt></ruby>を<ruby>潤<rt>うるお</rt></ruby>して<br>ゼリー<ruby>三兄妹<rt>さんきょうだい</rt></ruby>、<ruby>合体<rt>がったい</rt></ruby>！ <ruby>限界<rt>げんかい</rt></ruby>なきスマイル</p>
-                
-                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>顔<rt>かお</rt></ruby>を<ruby>上<rt>あ</rt></ruby>げて！」<br><ruby>自信<rt>じしん</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>す<ruby>瞬間<rt>しゅんかん</rt></ruby><br><ruby>赤<rt>あか</rt></ruby>いマントが<ruby>風<rt>かぜ</rt></ruby>に<ruby>舞<rt>ま</rt></ruby>い <ruby>限界<rt>げんかい</rt></ruby>を<ruby>突破<rt>とっぱ</rt></ruby>する<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
-                
-                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
-                
-                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br><ruby>座<rt>すわ</rt></ruby>りっぱなしにサヨナラ <ruby>痛<rt>いた</rt></ruby>みにもグッバイ<br><ruby>悪<rt>わる</rt></ruby>い<ruby>習慣<rt>しゅうかん</rt></ruby>はすべて <ruby>宇宙<rt>うちゅう</rt></ruby>の<ruby>彼方<rt>かなた</rt></ruby>へ<ruby>吹<rt>ふ</rt></ruby>き<ruby>飛<rt>と</rt></ruby>ばせ<br><ruby>君<rt>きみ</rt></ruby>の<ruby>身体<rt>からだ</rt></ruby>は ひとつの<ruby>偉大<rt>いだい</rt></ruby>な<ruby>小宇宙<rt>コスモ</rt></ruby><br><ruby>共<rt>とも</rt></ruby>に<ruby>守<rt>まも</rt></ruby>り<ruby>抜<rt>ぬ</rt></ruby>こう <ruby>決<rt>けっ</rt></ruby>して<ruby>退<rt>しりぞ</rt></ruby>かない！</p>
-                
-                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ</p>
-
-                <p>[Outro]<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br><ruby>毎日<rt>まいにち</rt></ruby>を<ruby>君<rt>きみ</rt></ruby>と<ruby>歩<rt>あゆ</rt></ruby>む <ruby>専属<rt>せんぞく</rt></ruby>のボディガード<br>Bio-Cityよ、<ruby>栄光<rt>えいこう</rt></ruby>に<ruby>輝<rt>かがや</rt></ruby>け...<br>FUNAI CARE！(End)</p>
-            </div>
-        </div>
-    </section>
-
     <section id="heroes" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>二、守護者聯盟：英雄圖鑑</h2>
+        <h2 class="section-title"><span class="title-accent"></span>英雄圖鑑｜守護者聯盟</h2>
         <div class="grid-container">
             
             <div class="card">
@@ -1126,7 +1138,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <section id="villains" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>三、通緝名單：生活中的搗蛋鬼</h2>
+        <h2 class="section-title"><span class="title-accent"></span>反派圖鑑｜生活中的搗蛋鬼</h2>
         <ul class="villain-list">
             <li class="villain-item">
                 <span class="villain-name">👻 酸痛幽靈 (Ache Phantom)</span>
@@ -1148,7 +1160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <section id="story" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>四、核心故事：Bio-City 覺醒時刻</h2>
+        <h2 class="section-title"><span class="title-accent"></span>核心劇情｜Bio-City 覺醒時刻</h2>
         <div class="video-wrap">
             <iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
         </div>
@@ -1197,6 +1209,75 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
+    <section id="soundtrack" class="section-wrap">
+        <h2 class="section-title"><span class="title-accent"></span>原創音樂｜守護者聯盟 OST</h2>
+        <p style="margin-bottom: 28px; color: var(--muted);">音樂是靈魂的記憶點。中/日文雙版本發行，打造深植人心的動漫級熱血聽覺制約。</p>
+        
+        <div class="ost-container">
+            <div class="ost-player-card">
+                <h4>🎙️ Bio-City 覺醒時刻<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(熱血女聲版)</span></h4>
+                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Bio-City%20%E8%A6%BA%E9%86%92%20by%20TERRY-2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
+                <a href="https://suno.com/song/b728362c-ff8c-4455-8f8a-d328cb897fc9" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+            <div class="ost-player-card">
+                <h4>🎙️ Burner 姐召喚<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(搖滾男聲版)</span></h4>
+                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
+                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+            <div class="ost-player-card">
+                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. A)</span></h4>
+                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
+                <a href="https://suno.com/s/VDz9xCjHm7DNKOJ1" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+            <div class="ost-player-card">
+                <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. B)</span></h4>
+                <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY_2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
+                <a href="https://suno.com/s/eodMbRDrxAsSEH7W" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+            </div>
+        </div>
+
+        <div class="lyrics-wrapper">
+            <div class="lyrics-box">
+                <h4>🇹🇼 中文版歌詞</h4>
+                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>熵能軍團入侵！船井協議，啟動！</p>
+                <p>[Verse 1]<br>灰濛濛的 Bio-City 警報在閃爍<br>細胞們無精打采 能量被封鎖<br>酸痛幽靈黏在肩上 沉重如枷鎖<br>藍光巨龍咆哮 奪走螢幕的光</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>「絕不低頭！」<br>聽見 Burner 姐的呼喚<br>紅色閃電劃破迷霧 拯救這混亂<br>守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
+                <p>[Verse 2]<br>體脂魔王黑洞獸 別想來搗蛋<br>野菜小將舉起盾牌 守住防線<br>Oracle 的液態魔法 灌溉了雙眼<br>果凍三兄妹合體 快樂不設限</p>
+                <p class="pre-chorus">[Pre-Chorus]<br>「抬頭挺胸！」<br>找回自信的瞬間<br>紅色披風迎風飛舞 衝破了極限<br>守護者聯盟 就在此刻全體集結！</p>
+                <p class="chorus">[Chorus]<br>覺醒吧 Bio-City！迎接大反擊！<br>MJ 機器人 帶來震動的節拍<br>萌牛阿哞揮動重鎚 敲碎懶惰的塵埃<br>葉寶 EX 聖劍出鞘 藍天為我們敞開<br>健康這場仗 我們每天都要贏！<br>We are FUNAI CARE，罩你到天明！</p>
+                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br>告別久坐 告別痠痛<br>把壞習慣通通掃出外太空<br>你的身體 是一座偉大的宇宙<br>讓我們一起守護 絕不退縮！</p>
+                <p>[Outro]<br>健康這場仗 我們每天都要贏！<br>守護你的每一天 你的專屬保鑣<br>Bio-City 閃耀榮耀...<br>FUNAI CARE！(End)</p>
+            </div>
+            
+            <div class="lyrics-box" id="jp-lyrics-box">
+                <div class="lyrics-header-jp">
+                    <h4>🇯🇵 日本語歌詞 (Japanese Ver.)</h4>
+                    <button id="furigana-toggle" class="furigana-btn" onclick="toggleFurigana()">ふりがな: ON</button>
+                </div>
+                <p>[Intro]<br>(Electronic siren sound)<br>Warning... Warning... <br>エントロピー<ruby>軍団<rt>ぐんだん</rt></ruby>、<ruby>侵入<rt>しんにゅう</rt></ruby>！<ruby>船井<rt>ふない</rt></ruby>・プロトコル、<ruby>起動<rt>きどう</rt></ruby>！<br><small style="opacity: 0.7; color: var(--cyan);">(Entropī gundan, shin'nyū! Funai purotokoru, kidō!)</small></p>
+                
+                <p>[Verse 1]<br><ruby>灰色<rt>はいいろ</rt></ruby>に<ruby>染<rt>そ</rt></ruby>まる Bio-City <ruby>鳴<rt>な</rt></ruby>り<ruby>響<rt>ひび</rt></ruby>くアラーム<br><ruby>覇気<rt>はき</rt></ruby>を<ruby>失<rt>うしな</rt></ruby>う<ruby>細胞<rt>さいぼう</rt></ruby>たち <ruby>封鎖<rt>ふうさ</rt></ruby>されたエナジー<br><ruby>肩<rt>かた</rt></ruby>に<ruby>憑<rt>と</rt></ruby>りつくペイン・ファントム <ruby>枷<rt>かせ</rt></ruby>のように<ruby>重<rt>おも</rt></ruby>く<br>ブルーライト・ドラゴンが<ruby>咆哮<rt>ほうこう</rt></ruby>し <ruby>光<rt>ひかり</rt></ruby>を<ruby>奪<rt>うば</rt></ruby>い<ruby>去<rt>さ</rt></ruby>る</p>
+                
+                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>絶対<rt>ぜったい</rt></ruby>にうつむかない！」<br>バーナー<ruby>姐<rt>ねえ</rt></ruby>さん <small style="opacity: 0.7; color: var(--cyan);">(Neesan)</small> の<ruby>声<rt>こえ</rt></ruby>が<ruby>響<rt>ひび</rt></ruby>く<br><ruby>赤<rt>あか</rt></ruby>い<ruby>稲妻<rt>いなずま</rt></ruby>が<ruby>霧<rt>きり</rt></ruby>を<ruby>裂<rt>さ</rt></ruby>き <ruby>混沌<rt>こんとん</rt></ruby>から<ruby>救<rt>すく</rt></ruby>い<ruby>出<rt>だ</rt></ruby>す<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
+                
+                <p>[Verse 2]<br>ファット・ドゥームにブラックホール<ruby>獣<rt>じゅう</rt></ruby> <ruby>邪魔<rt>じゃま</rt></ruby>はさせない<br><ruby>野菜<rt>やさい</rt></ruby>ソルジャーが<ruby>盾<rt>たて</rt></ruby>を<ruby>構<rt>かま</rt></ruby>え <ruby>防衛線<rt>ぼうえいせん</rt></ruby>を<ruby>死守<rt>ししゅ</rt></ruby>する<br>オラクルのリキッド・マジック <ruby>瞳<rt>ひとみ</rt></ruby>を<ruby>潤<rt>うるお</rt></ruby>して<br>ゼリー<ruby>三兄妹<rt>さんきょうだい</rt></ruby>、<ruby>合体<rt>がったい</rt></ruby>！ <ruby>限界<rt>げんかい</rt></ruby>なきスマイル</p>
+                
+                <p class="pre-chorus">[Pre-Chorus]<br>「<ruby>顔<rt>かお</rt></ruby>を<ruby>上<rt>あ</rt></ruby>げて！」<br><ruby>自信<rt>じしん</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>す<ruby>瞬間<rt>しゅんかん</rt></ruby><br><ruby>赤<rt>あか</rt></ruby>いマントが<ruby>風<rt>かぜ</rt></ruby>に<ruby>舞<rt>ま</rt></ruby>い <ruby>限界<rt>げんかい</rt></ruby>を<ruby>突破<rt>とっぱ</rt></ruby>する<br>ガーディアンズ・アライアンス、<ruby>今<rt>いま</rt></ruby>ここに<ruby>集結<rt>しゅうけつ</rt></ruby>せよ！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br>We are FUNAI CARE、<ruby>夜明<rt>よあ</rt></ruby>けまで<ruby>君<rt>きみ</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る！</p>
+                
+                <p>[Bridge]<br>(Guitar Solo / Heavy Beat)<br><ruby>座<rt>すわ</rt></ruby>りっぱなしにサヨナラ <ruby>痛<rt>いた</rt></ruby>みにもグッバイ<br><ruby>悪<rt>わる</rt></ruby>い<ruby>習慣<rt>しゅうかん</rt></ruby>はすべて <ruby>宇宙<rt>うちゅう</rt></ruby>の<ruby>彼方<rt>かなた</rt></ruby>へ<ruby>吹<rt>ふ</rt></ruby>き<ruby>飛<rt>と</rt></ruby>ばせ<br><ruby>君<rt>きみ</rt></ruby>の<ruby>身体<rt>からだ</rt></ruby>は ひとつの<ruby>偉大<rt>いだい</rt></ruby>な<ruby>小宇宙<rt>コスモ</rt></ruby><br><ruby>共<rt>とも</rt></ruby>に<ruby>守<rt>まも</rt></ruby>り<ruby>抜<rt>ぬ</rt></ruby>こう <ruby>決<rt>けっ</rt></ruby>して<ruby>退<rt>しりぞ</rt></ruby>かない！</p>
+                
+                <p class="chorus">[Chorus]<br><ruby>覚醒<rt>かくせい</rt></ruby>せよ Bio-City！<ruby>大反撃<rt>だいはんげき</rt></ruby>の<ruby>幕開<rt>まくあ</rt></ruby>けだ！<br>MJロボットが<ruby>刻<rt>きざ</rt></ruby>む <ruby>震<rt>ふる</rt></ruby>えるビート<br>モーモー<ruby>阿哞<rt>あもう</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Amou)</small> の<ruby>重槌<rt>じゅうつい</rt></ruby>が <ruby>怠惰<rt>たいだ</rt></ruby>な<ruby>塵<rt>ちり</rt></ruby>を<ruby>打<rt>う</rt></ruby>ち<ruby>砕<rt>くだ</rt></ruby>く<br><ruby>葉宝<rt>はたから</rt></ruby> <small style="opacity: 0.7; color: var(--cyan);">(Youhou)</small> EX <ruby>聖剣<rt>せいけん</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>け <ruby>青空<rt>あおぞら</rt></ruby>を<ruby>取<rt>と</rt></ruby>り<ruby>戻<rt>もど</rt></ruby>せ</p>
+
+                <p>[Outro]<br><ruby>健康<rt>けんこう</rt></ruby>という<ruby>名<rt>な</rt></ruby>の<ruby>戦<rt>たたか</rt></ruby>い <ruby>毎日<rt>まいにち</rt></ruby><ruby>勝<rt>か</rt></ruby>ち<ruby>抜<rt>ぬ</rt></ruby>くんだ！<br><ruby>毎日<rt>まいにち</rt></ruby>を<ruby>君<rt>きみ</rt></ruby>と<ruby>歩<rt>あゆ</rt></ruby>む <ruby>専属<rt>せんぞく</rt></ruby>のボディガード<br>Bio-Cityよ、<ruby>栄光<rt>えいこう</rt></ruby>に<ruby>輝<rt>かがや</rt></ruby>け...<br>FUNAI CARE！(End)</p>
+            </div>
+        </div>
+    </section>
+
     <div id="quiz" class="quiz-section">
         <div class="quiz-title">🔍 Bio-City 守護者配對站</div>
         <div class="quiz-desc">回答兩個生活習慣問題，找出與你最有共鳴的 Bio-City 守護者。這是趣味角色配對，不是健康診斷。</div>
@@ -1227,40 +1308,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <section id="strategy" class="section-wrap">
-        <h2 class="section-title"><span class="title-accent"></span>五、戰略發展：IP 生態系與數位行銷佈局</h2>
-        <p style="margin-bottom:30px; color:var(--muted); font-size:1.05rem;">本企劃以「聽得懂、玩得深、可變現」為核心，無縫融入數位戰略與 CRM 框架，建構一套「引流、留存、變現」的行銷飛輪：</p>
-        <div class="strategy-grid">
-            <div class="strategy-card">
-                <span class="strategy-phase">Phase 1</span>
-                <h3>📱 影音矩陣與社群裂變</h3>
-                <p>以高互動短影音迎戰演算法，突破廣告視覺疲乏。</p>
-                <ul>
-                    <li><strong>短片挑戰賽：</strong>利用 MJ 機器人洗腦電音打造專屬濾鏡，發起 #殭屍退散舞 挑戰。</li>
-                    <li><strong>VTuber 直播企劃：</strong>Burner 姐深夜開播點評宵夜，將痛點關鍵字綁定生成式搜尋 (GEO)。</li>
-                    <li><strong>影音導購模組：</strong>將生硬知識轉為「Bio-City 戰記」動畫，並串接 YouTube Shopping。</li>
-                </ul>
-            </div>
-            <div class="strategy-card">
-                <span class="strategy-phase">Phase 2</span>
-                <h3>🛒 互動變現與會員私域</h3>
-                <p>運用互動檢測工具精準匹配產品，並結合標籤化提升留存。</p>
-                <ul>
-                    <li><strong>Bio-City 檢測站 (官網流量變現)：</strong>擴充「互動式大數據檢測」。依運算結果自動匹配具備專利成分的英雄裝備，實現精準導購。</li>
-                    <li><strong>CDP 標籤與遊戲化：</strong>將 LINE 官方帳號升級為數位市民證。透過 IP 檢測行為於 CDP 系統貼標，並以「每日打卡」解鎖裝備提升黏著度。</li>
-                    <li><strong>跨線聯合促銷：</strong>將產品頁升級為裝備庫，推動內服外用聯合銷售（如 Burner 姐 x 極纖錠），拉升平均客單價。</li>
-                </ul>
-            </div>
-            <div class="strategy-card">
-                <span class="strategy-phase">Phase 3</span>
-                <h3>🌐 OMO 虛實整合與出海</h3>
-                <p>結合 AR 與實體快閃店，並以 IP 視覺跨越語言隔閡拓展海外。</p>
-                <ul>
-                    <li><strong>AR 智慧卡牌包裝：</strong>購買產品即贈「戰鬥卡」，手機掃描解鎖 3D 對話與專屬折扣，創造實體開箱儀式感。</li>
-                    <li><strong>實體維修快閃店：</strong>於重點商圈打造體驗店，提供實機按摩與果凍補給，將衛教轉為實體商機。</li>
-                    <li><strong>東南亞 (SEA) 登陸：</strong>以無國界的 IP 視覺與動感音樂，作為進軍香港、新馬市場的最強突破口。</li>
-                </ul>
-            </div>
-        </div>
+        <h2 class="section-title"><span class="title-accent"></span>數位發展｜從內容經營到品牌資產</h2>
+        <p class="strategy-lead">以「內容建立興趣 → 角色深化互動 → 數據驗證與產品連結」為主軸，分階段評估投入。以下是發展方向與測試規劃，並非宣稱所有功能皆已正式上線。</p>
+        <div class="strategy-grid"><article class="strategy-card"><span class="strategy-phase">PHASE 01｜內容測試</span><h3>🎬 角色短影音與系列內容</h3><p>先運用現有角色與原創音樂，測試真正適合品牌與受眾的內容形式。</p><ul><li><strong>TikTok／YouTube Shorts：</strong>測試角色出場、生活情境短劇、主題曲節奏片段與短版故事。</li><li><strong>YouTube 系列內容：</strong>以《Bio-City 覺醒時刻》為基礎，延伸角色篇、劇情篇與幕後創作內容。</li><li><strong>成效指標：</strong>觀察觀看留存、完播率、互動率及導入網站的行為，決定後續製作方向。</li></ul></article>
+<article class="strategy-card"><span class="strategy-phase">PHASE 02｜互動與衡量</span><h3>📊 串接體驗、商品與成效數據</h3><p>建立訪客從認識角色到觀看故事、試聽音樂與查看商品的自然路徑。</p><ul><li><strong>網站內容動線：</strong>統一角色、劇情、音樂與相關商品的呈現方式，避免每次都重新介紹產品。</li><li><strong>GA4／GTM 衡量：</strong>沿用現有事件架構，驗證角色音樂、OST、配對測驗與遊戲等互動成效。</li><li><strong>會員與 LINE 延伸：</strong>後續若要與會員系統整合，再確認個資告知、同意與內部系統可行性。</li></ul></article>
+<article class="strategy-card"><span class="strategy-phase">PHASE 03｜長期擴充</span><h3>🌏 IP 資產治理與跨場域應用</h3><p>由跨部門評估角色授權、製作資源、內容維護與後續商業運用。</p><ul><li><strong>產品與活動應用：</strong>視品牌需求延伸至產品頁、活動企劃、系列影片與聯名視覺。</li><li><strong>角色資產標準化：</strong>建立角色形象、命名、語氣、音樂與授權清單，便於內外部協作。</li><li><strong>多語言與新體驗：</strong>同步維護日文版，AR、實體活動與海外拓展則依實際成效評估。</li></ul></article></div>
+        <p class="strategy-disclaimer">※ 本區內容為規劃與驗證方向，涉及跨平台功能、系統串接及商業合作時，仍需另外確認可行性與權限。</p>
     </section>
 
     <section id="game" class="section-wrap">
@@ -1306,6 +1359,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
+    </main>
     <footer>
         <h3>FUNAI CARE 守護者聯盟</h3>
         <p>Your Bio-City, We Protect. 從產品力到品牌宇宙的進化之路。</p>
@@ -1481,12 +1535,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         yebao: { title: "葉寶 EX", desc: "你的生活型態守護者是葉寶 EX！長時間使用螢幕，記得適時休息、留意用眼習慣。想認識相關營養產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
         burner: { title: "Burner 姐", desc: "你的生活型態守護者是 Burner 姐！從日常飲食與運動習慣開始，逐步累積自己的節奏。想認識相關產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
     };
-    let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 };
+    let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 }, quizAnswers = [];
 
     function startQuiz() {
         document.getElementById('quiz-start').style.display = 'none';
         document.getElementById('quiz-play').style.display = 'block';
-        currentQuizQ = 0; quizScores = { mj:0, yebao:0, burner:0 };
+        currentQuizQ = 0; quizScores = { mj:0, yebao:0, burner:0 }; quizAnswers = [];
         showQuizQuestion();
     }
     function showQuizQuestion() {
@@ -1498,7 +1552,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ).join('');
     }
     function answerQuiz(type) {
-        quizScores[type]++; currentQuizQ++;
+        quizScores[type]++; quizAnswers.push(type); currentQuizQ++;
         if (currentQuizQ < quizQuestions.length) { showQuizQuestion(); }
         else {
             document.getElementById('quiz-progress-fill').style.width = '100%';
@@ -1510,7 +1564,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function showQuizResult() {
         document.getElementById('quiz-loading').style.display = 'none';
         document.getElementById('quiz-result').style.display = 'block';
-        let maxType = Object.keys(quizScores).reduce((a,b) => quizScores[a] > quizScores[b] ? a : b);
+        const topScore = Math.max(...Object.values(quizScores));
+        const tied = Object.keys(quizScores).filter(key => quizScores[key] === topScore);
+        const maxType = quizAnswers.find(key => tied.includes(key)) || tied[0];
         let res = quizResultsData[maxType];
         document.getElementById('quiz-res-img').src = res.img;
         document.getElementById('quiz-res-title').innerText = res.title;
@@ -1536,9 +1592,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let animationId, lastTime = 0, protocolTimer = null;
     const G_W = 450, G_H = 700, P_SIZE = 60, E_SIZE = 50, P_Y = G_H - 100;
     const HEROES = {
-        burner: { emoji:'👩‍🎤', color:'#f43f5e', weapon:'⚡', fireRate:300, dmg:1, speed:6 },
-        mj: { emoji:'🤖', color:'#0ea5e9', weapon:'🎵', fireRate:600, dmg:2, speed:4 },
-        yebao: { emoji:'🦸‍♂️', color:'#f59e0b', weapon:'⚔️', fireRate:1000, dmg:4, speed:8 }
+        burner: { id:'burner', emoji:'👩‍🎤', color:'#f43f5e', weapon:'⚡', fireRate:300, dmg:1, speed:6 },
+        mj: { id:'mj', emoji:'🤖', color:'#0ea5e9', weapon:'🎵', fireRate:600, dmg:2, speed:4 },
+        yebao: { id:'yebao', emoji:'🦸‍♂️', color:'#f59e0b', weapon:'⚔️', fireRate:1000, dmg:4, speed:8 }
     };
     const ENEMIES = [
         { emoji:'👻', hp:1, speed:2.5, score:10, energy:5 },
@@ -1595,7 +1651,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
                     'event': 'game_completed',
-                    'hero_used': gState.hero.emoji, 
+                    'hero_used': gState.hero.id, 
                     'final_score': gState.score     
                 });
                 gState.gaSent = true;
