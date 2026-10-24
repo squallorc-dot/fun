@@ -57,18 +57,18 @@ for(const lang of ['zh','ja'])for(const key of keys){
   if(!html.includes('bio-city-living-city-20261024-1200.webp'))fail(file,'missing Bio-City cinematic city artwork');
   if(html.includes('creative-vision-guardians'))fail(file,'obsolete character collage in creative core');
  }
- if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="protocol-game-root"')))fail(file,'Protocol UI missing');
+ if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="arcade-root"')&&html.includes('arcade-engine.js')&&html.includes('arcade.css')))fail(file,'Protocol UI missing');
  if(key==='heroes'&&(html.match(/onclick="playHeroAudio/g)||[]).length!==7)fail(file,'expected 7 hero players');
  if(key==='music'&&(html.match(/<audio\b/g)||[]).length!==4)fail(file,'expected 4 OST tracks');
  checked++;
 }
-for(const f of ['assets/site.js','assets/protocol-engine.js','assets/zh-play.js','assets/ja-play.js','scripts/build.mjs','scripts/verify.mjs']){
+for(const f of ['assets/site.js','assets/protocol-engine.js','assets/arcade-engine.js','assets/zh-play.js','assets/ja-play.js','scripts/build.mjs','scripts/verify.mjs']){
  try{execFileSync(process.execPath,['--check',path.join(root,f)],{stdio:'pipe'})}
  catch(e){fail(f,'JavaScript syntax '+(e.stderr?.toString()||e.message))}
 }
 try{execFileSync(process.execPath,[path.join(root,'scripts/build.mjs'),'--check'],{stdio:'pipe'})}
 catch(e){fail('build','14 pages out of sync: '+(e.stderr?.toString()||e.message))}
-const scripts=['assets/site.js','assets/protocol-engine.js','assets/zh-play.js','assets/ja-play.js'].map(x=>fs.readFileSync(path.join(root,x),'utf8')).join('\n');
+const scripts=['assets/site.js','assets/protocol-engine.js','assets/arcade-engine.js','assets/zh-play.js','assets/ja-play.js'].map(x=>fs.readFileSync(path.join(root,x),'utf8')).join('\n');
 for(const name of ['play_hero_audio','play_ost_audio','quiz_completed','game_completed','product_link_click'])
  if(!scripts.includes(name))fail('tracking','missing '+name);
 // Asset URL naming contract: exact ASCII, lowercase kebab-case, no old paths.

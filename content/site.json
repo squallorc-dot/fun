@@ -98,12 +98,12 @@
     },
     "play": {
       "zh": {
-        "title": "Bio-City Protocol｜城市決策與防衛｜FUNAI CARE",
-        "desc": "8 道現實情境的決策分析與七組守護者的回合制城市防衛。"
+        "title": "Bio-City｜守護者城市防衛戰｜FUNAI CARE",
+        "desc": "七組守護者、三波敵軍與 Boss 的 2D 即時動作防衛遊戲，另附 8 道生活情境決策分析。"
       },
       "ja": {
-        "title": "Bio-City Protocol｜都市の意思決定と防衛｜FUNAI CARE",
-        "desc": "8つの日常の意思決定シナリオと7組のガーディアンによる都市防衛。"
+        "title": "Bio-City｜ガーディアン防衛戦｜FUNAI CARE",
+        "desc": "7組のガーディアン、3ウェーブとボスに挑む2Dアクションゲーム。8つの意思決定シナリオも収録。"
       }
     },
     "strategy": {
