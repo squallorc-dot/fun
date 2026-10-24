@@ -1,5 +1,5 @@
 "use strict";
-    /* ── QUIZ (大數據升級版 - 日文) ── */
+    /* ── QUIZ (趣味角色配對 - 日文) ── */
     const quizQuestions = [
     {
         "q": "最近、日常生活で気になることは？",
@@ -95,6 +95,9 @@
     /* ── CANVAS GAME ── */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    // Accessible keyboard input on the game canvas; original pointer controls remain.
+    canvas.setAttribute('tabindex','0');
+    canvas.setAttribute('aria-label', "Bio-City ミニゲーム。左右矢印キーで移動、Escapeキーでヒーロー選択に戻る");
     let animationId, lastTime = 0, protocolTimer = null;
     const G_W = 450, G_H = 700, P_SIZE = 60, E_SIZE = 50, P_Y = G_H - 100;
     const HEROES = {
@@ -122,6 +125,7 @@
         if (protocolTimer) { clearTimeout(protocolTimer); protocolTimer = null; }
         lastTime = performance.now();
         animationId = requestAnimationFrame(gameLoop);
+        canvas.focus({preventScroll:true});
     };
     window.resetToCanvasMenu = function() {
         gState.status = 'select';
@@ -137,6 +141,14 @@
         let x = (clientX - rect.left) * (G_W / rect.width);
         gState.x = Math.max(P_SIZE/2, Math.min(x, G_W - P_SIZE/2));
     }
+    canvas.addEventListener('keydown', e => {
+        if (gState.status !== 'playing') return;
+        if (e.key === 'Escape') { e.preventDefault(); window.resetToCanvasMenu(); return; }
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        const dir = e.key === 'ArrowLeft' ? -1 : 1;
+        gState.x = Math.max(P_SIZE/2, Math.min(G_W-P_SIZE/2, gState.x + dir*32));
+    });
     canvas.addEventListener('mousemove', e => handleGameMove(e.clientX));
     canvas.addEventListener('touchmove', e => { e.preventDefault(); handleGameMove(e.touches[0].clientX); }, {passive:false});
     function spawnParticles(x, y, color) {

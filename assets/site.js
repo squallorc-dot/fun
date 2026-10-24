@@ -14,6 +14,14 @@
  if(!document.querySelector(".char-img-container.is-playing"))
   document.getElementById("global-audio-player")?.classList.remove("is-visible");
 },true);
+ document.addEventListener("click",e=>{
+  const link=e.target.closest('a[href*="www.funaicare.com/item/"]');
+  if(!link)return;
+  const card=link.closest(".card");
+  const heroName=card?.querySelector("h3")?.textContent?.trim() || document.querySelector("#quiz-res-title")?.textContent?.trim() || "";
+  window.dataLayer=window.dataLayer||[];
+  window.dataLayer.push({event:"product_link_click",hero_name:heroName,product_url:link.href});
+ });
  document.querySelectorAll("a[target=_blank]").forEach(a=>a.setAttribute("rel","noopener noreferrer"));
 })();
     /* ── HERO AUDIO CONTROLLER (單純穩定版) ── */
