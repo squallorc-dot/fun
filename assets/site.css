@@ -755,3 +755,84 @@ button:focus-visible,a:focus-visible,[role=button]:focus-visible{outline:3px sol
 @media(max-width:1020px){.app-header-inner{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px 15px 6px}.logo{grid-column:1;grid-row:1}.language-links{grid-column:2;grid-row:1}.main-nav{grid-column:1/-1;grid-row:2}.main-nav a{font-size:.8rem}}
 @media(max-width:760px){.app-width{width:min(100% - 26px,1130px)}.home-hero{grid-template-columns:1fr;min-height:0;padding:40px 0 20px}.home-head h1{font-size:clamp(2.2rem,9vw,3.7rem)}.hero-art{width:100%;max-width:420px;margin:0 auto;min-height:285px}.hero-art img{max-height:230px}.home-highlights{padding-bottom:20px}.value-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.value-grid a{padding:17px}.featured{grid-template-columns:1fr;padding:23px}.related-grid{grid-template-columns:1fr}.grid-container,.strategy-grid,.lyrics-wrapper{grid-template-columns:minmax(0,1fr)}.page-heading{padding:32px 0 20px}.page-heading h1{font-size:2rem}.bottom-nav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;bottom:0;left:0;right:0;z-index:500;background:#07182af7;border-top:1px solid #31536a;padding:7px 4px calc(7px + env(safe-area-inset-bottom));backdrop-filter:blur(13px)}.bottom-nav a{text-align:center;text-decoration:none;color:#b7ccdc;font-size:.69rem;font-weight:700}.bottom-nav a[aria-current=page]{color:var(--cyan)}.bottom-nav a span{display:block;font-size:1.2rem;line-height:1.2}.backtop{bottom:91px;left:13px}.floating-audio-player{bottom:75px}.game-panel{padding:5px}.game-wrapper{width:100%;height:auto;aspect-ratio:450/700}.vision-box,.worldview-box{padding:23px 18px}.site-footer{padding-bottom:110px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* ══ HERO GALLERY V2 2026-10-24 · scoped to heroes only ══ */
+body[data-page="heroes"] main.app-width { width:min(calc(100% - 54px),1560px); }
+body[data-page="heroes"] .page-heading { max-width:1040px; padding:28px 0 26px; }
+body[data-page="heroes"] .grid-container {
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; align-items:start;
+}
+body[data-page="heroes"] .card {
+  min-width:0; padding:18px; border-radius:18px; overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,.18);
+}
+body[data-page="heroes"] .card:hover { transform:translateY(-4px); z-index:2; }
+body[data-page="heroes"] .role-badge {
+  font-size:.68rem; line-height:1.5; letter-spacing:.03em;
+  padding:4px 10px; margin-bottom:10px; max-width:100%; white-space:normal;
+}
+body[data-page="heroes"] .card h3 { font-size:clamp(1.22rem,1.45vw,1.65rem); line-height:1.38; margin-bottom:3px; }
+body[data-page="heroes"] .card .alias { font-size:.79rem; line-height:1.5; margin-bottom:10px; }
+body[data-page="heroes"] .char-img-container {
+  height:174px; min-height:0; margin:1px 0 13px; padding:8px;
+  background:linear-gradient(150deg,rgba(37,75,103,.34),rgba(4,15,28,.48));
+  border:1px solid rgba(84,217,237,.12); border-radius:13px; overflow:hidden;
+}
+body[data-page="heroes"] .char-img-container img {
+  width:100%; height:100%; max-height:100%; object-fit:contain;
+}
+body[data-page="heroes"] .card:hover .char-img-container img { transform:scale(1.06) translateY(-2px); filter:drop-shadow(0 6px 15px rgba(0,213,255,.34)); }
+body[data-page="heroes"] .char-img-container.is-playing img { transform:scale(1.06) translateY(-2px); }
+body[data-page="heroes"] .char-img-clickable::after {
+  content:"▶ BGM"; left:auto; right:9px; bottom:8px; transform:none;
+  opacity:1; font-size:.64rem; padding:3px 9px; line-height:1.4;
+  background:rgba(3,22,36,.88); color:#b7f7ff;
+}
+body[data-page="heroes"] .card-content { flex-grow:1; min-width:0; }
+body[data-page="heroes"] .card-content > p {
+  font-size:.85rem; line-height:1.62; margin:0 0 9px; color:#d9e8f2;
+}
+body[data-page="heroes"] .hero-more {
+  border-top:1px solid rgba(84,217,237,.2); margin:2px 0 13px;
+  color:#dbeaf2; min-width:0;
+}
+body[data-page="heroes"] .hero-more summary {
+  display:flex; align-items:center; justify-content:space-between;
+  min-height:36px; cursor:pointer; gap:8px; color:#7ee8f4;
+  font-size:.8rem; font-weight:700; line-height:1.5; padding:8px 0;
+  list-style:none;
+}
+body[data-page="heroes"] .hero-more summary::-webkit-details-marker { display:none; }
+body[data-page="heroes"] .hero-more summary::after {
+  content:"＋"; font-family:system-ui,sans-serif; font-size:1.08rem; flex-shrink:0;
+}
+body[data-page="heroes"] .hero-more[open] summary::after { content:"−"; }
+body[data-page="heroes"] .hero-more summary:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; border-radius:5px; }
+body[data-page="heroes"] .hero-more .skill-box {
+  margin:6px 0 11px; padding:11px 12px; font-size:.81rem; line-height:1.55;
+}
+body[data-page="heroes"] .hero-more .real-benefits-box { padding:11px; margin:0 0 6px; }
+body[data-page="heroes"] .hero-more .real-benefits-list li { font-size:.79rem; line-height:1.55; }
+body[data-page="heroes"] .hero-more .real-benefits-title { font-size:.7rem; }
+body[data-page="heroes"] .card > .btn-link {
+  margin-top:auto; font-size:.8rem; letter-spacing:0;
+  line-height:1.5; padding:10px 12px;
+}
+body[data-page="heroes"] .char-img-container.is-playing ~ .hero-lyrics-hologram {
+  max-height:290px; padding:12px; margin:4px 0 13px; font-size:.78rem;
+}
+@media(max-width:1359px){
+  body[data-page="heroes"] .grid-container { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:1023px){
+  body[data-page="heroes"] .grid-container { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body[data-page="heroes"] main.app-width { width:min(calc(100% - 34px),960px); }
+}
+@media(max-width:679px){
+  body[data-page="heroes"] .grid-container { grid-template-columns:minmax(0,1fr); gap:14px; }
+  body[data-page="heroes"] main.app-width { width:calc(100% - 26px); }
+  body[data-page="heroes"] .card { padding:19px; }
+  body[data-page="heroes"] .char-img-container { height:205px; }
+  body[data-page="heroes"] .card h3 { font-size:1.55rem; }
+}
