@@ -130,3 +130,26 @@
         }
     }
 
+
+
+// Activate YouTube only after deliberate click; before activation the link remains a
+// working external YouTube URL (keyboard-accessible and privacy-respecting).
+document.addEventListener('click',function(event){
+ const opener=event.target.closest('a[data-youtube-embed]');
+ if(!opener)return;
+ const id=opener.dataset.youtubeEmbed||'';
+ if(!/^[A-Za-z0-9_-]{11}$/.test(id))return;
+ const holder=opener.closest('.film-shell');
+ if(!holder)return;
+ event.preventDefault();
+ const iframe=document.createElement('iframe');
+ iframe.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0';
+ iframe.title=opener.dataset.videoTitle||'FUNAI CARE Bio-City video';
+ iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+ iframe.allowFullscreen=true;
+ iframe.loading='eager';
+ iframe.referrerPolicy='strict-origin-when-cross-origin';
+ holder.replaceChildren(iframe);
+ window.dataLayer=window.dataLayer||[];
+ window.dataLayer.push({event:'story_video_play',video_id:id,video_context:holder.dataset.filmContext||'unknown'});
+},false);
