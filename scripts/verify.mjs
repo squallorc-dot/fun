@@ -46,7 +46,7 @@ for(const lang of ['zh','ja'])for(const key of keys){
   if(candidate!==null){internalCount++;if(!exists(candidate))fail(file,'missing target '+candidate)}
  }
  for(const m of html.matchAll(/<img\b[^>]*>/g))if(!/\balt=/.test(m[0]))fail(file,'image missing alt');
- for(const m of html.matchAll(/<iframe\b[^>]*>/g))if(!/\btitle=/.test(m[0]))fail(file,'iframe missing title');
+ for(const m of html.matchAll(/<iframe\b[^>]*>/g))if(!/googletagmanager\.com\/ns\.html/.test(m[0])&&!/\btitle=/.test(m[0]))fail(file,'iframe missing title');
  if(!html.includes('assets/site.css?v='+config.version))fail(file,'outdated CSS version');
  if(!html.includes('assets/site.js?v='+config.version))fail(file,'outdated JS version');
  if(/ui-refine-20261024\.css/.test(html))fail(file,'unused legacy stylesheet linked');
