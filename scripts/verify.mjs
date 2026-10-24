@@ -53,6 +53,10 @@ for(const lang of ['zh','ja'])for(const key of keys){
  if(html.includes('footer-top-link')||html.includes('foot-links'))fail(file,'obsolete duplicate footer navigation');
  if(!html.includes('class="backtop"'))fail(file,'missing return-to-top button');
  if(/<footer class="app-footer">[\s\S]*?<\/footer>/.test(html) && /<footer class="app-footer">[\s\S]*?<a\b/.test(html))fail(file,'footer still contains redundant navigation');
+ if(key==='strategy'){
+  if(!html.includes('bio-city-living-city-20261024-1200.webp'))fail(file,'missing Bio-City cinematic city artwork');
+  if(html.includes('creative-vision-guardians'))fail(file,'obsolete character collage in creative core');
+ }
  if(key==='heroes'&&(html.match(/onclick="playHeroAudio/g)||[]).length!==7)fail(file,'expected 7 hero players');
  if(key==='music'&&(html.match(/<audio\b/g)||[]).length!==4)fail(file,'expected 4 OST tracks');
  checked++;
