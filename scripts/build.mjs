@@ -48,9 +48,9 @@ return `<!DOCTYPE html>
 <a class="skip-link" href="#main-content">${esc(l.skip)}</a>
 <header class="app-header"><div class="app-header-inner">
 <a class="logo" href="${rel(lang,"home")}"><span class="logo-icon">✦</span><span><b>FUNAI CARE</b><small>${esc(l.logo)}</small></span></a>
-<nav class="main-nav" aria-label="${esc(l.navAria)}">${nav}</nav>
+<div class="nav-mobile-wrap"><nav class="main-nav" id="primary-menu" aria-label="${esc(l.navAria)}">${nav}</nav><div class="mobile-nav-tools"><span class="nav-swipe-hint">${lang==="zh"?"左右滑動查看更多":"左右にスワイプ"}</span><div class="nav-scroll-controls"><button type="button" class="nav-scroll-btn" data-nav-move="-1" aria-label="${lang==="zh"?"向左查看選單":"前のメニュー項目"}">‹</button><button type="button" class="nav-scroll-btn" data-nav-move="1" aria-label="${lang==="zh"?"向右查看選單":"次のメニュー項目"}">›</button></div><button type="button" class="nav-all-btn" aria-controls="all-pages-menu" aria-expanded="false">${lang==="zh"?"全部選單":"全メニュー"} <span aria-hidden="true">▾</span></button></div></div>
 <div class="language-links"><a href="${rel("zh",key)}"${lang==="zh"?' aria-current="page"':""}>繁中</a><a href="${rel("ja",key)}"${lang==="ja"?' aria-current="page"':""}>日本語</a></div>
-</div><div class="reading-progress"></div></header>
+</div><nav id="all-pages-menu" class="nav-all-panel" aria-label="${lang==="zh"?"所有頁面":"すべてのページ"}" hidden>${nav}</nav><div class="reading-progress"></div></header>
 <nav class="bottom-nav" aria-label="${esc(l.quick)}">${bottom}</nav>
 <main id="main-content" class="app-width">${content}</main>
 <footer class="app-footer"><div class="app-width"><strong>${esc(l.brand)}</strong><div class="foot-links">${footer}</div><p class="footer-credit">${lang==="zh"?"企劃・創作・網站製作｜家葦":"企画・クリエイティブ・Webサイト制作｜家葦"}</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
