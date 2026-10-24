@@ -53,7 +53,7 @@ return `<!DOCTYPE html>
 </div><div class="reading-progress"></div></header>
 <nav class="bottom-nav" aria-label="${esc(l.quick)}">${bottom}</nav>
 <main id="main-content" class="app-width">${content}</main>
-<footer class="app-footer"><div class="app-width"><strong>${esc(l.brand)}</strong><p>${esc(l.foot)}</p><div class="foot-links">${footer}</div><small>© 2026 FUNAI CARE · Bio-City</small></div></footer>
+<footer class="app-footer"><div class="app-width"><strong>${esc(l.brand)}</strong><div class="foot-links">${footer}</div><p class="footer-credit">${lang==="zh"?"企劃・創作・網站製作｜家葦":"企画・クリエイティブ・Webサイト制作｜家葦"}</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
 <button type="button" class="backtop" aria-label="${esc(l.backtop)}">↑</button>
 <div id="global-audio-player" class="floating-audio-player" aria-live="polite"><div class="f-audio-info"><span class="f-audio-label">NOW PLAYING</span><span id="f-audio-name" class="f-audio-name">FUNAI CARE</span></div><button class="f-audio-btn" onclick="stopAllHeroAudio()" type="button" aria-label="${esc(l.stop)}">⏸</button></div>
 <script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}

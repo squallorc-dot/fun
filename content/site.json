@@ -2,7 +2,7 @@
   "base": "https://squallorc-dot.github.io/fun/",
   "ogImage": "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png",
   "gtm": "GTM-5M4KVKNX",
-  "version": "20261024.9",
+  "version": "20261024.10",
   "locales": {
     "zh": {
       "htmlLang": "zh-TW",
@@ -13,7 +13,6 @@
       "skip": "跳至內容",
       "backtop": "回到頂部",
       "stop": "停止音樂",
-      "foot": "品牌 IP 概念與數位內容展示；商品資訊以船井購物網為準。",
       "alt": "FUNAI CARE 守護者聯盟｜Burner 姐",
       "names": [
         "首頁",
@@ -22,7 +21,7 @@
         "核心故事",
         "原創音樂",
         "互動體驗",
-        "數位策略"
+        "創作與應用"
       ]
     },
     "ja": {
@@ -34,7 +33,6 @@
       "skip": "本文へ移動",
       "backtop": "ページ上部へ",
       "stop": "音楽を停止",
-      "foot": "ブランドIPとデジタルコンテンツの展示。製品情報は公式ストアをご確認ください。",
       "alt": "FUNAI CARE ガーディアンズ｜バーナー姐さん",
       "names": [
         "ホーム",
@@ -43,7 +41,7 @@
         "ストーリー",
         "音楽",
         "体験",
-        "戦略"
+        "制作・活用"
       ]
     }
   },
@@ -110,12 +108,12 @@
     },
     "strategy": {
       "zh": {
-        "title": "品牌 IP 數位行銷發展策略｜FUNAI CARE",
-        "desc": "串聯品牌 IP、YouTube、TikTok、原創音樂及 GA4 互動衡量的中長期構想。"
+        "title": "從角色到故事｜Bio-City 創作與內容應用｜FUNAI CARE",
+        "desc": "了解 Bio-City 守護者聯盟的創作理念、角色與世界觀、原創動畫及 AI 音樂製作、雙語互動網站與未來內容應用。"
       },
       "ja": {
-        "title": "ブランドIP デジタル戦略｜FUNAI CARE",
-        "desc": "ブランドIP、動画、SNS、音楽、GA4計測をつなぐ継続的な企画。"
+        "title": "キャラクターから物語へ｜Bio-City 制作・活用｜FUNAI CARE",
+        "desc": "Bio-City ガーディアンズの制作コンセプト、キャラクター、アニメーション、AIツールを活用した音楽、日中2言語のWeb体験と展開の可能性をご紹介します。"
       }
     }
   }
