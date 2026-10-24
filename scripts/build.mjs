@@ -13,7 +13,6 @@ const abs=(la,k)=>c.base+route(la,k);
 const current=k=>key===k?' aria-current="page"':"";
 const nav=keys.map((k,i)=>`<a href="${rel(lang,k)}"${current(k)}>${esc(l.names[i])}</a>`).join("");
 const bottom=["home","heroes","story","music"].map((k,i)=>`<a href="${rel(lang,k)}"${current(k)}><span>${["⌂","♛","▶","♫"][i]}</span>${esc(l.names[keys.indexOf(k)])}</a>`).join("");
-const footer=["home","heroes","music","strategy"].map(k=>`<a href="${rel(lang,k)}">${esc(l.names[keys.indexOf(k)])}</a>`).join("");
 const metaJson=JSON.stringify({"@context":"https://schema.org","@type":"WebPage",name:m.title,url:abs(lang,key),inLanguage:l.htmlLang,description:m.desc}).replace(/</g,"\\u003c");
 return `<!DOCTYPE html>
 <html lang="${l.htmlLang}">
@@ -57,7 +56,7 @@ return `<!DOCTYPE html>
 </div><nav id="mobile-explore-panel" class="mobile-explore-panel" aria-label="${lang==="zh"?"探索其他內容":"その他のページを探す"}" hidden>${["world","play","strategy"].map(k=>`<a href="${rel(lang,k)}"${current(k)}><span class="mobile-explore-icon" aria-hidden="true">${{world:"◎",play:"◇",strategy:"✦"}[k]}</span><span><strong>${esc(l.names[keys.indexOf(k)])}</strong><small>${lang==="zh"?{world:"認識 Bio-City 世界觀",play:"角色配對與小遊戲",strategy:"企劃創作與數位應用"}[k]:{world:"Bio-City の世界観",play:"ヒーロー診断・ミニゲーム",strategy:"制作・デジタル活用"}[k]}</small></span><span class="mobile-explore-chevron" aria-hidden="true">›</span></a>`).join("")}</nav><div class="reading-progress"></div></header>
 <nav class="bottom-nav" aria-label="${esc(l.quick)}">${bottom}</nav>
 <main id="main-content" class="app-width">${content}</main>
-<footer class="app-footer"><div class="app-width"><a class="footer-top-link" href="#main-content">${lang==="zh"?"↑ 返回頁首":"↑ ページ上部へ"}</a><strong>${esc(l.brand)}</strong><div class="foot-links">${footer}</div><p class="footer-credit">${lang==="zh"?"企劃・創作・網站製作｜家葦":"企画・クリエイティブ・Webサイト制作｜家葦"}</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
+<footer class="app-footer"><div class="app-width"><strong>${esc(l.brand)}</strong><p class="footer-credit">${lang==="zh"?"企劃・創作・網站製作｜家葦":"企画・クリエイティブ・Webサイト制作｜家葦"}</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
 <button type="button" class="backtop" aria-label="${esc(l.backtop)}">↑</button>
 <div id="global-audio-player" class="floating-audio-player" aria-live="polite"><div class="f-audio-info"><span class="f-audio-label">NOW PLAYING</span><span id="f-audio-name" class="f-audio-name">FUNAI CARE</span></div><button class="f-audio-btn" onclick="stopAllHeroAudio()" type="button" aria-label="${esc(l.stop)}">⏸</button></div>
 <script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}
