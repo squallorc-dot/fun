@@ -153,3 +153,27 @@ document.addEventListener('click',function(event){
  window.dataLayer=window.dataLayer||[];
  window.dataLayer.push({event:'story_video_play',video_id:id,video_context:holder.dataset.filmContext||'unknown'});
 },false);
+
+
+// Resolve a sharp thumbnail on first visit. YouTube sometimes returns a tiny
+// placeholder for unavailable maxresdefault thumbnails with HTTP 200.
+(function initVideoPosters(){
+ const qualities=['maxresdefault','sddefault','hqdefault'];
+ document.querySelectorAll('img[data-youtube-thumb]').forEach(img=>{
+  const id=img.dataset.youtubeThumb;
+  if(!/^[A-Za-z0-9_-]{11}$/.test(id))return;
+  let qualityIndex=0;
+  const advance=()=>{
+   qualityIndex++;
+   if(qualityIndex>=qualities.length)return;
+   img.src='https://i.ytimg.com/vi/'+id+'/'+qualities[qualityIndex]+'.jpg';
+  };
+  const check=()=>{
+   const minimumWidth=qualityIndex===0?900:qualityIndex===1?600:200;
+   if(!img.naturalWidth||img.naturalWidth<minimumWidth)advance();
+  };
+  img.addEventListener('error',advance);
+  img.addEventListener('load',check);
+  if(img.complete)check();
+ });
+})();
