@@ -38,7 +38,7 @@ return `<!DOCTYPE html>
 <link rel="alternate" hreflang="ja" href="${abs("ja",key)}">
 <link rel="alternate" hreflang="x-default" href="${abs("zh",key)}">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=${c.version}"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=20261024.24">`:""}
+<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=20261024.25"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=20261024.24">`:""}
 <script type="application/ld+json">${metaJson}</script>
 <script>(function(w,d,s,n,i){w[n]=w[n]||[];w[n].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer','${c.gtm}');</script>
 </head>

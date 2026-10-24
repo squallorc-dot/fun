@@ -15,3 +15,72 @@ body[data-page="play"] #protocol-quiz,body[data-page="play"] #protocol-game{scro
 @media(max-width:760px){.protocol-intro-banner{min-height:193px;padding:23px;background-position:58% center}.protocol-entry{margin-bottom:36px;grid-template-columns:1fr;gap:9px}.protocol-entry>a{padding:17px}.protocol-module{margin-bottom:38px}.protocol-hero-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.protocol-result-heroes{flex-direction:column}.protocol-aide-hero{width:auto}.protocol-options{grid-template-columns:1fr}.protocol-option{min-height:78px;padding:13px;grid-template-columns:32px 1fr 12px}.protocol-status>div{padding:11px 8px}.protocol-status strong{font-size:1.34rem}.protocol-status span{font-size:.65rem}.protocol-module-heading h2{font-size:1.55rem}}
 @media(max-width:380px){.protocol-hero-grid{grid-template-columns:1fr}.protocol-district{min-height:120px;padding:10px}.protocol-city-map{gap:7px;padding:9px}.protocol-district>strong{font-size:.87rem}.protocol-district-health{font-size:1.2rem}.protocol-axis-grid{grid-template-columns:1fr}.protocol-chip-row{gap:5px}.protocol-chip-row span{font-size:.66rem}}
 @media(prefers-reduced-motion:reduce){.protocol-entry>a,.protocol-primary,.protocol-meter>span{transition:none!important}}
+
+
+/* result hero portrait reflow v20261024.25: main guardian is the visual hero, secondary guardian is still legible */
+.protocol-result-heroes{
+ display:grid;
+ grid-template-columns:minmax(0,1.58fr) minmax(0,1fr);
+ gap:16px;align-items:stretch;margin:20px 0 27px;
+}
+.protocol-lead-hero,.protocol-aide-hero{
+ position:relative;isolation:isolate;box-sizing:border-box;min-width:0;
+ width:auto;min-height:245px;overflow:hidden;border-radius:17px;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 25px rgba(0,0,0,.16);
+}
+.protocol-lead-hero{
+ display:grid;grid-template-columns:minmax(0,215px) minmax(0,1fr);
+ gap:20px;align-items:center;padding:16px 21px;
+ border:1px solid #427b91;
+ background:radial-gradient(circle at 23% 47%,rgba(44,150,180,.2),transparent 55%),linear-gradient(130deg,#103950,#0b2338);
+}
+.protocol-aide-hero{
+ display:grid;grid-template-columns:minmax(0,157px) minmax(0,1fr);
+ gap:13px;align-items:center;padding:16px;
+ border:1px solid #38627a;
+ background:radial-gradient(circle at 25% 45%,rgba(73,124,176,.16),transparent 58%),linear-gradient(130deg,#102e44,#0a2235);
+}
+.protocol-lead-hero img,.protocol-aide-hero img{
+ display:block;width:100%;max-width:100%;object-fit:contain;object-position:center;
+ filter:drop-shadow(0 10px 16px rgba(0,0,0,.32));
+}
+.protocol-lead-hero img{height:215px}
+.protocol-aide-hero img{height:190px}
+.protocol-lead-hero>div{min-width:0;display:grid;gap:9px;align-content:center}
+.protocol-lead-hero small,.protocol-aide-hero>span{font-size:.82rem;color:#a4d7e9;line-height:1.55}
+.protocol-lead-hero strong{
+ display:block;font-size:clamp(1.37rem,2.15vw,1.84rem);line-height:1.3;color:#f6fdff;
+ overflow-wrap:anywhere;
+}
+.protocol-lead-hero div>span{display:block;font-size:.94rem;line-height:1.8;color:#c9e2f0}
+.protocol-aide-hero>span{display:block;min-width:0;font-size:.8rem}
+.protocol-aide-hero strong{
+ display:block;margin-top:8px;font-size:clamp(1.08rem,1.55vw,1.32rem);
+ color:#f3fbff;line-height:1.4;overflow-wrap:anywhere;
+}
+@media(max-width:1090px){
+ .protocol-result-heroes{grid-template-columns:minmax(0,1fr)}
+ .protocol-lead-hero{grid-template-columns:minmax(0,205px) minmax(0,1fr);min-height:226px}
+ .protocol-aide-hero{grid-template-columns:minmax(0,150px) minmax(0,1fr);min-height:185px}
+ .protocol-lead-hero img{height:200px}
+ .protocol-aide-hero img{height:164px}
+}
+@media(max-width:760px){
+ .protocol-result-heroes{gap:12px;margin:17px 0 23px}
+ .protocol-lead-hero{display:flex;flex-direction:column;gap:12px;text-align:center;padding:17px 15px 19px;min-height:0}
+ .protocol-lead-hero img{width:min(100%,225px);height:clamp(188px,56vw,227px);margin:0 auto}
+ .protocol-lead-hero>div{gap:7px}
+ .protocol-lead-hero strong{font-size:clamp(1.42rem,5.8vw,1.8rem)}
+ .protocol-lead-hero div>span{font-size:.87rem}
+ .protocol-aide-hero{
+  grid-template-columns:minmax(0,38%) minmax(0,1fr);
+  gap:12px;min-height:160px;padding:12px 14px;
+ }
+ .protocol-aide-hero img{height:152px}
+ .protocol-aide-hero strong{font-size:1.08rem}
+}
+@media(max-width:380px){
+ .protocol-aide-hero{grid-template-columns:minmax(0,40%) minmax(0,1fr);gap:9px;padding:10px}
+ .protocol-aide-hero img{height:140px}
+ .protocol-aide-hero strong{font-size:.99rem}
+}
