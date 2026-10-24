@@ -1110,3 +1110,24 @@ body[data-page="strategy"] .creative-vision-media>img{filter:saturate(1.04) cont
 body[data-page="strategy"] .creative-vision-media::after{content:"";position:absolute;inset:61% 0 0;z-index:1;pointer-events:none;background:linear-gradient(0deg,rgba(2,12,25,.68),rgba(2,13,32,0))}
 body[data-page="strategy"] .creative-vision-media figcaption{z-index:2;letter-spacing:.075em;text-shadow:0 2px 12px #000}
 @media(max-width:760px){body[data-page="strategy"] .creative-vision-media{aspect-ratio:5/4;min-height:0}body[data-page="strategy"] .creative-vision-media>img{object-position:50% 36%}}
+
+/* v20261024.20 · Bio-City artwork: visible without hover, gently illuminated on desktop. */
+@media (min-width:761px){
+ body[data-page="strategy"] .creative-vision-media>img{
+  filter:brightness(1.12) saturate(1.06) contrast(1.02);
+ }
+ body[data-page="strategy"] .creative-vision-media::after{
+  background:linear-gradient(0deg,rgba(2,12,25,.42),rgba(2,13,32,0));
+ }
+}
+@media (min-width:761px) and (hover:hover) and (pointer:fine){
+ body[data-page="strategy"] .creative-vision-media>img{
+  transition:filter .45s ease;
+ }
+ body[data-page="strategy"] .creative-vision-media:hover>img{
+  filter:brightness(1.19) saturate(1.10) contrast(1.03);
+ }
+}
+@media (prefers-reduced-motion:reduce){
+ body[data-page="strategy"] .creative-vision-media>img{transition:none}
+}
