@@ -1,0 +1,61 @@
+# FUNAI CARE｜守護者聯盟 · 多頁式品牌 IP 網站
+
+本專案為 Bio-City 品牌 IP 展示網站。於 2026-10-24 由原有單頁提案改為中日雙語多頁式網站；保留原創音樂、故事、七組英雄、商品資料及 GTM 設定。
+
+## 正式入口
+
+- 繁體中文首頁：`FUNAI-CARE.html`
+- 日文首頁：`FUNAI-CARE_jp.html`
+- 專案根目錄：`index.html` 導向中文版
+
+## 內容與路由
+
+| 頁面 | 繁中 | 日本語 |
+|---|---|---|
+| 首頁 | `FUNAI-CARE.html` | `FUNAI-CARE_jp.html` |
+| 世界觀 | `zh/world.html` | `ja/world.html` |
+| 英雄圖鑑 | `zh/heroes.html` | `ja/heroes.html` |
+| 核心故事 | `zh/story.html` | `ja/story.html` |
+| 原創音樂 | `zh/music.html` | `ja/music.html` |
+| 互動體驗 | `zh/play.html` | `ja/play.html` |
+| 數位策略 | `zh/strategy.html` | `ja/strategy.html` |
+
+## 共用與語系資產
+
+- `assets/site.css`：全站共用 CSS，包含沿用角色元件的既有樣式及新版設計系統。
+- `assets/site.js`：全站導覽、音源互斥、角色音樂、GA4 事件、日文注音切換。
+- `assets/zh-play.js`、`assets/ja-play.js`：角色配對與 Canvas 遊戲。
+- `images/`、`Music/`：保留原有角色圖片及音檔，不覆蓋、不改名。
+
+## 既有追蹤
+
+沿用 GTM 容器 `GTM-5M4KVKNX`，正確 GA4 資源 ID 為 `534706548`。保留既有自訂事件：
+`play_hero_audio` + `hero_name`、`play_ost_audio` + `ost_name`、`quiz_completed` + `recommended_hero`、`game_completed` + `hero_used`／`final_score`。
+
+GTM 的內部事件參數對應及 GA4 實際接收，需使用預覽模式與 DebugView 測試；純網頁靜態檢查不能取代瀏覽器驗收。
+
+## 不可任意變動
+
+- 商品名稱、商品連結與已確認功效宣稱：未經明確要求不改。
+- 已完成的音樂、影片、角色素材：不重新生成、不更動版權或來源標示。
+- 中日語系必須維持相同路由結構、標籤用途和功能。
+- 實際執行的數位策略需與規劃中的項目清楚區隔。
+
+## 改版備份與還原
+
+- 改版前保留分支：`backup/pre-redesign-20261024`。
+- 多頁改版前保留分支：`backup/pre-multipage-20261024`。
+- 本次工作分支：`redesign/multipage-20261024`。
+
+## 驗收清單
+
+- [x] 14 個內容頁已建立
+- [x] 中日語言路由配對
+- [x] 內部連結靜態檢查
+- [x] 商品連結與原版逐項比對
+- [x] 三份 JS 語法檢查
+- [ ] 實際瀏覽器桌機／手機檢查
+- [ ] YouTube 與 MP3 播放實測
+- [ ] Canvas 遊戲與問答互動實測
+- [ ] GTM Preview、GA4 DebugView 驗證
+- [ ] 日文內容編校
