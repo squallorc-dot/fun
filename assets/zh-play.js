@@ -72,7 +72,7 @@
         document.getElementById('quiz-result').style.display = 'block';
         const topScore = Math.max(...Object.values(quizScores));
         const tied = Object.keys(quizScores).filter(key => quizScores[key] === topScore);
-        const maxType = quizAnswers.find(key => tied.includes(key)) || tied[0];
+        const maxType = [...quizAnswers].reverse().find(key => tied.includes(key)) || tied[0];
         let res = quizResultsData[maxType];
         document.getElementById('quiz-res-img').src = res.img;
         document.getElementById('quiz-res-title').innerText = res.title;
