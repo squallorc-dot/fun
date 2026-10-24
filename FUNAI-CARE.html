@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUNAI CARE 守護者聯盟 - 品牌宇宙戰略</title>
-    <meta name="description" content="FUNAI CARE 守護者聯盟 - 啟動內在英雄：從產品力到品牌宇宙的進化。">
+    <meta name="description" content="FUNAI CARE 守護者聯盟｜探索 Bio-City 生命之城、英雄角色、原創音樂、動畫故事與互動體驗，了解船井生醫品牌 IP 的數位內容企劃。">
     
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,6 +12,21 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-5M4KVKNX');</script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#040a18">
+    <meta name="color-scheme" content="dark">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="FUNAI CARE">
+    <meta property="og:locale" content="zh_TW">
+    <meta property="og:title" content="FUNAI CARE 守護者聯盟｜Bio-City 品牌 IP 宇宙">
+    <meta property="og:description" content="FUNAI CARE 守護者聯盟｜探索 Bio-City 生命之城、英雄角色、原創音樂、動畫故事與互動體驗，了解船井生醫品牌 IP 的數位內容企劃。">
+    <meta property="og:url" content="https://squallorc-dot.github.io/fun/FUNAI-CARE.html">
+    <meta property="og:image" content="https://squallorc-dot.github.io/fun/images/Gemini_Generated_Image_9lx3429lx3429lx3.png">
+    <meta property="og:image:alt" content="FUNAI CARE Bio-City">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://squallorc-dot.github.io/fun/FUNAI-CARE.html">
+    <link rel="alternate" hreflang="zh-TW" href="https://squallorc-dot.github.io/fun/FUNAI-CARE.html">
+    <link rel="alternate" hreflang="ja" href="https://squallorc-dot.github.io/fun/FUNAI-CARE_jp.html">
+    <link rel="alternate" hreflang="x-default" href="https://squallorc-dot.github.io/fun/FUNAI-CARE.html">
     <style>
         /* --- 全局與變數設定 --- */
         :root {
@@ -540,6 +555,7 @@
         .quiz-progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--red)); width: 0%; transition: width 0.4s ease; }
         .quiz-question { font-size: 1.3rem; font-weight: 700; color: var(--white); margin-bottom: 28px; }
         .quiz-option {
+            width:100%; font-family:inherit;
             background: rgba(255,255,255,0.05); border: 1px solid var(--border);
             padding: 16px 20px; border-radius: var(--radius-sm);
             margin-bottom: 14px; cursor: pointer; transition: all 0.25s;
@@ -622,11 +638,48 @@
             .vision-box, .quiz-section { padding: 30px 20px; }
             .lang-switcher { top: 15px; right: 15px; }
         }
+
+        /* 2026 UX upgrade: navigation, reading rhythm, accessibility */
+        :root { --content-width: 1080px; }
+        html { scroll-padding-top: 88px; }
+        body { -webkit-font-smoothing: antialiased; }
+        .skip-link { position:fixed; top:-80px; left:12px; z-index:3000; background:var(--cyan); color:var(--navy); padding:10px 16px; border-radius:8px; font-weight:800; }
+        .skip-link:focus { top:12px; }
+        .site-nav { position:sticky; top:0; z-index:150; background:rgba(4,10,24,.93); backdrop-filter:blur(18px); border-bottom:1px solid var(--border); }
+        .site-nav-inner { max-width:var(--content-width); margin:auto; padding:9px 22px; display:flex; align-items:center; gap:14px; }
+        .site-nav-logo { color:white; font-size:.89rem; font-weight:900; letter-spacing:.04em; text-decoration:none; white-space:nowrap; }
+        .site-nav-links { display:flex; gap:5px; overflow-x:auto; scrollbar-width:thin; flex:1; scroll-snap-type:x proximity; }
+        .site-nav-links a { flex-shrink:0; scroll-snap-align:start; color:var(--muted); text-decoration:none; font-size:.79rem; font-weight:700; padding:8px 10px; border-radius:9px; transition:color .2s,background .2s; }
+        .site-nav-links a:hover,.site-nav-links a[aria-current="location"] { color:var(--navy); background:var(--cyan); }
+        .section-wrap,.quiz-section { scroll-margin-top:96px; }
+        .section-wrap { content-visibility:auto; contain-intrinsic-size:auto 600px; }
+        .char-img-clickable { cursor:pointer; }
+        .char-img-clickable:focus-visible,.btn-link:focus-visible,.hero-btn:focus-visible,.quiz-option:focus-visible { outline:3px solid var(--cyan); outline-offset:4px; }
+        .status-note { color:var(--muted); font-size:.84rem; line-height:1.7; margin-top:12px; }
+        .upgrade-note { max-width:780px; margin:16px auto 0; color:var(--muted); font-size:.88rem; line-height:1.8; text-align:center; }
+        .story-content p, .vision-box p, .worldview-item p { overflow-wrap:anywhere; }
+        @media(max-width:768px){
+          .site-nav-inner { padding:8px 12px; gap:9px; }
+          .site-nav-logo { font-size:.73rem; }
+          .site-nav-links a { font-size:.76rem; padding:8px 9px; }
+          .container { padding-left:16px; padding-right:16px; }
+          header { min-height:76vh; padding:80px 18px 60px; }
+          .worldview-box,.vision-box { padding:26px 19px; }
+          .floating-audio-player { max-width:calc(100vw - 28px); right:14px; bottom:14px; padding:9px 13px; }
+          .lyrics-wrapper { grid-template-columns:minmax(0,1fr); }
+          .grid-container,.strategy-grid { grid-template-columns:minmax(0,1fr); }
+          .section-wrap { padding:38px 0; }
+          .story-timeline { overflow-wrap:anywhere; }
+        }
+        @media (prefers-reduced-motion: reduce){
+          html { scroll-behavior:auto; }
+          *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+        }
     </style>
 </head>
 <body>
 
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5M4KVKNX"
+<noscript><iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.googletagmanager.com/ns.html?id=GTM-5M4KVKNX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="bg-layer">
     <div class="bg-noise"></div>
@@ -638,7 +691,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="FUNAI-CARE_jp.html" class="lang-btn">🇯🇵 日本語</a>
 </div>
 
-<div class="container">
+<a class="skip-link" href="#concept">跳至主要內容</a>
+<nav class="site-nav" aria-label="站內章節導覽"><div class="site-nav-inner"><a class="site-nav-logo" href="#top">FUNAI CARE</a><div class="site-nav-links"><a href="#concept" data-section="concept">企劃理念</a><a href="#world" data-section="world">世界觀</a><a href="#soundtrack" data-section="soundtrack">原聲帶</a><a href="#heroes" data-section="heroes">英雄圖鑑</a><a href="#villains" data-section="villains">反派</a><a href="#story" data-section="story">核心故事</a><a href="#quiz" data-section="quiz">角色配對</a><a href="#strategy" data-section="strategy">數位策略</a><a href="#game" data-section="game">互動遊戲</a></div></div></nav>
+<div class="container" id="top">
 
     <header>
         <div class="header-bg"></div>
@@ -661,7 +716,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button class="f-audio-btn" onclick="stopAllHeroAudio()" title="暫停播放">⏸</button>
     </div>
 
-    <section class="section-wrap">
+    <section id="concept" class="section-wrap">
         <div class="vision-box">
             <h3>💡 品牌 IP 戰略：創作理念</h3>
             <p><strong>「打破單點行銷，建構可持續累積的品牌資產。」</strong></p>
@@ -671,16 +726,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 守護者聯盟 - 品牌預告片" allowfullscreen></iframe>
+            <iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/Tbmg2LKTQVI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 守護者聯盟 - 品牌預告片" allowfullscreen></iframe>
         </div>
         <p class="video-caption">🎬 首映預告：【FUNAI CARE 守護者聯盟】Bio-City 覺醒時刻 - 英雄們的大反擊</p>
     </section>
 
-    <section class="section-wrap">
+    <section id="world" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>一、世界觀：Bio-City (生命之城)</h2>
 
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="Bio-City 前導預告" allowfullscreen></iframe>
+            <iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/g3HITXzXhT8?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="Bio-City 前導預告" allowfullscreen></iframe>
         </div>
         <p class="video-caption">🎬 點擊播放：Bio-City 覺醒時刻 - 品牌前導預告</p>
 
@@ -712,7 +767,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <section class="section-wrap">
+    <section id="soundtrack" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>🎵 聯盟專屬 OST 數位原聲帶</h2>
         <p style="margin-bottom: 28px; color: var(--muted);">音樂是靈魂的記憶點。中/日文雙版本發行，打造深植人心的動漫級熱血聽覺制約。</p>
         
@@ -720,22 +775,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="ost-player-card">
                 <h4>🎙️ Bio-City 覺醒時刻<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(熱血女聲版)</span></h4>
                 <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Bio-City%20%E8%A6%BA%E9%86%92%20by%20TERRY-2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/song/b728362c-ff8c-4455-8f8a-d328cb897fc9" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+                <a href="https://suno.com/song/b728362c-ff8c-4455-8f8a-d328cb897fc9" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
             <div class="ost-player-card">
                 <h4>🎙️ Burner 姐召喚<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(搖滾男聲版)</span></h4>
                 <audio controls><source src="https://squallorc-dot.github.io/fun/Music/Burner%E5%A7%90%E5%8F%AC%E5%96%9A.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+                <a href="https://suno.com/song/4548a36e-2509-4422-8e7f-e774372bfc8f" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
             <div class="ost-player-card">
                 <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. A)</span></h4>
                 <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/s/VDz9xCjHm7DNKOJ1" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+                <a href="https://suno.com/s/VDz9xCjHm7DNKOJ1" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
             <div class="ost-player-card">
                 <h4>🎙️ MJロボット刻む<br><span style="font-size:0.82rem; color:var(--muted); font-weight:400;">(日文版 Ver. B)</span></h4>
                 <audio controls><source src="https://squallorc-dot.github.io/fun/Music/MJ%E3%83%AD%E3%83%9C%E3%83%83%E3%83%88%E5%88%BB%E3%82%80%20by%20TERRY_2.mp3" type="audio/mpeg">您的瀏覽器不支援播放音訊。</audio>
-                <a href="https://suno.com/s/eodMbRDrxAsSEH7W" target="_blank" class="suno-link">🔗 前往 Suno 試聽原曲</a>
+                <a href="https://suno.com/s/eodMbRDrxAsSEH7W" target="_blank" rel="noopener noreferrer" class="suno-link">🔗 前往 Suno 試聽原曲</a>
             </div>
         </div>
 
@@ -781,7 +836,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <section class="section-wrap">
+    <section id="heroes" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>二、守護者聯盟：英雄圖鑑</h2>
         <div class="grid-container">
             
@@ -790,8 +845,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>Burner 姐</h3>
                 <span class="alias">那個超酷的女生</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-burner', 'Burner 姐', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-burner', 'Burner 姐', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png" alt="Burner 姐">
                 </div>
                 
                 <div class="card-content">
@@ -821,7 +876,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     極纖雷射，啟動！
                 </div>
 
-                <a href="https://www.funaicare.com/item/burner-sr15x5" target="_blank" class="btn-link">召喚裝備：極纖錠</a>
+                <a href="https://www.funaicare.com/item/burner-sr15x5" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：極纖錠</a>
             </div>
 
             <div class="card">
@@ -829,8 +884,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>MJ 機器人</h3>
                 <span class="alias">自帶 BGM 的節奏戰神</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-mj', 'MJ 機器人', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-mj', 'MJ 機器人', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png" alt="MJ 機器人">
                 </div>
                 
                 <div class="card-content">
@@ -861,7 +916,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     酸痛掰掰舞，開始！
                 </div>
 
-                <a href="https://www.funaicare.com/item/care-mj" target="_blank" class="btn-link">召喚裝備：酸痛按摩機</a>
+                <a href="https://www.funaicare.com/item/care-mj" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：酸痛按摩機</a>
             </div>
 
             <div class="card">
@@ -869,8 +924,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>萌牛阿哞</h3>
                 <span class="alias">力大無窮的大姊頭</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-amou', '萌牛阿哞', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-amou', '萌牛阿哞', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/%E8%90%8C%E7%89%9B%E9%98%BF%E5%93%9E.png" alt="萌牛阿哞">
                 </div>
                 
                 <div class="card-content">
@@ -901,7 +956,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     看我的厲害，哞——！
                 </div>
 
-                <a href="https://www.funaicare.com/item/funcare-as10x6" target="_blank" class="btn-link">召喚裝備：牛奶鈣魚膠原</a>
+                <a href="https://www.funaicare.com/item/funcare-as10x6" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：牛奶鈣魚膠原</a>
             </div>
 
             <div class="card">
@@ -909,8 +964,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>葉寶 EX</h3>
                 <span class="alias">對抗藍光的劍士</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-yebao', '葉寶 EX', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-yebao', '葉寶 EX', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png" alt="葉寶 EX">
                 </div>
                 
                 <div class="card-content">
@@ -941,7 +996,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     葉寶 EX，出擊！
                 </div>
 
-                <a href="https://www.funaicare.com/item/funcare-aawx90" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍EX</a>
+                <a href="https://www.funaicare.com/item/funcare-aawx90" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：3C葉黃素凍EX</a>
             </div>
 
             <div class="card">
@@ -949,8 +1004,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>果凍三兄妹</h3>
                 <span class="alias">盞哥、美莓、葉寶</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-jelly', '果凍三兄妹', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-jelly', '果凍三兄妹', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/%E6%9E%9C%E5%87%8D%E4%B8%89%E5%85%84%E5%A6%B9.png" alt="果凍三兄妹">
                 </div>
                 
                 <div class="card-content">
@@ -982,7 +1037,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     耶！
                 </div>
 
-                <a href="https://www.funaicare.com/item/funcare-aaex100" target="_blank" class="btn-link">召喚裝備：3C葉黃素凍</a>
+                <a href="https://www.funaicare.com/item/funcare-aaex100" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：3C葉黃素凍</a>
             </div>
 
             <div class="card">
@@ -990,8 +1045,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>野菜小將</h3>
                 <span class="alias">綠色盾牌衛兵</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-veggie', '野菜小將', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-veggie', '野菜小將', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/%E9%87%8E%E8%8F%9C%E5%B0%8F%E5%B0%87.png" alt="野菜小將">
                 </div>
                 
                 <div class="card-content">
@@ -1023,7 +1078,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     野菜小將，保持均衡，出發！
                 </div>
 
-                <a href="https://www.funaicare.com/item/funcare-aac" target="_blank" class="btn-link">召喚裝備：野菜小將</a>
+                <a href="https://www.funaicare.com/item/funcare-aac" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：野菜小將</a>
             </div>
 
             <div class="card">
@@ -1031,8 +1086,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h3>守望者 Oracle</h3>
                 <span class="alias">幻影水精靈</span>
                 
-                <div class="char-img-container char-img-clickable" onclick="playHeroAudio('audio-oracle', '守望者 Oracle', this)">
-                    <img src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle">
+                <div class="char-img-container char-img-clickable" role="button" tabindex="0" aria-label="播放角色登場音樂" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="playHeroAudio('audio-oracle', '守望者 Oracle', this)">
+                    <img loading="lazy" decoding="async" src="https://squallorc-dot.github.io/fun/images/%E5%AE%88%E6%9C%9B%E8%80%85%20Oracle.png" alt="守望者 Oracle">
                 </div>
                 
                 <div class="card-content">
@@ -1064,13 +1119,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     守望著你，直到永遠。
                 </div>
 
-                <a href="https://www.funaicare.com/item/funcare-aaox9" target="_blank" class="btn-link">召喚裝備：3C葉黃素飲</a>
+                <a href="https://www.funaicare.com/item/funcare-aaox9" target="_blank" rel="noopener noreferrer" class="btn-link">召喚裝備：3C葉黃素飲</a>
             </div>
 
         </div>
     </section>
 
-    <section class="section-wrap">
+    <section id="villains" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>三、通緝名單：生活中的搗蛋鬼</h2>
         <ul class="villain-list">
             <li class="villain-item">
@@ -1092,10 +1147,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </ul>
     </section>
 
-    <section class="section-wrap">
+    <section id="story" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>四、核心故事：Bio-City 覺醒時刻</h2>
         <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
+            <iframe loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/A-2X3iLnUTI?rel=0&modestbranding=1&controls=1&enablejsapi=1" title="FUNAI CARE 覺醒時刻" allowfullscreen></iframe>
         </div>
         <div class="story-timeline">
             <div class="story-step">
@@ -1142,25 +1197,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <div class="quiz-section">
-        <div class="quiz-title">🔍 Bio-City 雲端大數據掃描站</div>
-        <div class="quiz-desc">透過生活型態大數據演算法，為您的身體城市匹配專屬的防禦專利科技。</div>
+    <div id="quiz" class="quiz-section">
+        <div class="quiz-title">🔍 Bio-City 守護者配對站</div>
+        <div class="quiz-desc">回答兩個生活習慣問題，找出與你最有共鳴的 Bio-City 守護者。這是趣味角色配對，不是健康診斷。</div>
         <div class="quiz-container">
             <div id="quiz-start">
                 <button class="btn-link" style="padding:15px 40px; font-size:1.1rem; max-width:280px; margin:0 auto; display:block;" onclick="startQuiz()">⚡ 啟動健康數據掃描</button>
-                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">本檢測數據分析結果僅供健康管理裝備推薦參考，不具醫療診斷效力。如有疑慮請尋求專業醫師協助。</p>
+                <p style="margin-top:20px; font-size:0.85rem; color:rgba(203, 213, 225, 0.7); font-family:'Space Mono',monospace;">此為趣味角色配對，非健康風險評估或醫療診斷。產品資訊請以官方頁面為準。</p>
             </div>
             <div id="quiz-play" style="display:none;">
                 <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
                 <div class="quiz-question" id="quiz-question-text">載入中...</div>
-                <div id="quiz-options"></div>
+                <div id="quiz-options" role="group" aria-live="polite"></div>
             </div>
             <div id="quiz-loading" style="display:none;">
-                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">正在分析大數據特徵...</h3>
-                <p style="color:var(--muted);">與超過 1300 人次臨床數據比對中...</p>
+                <h3 style="color:var(--white); margin-bottom:8px; font-family:'Space Mono',monospace; font-size:1.2rem;">正在尋找適合你的守護者...</h3>
+                <p style="color:var(--muted);">正在整理你的回答，尋找相符的角色...</p>
             </div>
             <div id="quiz-result" style="display:none;">
-                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">掃描完成！最適合您的守護者與科技是：</h3>
+                <h3 style="color:var(--muted); font-size:1rem; margin-bottom:12px; font-family:'Space Mono',monospace; letter-spacing:1px; text-transform:uppercase;">你的 Bio-City 守護者是：</h3>
                 <img id="quiz-res-img" src="" class="quiz-result-img" alt="守護者">
                 <div id="quiz-res-title"></div>
                 <div id="quiz-res-desc" style="color:var(--muted); margin-bottom:28px; line-height: 1.6;"></div>
@@ -1171,7 +1226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <section class="section-wrap">
+    <section id="strategy" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>五、戰略發展：IP 生態系與數位行銷佈局</h2>
         <p style="margin-bottom:30px; color:var(--muted); font-size:1.05rem;">本企劃以「聽得懂、玩得深、可變現」為核心，無縫融入數位戰略與 CRM 框架，建構一套「引流、留存、變現」的行銷飛輪：</p>
         <div class="strategy-grid">
@@ -1208,7 +1263,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </section>
 
-    <section class="section-wrap">
+    <section id="game" class="section-wrap">
         <h2 class="section-title"><span class="title-accent"></span>🎮 Bio-City 守護者特訓模擬器</h2>
         <p style="text-align:center; color:var(--muted); margin-bottom:12px;">操作說明：滑鼠/手指左右滑動控制英雄。能量滿百將自動釋放全域淨化大招！</p>
         <div class="game-wrapper">
@@ -1260,6 +1315,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <script>
+
+    /* UX/navigation and unified media playback – 2026 */
+    const uxAnchors = [...document.querySelectorAll('.site-nav-links a[data-section]')];
+    if ('IntersectionObserver' in window) {
+      const uxObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) if (entry.isIntersecting) {
+          uxAnchors.forEach(a => a.removeAttribute('aria-current'));
+          const active = uxAnchors.find(a => a.dataset.section === entry.target.id);
+          if(active) active.setAttribute('aria-current','location');
+        }
+      },{rootMargin:'-20% 0px -66% 0px',threshold:0});
+      uxAnchors.forEach(a => { const section=document.getElementById(a.dataset.section); if(section) uxObserver.observe(section); });
+    }
+    const uxAllAudio = [...document.querySelectorAll('audio')];
+    document.addEventListener('play',event => {
+      if(!(event.target instanceof HTMLAudioElement)) return;
+      uxAllAudio.forEach(a => {if(a!==event.target && !a.paused)a.pause();});
+    },true);
+    document.querySelectorAll('audio').forEach(a=>a.addEventListener('error',()=>{console.warn('Audio unavailable:',a.currentSrc||a.id)}));
+    document.querySelectorAll('.quiz-option').forEach(x=>x.setAttribute('type','button'));
+    // Reset delayed game effects across rounds
+
     /* ── HERO AUDIO CONTROLLER (單純穩定版) ── */
     function playHeroAudio(audioId, heroName, imgContainer) {
         const allAudios = document.querySelectorAll('.card audio');
@@ -1363,22 +1440,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     /* ── QUIZ (大數據升級版) ── */
-    const quizQuestions = [
-        { q: "分析系統提問：您最近覺得身體哪裡最需要修復？", options: [
-            { text: "肩頸僵硬，像背著石頭般沉重", type: "mj" },
-            { text: "眼睛乾澀，螢幕看久就想流淚", type: "yebao" },
-            { text: "體態沉重，基礎代謝好像停滯了", type: "burner" }
-        ]},
-        { q: "大數據關聯特徵：您平常的休閒活動最接近哪一項？", options: [
-            { text: "癱在沙發上，完全不想活動筋骨", type: "mj" },
-            { text: "瘋狂追劇打遊戲，長時間緊盯螢幕", type: "yebao" },
-            { text: "經常吃大餐犒賞自己，難以克制食慾", type: "burner" }
-        ]}
-    ];
+    const quizQuestions = [[
+    {
+        "q": "最近最想改善哪一種生活習慣？",
+        "options": [
+            {
+                "text": "工作久坐，想安排放鬆時間",
+                "type": "mj"
+            },
+            {
+                "text": "看螢幕的時間太長，想提醒自己休息",
+                "type": "yebao"
+            },
+            {
+                "text": "想建立飲食與運動的規律",
+                "type": "burner"
+            }
+        ]
+    },
+    {
+        "q": "如果選一位守護者陪你開始，你會選？",
+        "options": [
+            {
+                "text": "充滿節奏感的 MJ 機器人",
+                "type": "mj"
+            },
+            {
+                "text": "重視用眼習慣的葉寶 EX",
+                "type": "yebao"
+            },
+            {
+                "text": "鼓勵行動與自信的 Burner 姐",
+                "type": "burner"
+            }
+        ]
+    }
+];
     const quizResultsData = {
-        mj: { title: "MJ 機器人", desc: "大數據分析顯示：您正面臨高強度的「肌肉緊繃風險」。\n建議配備【酸痛按摩機】，透過衛福部核可的 15 段雙頻道電流，啟動 8 點共震波，深層震碎僵硬。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
-        yebao: { title: "葉寶 EX", desc: "大數據分析顯示：藍光巨龍已嚴重威脅您的「靈魂之窗」。\n建議配備【3C葉黃素凍EX】，其含有美國藍光專利游離型葉黃素，高達 18 倍吸收率，為您啟動晶亮防護罩。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
-        burner: { title: "Burner 姐", desc: "大數據分析顯示：您的「基礎代謝率」有顯著下降趨勢。\n建議配備【極纖錠】，透過專利菸鹼酸鉻與獨家 E.F.T. 黃金代謝配方，穩定醣類代謝，經實驗證實有助不易形成體脂肪。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
+        mj: { title: "MJ 機器人", desc: "你的生活型態守護者是 MJ 機器人！工作與生活之餘，也別忘了安排放鬆的時間。想了解對應的按摩機，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/MJ%20%E6%A9%9F%E5%99%A8%E4%BA%BA.png", link: "https://www.funaicare.com/item/care-mj" },
+        yebao: { title: "葉寶 EX", desc: "你的生活型態守護者是葉寶 EX！長時間使用螢幕，記得適時休息、留意用眼習慣。想認識相關營養產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/%E8%91%89%E5%AF%B6%20EX.png", link: "https://www.funaicare.com/item/funcare-aawx90" },
+        burner: { title: "Burner 姐", desc: "你的生活型態守護者是 Burner 姐！從日常飲食與運動習慣開始，逐步累積自己的節奏。想認識相關產品，可查看正式商品資訊。", img: "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png", link: "https://www.funaicare.com/item/burner-sr15x5" }
     };
     let currentQuizQ = 0, quizScores = { mj:0, yebao:0, burner:0 };
 
@@ -1393,7 +1494,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('quiz-question-text').innerText = q.q;
         document.getElementById('quiz-progress-fill').style.width = (currentQuizQ / quizQuestions.length * 100) + '%';
         document.getElementById('quiz-options').innerHTML = q.options.map(o =>
-            `<div class="quiz-option" onclick="answerQuiz('${o.type}')">${o.text}</div>`
+            `<button type="button" class="quiz-option" onclick="answerQuiz('${o.type}')">${o.text}</button>`
         ).join('');
     }
     function answerQuiz(type) {
@@ -1432,7 +1533,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     /* ── CANVAS GAME ── */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    let animationId, lastTime = 0;
+    let animationId, lastTime = 0, protocolTimer = null;
     const G_W = 450, G_H = 700, P_SIZE = 60, E_SIZE = 50, P_Y = G_H - 100;
     const HEROES = {
         burner: { emoji:'👩‍🎤', color:'#f43f5e', weapon:'⚡', fireRate:300, dmg:1, speed:6 },
@@ -1456,11 +1557,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('game-ui-gameover').style.display = 'none';
         uiH.style.display = 'flex'; updateGameDOM();
         if (animationId) cancelAnimationFrame(animationId);
+        if (protocolTimer) { clearTimeout(protocolTimer); protocolTimer = null; }
         lastTime = performance.now();
         animationId = requestAnimationFrame(gameLoop);
     };
     window.resetToCanvasMenu = function() {
         gState.status = 'select';
+        if (protocolTimer) { clearTimeout(protocolTimer); protocolTimer = null; }
+        if (animationId) cancelAnimationFrame(animationId);
         document.getElementById('game-ui-gameover').style.display = 'none';
         document.getElementById('game-ui-select').style.display = 'flex';
         ctx.clearRect(0,0,G_W,G_H);
@@ -1531,7 +1635,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         gState.enemies.splice(i,1); updateGameDOM();
                         if (gState.energy >= 100) {
                             gState.energy = 0; gState.protocol = true;
-                            setTimeout(() => { gState.enemies.forEach(ex => gState.score += ex.score); gState.enemies = []; gState.protocol = false; updateGameDOM(); }, 1000);
+                            protocolTimer = setTimeout(() => { if(gState.status !== 'playing') return; gState.enemies.forEach(ex => gState.score += ex.score); gState.enemies = []; gState.protocol = false; updateGameDOM(); protocolTimer=null; }, 1000);
                         }
                         break;
                     }
