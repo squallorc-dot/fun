@@ -57,7 +57,7 @@ for(const lang of ['zh','ja'])for(const key of keys){
   if(!html.includes('bio-city-living-city-20261024-1200.webp'))fail(file,'missing Bio-City cinematic city artwork');
   if(html.includes('creative-vision-guardians'))fail(file,'obsolete character collage in creative core');
  }
- if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="arcade-root"')&&html.includes('arcade-engine.js')&&html.includes('arcade.css')))fail(file,'Protocol UI missing');
+ if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="arcade-root"')&&html.includes('arcade-engine.js')&&html.includes('arcade.css')&&html.includes('arcade.css?v=20261024.24')&&html.includes('arcade-engine.js?v=20261024.24')))fail(file,'Protocol UI missing');
  if(key==='heroes'&&(html.match(/onclick="playHeroAudio/g)||[]).length!==7)fail(file,'expected 7 hero players');
  if(key==='music'&&(html.match(/<audio\b/g)||[]).length!==4)fail(file,'expected 4 OST tracks');
  checked++;

@@ -64,3 +64,91 @@ body[data-page="play"] .arcade-app{--arc:#76def3;--arc-muted:#a8c4d5;color:#eafa
 @media(max-width:720px){.arcade-screen{border-radius:13px}.arcade-select{padding:15px}.arcade-select-top{display:block}.arcade-tag{display:inline-flex;margin-top:12px}.arcade-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.arcade-hero{display:grid;grid-template-columns:65px 1fr;column-gap:9px;grid-template-rows:1fr 1fr;align-items:center;text-align:left;padding:7px;min-height:86px}.arcade-hero-image{grid-row:span 2;width:65px;height:72px}.arcade-hero strong{font-size:.84rem;align-self:end}.arcade-hero small{font-size:.66rem;align-self:start;min-height:0}.arcade-launch{flex-direction:column;align-items:stretch}.arcade-launch label{width:100%}.arcade-launch select{width:100%}.arcade-canvas-wrap{aspect-ratio:4/5}.arcade-topbar{flex-wrap:wrap;gap:7px;padding:10px 10px 8px}.arcade-badge{font-size:.58rem}.arcade-hud{order:3;flex:1 0 100%;justify-content:space-between;gap:7px;font-size:.63rem}.arcade-hud b{font-size:.75rem;margin-left:3px}.arcade-small{padding:6px 9px;font-size:.65rem}.arcade-bottombar{padding:9px 10px;font-size:.66rem;gap:6px}.arcade-sound{font-size:.63rem;padding:5px}.arcade-touch-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px 16px;background:#081c2d;touch-action:none}.arcade-stick{width:118px;height:118px;position:relative;flex:0 0 118px;border-radius:50%;background:radial-gradient(circle,#0b2e45,#061b2e);border:2px solid #43718a;box-shadow:inset 0 0 20px #032d4a;touch-action:none}.arcade-stick-ring{position:absolute;inset:21px;border:1px dashed #539bb8;border-radius:50%;opacity:.8;pointer-events:none}.arcade-stick-thumb{position:absolute;width:44px;height:44px;left:50%;top:50%;border:2px solid #76dfef;background:radial-gradient(circle,#277b94,#11475e);border-radius:50%;box-shadow:0 0 12px #1bb3da77;transform:translate(-50%,-50%);pointer-events:none}.arcade-touch-actions{display:flex;align-items:center;gap:10px;touch-action:none}.arcade-touch-actions>div{display:flex;flex-direction:column;gap:9px}.arcade-action{border:1px solid #5393aa;background:#113b54;color:white;border-radius:12px;min-width:65px;min-height:52px;padding:7px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;font-size:.85rem;font-weight:800;touch-action:none;cursor:pointer}.arcade-action small{font:700 .55rem 'Space Mono',monospace;color:#b2dfeb}.arcade-action--fire{width:78px;height:78px;border-radius:50%;border:2px solid #ea617d;background:radial-gradient(circle,#a73e59,#4c203a);box-shadow:0 0 20px #ee527a33}.arcade-action--skill{border-color:#b5a0ff}.arcade-control-note{padding:6px 11px 13px;font-size:.68rem}.arcade-control-note{font-size:0}.arcade-control-note span{display:block;font-size:.7rem}.arcade-result{padding:15px}.arcade-result h3{font-size:1.4rem}}
 @media(max-width:385px){.arcade-stick{width:105px;height:105px;flex-basis:105px}.arcade-action--fire{width:70px;height:70px}.arcade-action{min-width:60px}.arcade-touch-actions{gap:6px}.arcade-touch-controls{padding:12px 10px}.arcade-hero{grid-template-columns:55px 1fr}.arcade-hero-image{width:55px;height:65px}.arcade-hero small{font-size:.62rem}}
 @media(prefers-reduced-motion:reduce){.arcade-app *{transition:none!important;animation:none!important}}
+/* v20261024.24 — full-viewport battle mode, scroll lock, larger character cards. */
+.arcade-top-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.arcade-leave{border-color:#5e6d89;background:#17263a;color:#edf6fc}
+.arcade-leave:hover,.arcade-leave:focus-visible{border-color:#ed8fa4;background:#452436}
+
+/* The pregame roster is intentionally allowed to scroll with the webpage. */
+@media(min-width:1121px){
+ .arcade-roster{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+ .arcade-hero{padding:12px 12px 15px;gap:9px}
+ .arcade-hero-image{height:clamp(205px,19vw,265px)}
+ .arcade-hero strong{font-size:1rem}
+ .arcade-hero small{font-size:.78rem;min-height:0}
+}
+@media(min-width:721px) and (max-width:1120px){
+ .arcade-roster{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+ .arcade-hero{padding:10px;gap:8px}
+ .arcade-hero-image{height:clamp(170px,23vw,225px)}
+ .arcade-hero strong{font-size:.92rem}
+ .arcade-hero small{font-size:.72rem}
+}
+@media(max-width:720px){
+ .arcade-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .arcade-roster .arcade-hero{display:flex;flex-direction:column;text-align:center;align-items:center;min-height:0;padding:8px 8px 12px;gap:7px}
+ .arcade-roster .arcade-hero-image{grid-row:auto;width:100%;height:clamp(150px,43vw,208px)}
+ .arcade-roster .arcade-hero strong{font-size:.88rem;align-self:center}
+ .arcade-roster .arcade-hero small{font-size:.69rem;min-height:0;line-height:1.5;align-self:center}
+}
+
+/* Lock underlying document only after the user starts a battle. */
+html.arcade-scroll-locked{overflow:hidden!important;overscroll-behavior:none}
+body.arcade-scroll-locked{position:fixed!important;top:var(--arcade-scroll-offset,0px)!important;left:0;right:0;width:100%;overflow:hidden!important}
+body.arcade-scroll-locked :is(.app-header,.bottom-nav,.backtop,.floating-audio-player){visibility:hidden!important}
+body[data-page="play"] #arcade-root.arcade-immersive{
+ position:fixed!important;inset:0!important;width:100vw!important;
+ height:100vh!important;height:100dvh!important;
+ z-index:2147483000!important;margin:0!important;
+ padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+ overflow:hidden;overscroll-behavior:contain;background:#020c18;
+}
+.arcade-immersive .arcade-app,.arcade-immersive .arcade-screen{width:100%;height:100%;min-height:0}
+.arcade-immersive .arcade-screen{border:0;border-radius:0;box-shadow:none;background:#051426}
+.arcade-immersive .arcade-playing{height:100%;max-width:1440px;margin-inline:auto;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+.arcade-immersive .arcade-topbar,.arcade-immersive .arcade-bottombar,.arcade-immersive .arcade-touch-controls{flex:0 0 auto}
+.arcade-immersive .arcade-health-track{flex:0 0 4px}
+.arcade-immersive .arcade-canvas-wrap{aspect-ratio:auto!important;flex:1 1 0%;height:auto!important;min-height:0;min-width:0;overflow:hidden}
+.arcade-immersive .arcade-canvas-wrap canvas{width:100%;height:100%;touch-action:none}
+.arcade-immersive .arcade-control-note{display:none}
+.arcade-immersive .arcade-topbar{background:#071b2b}
+.arcade-immersive .arcade-bottombar{background:#061b2b}
+
+/* Even a large touchscreen tablet should receive touch controls. */
+@media(pointer:coarse){
+ .arcade-immersive .arcade-touch-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px clamp(12px,4vw,28px) 10px;background:#081b2b;touch-action:none}
+ .arcade-immersive .arcade-stick{width:108px;height:108px;flex:0 0 108px;position:relative;border-radius:50%;border:2px solid #43718a;background:radial-gradient(circle,#0b2e45,#061b2e);touch-action:none}
+ .arcade-immersive .arcade-stick-ring{position:absolute;inset:20px;border:1px dashed #539bb8;border-radius:50%;pointer-events:none}
+ .arcade-immersive .arcade-stick-thumb{position:absolute;width:42px;height:42px;top:50%;left:50%;transform:translate(-50%,-50%);border:2px solid #76dfef;background:#185874;border-radius:50%;pointer-events:none}
+ .arcade-immersive .arcade-touch-actions{display:flex;align-items:center;gap:10px}
+ .arcade-immersive .arcade-touch-actions>div{display:flex;flex-direction:column;gap:6px}
+ .arcade-immersive .arcade-action{min-width:64px;min-height:46px;border-radius:11px;touch-action:none}
+ .arcade-immersive .arcade-action--fire{width:78px;height:78px;border-radius:50%}
+}
+@media (pointer:fine){
+ .arcade-immersive .arcade-touch-controls{display:none}
+}
+@media(max-width:720px){
+ .arcade-immersive .arcade-topbar{gap:5px;padding:6px 9px}
+ .arcade-immersive .arcade-badge{display:none}
+ .arcade-immersive .arcade-hud{order:0;flex:1 1 auto;justify-content:flex-start;flex-wrap:wrap;gap:5px 12px}
+ .arcade-immersive .arcade-hud span{font-size:.63rem}
+ .arcade-immersive .arcade-hud b{font-size:.74rem}
+ .arcade-immersive .arcade-top-actions{gap:5px}
+ .arcade-immersive .arcade-small{min-height:35px;padding:6px 8px}
+ .arcade-immersive .arcade-leave span{display:none}
+ .arcade-immersive .arcade-bottombar{padding:7px 9px;gap:5px;font-size:.62rem}
+}
+@media(max-height:610px){
+ .arcade-immersive .arcade-topbar{padding-top:3px;padding-bottom:3px}
+ .arcade-immersive .arcade-bottombar{padding-top:4px;padding-bottom:4px}
+ .arcade-immersive .arcade-touch-controls{padding-top:4px;padding-bottom:4px}
+}
+@media(max-height:500px) and (orientation:landscape) and (pointer:coarse){
+ .arcade-immersive .arcade-touch-controls{position:absolute;left:0;right:0;bottom:31px;z-index:4;background:none;pointer-events:none}
+ .arcade-immersive .arcade-stick,.arcade-immersive .arcade-touch-actions{pointer-events:auto}
+ .arcade-immersive .arcade-stick{width:92px;height:92px;flex-basis:92px}
+ .arcade-immersive .arcade-action--fire{width:64px;height:64px}
+ .arcade-immersive .arcade-action{min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){.arcade-immersive *{transition:none!important}}
