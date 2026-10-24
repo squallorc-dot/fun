@@ -6,7 +6,8 @@ const assert=(x,m)=>{if(!x)fails.push(m)};
 const hub=read('arcade/assets/hub.js'),games=read('arcade/assets/games-core.js'),css=read('arcade/assets/arcade-hub.css');
 for(const id of ['g01','g02','g03','g04','g05','g06'])assert(hub.includes(`'${id}'`),id+' missing from lobby');
 for(const id of ['g01','g03','g04','g05','g06']){assert(games.includes(`R.${id}=`),id+' lacks playable engine');}
-assert(hub.includes("arcade-engine.js"),'G02 must reuse existing tested Guardian Assault');
+assert(hub.includes('shooter.html'),'G02 hub must load isolated shooter');
+assert(read('arcade/zh/shooter.html').includes('arcade-engine.js')&&read('arcade/ja/shooter.html').includes('arcade-engine.js'),'G02 iframe must reuse existing shooter engine');
 assert(hub.includes('shooter.html'),'G02 iframe adapter path missing');
 assert(!hub.includes("script.src='../../assets/arcade-engine.js"),'G02 must not dynamically reinject global engine');
 assert(hub.includes("msg.type==='ready'"),'G02 parent must wait for child readiness');
