@@ -70,8 +70,8 @@ try{
    verify(!(await panel.isVisible()),lang+' explore closes keyboard');
    await page.evaluate(()=>scrollTo(0,900));
    await page.waitForTimeout(120);
-   const placement=await page.evaluate(()=>{const b=document.querySelector('.backtop').getBoundingClientRect(),n=document.querySelector('.bottom-nav').getBoundingClientRect();return{separated:b.bottom<=n.top+1,wide:document.documentElement.scrollWidth<=innerWidth+3}});
-   verify(placement.separated&&placement.wide,lang+' backtop above fixed bottom navigation');
+   const placement=await page.evaluate(()=>{const b=document.querySelector('.backtop').getBoundingClientRect(),n=document.querySelector('.bottom-nav').getBoundingClientRect();return{separated:b.bottom<=n.top+1,wide:document.documentElement.scrollWidth<=innerWidth+3,rightGap:innerWidth-b.right,touchTarget:b.width>=44}});
+   verify(placement.separated&&placement.wide&&placement.rightGap>=0&&placement.rightGap<=12&&placement.touchTarget,lang+' backtop right-edge position and bottom-nav separation '+JSON.stringify(placement));
   }catch(e){errors.push(lang+' mobile header interactions '+e.message)}finally{await page.close()}
  }
  for(const [home,story] of [['FUNAI-CARE.html','zh/story.html'],['FUNAI-CARE_jp.html','ja/story.html']]){
