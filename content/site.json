@@ -1,0 +1,122 @@
+{
+  "base": "https://squallorc-dot.github.io/fun/",
+  "ogImage": "https://squallorc-dot.github.io/fun/images/Burner%20%E5%A7%90.png",
+  "gtm": "GTM-5M4KVKNX",
+  "version": "20261024.2",
+  "locales": {
+    "zh": {
+      "htmlLang": "zh-TW",
+      "brand": "FUNAI CARE 守護者聯盟",
+      "logo": "守護者聯盟",
+      "navAria": "主要導覽",
+      "quick": "快速導覽",
+      "skip": "跳至內容",
+      "backtop": "回到頂部",
+      "stop": "停止音樂",
+      "foot": "品牌 IP 概念與數位內容展示；商品資訊以船井購物網為準。",
+      "alt": "FUNAI CARE 守護者聯盟｜Burner 姐",
+      "names": [
+        "首頁",
+        "世界觀",
+        "英雄圖鑑",
+        "核心故事",
+        "原創音樂",
+        "互動體驗",
+        "數位策略"
+      ]
+    },
+    "ja": {
+      "htmlLang": "ja",
+      "brand": "FUNAI CARE ガーディアンズ",
+      "logo": "GUARDIANS",
+      "navAria": "メインメニュー",
+      "quick": "ショートカット",
+      "skip": "本文へ移動",
+      "backtop": "ページ上部へ",
+      "stop": "音楽を停止",
+      "foot": "ブランドIPとデジタルコンテンツの展示。製品情報は公式ストアをご確認ください。",
+      "alt": "FUNAI CARE ガーディアンズ｜バーナー姐さん",
+      "names": [
+        "ホーム",
+        "世界観",
+        "ヒーロー",
+        "ストーリー",
+        "音楽",
+        "体験",
+        "戦略"
+      ]
+    }
+  },
+  "meta": {
+    "home": {
+      "zh": {
+        "title": "FUNAI CARE 守護者聯盟｜FUNAI CARE",
+        "desc": "從既有角色、原創影音及品牌資產出發，共同建立可長期發展的 Bio-City 品牌 IP 宇宙。"
+      },
+      "ja": {
+        "title": "FUNAI CARE ガーディアンズ｜FUNAI CARE",
+        "desc": "既存キャラクターとオリジナル音楽・映像から始まる Bio-City ブランドIPプロジェクト。"
+      }
+    },
+    "world": {
+      "zh": {
+        "title": "Bio-City｜生命之城｜FUNAI CARE",
+        "desc": "探索 Bio-City 世界觀、英雄集結與熵能軍團的故事設定。"
+      },
+      "ja": {
+        "title": "Bio-City｜生命の都市｜FUNAI CARE",
+        "desc": "Bio-Cityの世界観と敵キャラクター、ヒーローたちの物語。"
+      }
+    },
+    "heroes": {
+      "zh": {
+        "title": "守護者聯盟｜英雄圖鑑｜FUNAI CARE",
+        "desc": "七組守護者完整角色圖鑑，包含性格、音樂與對應產品資訊。"
+      },
+      "ja": {
+        "title": "ガーディアンズ｜ヒーロー図鑑｜FUNAI CARE",
+        "desc": "7組のヒーローの個性、テーマ音楽、製品情報を紹介します。"
+      }
+    },
+    "story": {
+      "zh": {
+        "title": "Bio-City 覺醒時刻｜核心故事｜FUNAI CARE",
+        "desc": "從失去光芒的城市到英雄們的大反擊，一起認識 Bio-City 的四幕主線。"
+      },
+      "ja": {
+        "title": "Bio-City 覚醒の時｜ストーリー｜FUNAI CARE",
+        "desc": "光を失った都市からヒーローたちの反撃まで、4幕で描くストーリー。"
+      }
+    },
+    "music": {
+      "zh": {
+        "title": "FUNAI CARE 原創音樂與主題曲｜FUNAI CARE",
+        "desc": "收聽原創主題曲、角色音樂，瀏覽中日文歌詞與創作素材。"
+      },
+      "ja": {
+        "title": "FUNAI CARE オリジナル楽曲｜FUNAI CARE",
+        "desc": "テーマ曲、キャラクター音楽、日本語・中国語の歌詞を楽しめます。"
+      }
+    },
+    "play": {
+      "zh": {
+        "title": "角色配對與守護者特訓｜FUNAI CARE",
+        "desc": "從生活型態的趣味角色配對，到 Bio-City 守護者遊戲。"
+      },
+      "ja": {
+        "title": "ヒーローマッチングとミニゲーム｜FUNAI CARE",
+        "desc": "ヒーローマッチングと Bio-City ミニゲームを体験。"
+      }
+    },
+    "strategy": {
+      "zh": {
+        "title": "品牌 IP 數位行銷發展策略｜FUNAI CARE",
+        "desc": "串聯品牌 IP、YouTube、TikTok、原創音樂及 GA4 互動衡量的中長期構想。"
+      },
+      "ja": {
+        "title": "ブランドIP デジタル戦略｜FUNAI CARE",
+        "desc": "ブランドIP、動画、SNS、音楽、GA4計測をつなぐ継続的な企画。"
+      }
+    }
+  }
+}
