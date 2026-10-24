@@ -13,9 +13,13 @@ window.addEventListener('message',e=>{
  const hero=Math.max(0,Math.min(6,Number(e.data.hero)||0));
  document.querySelector('[data-ar-hero="'+hero+'"]')?.click();
  const sel=document.querySelector('#arcade-difficulty');
- if(sel&&['normal','hard','expert'].includes(e.data.difficulty))sel.value=e.data.difficulty;
- document.querySelector('[data-ar-command="start"]')?.click();
+ if(sel&&['normal','hard','expert'].includes(e.data.difficulty)){sel.value=e.data.difficulty;sel.dispatchEvent(new Event('change',{bubbles:true}));}
+ const start=document.querySelector('[data-ar-command="start"]');
+ if(!start){parent.postMessage({source:'bio-city-shooter',type:'error',reason:'start button missing'},location.origin);return;}
+ start.click();
+ parent.postMessage({source:'bio-city-shooter',type:'started'},location.origin);
 });
+window.addEventListener('load',()=>parent.postMessage({source:'bio-city-shooter',type:'ready'},location.origin),{once:true});
 </script>
 <script defer src="../assets/arcade-engine.js?v=20261024.24"></script>
 </body></html>
