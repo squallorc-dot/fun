@@ -31,6 +31,19 @@ try{
     const state=await page.evaluate(()=>({w:document.documentElement.scrollWidth,v:innerWidth,h:document.querySelectorAll('h1').length,main:!!document.querySelector('#main-content'),nav:!!document.querySelector('nav')}));
     verify(state.w<=state.v+3,file+' @'+width+' horizontal overflow '+state.w+'/'+state.v);
     verify(state.h===1&&state.main&&state.nav,file+' @'+width+' missing structure');
+
+    if(width<=430){
+     const menus=await page.evaluate(()=>{
+      const visible=el=>!!el&&el.getClientRects().length>0&&getComputedStyle(el).display!=='none';
+      const upper=[...document.querySelectorAll('.nav-mobile-wrap .main-nav>a')].filter(visible);
+      const lower=[...document.querySelectorAll('.bottom-nav>a')].filter(visible);
+      const bar=document.querySelector('.nav-mobile-wrap .main-nav');
+      return{up:upper.length,down:lower.length,distinct:new Set([...upper,...lower].map(x=>x.href)).size,
+       noHorizontalClip:bar.scrollWidth<=bar.clientWidth+2,toolHidden:!visible(document.querySelector('.mobile-nav-tools'))};
+     });
+     verify(menus.up===3&&menus.down===4&&menus.distinct===7,file+' @'+width+' duplicate or missing mobile navigation '+JSON.stringify(menus));
+     verify(menus.noHorizontalClip&&menus.toolHidden,file+' @'+width+' mobile navigation clipped or controls visible');
+    }
    }catch(e){errors.push(file+' @'+width+' '+e.message)}
   }
   await page.close();
