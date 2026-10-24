@@ -179,16 +179,29 @@ document.addEventListener('click',function(event){
 })();
 
 
-/* Mobile primary-nav controls: discoverable swiping + fully visible menu. */
-(function initMobileNav(){
- const scroll=document.querySelector('.nav-mobile-wrap .main-nav'),panel=document.getElementById('all-pages-menu'),toggle=document.querySelector('.nav-all-btn');
- if(!scroll||!panel||!toggle)return;
- const buttons=[...document.querySelectorAll('.nav-scroll-btn')];
- const update=()=>{let max=Math.max(0,scroll.scrollWidth-scroll.clientWidth);buttons.forEach(b=>{b.disabled=b.dataset.navMove==="-1"?scroll.scrollLeft<=3:scroll.scrollLeft>=max-3})};
- buttons.forEach(button=>button.addEventListener('click',()=>scroll.scrollBy({left:Number(button.dataset.navMove)*Math.max(180,scroll.clientWidth*.64),behavior:'smooth'})));
- scroll.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);window.addEventListener('load',update);
- toggle.addEventListener('click',()=>{const opening=panel.hidden;panel.hidden=!opening;toggle.setAttribute('aria-expanded',String(opening));if(opening)panel.querySelector('a[aria-current="page"]')?.focus()});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus()}});
- document.addEventListener('click',e=>{if(!panel.hidden&&!e.target.closest('.nav-all-panel,.nav-all-btn')){panel.hidden=true;toggle.setAttribute('aria-expanded','false')}});
- const active=scroll.querySelector('a[aria-current="page"]');if(active){const pos=active.offsetLeft-scroll.offsetLeft-Math.max(0,(scroll.clientWidth-active.offsetWidth)/2);scroll.scrollLeft=Math.max(0,pos)}update();
+/* Mobile header: accessible explore drawer and language dropdown. */
+(function initMobileHeader(){
+ const toggle=document.querySelector('.mobile-explore-toggle');
+ const panel=document.getElementById('mobile-explore-panel');
+ const languages=document.querySelector('.mobile-language');
+ if(!toggle||!panel)return;
+ const close=()=>{panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label',document.documentElement.lang==='ja'?'探索メニューを開く':'開啟探索選單')};
+ toggle.addEventListener('click',()=>{
+  const opening=panel.hidden;
+  languages?.removeAttribute('open');
+  panel.hidden=!opening;
+  toggle.setAttribute('aria-expanded',String(opening));
+  toggle.setAttribute('aria-label',document.documentElement.lang==='ja'?(opening?'探索メニューを閉じる':'探索メニューを開く'):(opening?'關閉探索選單':'開啟探索選單'));
+  if(opening)panel.querySelector('a[aria-current="page"]')?.focus();
+ });
+ languages?.addEventListener('toggle',()=>{if(languages.open)close()});
+ document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(!panel.hidden){close();toggle.focus()}else if(languages?.open){languages.open=false;languages.querySelector('summary')?.focus()}
+ });
+ document.addEventListener('click',e=>{
+  if(!panel.hidden&&!e.target.closest('.mobile-explore-panel,.mobile-explore-toggle'))close();
+  if(languages?.open&&!e.target.closest('.mobile-language'))languages.open=false;
+ });
+ window.addEventListener('resize',()=>{if(innerWidth>760){close();if(languages)languages.open=false}});
 })();

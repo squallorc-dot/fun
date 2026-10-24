@@ -33,20 +33,46 @@ try{
     verify(state.h===1&&state.main&&state.nav,file+' @'+width+' missing structure');
 
     if(width<=430){
-     const menus=await page.evaluate(()=>{
+     const state=await page.evaluate(()=>{
       const visible=el=>!!el&&el.getClientRects().length>0&&getComputedStyle(el).display!=='none';
-      const upper=[...document.querySelectorAll('.nav-mobile-wrap .main-nav>a')].filter(visible);
-      const lower=[...document.querySelectorAll('.bottom-nav>a')].filter(visible);
-      const bar=document.querySelector('.nav-mobile-wrap .main-nav');
-      return{up:upper.length,down:lower.length,distinct:new Set([...upper,...lower].map(x=>x.href)).size,
-       noHorizontalClip:bar.scrollWidth<=bar.clientWidth+2,toolHidden:!visible(document.querySelector('.mobile-nav-tools'))};
+      const bottom=[...document.querySelectorAll('.bottom-nav>a')].filter(visible);
+      const header=document.querySelector('.app-header-inner');
+      return{bottom:bottom.length,headerHeight:header.getBoundingClientRect().height,
+       desktopNavHidden:!visible(document.querySelector('.main-nav')),
+       language:visible(document.querySelector('.mobile-language summary')),
+       explore:visible(document.querySelector('.mobile-explore-toggle')),
+       exploreClosed:!visible(document.querySelector('#mobile-explore-panel')),
+       brand:visible(document.querySelector('.logo'))};
      });
-     verify(menus.up===3&&menus.down===4&&menus.distinct===7,file+' @'+width+' duplicate or missing mobile navigation '+JSON.stringify(menus));
-     verify(menus.noHorizontalClip&&menus.toolHidden,file+' @'+width+' mobile navigation clipped or controls visible');
+     verify(state.bottom===4&&state.headerHeight<=72&&state.desktopNavHidden&&state.language&&state.explore&&state.exploreClosed&&state.brand,file+' @'+width+' compact mobile header '+JSON.stringify(state));
     }
    }catch(e){errors.push(file+' @'+width+' '+e.message)}
   }
   await page.close();
+ }
+ for(const lang of locales){
+  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+  try{
+   await page.goto(origin+'/'+lang+'/strategy.html',{waitUntil:'domcontentloaded'});
+   const toggle=page.locator('.mobile-explore-toggle'),panel=page.locator('#mobile-explore-panel'),language=page.locator('.mobile-language');
+   await toggle.click();
+   verify(await panel.isVisible(),lang+' explore opens');
+   verify(await panel.locator('a').count()===3,lang+' exactly three secondary links');
+   verify((await page.evaluate(()=>{const a=[...document.querySelectorAll('.bottom-nav>a,.mobile-explore-panel>a')];return new Set(a.map(x=>x.href)).size}))===7,lang+' seven unique routes');
+   await page.keyboard.press('Escape');
+   verify(!(await panel.isVisible()),lang+' Escape closes explore');
+   await language.locator('summary').click();
+   verify(await language.locator('.mobile-language-options').isVisible(),lang+' languages open');
+   await toggle.click();
+   verify(!(await language.locator('.mobile-language-options').isVisible()),lang+' explore closes language');
+   await page.keyboard.press('Escape');
+   verify(!(await panel.isVisible()),lang+' explore closes keyboard');
+   await page.evaluate(()=>scrollTo(0,900));
+   await page.waitForTimeout(120);
+   const placement=await page.evaluate(()=>{const b=document.querySelector('.backtop').getBoundingClientRect(),n=document.querySelector('.bottom-nav').getBoundingClientRect();return{separated:b.bottom<=n.top+1,wide:document.documentElement.scrollWidth<=innerWidth+3}});
+   verify(placement.separated&&placement.wide,lang+' backtop above fixed bottom navigation');
+  }catch(e){errors.push(lang+' mobile header interactions '+e.message)}finally{await page.close()}
  }
  for(const [home,story] of [['FUNAI-CARE.html','zh/story.html'],['FUNAI-CARE_jp.html','ja/story.html']]){
   const page=await browser.newPage({viewport:{width:390,height:844}});
