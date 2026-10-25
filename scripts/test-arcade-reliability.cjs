@@ -5,7 +5,7 @@ function instance(game,seed,difficulty='normal',size={w:640,h:510}){
  let state=seed>>>0;const random=()=>{state=(Math.imul(1664525,state)+1013904223)>>>0;return state/4294967296};
  const rng=Object.create(Math);rng.random=random;
  const ctx={Math:rng,window:{},console};vm.runInNewContext(code,ctx);
- let finished=null;const env={hero:0,difficulty,mode:'volley',I:{hero:Array.from({length:7},(_,i)=>String(i))},sfx:()=>{},finish:(...r)=>finished=r,ga:()=>{}};
+ let finished=null;const env={hero:0,difficulty,testMode:true,mode:'volley',I:{hero:Array.from({length:7},(_,i)=>String(i))},sfx:()=>{},finish:(...r)=>finished=r,ga:()=>{}};
  const g=ctx.window.BioSuiteGames[game](env);g.w=size.w;g.h=size.h;g.start();return{g,result:()=>finished};
 }
 const idle={left:false,right:false,up:false,down:false,jump:false,fire:false,skill:false,pointer:{down:false,x:0,y:0}};
@@ -40,6 +40,17 @@ for(let i=0;i<180;i++){
 }
 assert(landed,'holding down must land on the next reachable platform');
 console.log('G03 held drop catches next platform: PASS');
+const falling=instance('g03',17,'normal',{w:480,h:720});falling.g.testFreeFall();
+for(let i=0;i<300&&!falling.result();i++)falling.g.update(1/60,idle);
+assert.equal(falling.result()?.[0],false,'uninterrupted freefall must not clear the game');
+assert(falling.g.debugGeometry().depth<1700,'freefall loses lives before reaching the goal');
+assert.equal(falling.g.debugGeometry().player.hp,0);
+const landing=instance('g03',1,'normal',{w:480,h:720}).g;
+for(let i=0;i<60;i++)landing.update(1/60,idle);
+let landedAfterDrop=false;
+for(let i=0;i<180;i++){landing.update(1/60,{...idle,down:true});const state=landing.debugGeometry();if(i>20&&state.player.ground){landedAfterDrop=true;assert.equal(state.player.fallFrom,state.player.y,'landing resets fall distance');assert.equal(state.player.hp,3,'ordinary platform descent stays safe');break;}}
+assert(landedAfterDrop);
+console.log('G03 freefall defeat and safe landing reset: PASS');
 function simulateMarble(dt){const {g}=instance('g04',117,'normal');let time=0,started=false;
  while(time<5-0.00001){const step=Math.min(dt,5-time);g.update(step,{...idle,fire:!started});started=true;time+=step;}
  return g.debugPhysics();}
