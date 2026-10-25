@@ -51,6 +51,8 @@ try{
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
    const open=async(id)=>{
     await page.locator('[data-launch="'+id+'"]').click();
+    check(await page.locator('#campaign-brief').count()===1,label+' '+id+' chapter briefing shown');
+    check((await page.locator('#campaign-brief').textContent()).includes('1'),label+' '+id+' first chapter description shown');
     await page.locator('#setup-play').click();
     await page.locator('#stage.active').waitFor();
    };
