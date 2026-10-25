@@ -85,6 +85,36 @@ try{
     await page.locator('#stage-back').click();
     await inLobby();
    }
+   // Single-owner RAF, pause/resume, blur and multi-touch lifecycle assertions.
+   await open('g03');
+   await page.locator('#hub-canvas').waitFor();
+   const status=()=>page.evaluate(()=>window.BioSuiteHub.debugState);
+   check((await status()).rafQueued,label+' a single frame queued');
+   await page.locator('#stage-pause').click();
+   check((await status()).paused&&!(await status()).rafQueued,label+' pause cancels RAF');
+   for(let cycle=0;cycle<4;cycle++){
+     await page.locator('#pause-resume').click();
+     check((await status()).rafQueued&&!(await status()).paused,label+' resumed RAF '+cycle);
+     await page.locator('#stage-pause').click();
+     check(!(await status()).rafQueued&&(await status()).paused,label+' re-pause RAF '+cycle);
+   }
+   await page.locator('#pause-resume').click();
+   await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+   check((await status()).paused&&!(await status()).rafQueued,label+' blur pauses without queued frames');
+   await page.locator('#pause-resume').click();
+   await page.evaluate(()=>{
+     const btn=document.querySelector('[data-touch="left"]');
+     btn.dispatchEvent(new PointerEvent('pointerdown',{pointerId:511,bubbles:true}));
+     btn.dispatchEvent(new PointerEvent('pointerdown',{pointerId:512,bubbles:true}));
+     btn.dispatchEvent(new PointerEvent('pointerup',{pointerId:511,bubbles:true}));
+   });
+   check((await status()).touch.includes('left'),label+' second finger remains held');
+   await page.evaluate(()=>document.querySelector('[data-touch="left"]').dispatchEvent(new PointerEvent('pointercancel',{pointerId:512,bubbles:true})));
+   check(!(await status()).touch.includes('left'),label+' pointercancel releases last finger');
+   await page.evaluate(()=>window.BioSuiteHub.finish(false,10,'lifecycle test'));
+   check(!(await status()).rafQueued,label+' result stops RAF');
+   await page.locator('#stage-back').click();await inLobby();
+   check(!(await status()).rafQueued,label+' exit retains no RAF');
    // Volleyball and Pong use different persistent records.
    await page.locator('[data-launch="g05"]').click();
    await page.locator('[data-mode="volley"]').click();
