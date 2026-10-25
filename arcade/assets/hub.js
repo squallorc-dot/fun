@@ -24,7 +24,7 @@ const currentLocale=ja?'ja':'zh'; const trackUrl=i=>'../../music/'+srcTrack[i];
 const stageSongs={g01:[1,1,1,3,1],g02:[2,2,3,2,3],g03:[0,0,3,0,2],g04:[3,3,2,3,1],g05:[0,0,3,2,1],g06:[1,0,2,1,3]};
 function selectStageSong(id){
  if(prefs.playMode==='off')return false;
- if(prefs.playMode==='scene')prefs.track=(stageSongs[id]||stageSongs.g03)[Math.max(1,Math.min(5,chapter))-1];
+ if(prefs.playMode==='scene')prefs.track=(stageSongs[id]||stageSongs.g03)[Math.max(1,Math.min(5,sessionKind==='campaign'?chapter:1))-1];
  else if(prefs.playMode==='shuffle'){
    const next=Math.floor(Math.random()*(srcTrack.length-1));
    prefs.track=next>=prefs.track?next+1:next;
