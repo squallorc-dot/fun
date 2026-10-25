@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,follow"><title>Bio-City｜連續 OST 播放模式</title><link rel="stylesheet" href="assets/ost-shell.css?v=20261025.10"></head>
+<body><iframe id="bio-website" title="FUNAI CARE 守護者聯盟內容" allow="autoplay" loading="eager"></iframe>
+<audio id="persistent-audio" preload="none"></audio>
+<button type="button" id="persistent-mini" aria-label="開啟音樂控制">♪ OST</button>
+<button type="button" id="persistent-expand" aria-controls="persistent-panel" aria-expanded="false" aria-label="開啟音樂控制">♫</button>
+<section id="persistent-panel" role="dialog" aria-label="OST 音樂設定" aria-hidden="true" hidden>
+<h1 id="persistent-title">Bio-City OST</h1><label><span>OST</span><select id="persistent-track"></select></label>
+<button id="persistent-toggle" type="button">▶ PLAY</button>
+<label><span>BGM</span><input id="persistent-volume" type="range" min="0" max="100" value="36"></label>
+<p id="persistent-note"></p><button id="persistent-close" type="button">✕</button><button id="persistent-leave" type="button">離開連續模式</button>
+</section><script defer src="assets/ost-shell.js?v=20261025.10"></script></body></html>
