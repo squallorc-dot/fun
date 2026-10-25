@@ -27,6 +27,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  test(new URL(page.url()).searchParams.get('page')?.includes('/world.html'),lang+' deep route state updated');
  await frame.locator('a[href*="music.html"]').first().click();
  await frame.locator('.ost-player-card').first().waitFor();
+ await frame.locator('.ost-shell-play').first().waitFor({state:'visible',timeout:8000});
  test(await frame.locator('.ost-shell-play').count()===4,lang+' songs use shared persistent audio');
  await frame.locator('.ost-shell-play').first().click();
  test((await page.evaluate(()=>window.BioGlobalOST.state.track))===0,lang+' song card selects OST');
