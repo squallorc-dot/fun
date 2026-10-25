@@ -20,8 +20,8 @@ if(shell){
   btn.addEventListener('click',()=>controller.playIndex(i));
   audio.after(btn);
  });
- document.addEventListener('play',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStarted();}},true);
- document.addEventListener('pause',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStopped();}},true);
+ document.addEventListener('play',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStarted(e.target);}},true);
+ document.addEventListener('pause',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStopped(e.target);}},true);
  return;
 }
 if(document.querySelector('#bio-ost-entry'))return;
