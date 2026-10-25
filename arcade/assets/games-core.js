@@ -20,26 +20,124 @@ function fighter(ctx,x,y,z,size,color,time,state='idle',dir=1,id=0,hp=1){const s
 function ends(g,win,score,note){if(g._finished)return;g._finished=true;g.finish(win,score,note)}
 function cObj(x,y,rest={}){return {x,y,...rest}}
 R.g01=env=>{
-let p,enemies=[],wave=1,spawn=0,spawnClock=0,elapsed=0,score=0,kills=0,t=.0,button={},lock=false,bossSpawned=false;const mode=env.difficulty==='expert'?1.65:env.difficulty==='hard'?1.3:1;
-function addEnemy(type='grunt'){const w=g.w,h=g.h;const e=cObj(w+35,between(h*.58+Math.random()*h*.3,h*.52,h*.87),{type,hp:type==='boss'?520*mode:type==='brute'?105*mode:type==='ranged'?65*mode:55*mode,max:1,speed:type==='boss'?75:type==='brute'?47:type==='ranged'?64:80,hit:0,attack:0,tele:0,dir:-1,phase:0});e.max=e.hp;if(type==='boss')e.x=w-80;enemies.push(e)}
-function getWave(n){wave=n;spawn=n===1?6:n===2?9:3;spawnClock=.65;bossSpawned=false}
-function attack(){if(p.attackCool>0||p.stun>0)return;p.combo=p.comboTimer>0?(p.combo+1)%3:0;p.comboTimer=.75;p.attack=.19;p.attackCool=.24;p.dir=p.lastDir||p.dir;const range=53+p.combo*15;let hits=0;for(const e of enemies){if(e.hp<=0)continue;const dx=e.x-p.x,dy=e.y-p.y;if(dx*p.dir>0&&dx*p.dir<range&&Math.abs(dy)<35&&p.z<38){e.hp-=([17,23,32][p.combo])*(p.hero===3?1.35:p.hero===2?1.2:1);e.hit=.2;e.x+=p.dir*(13+p.combo*9);hits++}}if(hits){p.energy=Math.min(100,p.energy+hits*9);score+=hits*6;env.sfx(360,0.07)}else env.sfx(160,.025);}
-function skill(){if(p.energy<100||p.stun>0)return;p.energy=0;p.attack=.45;for(const e of enemies){if(Math.hypot(e.x-p.x,(e.y-p.y)*2)<130){e.hp-=85*(p.hero===6?1.4:1);e.hit=.45;e.x+=p.dir*34;}}p.hp=Math.min(p.max,p.hp+(p.hero===5?30:0));env.sfx(790,.21);}
-function jump(){if(p.z>0||p.vz>0)return;p.vz=400;env.sfx(530,.05)}
-function dodge(){if(p.dodge>0)return;p.inv=.35;p.dodge=.8;p.dash=.19;env.sfx(660,.05)}
-const g={w:960,h:540,finish:env.finish,start(){let w=g.w,h=g.h;p={hero:env.hero,x:w*.25,y:h*.75,z:0,vz:0,dir:1,lastDir:1,hp:[140,130,180,115,125,150,120][env.hero],max:[140,130,180,115,125,150,120][env.hero],energy:38,combo:0,comboTimer:0,attack:0,attackCool:0,dodge:0,dash:0,inv:0,stun:0};getWave(1)},onResize(ow,oh,w,h){if(!p)return;const sx=w/(ow||w),sy=h/(oh||h);p.x*=sx;p.y*=sy;for(const e of enemies){e.x*=sx;e.y*=sy}},update(dt,input){if(g._finished)return;t+=dt;elapsed+=dt;for(const key of ['attack','attackCool','comboTimer','dodge','dash','inv','stun'])p[key]=Math.max(0,p[key]-dt);
- const rising=(key,pressed)=>{if(pressed&&!button[key]){button[key]=true;return true}if(!pressed)button[key]=false;return false};if(rising('jump',input.jump))jump();if(rising('dodge',input.dodge))dodge();if(rising('skill',input.skill))skill();if(input.fire&&p.attackCool<=0)attack();
- let vx=(input.right?1:0)-(input.left?1:0),vy=(input.down?1:0)-(input.up?1:0);if(vx){p.dir=vx>0?1:-1;p.lastDir=p.dir;}let mult=p.dash>0?2.6:1,spd=env.hero===3?190:env.hero===2?125:163;p.x=between(p.x+vx*spd*mult*dt,24,g.w-24);p.y=between(p.y+vy*spd*.65*dt,g.h*.55,g.h*.88);p.z=Math.max(0,p.z+p.vz*dt);p.vz-=920*dt;if(p.z===0)p.vz=0;
- spawnClock-=dt;if(spawn>0&&spawnClock<=0){addEnemy(wave===1?'grunt':wave===2?pick(['grunt','ranged','brute']):pick(['brute','ranged']));spawn--;spawnClock=wave===1?.85:.75;}if(wave===3&&spawn===0&&!bossSpawned){addEnemy('boss');bossSpawned=true;}
- for(const e of enemies){e.hit=Math.max(0,e.hit-dt);e.attack=Math.max(0,e.attack-dt);e.tele=Math.max(0,e.tele-dt);const dist=Math.abs(e.x-p.x),lane=Math.abs(e.y-p.y);e.dir=p.x<e.x?-1:1;if(e.hp<=0)continue;if(e.type==='boss'){e.phase+=dt;if(dist>58)e.x+=e.dir*e.speed*dt;if(lane>15)e.y+=(p.y>e.y?1:-1)*25*dt;if(e.attack<=0&&dist<85&&lane<45){e.tele=.65;e.attack=1.9;}if(e.tele>0&&e.tele<dt+.03&&dist<90&&lane<45&&p.inv<=0){p.hp-=24*mode;p.inv=.5;p.stun=.15;env.sfx(90,.18);}}
- else if(e.type==='ranged'){if(dist>155)e.x+=e.dir*e.speed*dt;else if(dist<95)e.x-=e.dir*e.speed*.4*dt;if(lane>20)e.y+=(p.y>e.y?1:-1)*24*dt;if(e.attack<=0&&dist<175&&lane<40){e.tele=.45;e.attack=2.1;}if(e.tele>0&&e.tele<dt+.03&&dist<190&&lane<40&&p.inv<=0){p.hp-=11*mode;p.inv=.52;env.sfx(130,.08);}}
- else {if(dist>35)e.x+=e.dir*e.speed*dt;if(lane>7)e.y+=(p.y>e.y?1:-1)*e.speed*.45*dt;if(dist<40&&lane<35&&e.attack<=0){e.tele=.3;e.attack=e.type==='brute'?1.8:1.35;}if(e.tele>0&&e.tele<dt+.03&&dist<45&&lane<35&&p.inv<=0){p.hp-=(e.type==='brute'?19:10)*mode;p.inv=.45;p.stun=.08;env.sfx(120,.12);}}}
- enemies=enemies.filter(e=>{if(e.hp>0)return true;score+=e.type==='boss'?1200:e.type==='brute'?80:40;kills++;p.energy=Math.min(100,p.energy+6);return false});if(p.hp<=0){ends(g,false,score,`WAVE ${wave} · ${kills} KO`);return;}if(spawn===0&&enemies.length===0){if(wave===3){ends(g,true,score+Math.floor(p.hp)*8,`${kills} KO`);return;}getWave(++wave);p.hp=Math.min(p.max,p.hp+20);}}
- ,draw(ctx){const w=g.w,h=g.h;arena(ctx,w,h,t);const horizon=h*.43;words(ctx,`SECTOR 0${wave} / CORE DEFENSE`,18,31,13,'#89eff7');const sorted=[...enemies,{...p,type:'hero'}].sort((a,b)=>a.y-b.y);for(const e of sorted){if(e.type==='hero'){if(p.inv>.05&&Math.floor(t*16)%2===0)continue;fighter(ctx,p.x,p.y,p.z,between(Math.min(w,h)*.095,34,55),pal[p.hero],t,p.attack?'attack':p.z?'jump':'walk',p.dir,p.hero);if(p.dash>0)trace(ctx,p.x,p.y-20,35,pal[p.hero]);}
- else {const col=e.type==='boss'?'#ff3b80':e.type==='brute'?'#fc995a':e.type==='ranged'?'#e09cff':'#ff6b8a';fighter(ctx,e.x,e.y,0,e.type==='boss'?between(Math.min(w,h)*.15,67,87):e.type==='brute'?between(Math.min(w,h)*.115,45,66):between(Math.min(w,h)*.082,31,48),e.hit?'#fff':col,t,e.tele?'attack':'walk',e.dir,1);if(e.tele>0){trace(ctx,e.x,e.y-28,e.type==='boss'?65:33,'#ff3a5c');}bar(ctx,e.x-26,e.y-68,e.type==='boss'?66:52,4,e.hp/e.max,'#fa748d');}}
- ctx.fillStyle='#f2fdff';words(ctx,`HERO  ${env.I.hero[env.hero]}`,16,h-18,12);if(p){bar(ctx,16,h-44,Math.min(200,w*.48),10,p.hp/p.max,'#72e9ca');bar(ctx,16,h-55,Math.min(200,w*.48),5,p.energy/100,'#b4a2ff');}}
- ,hud(){return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo+1||1}</b></span><span>SCORE <b>${score}</b></span>`;}};
- return g;};
+let p,enemies=[],bolts=[],effects=[],wave=1,spawn=0,spawnClock=0,elapsed=0,score=0,kills=0,t=0,button={},bossSpawned=false,impactStop=0;
+const mode=env.difficulty==='expert'?1.65:env.difficulty==='hard'?1.3:1;
+const health=[140,130,180,115,125,150,120];
+function addEnemy(type='grunt'){
+ const w=g.w,h=g.h;
+ const e=cObj(w+35,between(h*.58+Math.random()*h*.3,h*.52,h*.87),{type,hp:(type==='boss'?520:type==='brute'?105:type==='ranged'?65:55)*mode,max:1,speed:type==='boss'?75:type==='brute'?47:type==='ranged'?64:80,hit:0,attack:0,tele:0,dir:-1,phase:0,attackKind:'',targetX:0,targetY:0});
+ e.max=e.hp;if(type==='boss')e.x=w-80;enemies.push(e);
+}
+function getWave(n){wave=n;spawn=n===1?6:n===2?9:3;spawnClock=.65;bossSpawned=false;bolts=[];}
+function sparks(x,y,col,n=8){for(let i=0;i<n;i++){const a=rnd(0,TAU),v=rnd(45,170);effects.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:rnd(1,3.6),life:rnd(.12,.35),color:col});}}
+function wound(amt,source){if(p.inv>0||p.z>32||p.dash>0)return false;p.hp=Math.max(0,p.hp-amt);p.inv=.6;p.stun=.13;impactStop=.065;sparks(p.x,p.y-32,'#ff8298',12);env.sfx(125,.12);return true;}
+function aimAt(target,source,speed,damage,col='#ed94f8'){
+ let dx=target.x-source.x,dy=target.y-source.y,mag=Math.hypot(dx,dy)||1;
+ bolts.push({x:source.x,y:source.y-28,vx:dx/mag*speed,vy:dy/mag*speed,r:7,life:3.0,damage,color:col});
+}
+function attack(){if(p.attackCool>0||p.stun>0)return;const combo=p.comboTimer>0?(p.combo%3)+1:1;p.combo=combo;p.comboTimer=.82;p.attack=.21;p.attackCool=[0,.26,.28,.34][combo];p.dir=p.lastDir||p.dir;
+ const range=48+combo*14;let hits=0;
+ for(const e of enemies){if(e.hp<=0)continue;const dx=e.x-p.x,dy=e.y-p.y;
+  if(dx*p.dir>-18&&dx*p.dir<range&&Math.abs(dy)<38&&p.z<40){
+   e.hp-=([0,17,24,37][combo])*(p.hero===3?1.35:p.hero===2?1.2:1);
+   e.hit=.23;e.tele=0;e.attackKind='';e.x=between(e.x+p.dir*(10+combo*7),20,g.w+40);hits++;
+   sparks(e.x,e.y-35,combo===3?'#fff0ab':'#8eefff',combo===3?13:7);
+  }
+ }
+ if(hits){p.energy=Math.min(100,p.energy+hits*10);score+=hits*(5+combo*3);impactStop=combo===3?.09:.045;env.sfx(355+combo*95,.07)}else env.sfx(160,.025);
+}
+function skill(){if(p.energy<100||p.stun>0)return;p.energy=0;p.attack=.5;p.attackCool=.48;let hits=0;
+ for(const e of enemies){if(e.hp<=0)continue;if(Math.hypot(e.x-p.x,(e.y-p.y)*2)<145){e.hp-=85*(p.hero===6?1.4:1);e.hit=.43;e.tele=0;e.x+=p.dir*34;hits++;}}
+ bolts=bolts.filter(b=>Math.hypot(b.x-p.x,b.y+28-p.y)>165);
+ if(p.hero===5)p.hp=Math.min(p.max,p.hp+30);
+ if(p.hero===2)p.inv=Math.max(p.inv,1.1);
+ p.energy=Math.min(100,p.energy+Math.max(0,hits-1)*3);
+ effects.push({type:'ring',x:p.x,y:p.y-42,r:150,life:.45,color:pal[p.hero]});sparks(p.x,p.y-42,pal[p.hero],24);env.sfx(790,.21);
+}
+function jump(){if(p.z>0||p.vz>0||p.stun>0)return;p.vz=400;env.sfx(530,.05)}
+function dodge(){if(p.dodge>0||p.stun>0)return;p.inv=.38;p.dodge=.9;p.dash=.19;p.dashDir=p.lastDir||1;env.sfx(660,.05)}
+function moveEnemy(e,dt){
+ e.hit=Math.max(0,e.hit-dt);e.attack=Math.max(0,e.attack-dt);
+ const dist=Math.abs(e.x-p.x),lane=Math.abs(e.y-p.y);e.dir=p.x<e.x?-1:1;
+ if(e.hit>0)return;
+ if(e.tele>0){const old=e.tele;e.tele=Math.max(0,e.tele-dt);if(old>0&&e.tele===0){
+   if(e.type==='boss'&&e.attackKind==='slam'){
+    effects.push({type:'ring',x:e.targetX,y:e.targetY-8,r:60,life:.38,color:'#fd7895'});
+    if(Math.hypot(p.x-e.targetX,(p.y-e.targetY)*1.5)<63)wound(27*mode,e);
+   }else if(e.type==='boss'&&e.attackKind==='volley'){
+    for(let i=-1;i<=1;i++){
+     const target={x:p.x+i*28,y:p.y+i*20};aimAt(target,e,195,16*mode,'#ff6c9d');
+    }
+   }else if(e.type==='ranged')aimAt(p,e,215,12*mode);
+   else if(dist<47&&lane<39)wound((e.type==='brute'?19:10)*mode,e);
+   e.attackKind='';
+  }
+  return;
+ }
+ if(e.type==='boss'){
+  e.phase+=dt;
+  if(dist>67)e.x+=e.dir*e.speed*dt;
+  if(lane>18)e.y+=(p.y>e.y?1:-1)*27*dt;
+  if(e.attack<=0&&dist<235&&lane<100){
+   e.attackKind=(dist<115&&e.phase%3<2)?'slam':'volley';
+   e.tele=e.attackKind==='slam'?.76:1.0;e.attack=2.05;
+   e.targetX=p.x;e.targetY=p.y;
+  }
+ }else if(e.type==='ranged'){
+  if(dist>160)e.x+=e.dir*e.speed*dt;else if(dist<112)e.x-=e.dir*e.speed*.5*dt;
+  if(lane>17)e.y+=(p.y>e.y?1:-1)*24*dt;
+  if(e.attack<=0&&dist<270&&lane<75){e.tele=.57;e.attack=2.1;e.attackKind='bolt';}
+ }else{
+  if(dist>37)e.x+=e.dir*e.speed*dt;
+  if(lane>7)e.y+=(p.y>e.y?1:-1)*e.speed*.45*dt;
+  if(dist<47&&lane<38&&e.attack<=0){e.tele=e.type==='brute'?.53:.36;e.attack=e.type==='brute'?1.7:1.3;e.attackKind='melee';}
+ }
+}
+const g={w:960,h:540,finish:env.finish,
+ start(){g._finished=false;let w=g.w,h=g.h;p={hero:env.hero,x:w*.25,y:h*.75,z:0,vz:0,dir:1,lastDir:1,hp:health[env.hero],max:health[env.hero],energy:38,combo:0,comboTimer:0,attack:0,attackCool:0,dodge:0,dash:0,dashDir:1,inv:0,stun:0};enemies=[];bolts=[];effects=[];t=0;elapsed=0;score=0;kills=0;button={};impactStop=0;getWave(1);},
+ onResize(ow,oh,w,h){if(!p)return;const sx=w/(ow||w),sy=h/(oh||h);p.x*=sx;p.y*=sy;for(const group of [enemies,bolts,effects])for(const e of group){e.x*=sx;e.y*=sy;if(e.targetX)e.targetX*=sx;if(e.targetY)e.targetY*=sy;}},
+ update(dt,input){if(g._finished)return;
+  dt=Math.max(0,Math.min(dt,.045));t+=dt;elapsed+=dt;
+  const keys=['attack','attackCool','comboTimer','dodge','dash','inv','stun'];for(const key of keys)p[key]=Math.max(0,p[key]-dt);
+  if(impactStop>0){impactStop=Math.max(0,impactStop-dt);return;}
+  const vx=(input.right?1:0)-(input.left?1:0),vy=(input.down?1:0)-(input.up?1:0);
+  if(vx){p.dir=vx>0?1:-1;p.lastDir=p.dir;}
+  const rising=(key,pressed)=>{if(pressed&&!button[key]){button[key]=true;return true}if(!pressed)button[key]=false;return false};
+  if(rising('jump',input.jump))jump();if(rising('dodge',input.dodge))dodge();if(rising('skill',input.skill))skill();if(input.fire&&p.attackCool<=0)attack();
+  const speed=env.hero===3?190:env.hero===2?125:163;
+  p.x=between(p.x+(p.dash>0?p.dashDir*speed*2.5:vx*speed)*dt,24,g.w-24);
+  p.y=between(p.y+vy*speed*.65*dt,g.h*.55,g.h*.88);
+  p.z=Math.max(0,p.z+p.vz*dt);p.vz-=920*dt;if(p.z===0)p.vz=0;
+  spawnClock-=dt;if(spawn>0&&spawnClock<=0){addEnemy(wave===1?'grunt':wave===2?pick(['grunt','ranged','brute']):pick(['brute','ranged']));spawn--;spawnClock=wave===1?.85:.75;}
+  if(wave===3&&spawn===0&&!bossSpawned){addEnemy('boss');bossSpawned=true;}
+  for(const e of enemies){if(e.hp>0)moveEnemy(e,dt);}
+  for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];b.life-=dt;b.x+=b.vx*dt;b.y+=b.vy*dt;
+   if(b.life<=0||b.x<-25||b.x>g.w+25||b.y<0||b.y>g.h){bolts.splice(i,1);continue;}
+   if(Math.hypot(b.x-p.x,(b.y+28-p.y)*1.3)<b.r+14){wound(b.damage,b);bolts.splice(i,1);}
+  }
+  for(const f of effects){f.life-=dt;if(f.vx){f.x+=f.vx*dt;f.y+=f.vy*dt;}}effects=effects.filter(f=>f.life>0);
+  enemies=enemies.filter(e=>{if(e.hp>0)return true;score+=e.type==='boss'?1200:e.type==='brute'?80:40;kills++;p.energy=Math.min(100,p.energy+6);return false});
+  if(p.hp<=0){ends(g,false,score,`WAVE ${wave} · ${kills} KO`);return;}
+  if(spawn===0&&enemies.length===0){if(wave===3){ends(g,true,score+Math.floor(p.hp)*8,`${kills} KO`);return;}getWave(++wave);p.hp=Math.min(p.max,p.hp+20);}
+ },
+ draw(ctx){const w=g.w,h=g.h;arena(ctx,w,h,t);
+  words(ctx,`SECTOR 0${wave} / CORE DEFENSE`,18,31,13,'#89eff7');
+  for(const b of bolts){ctx.strokeStyle=b.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b.x-b.vx*.04,b.y-b.vy*.04);ctx.lineTo(b.x,b.y);ctx.stroke();orb(ctx,b.x,b.y,b.r,b.color);}
+  for(const e of enemies){if(e.tele>0){if(e.type==='boss'&&e.attackKind==='slam'){
+     ctx.strokeStyle='#ff7795';ctx.lineWidth=3;ctx.setLineDash([10,8]);ctx.beginPath();ctx.ellipse(e.targetX,e.targetY-8,58,37,0,0,TAU);ctx.stroke();ctx.setLineDash([]);
+   }else{ctx.strokeStyle='#ff8399';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(e.x,e.y-30);ctx.lineTo(e.type==='boss'?p.x:e.x+e.dir*85,e.type==='boss'?p.y-30:e.y-30);ctx.stroke();}}}
+  const sorted=[...enemies,{...p,type:'hero'}].sort((a,b)=>a.y-b.y);
+  for(const e of sorted){if(e.type==='hero'){if(p.inv>.05&&Math.floor(t*16)%2===0)continue;fighter(ctx,p.x,p.y,p.z,between(Math.min(w,h)*.095,34,55),pal[p.hero],t,p.stun?'hurt':p.attack?'attack':p.z?'jump':'walk',p.dir,p.hero);if(p.dash>0)trace(ctx,p.x,p.y-20,35,pal[p.hero]);}
+   else{const col=e.type==='boss'?'#ff3b80':e.type==='brute'?'#fc995a':e.type==='ranged'?'#e09cff':'#ff6b8a';fighter(ctx,e.x,e.y,0,e.type==='boss'?between(Math.min(w,h)*.15,67,87):e.type==='brute'?between(Math.min(w,h)*.115,45,66):between(Math.min(w,h)*.082,31,48),e.hit?'#fff':col,t,e.hit?'hurt':e.tele?'attack':'walk',e.dir,1);bar(ctx,e.x-26,e.y-68,e.type==='boss'?66:52,4,e.hp/e.max,'#fa748d');}}
+  for(const f of effects){ctx.globalAlpha=Math.min(1,f.life/.2);if(f.type==='ring'){ctx.strokeStyle=f.color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(f.x,f.y,f.r*(1-f.life/.6),0,TAU);ctx.stroke();}else orb(ctx,f.x,f.y,f.r,f.color);}ctx.globalAlpha=1;
+  words(ctx,`HERO  ${env.I.hero[env.hero]}`,16,h-18,12);bar(ctx,16,h-44,Math.min(200,w*.48),10,p.hp/p.max,'#72e9ca');bar(ctx,16,h-55,Math.min(200,w*.48),5,p.energy/100,'#b4a2ff');
+ },
+ hud(){return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo||0}</b></span><span>ENERGY <b>${Math.round(p?.energy||0)}%</b></span><span>SCORE <b>${score}</b></span>`;}
+};
+ g.inspectCombat=()=>({wave,spawn,score,kills,player:{...p},enemies:enemies.map(e=>({...e})),projectiles:bolts.map(b=>({...b})),elapsed,finished:!!g._finished});
+ if(env.testMode)g.testSetup=({kind='grunt',dx=65,hp=null,waveNumber=null,remaining=null}={})=>{if(waveNumber!==null)wave=waveNumber;if(remaining!==null)spawn=remaining;addEnemy(kind);const e=enemies[enemies.length-1];e.x=p.x+dx;e.y=p.y;if(hp!==null){e.hp=hp;e.max=Math.max(hp,1);}if(kind==='boss')bossSpawned=true;return e;};
+ return g;
+};
 R.g03=env=>{
 let p=null,platforms=[],camera=0,depth=0,level=0,t=0,score=0,button={},goal=1700,mult=env.difficulty==='expert'?1.35:env.difficulty==='hard'?1.18:1,spawny=0,crush=0;
 const g={w:960,h:540,finish:env.finish,start(){const w=g.w,h=g.h;p={x:w*.5,y:90,vx:0,vy:0,r:13,hp:3,ground:false,inv:0,drop:0};platforms=[{x:w*.5-65,y:135,w:130,type:'safe',hp:99}];spawny=230;while(spawny<2000)makePlatform();camera=0;crush=0;},onResize(ow,oh,w,h){const kx=w/(ow||w),ky=h/(oh||h);if(p){p.x*=kx;p.y*=ky;}for(const f of platforms){f.x*=kx;f.w*=kx;f.y*=ky;}spawny*=ky;camera*=ky;goal*=ky},update(dt,input){if(g._finished)return;t+=dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);if(input.down&&p.ground){p.drop=.23;p.vy=Math.max(85,p.vy);p.ground=false;}const width=g.w;if(input.left)p.vx-=850*dt;if(input.right)p.vx+=850*dt;p.vx*=Math.exp(-5*dt);p.vx=between(p.vx,-260,260);if((input.jump||input.fire)&&p.ground&&!button.jump){p.vy=-275;p.ground=false;env.sfx(690,.07)}button.jump=!!(input.jump||input.fire);
