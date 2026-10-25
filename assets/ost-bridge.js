@@ -17,7 +17,7 @@ if(shell){
   const audio=card.querySelector('audio');if(!audio||i>3)return;
   audio.hidden=true;audio.removeAttribute('controls');
   const btn=document.createElement('button');btn.type='button';btn.className='ost-shell-play';btn.textContent=ja?'♪ この曲を連続再生':'♪ 全站連續播放此曲';
-  btn.addEventListener('click',()=>{controller.playIndex(i);mark('play_ost_audio',{ost_name:card.querySelector('h4')?.textContent?.trim()||('OST '+(i+1)),audio_source:'persistent_shell'})});
+  btn.addEventListener('click',()=>controller.playIndex(i));
   audio.after(btn);
  });
  document.addEventListener('play',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStarted();}},true);
