@@ -19,6 +19,10 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  test(await page.evaluate(()=>!!window.BioGlobalOST),lang+' shell exists');
  test(await frame.locator('.site-bottom-nav').count()===1,lang+' original mobile nav retained');
  await page.locator('#persistent-expand').click();
+ test(await page.locator('#persistent-progress').count()===1&&await page.locator('#persistent-next').count()===1,lang+' v1.2 seek and next track');
+ await page.locator('#persistent-mode').selectOption('shuffle');
+ test(await page.locator('#persistent-mode').inputValue()==='shuffle',lang+' shuffle selection');
+ await page.locator('#persistent-mode').selectOption('list');
  await page.locator('#persistent-track').selectOption('1');
  test((await page.evaluate(()=>window.BioGlobalOST.state.track))===1,lang+' track changes');
  const before=await page.evaluate(()=>{window.__originalSound=window.BioGlobalOST.state.element;return window.BioGlobalOST.state.src});
