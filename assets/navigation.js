@@ -1,5 +1,9 @@
 /* Shared, dependency-free navigation. Native dialog owns focus and Escape. */
 (()=>{'use strict';
+ // Load the optional persistent music bridge without changing canonical routes.
+ const bridge=document.createElement('script');
+ const own=document.currentScript?.src;
+ if(own){bridge.src=new URL('ost-bridge.js?v=20261025.10',own).href;bridge.defer=true;document.head.appendChild(bridge);}
  const toggle=document.querySelector('.mobile-explore-toggle');
  const panel=document.querySelector('#mobile-explore-panel');
  const language=document.querySelector('.mobile-language');

@@ -74,6 +74,24 @@ try{
     }else await open(id);
     await page.locator('#hub-canvas').waitFor();
     check(await page.locator('#hub-canvas').count()===1,label+' '+id+' single canvas');
+    check(await page.locator('#stick-pad').count()===1,label+' '+id+' single joystick');
+    if(await page.locator('#stick-pad').isVisible()){
+      const axis=await page.locator('#stage-controls').getAttribute('data-stick-axis');
+      await page.evaluate(axis=>{
+        const el=document.querySelector('#stick-pad'),r=el.getBoundingClientRect();
+        el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:891,clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+        el.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,pointerId:891,clientX:r.left+r.width*(axis==='y'?.5:.9),clientY:r.top+r.height*(axis==='y'?.12:.5)}));
+      },axis);
+      check((await page.evaluate(()=>BioSuiteHub.debugState.stick.held)),label+' '+id+' joystick responds');
+      const keys=(await page.evaluate(()=>BioSuiteHub.debugState.stick.dirs));
+      check(keys.includes(axis==='y'?'up':'right'),label+' '+id+' correct joystick direction');
+      await page.evaluate(()=>document.querySelector('#stick-pad').dispatchEvent(new PointerEvent('pointercancel',{bubbles:true,pointerId:891})));
+      check(!(await page.evaluate(()=>BioSuiteHub.debugState.stick.held)),label+' '+id+' joystick releases');
+    }
+    if(id==='g01'){
+      const stage=await page.evaluate(()=>BioSuiteHub.debugState);
+      check(stage.chapter>=1&&stage.sessionKind==='campaign',label+' campaign mode defaults');
+    }
     await page.locator('#stage-pause').click();
     check(await page.locator('#stage-dialog-layer.show').count()===1,label+' '+id+' paused');
     await page.locator('#pause-resume').click();
@@ -83,7 +101,17 @@ try{
       // finish callback; engine win/loss fairness is tested separately.
       await page.evaluate(()=>window.BioSuiteHub.finish(true,987,'test pong'));
       check(await page.locator('#stage-dialog-layer.show').count()===1,label+' G05 result UI shown');
-      check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='987',label+' G05 Pong stores independent score');
+      check(await page.locator('#pause-resume').textContent()!==null,label+' next stage action');
+      check(await page.locator('#pause-resume').getAttribute('data-next')==='1',label+' chapter 1 victory enables next');
+      await page.locator('#pause-resume').click();
+      check((await page.evaluate(()=>BioSuiteHub.debugState)).chapter===2,label+' stage 2 auto advances');
+      check(await page.locator('#stage-dialog-layer.show').count()===0,label+' stage 2 starts immediately');
+      await page.evaluate(()=>window.BioSuiteHub.finish(true,1002,'test pong chapter 2'));
+      check(await page.locator('#pause-resume').getAttribute('data-next')==='1',label+' chapter 2 offers stage 3');
+      await page.locator('#pause-resume').click();
+      check((await page.evaluate(()=>BioSuiteHub.debugState)).chapter===3,label+' stage 3 continues');
+
+      check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='1002',label+' G05 Pong retains best score across chapter progression');
     }
     await page.locator('#stage-back').click();
     await inLobby();
@@ -130,7 +158,7 @@ try{
      startEvents:window.dataLayer.filter(x=>x.event==='arcade_game_start').length,
      finishEvents:window.dataLayer.filter(x=>x.event==='arcade_game_finish').length
    }));
-   check(scores.volley==='432'&&scores.pong==='987',label+' G05 modes retain independent best');
+   check(scores.volley==='432'&&scores.pong==='1002',label+' G05 modes retain independent best after chapter progression');
    check(scores.startEvents>=6&&scores.finishEvents>=2,label+' unified game start/finish events');
    await page.locator('#stage-back').click();await inLobby();
    check(!pageErrors.length,label+' JS errors: '+pageErrors.join(' | ').slice(0,500));

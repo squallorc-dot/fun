@@ -45,7 +45,15 @@ try{
     check(Math.abs(canvasBox.width/canvasBox.height-logical[0]/logical[1])<.015,id+' canvas preserves game aspect ratio');
     const visible=await page.locator('[data-touch]:not([hidden])').evaluateAll(es=>es.map(e=>e.dataset.touch));
     const expected=await page.evaluate(({id,mode})=>Object.keys(BioArcadeGuide.get(id,mode||'volley').buttons),{id,mode});
-    check(JSON.stringify([...visible].sort())===JSON.stringify(expected.sort()),id+' only applicable touch buttons');
+    const stickVisible=await page.locator('#stick-pad').isVisible();
+    const rightDirs=id==='g03'||id==='g06'?['down']:[];
+    const intended=expected.filter(k=>!(['left','right','up','down'].includes(k)&&!rightDirs.includes(k)));
+    check(JSON.stringify([...visible].sort())===JSON.stringify(intended.sort()),id+' only applicable touch action buttons');
+    if(viewport.width!==1440){
+      check(stickVisible,id+' unified joystick visible on touch screen');
+      const axis=id==='g01'||id==='g04'?'xy':id==='g05'&&mode==='pong'?'y':'x';
+      check(await page.locator('#stage-controls').getAttribute('data-stick-axis')===axis,id+' joystick axis correct');
+    }
     if(await page.locator('#stage-controls').isVisible()){
      const buttons=await page.locator('[data-touch]:not([hidden])').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {key:e.dataset.touch,x:r.x,y:r.y,width:r.width,height:r.height}}));
      for(const b of buttons){

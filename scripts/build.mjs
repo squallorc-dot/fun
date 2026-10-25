@@ -29,9 +29,14 @@ return `<!DOCTYPE html>
 <meta property="og:description" content="${esc(m.desc)}">
 <meta property="og:url" content="${abs(lang,key)}">
 <meta property="og:image" content="${c.ogImage}">
-<meta property="og:image:type" content="image/png">
+<meta property="og:image:type" content="image/webp">
 <meta property="og:image:alt" content="${esc(l.alt)}">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:locale" content="${lang==="zh"?"zh_TW":"ja_JP"}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(m.title)}">
+<meta name="twitter:description" content="${esc(m.desc)}">
 <meta name="twitter:image" content="${c.ogImage}">
 <meta name="twitter:image:alt" content="${esc(l.alt)}">
 <link rel="canonical" href="${abs(lang,key)}">
@@ -83,7 +88,7 @@ for(const lang of ['zh','ja']){
  const file=path.join(root,'arcade',lang,'index.html');
  const original=fs.readFileSync(file,'utf8');
  let html=original.replace(/<body[^>]*>/,'<body data-page="play" class="arcade-page">');
- html=html.replace(/(assets\/hub\.js)\?v=[^"]+/g,'$1?v='+c.version);
+ html=html.replace(/(assets\/hub\.js)\?v=[^"]+/g,'$1?v='+(c.arcadeVersion||c.version));
  const shell='<!-- SITE SHELL START -->'+navigation(lang,'play',c,{prefix:'../../',arcade:true})+'<!-- SITE SHELL END -->';
  if(html.includes('<!-- SITE SHELL START -->')) html=html.replace(/<!-- SITE SHELL START -->[\s\S]*?<!-- SITE SHELL END -->/,shell);
  else html=html.replace(/<header class="hub-head">[\s\S]*?<\/header>/,shell);
