@@ -2,6 +2,8 @@
 
 `arcade/zh/index.html`／`arcade/ja/index.html`。保留原本站 `zh/play.html`、`ja/play.html` 的 8 題情境決策分析與城市防衛戰。
 
+2026-10-25 上線後修正：大型遊戲／選角卡、中日文完整操作指南、G03–G06 七英雄圖集、排球網高與發球軌跡、快速點按保留。工程結果與待人工項目見 [視覺與操作修正紀錄](docs/19_上線後大廳視覺與球類操作修正_20261025.md)。
+
 ## 六款遊戲
 - G01：原創 2.5D 橫向格鬥。七組英雄、四種敵人使用實際 PNG 逐格圖集；包含三段連擊、命中幀、輸入緩衝、受擊中斷、閃避取消及三招式二階段 Boss。
 - G02：整合既有守護者城市防衛戰引擎，保留三波和七英雄。
@@ -11,7 +13,7 @@
 - G06：擬 3D 街機賽車，路線、加速、煞車、障礙、三圈及倒數。
 
 ## 系統
-- 共用六首存量歌曲的 OST 控制、音量、循環、開始遊戲播放偏好。六首為候選；授權與商用條款仍須逐首確認。
+- 遊戲 OST 僅提供使用者指定的四首：覺醒時刻（熱血女聲版）、Burner 姐召喚（搖滾男聲版）、MJ 刻む日文 A／B。提供音量、循環、開始遊戲播放偏好；其他歌曲不列入遊戲播放清單。
 - 音效獨立音量；瀏覽器不允許自動播放時由玩家自行啟動。切換到背景分頁即暫停。
 - localStorage 儲存本機最高分與偏好，不建立帳號。共用 `window.dataLayer`，使用網站現有 GTM 容器。
 - 遊戲戰鬥在固定視窗內，電腦鍵盤與手機觸控各有專用控制，免受網站捲軸干擾。
@@ -27,6 +29,9 @@ node scripts/verify-arcade.mjs
 node scripts/test-arcade-engines.cjs
 node scripts/test-g01-animation.cjs
 node scripts/smoke-guardian-art.mjs
+node scripts/smoke-arcade-visual.mjs
+node scripts/test-g05-volley.cjs
+node scripts/test-arcade-sprites.cjs
 node scripts/build.mjs --check
 node scripts/verify.mjs
 ```

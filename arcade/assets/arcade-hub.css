@@ -18,3 +18,172 @@
  .stage-toolbar b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  .stage-toolbar button{min-height:40px;min-width:40px;padding:7px}
 }
+
+/* v1.1: one visual language across the lobby, ready room and all six games. */
+html{scroll-padding-top:90px}
+.hub-main{max-width:1480px;padding:clamp(16px,3vw,40px)}
+.hub-hero{position:relative;isolation:isolate;overflow:hidden;min-height:470px;padding:48px;background:#081b2e url('covers/bio-city-arcade-cover.webp') right center/auto 100% no-repeat;border-color:#4b8295;border-radius:24px}
+.hub-hero:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#031122f7 0%,#041325e8 26%,#0413256b 47%,transparent 70%)}
+.hero-copy{max-width:480px}
+.hub-hero h1{font-size:clamp(2.6rem,4.5vw,4.1rem);line-height:1.08;letter-spacing:.025em;white-space:pre-line;text-shadow:0 4px 25px #0009;margin:16px 0}
+.hub-hero p{max-width:390px;font-size:.95rem;line-height:1.8}
+.hero-cta{margin-top:24px;min-width:190px;background:#76e6e1;color:#062337;border-color:#b1fff4;box-shadow:0 6px 26px #55ece52e}
+.hero-stats{display:flex;align-items:center;gap:18px;color:#c8dde9;margin-top:25px;font-size:.75rem}
+.hero-stats b{font:700 1.2rem monospace;color:#86eee8;margin-right:4px}
+.hero-stats>span+span{border-left:1px solid #5c829866;padding-left:18px}
+.hub-progress{margin-top:38px;margin-bottom:20px}
+.game-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;scroll-margin-top:100px}
+.game-card{border-radius:20px;border-color:#315267;background:linear-gradient(145deg,#123047,#0a1d30);box-shadow:0 12px 26px #0002}
+.game-thumb{height:auto;aspect-ratio:16/9;background:#0a2137}
+.game-thumb img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .3s}
+.game-card:hover .game-thumb img{transform:scale(1.035)}
+.game-thumb:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0617279c,transparent 30%);pointer-events:none}
+.game-thumb>span{z-index:1;border-radius:8px;font-size:.8rem;background:#061827ed;padding:7px 10px}
+.game-thumb>small{position:absolute;right:16px;bottom:12px;color:#d3edf1;font-size:.68rem;z-index:1;letter-spacing:.08em}
+.game-body{padding:22px 24px 24px;gap:12px}
+.game-body h3{font-size:clamp(1.25rem,2vw,1.65rem);letter-spacing:.03em}
+.game-body p{font-size:.91rem;margin:0 0 6px}
+.game-meta span{border:0;background:#1b4055;color:#9fdfed;border-radius:5px;font-size:.65rem;letter-spacing:.04em}
+.game-meta span+span{background:transparent;color:#b3cdda}
+.card-actions{display:flex;gap:10px}
+.card-actions .btn{width:auto;flex:1;min-height:48px}
+.card-actions .card-help{flex:0 0 auto;font-size:.83rem}
+body.setup-active,body.help-active{overflow:hidden}
+.setup-layer{padding:24px;background:#020d19e8;backdrop-filter:blur(7px);overscroll-behavior:contain}
+.setup-dialog{width:min(1180px,100%);max-height:94dvh;padding:28px;background:linear-gradient(140deg,#102b40,#081e30);border-radius:22px;box-shadow:0 30px 100px #0009;scrollbar-width:thin;scroll-padding:18px}
+.setup-dialog>h2{font-size:clamp(1.5rem,2.6vw,2rem);margin:8px 0}
+.setup-dialog>#setup-desc{max-width:800px;margin:8px 0 18px}
+.setup-row{padding:14px 18px;border-radius:12px;background:#071b2b;border:1px solid #2b536a;justify-content:flex-start;gap:24px}
+.setup-row label{display:flex;align-items:center;gap:12px;font-size:.85rem}
+.setup-dialog select{min-height:44px;min-width:140px}
+#setup-mode{font-size:.85rem}
+.mode-choices{display:inline-flex;margin:0 0 0 12px}
+.mode-choices button{min-height:44px;padding:9px 18px}
+.setup-layout{display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:24px;margin-top:24px;align-items:start}
+.setup-roster{min-width:0}
+.setup-roster h3{margin:0 0 15px;font-size:1rem}
+.hero-chip-wrap{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0}
+.hero-chip{padding:7px 7px 10px;border-radius:13px;gap:7px;background:#0e2c40;border:1px solid #365c74;transition:transform .16s,border-color .16s;align-content:start}
+.hero-chip:hover{border-color:#a2e8ef;transform:translateY(-2px)}
+.hero-chip.chosen{border:2px solid #8cf7dc;padding:6px 6px 9px;background:#164956;box-shadow:0 0 0 3px #7df6dc1a}
+.hero-card-image{position:relative;width:100%;overflow:hidden;border-radius:8px;background:#0a1c2c}
+.hero-chip img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;display:block}
+.hero-chip span{font-size:.77rem;line-height:1.4;font-weight:700}
+.hero-check{position:absolute;right:5px;top:5px;width:22px;height:22px;background:#9af5da;color:#083329;border-radius:50%;display:none;align-items:center;justify-content:center;box-shadow:0 1px 8px #0006}
+.chosen .hero-check{display:flex}
+.hero-chip .hero-skill{font-size:.69rem;line-height:1.5;color:#b4fbe2}
+.setup-brief{background:#071b2b;border:1px solid #2e5369;border-radius:14px;padding:16px}
+.setup-selected{display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #2b4f63}
+.setup-selected img{width:80px;height:100px;object-fit:cover;border-radius:7px;flex:0 0 auto}
+.setup-selected h3{margin:5px 0;font-size:1rem}
+.setup-selected p{font-size:.75rem;margin:0;line-height:1.65}
+.guide-eyebrow{font-size:.69rem;color:#81e9e3;letter-spacing:.07em;font-weight:800}
+.setup-guide summary{font-weight:800;font-size:.95rem;cursor:pointer;min-height:34px}
+.setup-guide h3{font-size:.82rem;margin:18px 0 10px;color:#d8f2ff}
+.setup-guide p{font-size:.76rem;margin:5px 0;line-height:1.75}
+.guide-goal{padding:14px 16px;background:#103a4b;border-left:3px solid #7fe3d1;border-radius:6px;margin:14px 0}
+.guide-goal p{margin:6px 0 0;color:#e0f3f7}
+.guide-keys{margin:0;display:grid;gap:10px}
+.guide-keys>div{display:grid;grid-template-columns:minmax(90px,.95fr) 1.15fr;gap:10px;align-items:center}
+.guide-keys dt,.guide-keys dd{margin:0;font-size:.76rem;line-height:1.55}
+kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bottom-width:3px;border-radius:6px;padding:4px 7px;color:#e7fbff;font:600 .73rem system-ui,sans-serif;white-space:normal}
+.guide-tip{background:#193b3d;border:1px solid #3d6562;border-radius:9px;padding:12px 14px;margin-top:16px;font-size:.8rem;color:#bef2d7}
+.guide-tip p{color:#c9e8de}
+.setup-dialog>.stage-dialog-actions{position:sticky;bottom:-28px;margin:20px -28px -28px;padding:15px 28px;background:#0a2236f7;border-top:1px solid #376279;backdrop-filter:blur(12px);z-index:2}
+.setup-dialog>.stage-dialog-actions .btn{min-width:118px;min-height:48px}
+.guide-layer{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:20px;background:#020e1be8;backdrop-filter:blur(7px);overscroll-behavior:contain}
+.guide-layer[hidden]{display:none!important}
+.guide-dialog{width:min(640px,100%);max-height:92dvh;overflow:auto;padding:28px;border:1px solid #6291a4;border-radius:20px;background:linear-gradient(145deg,#112e44,#071e30);box-shadow:0 24px 80px #0007}
+.guide-dialog h2{font-size:1.4rem;line-height:1.5;margin:10px 0 20px}
+.guide-dialog h3{font-size:.95rem;margin:22px 0 12px;color:#c9f8ff}
+.guide-dialog p{font-size:.9rem;line-height:1.85;margin:7px 0}
+.guide-dialog .guide-keys>div{grid-template-columns:minmax(130px,1fr) 1.4fr;border-bottom:1px solid #315269;padding-bottom:9px}
+.guide-dialog .guide-keys dt,.guide-dialog .guide-keys dd{font-size:.85rem}
+.guide-dialog>button{position:sticky;bottom:-12px;margin-top:22px;width:100%;box-shadow:0 0 0 12px #0a2236}
+.stage-toolbar{background:linear-gradient(100deg,#102d42,#081a2c)}
+.stage-toolbar small{display:none}
+.stage-hud{background:#091e30;letter-spacing:.025em}
+.stage-footer{margin:0;font-size:.71rem;line-height:1.75;padding:6px 16px;color:#aacbd9}
+.touch-button[hidden]{display:none!important}
+.touch-button{box-shadow:0 3px 0 #041727;min-width:52px}
+.touch-button.primary{background:#207c88;border-color:#85dfcf}
+.hero-carousel-hint,.setup-quick-guide{display:none}
+.setup-guide-link{border:0;border-bottom:1px solid #80dadc;background:transparent;padding:4px 0;color:#96f0e4;font-size:.8rem;font-weight:700;min-height:32px}
+@media(max-width:1000px){
+ .setup-dialog{width:min(880px,100%)}
+ .setup-layout{grid-template-columns:minmax(0,1fr) 280px;gap:18px}
+ .hero-chip-wrap{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+ .setup-brief{padding:12px}
+ .hero-chip span{font-size:.72rem}
+ .hub-hero{min-height:410px;padding:32px}
+ .hero-copy{max-width:370px}
+ .hub-hero h1{font-size:3rem}
+ .hub-hero p{max-width:310px;font-size:.88rem}
+ .game-body{padding:18px}
+}
+@media(max-width:690px){
+ .hub-main{padding:14px}
+ .hub-head{padding:9px 12px}
+ .hub-brand b{letter-spacing:.07em}
+ .hub-actions a,.hub-actions button{min-height:38px;padding:8px}
+ #home-link{font-size:0;width:34px;overflow:hidden;position:relative}
+ #home-link:after{content:'←';font-size:18px;position:absolute;inset:0;display:grid;place-items:center}
+ .hub-hero{min-height:0;display:block;padding:0;background:#0b2236;border-radius:18px}
+ .hub-hero:before{position:relative;inset:auto;z-index:auto;display:block;height:220px;background:linear-gradient(0deg,#0b2236,transparent 28%),url('covers/bio-city-arcade-cover.webp') 65% center/cover}
+ .hero-copy{position:relative;max-width:none;padding:8px 24px 26px}
+ .hero-copy .kicker{font-size:.62rem}
+ .hub-hero h1{font-size:2.25rem;line-height:1.18;white-space:normal;margin:12px 0}
+ .hub-hero p{max-width:none;font-size:.86rem}
+ .hero-cta{margin-top:18px;min-height:46px}
+ .hero-stats{gap:12px;margin-top:20px;font-size:.68rem}
+ .hero-stats>span+span{padding-left:12px}
+ .hub-progress{margin-top:28px}
+ .hub-progress h2{font-size:1.4rem}
+ .hub-progress span{font-size:.7rem}
+ .game-grid{grid-template-columns:1fr;gap:20px}
+ .game-card{display:flex;border-radius:17px}
+ .game-thumb{min-height:0;height:auto;aspect-ratio:16/9}
+ .game-body{padding:18px 20px 20px;gap:11px}
+ .game-body h3{font-size:1.35rem}
+ .game-body p{font-size:.84rem}
+ .card-actions .btn{font-size:.86rem}
+ .setup-layer{padding:10px}
+ .setup-dialog{max-height:96dvh;padding:20px;border-radius:17px}
+ .setup-dialog>h2{font-size:1.5rem}
+ .setup-row{padding:12px;gap:14px}
+ .setup-row label{font-size:.8rem;gap:10px}
+ .setup-dialog select{min-width:128px}
+ .setup-layout{display:block;margin-top:20px}
+ .hero-chip-wrap{display:flex!important;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 12px;scrollbar-width:thin;scrollbar-color:#5ba2b0 #0b2033;overscroll-behavior-x:contain}
+ .hero-chip{flex:0 0 144px;scroll-snap-align:center}
+ .hero-carousel-hint{display:block;font-size:.73rem;color:#a6cbd7;margin:-5px 0 12px}
+ .setup-quick-guide{display:block;margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid #386073;background:#0a293a}
+ .setup-quick-guide p{font-size:.8rem;line-height:1.7;margin:0 0 5px}
+ .hero-chip img{height:auto;aspect-ratio:4/5}
+ .hero-chip span{font-size:.8rem}
+ .hero-chip .hero-skill{font-size:.72rem}
+ .setup-brief{display:none}
+ .setup-selected img{width:68px;height:85px}
+ .setup-dialog>.stage-dialog-actions{bottom:-20px;margin:20px -20px -20px;padding:12px 20px;gap:10px}
+ .setup-dialog>.stage-dialog-actions .btn{min-width:0;flex:1}
+ .setup-guide p{font-size:.81rem}
+ .setup-guide h3{font-size:.88rem}
+ .guide-layer{padding:12px}
+ .guide-dialog{max-height:95dvh;padding:21px}
+ .guide-dialog h2{font-size:1.2rem}
+ .guide-dialog .guide-keys>div{grid-template-columns:1fr 1.2fr}
+ .guide-dialog p{font-size:.83rem}
+ .guide-dialog .guide-keys dt,.guide-dialog .guide-keys dd{font-size:.77rem}
+ .stage-toolbar>div{gap:4px!important}
+ .stage-toolbar{gap:5px}
+ .stage-toolbar button{min-width:34px;min-height:38px;padding:5px;font-size:.8rem}
+ .stage-toolbar b{font-size:.77rem}
+ .touch-left,.touch-right{max-width:55%;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .touch-button{min-width:54px}
+}
+@media(max-height:520px) and (orientation:landscape){
+ .setup-layer{padding:9px}
+ .setup-dialog{max-height:95dvh}
+ .hero-chip-wrap{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .stage-toolbar button{min-height:34px}
+}

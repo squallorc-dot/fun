@@ -8,8 +8,12 @@
 window.dataLayer=[];
 const originalPush=window.dataLayer.push.bind(window.dataLayer);
 window.dataLayer.push=function(event){if(event&&event.event)parent.postMessage({source:'bio-city-shooter',event},location.origin);return originalPush(event)};
+let guideWasPlaying=false;
 window.addEventListener('message',e=>{
- if(e.origin!==location.origin||e.source!==parent||e.data?.source!=='bio-city-hub'||e.data?.command!=='start')return;
+ if(e.origin!==location.origin||e.source!==parent||e.data?.source!=='bio-city-hub')return;
+ if(e.data.command==='guide-pause'){const overlay=document.querySelector('#arcade-overlay');guideWasPlaying=e.data.resumeAfter===true||e.data.resumeAfter===undefined&&!!overlay&&overlay.hidden;if(overlay?.hidden)document.querySelector('[data-ar-command="pause"]')?.click();return;}
+ if(e.data.command==='guide-resume'){if(guideWasPlaying){document.querySelector('[data-ar-command="resume"]')?.click();document.querySelector('canvas')?.focus({preventScroll:true});}guideWasPlaying=false;return;}
+ if(e.data.command!=='start')return;
  const hero=Math.max(0,Math.min(6,Number(e.data.hero)||0));
  document.querySelector('[data-ar-hero="'+hero+'"]')?.click();
  const sel=document.querySelector('#arcade-difficulty');
