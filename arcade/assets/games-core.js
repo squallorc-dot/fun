@@ -347,7 +347,7 @@ let player,ai,ball,points=[0,0],t=0,serve=0,rally=0,rallyClock=0,button={},limit
 let score=0,variant=env.difficulty==='expert'?1.2:env.difficulty==='hard'?1.08:1,tableDebt=0,tableFrame=0,pointReason='',volleyDebt=0,serveSide=0,serveCrossings=[0,0],netContacts=0;
 const table=()=>({left:g.w*.10,right:g.w*.90,top:g.h*.23,bottom:g.h*.82,mid:g.w*.50,
  leftPaddle:g.w*.15,rightPaddle:g.w*.85,net:Math.max(17,Math.min(g.w,g.h)*.042),radius:Math.max(5,Math.min(g.w,g.h)*.012)});
-const field=()=>({floor:g.h*.86,body:between(Math.min(g.w,g.h)*.04,16,22),netTop:g.h*.86-Math.min(120,g.h*.24),netHalf:3,r:between(Math.min(g.w,g.h)*.022,8,13),gravity:g.h*1.18});
+const field=()=>({floor:g.h*.86,body:between(Math.min(g.w,g.h)*.04,16,22),netTop:g.h*.86-Math.min(160,g.h*.30),netHalf:3,r:between(Math.min(g.w,g.h)*.022,8,13),gravity:g.h*1.18});
 const sideOf=x=>x<g.w*.5?0:1;
 function beginRound(){
  rallyClock=0;tableDebt=0;tableFrame=0;serve=.75;button={};rally=0;ball=null;
