@@ -42,6 +42,31 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
   return {both,still,cleared,game,restored};
  });
  test(Object.values(focus).every(Boolean),lang+' audio focus tracks concurrent sources and game lifecycle');
+
+ // Navigate using a real player entry to the actual game center, not a mocked
+ // controller. Keep the original persistent audio element across both games.
+ await frame.locator('.experience-hero a[href*="/arcade/"]').click();
+ await frame.locator('[data-launch="g01"]').waitFor();
+ await page.setViewportSize({width:390,height:844});
+ test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' music object stays alive entering Arcade on mobile');
+ await frame.locator('[data-launch="g01"]').click();
+ await frame.locator('#setup-play').click();
+ await frame.locator('#stage.active').waitFor();
+ await page.waitForFunction(()=>window.BioGlobalOST.state.gameActive===true);
+ test(await page.locator('#persistent-expand').isHidden(),lang+' background player hides during G01');
+ await frame.locator('#stage-back').click();
+ await page.waitForFunction(()=>window.BioGlobalOST.state.gameActive===false);
+ test(await page.locator('#persistent-expand').isVisible(),lang+' background player returns after G01');
+
+ await frame.locator('[data-launch="g02"]').click();
+ await frame.locator('#setup-play').click();
+ await frame.locator('#g02-frame').waitFor();
+ await page.waitForFunction(()=>window.BioGlobalOST.state.gameActive===true);
+ test(await page.locator('#persistent-expand').isHidden(),lang+' background player hides during G02');
+ await frame.locator('#stage-back').click();
+ await page.waitForFunction(()=>window.BioGlobalOST.state.gameActive===false);
+ test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' original soundtrack player survives G02 iframe disposal');
+
  await page.close();
  }console.log('PERSISTENT OST PASS '+checks+' bilingual browser assertions');
 }finally{await browser.close();await new Promise(done=>server.close(done));}
