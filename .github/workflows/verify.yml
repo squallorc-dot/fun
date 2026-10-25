@@ -1,7 +1,7 @@
 name: FUNAI CARE bilingual quality gate
 on:
   push:
-    branches: [main, development/bio-city-arcade-six-games]
+    branches: [main, development/bio-city-arcade-six-games, release/bio-city-arcade-v1]
   pull_request:
   workflow_dispatch:
 permissions:
