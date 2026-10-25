@@ -47,3 +47,4 @@ jobs:
           node scripts/verify-arcade.mjs
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
+          node scripts/test-g06-race.cjs
