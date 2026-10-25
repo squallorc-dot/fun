@@ -302,7 +302,7 @@ R.g04=env=>{
  const penalty=env.difficulty==='expert'?3:env.difficulty==='hard'?2:0;
  const g={w:960,h:540,finish:env.finish,
   start(){g._finished=false;stage=1;score=0;hits=0;t=0;walls=0;buttons={};stageHistory=[];window.BioGuardianArt?.preload([env.hero]);setupStage();},
-  onResize(ow,oh,w,h){const sx=w/(ow||w),sy=h/(oh||h);for(const q of [...targets,...bumpers,...balls]){q.x*=sx;q.y*=sy;q.r=Math.max(6,q.r*Math.min(sx,sy));} },
+  onResize(ow,oh,w,h){const sx=w/(ow||w),sy=h/(oh||h);for(const q of [...targets,...bumpers,...balls]){q.x*=sx;q.y*=sy;if(q.baseX!==undefined)q.baseX*=sx;q.r=Math.max(6,q.r*Math.min(sx,sy));} },
   update(dt,input){if(g._finished)return;dt=Math.max(0,Math.min(.05,dt));t+=dt;transition=Math.max(0,transition-dt);
    angle=between(angle+((input.right?-1:input.left?1:0))*dt*1.35,-1.15,1.15);
    power=between(power+((input.up?1:input.down?-1:0))*45*dt,35,100);
@@ -363,6 +363,7 @@ R.g04=env=>{
  if(env.testMode)g.testClearStage=()=>{for(const q of targets)q.hp=0;};
  return g;};
 R.g05=env=>{
+ const aiProfiles=['ROOKIE','DEFENDER','ANTICIPATOR','AGGRESSOR','CHAMPION'];
 const mode=env.mode==='pong'?'pong':'volley';
 const chapter=Math.max(1,Math.min(5,Number(env.chapter)||1));
 let player,ai,ball,points=[0,0],t=0,serve=0,rally=0,rallyClock=0,button={},limit=(mode==='pong'?7:5)+(chapter-1)*2;
@@ -394,7 +395,7 @@ function sendReturn(who){
  const f=table(),p=who===0?player:ai,dir=who===0?1:-1;
  ball.x=p.x+dir*11;ball.z=Math.max(40,Math.min(72,ball.z));ball.vz=220;
  ball.vx=dir*(400+(who===0&&p.swing>0?35:0))*g.w/640;
- const control=who===0?((button.up?-45:button.down?45:0)+(p.y-ball.y)*-.45):((Math.random()-.5)*55);
+ const control=who===0?((button.up?-45:button.down?45:0)+(p.y-ball.y)*-.45):chapter>=4?between((player.y-p.y)*1.15+(Math.random()-.5)*22,-70,70):((Math.random()-.5)*55);
  ball.vy=between((ball.y-p.y)*1.65+control,-115,115);
  ball.lastHitter=who;ball.serveOwn=false;ball.bouncedReceiver=false;
  rally++;env.sfx(who===0?520:420,.055);if(who===0){p.swing=0;p.cool=.14;}
@@ -426,7 +427,7 @@ function tableStep(dt){
  const defender=1-ball.lastHitter,p=defender===0?player:ai;
  if(ball.bouncedReceiver&&Math.abs(ball.x-p.x)<Math.max(14,f.radius*2.3)&&Math.abs(ball.y-p.y)<g.h*.092&&ball.z>=6&&ball.z<94){
   if(defender===0){if(p.swing>0)sendReturn(0);}
-  else if(Math.random()<(env.difficulty==='expert'?.997:env.difficulty==='hard'?.985:.955)){sendReturn(1);}
+  else if(Math.random()<Math.min(.997,(env.difficulty==='expert'?.997:env.difficulty==='hard'?.985:.955)+(chapter-1)*.008)){sendReturn(1);}
  }
 }
 function updateTable(dt,input){
@@ -437,7 +438,7 @@ function updateTable(dt,input){
  if(input.fire&&!button.fire&&player.cool===0){player.swing=.23;player.cool=.31;env.sfx(200,.03)}
  button.fire=!!input.fire;button.up=!!(input.up||input.left);button.down=!!(input.down||input.right);
  if(ball){
-  const aim=(ball.vx>0&&ball.lastHitter===0)?ball.y:g.h*.52;
+  const aim=(ball.vx>0&&ball.lastHitter===0)?between(ball.y+(chapter>=3?ball.vy*.12:0),f.top+10,f.bottom-10):g.h*.52;
   ai.y+=between(aim-ai.y,-g.h*.61*variant*dt,g.h*.61*variant*dt);
   ai.y=between(ai.y,f.top+10,f.bottom-10);
  }
@@ -450,7 +451,7 @@ function updateTable(dt,input){
 function heldVolley(){const f=field(),server=serveSide===0?player:ai,dir=serveSide===0?1:-1;ball={x:server.x+dir*f.body*.8,y:server.y-f.body*1.2,vx:0,vy:0,lastHitter:serveSide,servedBy:serveSide,serveCrossed:false};}
 function hitVolley(who,input={},serving=false){
  const f=field(),p=who===0?player:ai;
- const landing=g.w*(who===0?.79:.21)+(who===0?(input.right?g.w*.06:input.left?-g.w*.06:0):0);
+ const landing=g.w*(who===0?.79:chapter>=4?(player.x<g.w*.24?.31:.14):.21)+(who===0?(input.right?g.w*.06:input.left?-g.w*.06:0):0);
  const dx=landing-ball.x,ratio=between((g.w*.5-ball.x)/dx,.07,.93);
  const targetY=f.floor-f.r,linear=ball.y+(targetY-ball.y)*ratio;
  const clearance=f.netTop-f.r-g.h*.065;
@@ -464,7 +465,7 @@ function volleyStep(dt,input){
  const firePressed=input.fire&&!button.fire;button.fire=!!input.fire;
  player.moving=!!(input.left||input.right);if(input.left)player.x-=w*.65*dt;if(input.right)player.x+=w*.65*dt;
  player.x=between(player.x,f.body+3,w*.5-f.body-7);
- const targetX=serve>0?w*.78:between(ball.x,w*.5+f.body+7,w-f.body-3);
+ const targetX=serve>0?w*.78:between(ball.x+(chapter>=3?ball.vx*.075:0),w*.5+f.body+7,w-f.body-3);
  const aiDelta=between(targetX-ai.x,-w*.39*dt*variant,w*.39*dt*variant);ai.x+=aiDelta;ai.moving=Math.abs(aiDelta)>.05;
  if((input.jump||input.up)&&player.ground&&!button.jump){player.vy=-h*.8;player.ground=false;}button.jump=!!(input.jump||input.up);
  const shouldAIJump=serve<=0&&ball.x>w*.53&&ball.y<h*.70&&ball.vy>0&&Math.abs(ball.x-ai.x)<w*.12;
@@ -539,7 +540,7 @@ const g={w:960,h:540,finish:env.finish,
   words(ctx,mode==='pong'?'TABLE TENNIS':'ENERGY VOLLEYBALL',15,h*.135,12,'#8de4eb');
  },
  hud(){return `<span>${mode==='pong'?'TABLE TENNIS':'VOLLEY'}</span><span>YOU <b>${points[0]}</b></span><span>AI <b>${points[1]}</b></span><span>FIRST TO <b>${limit}</b></span>${mode==='volley'?`<span>RALLY <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`:`<span>${serve>0?'SERVICE':ball?.bouncedReceiver?'RETURN':'BOUNCE'} <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`}`;},
- inspectMatch(){return {mode,points:[...points],serve,ball:ball?{...ball}:null,player:{...player},ai:{...ai},rally,rallyClock,reason:pointReason,field:mode==='volley'?{...field()}:null,serveSide,serveCrossings:[...serveCrossings],netContacts,finished:!!g._finished}},
+ inspectMatch(){return {mode,chapter,aiProfile:aiProfiles[chapter-1],points:[...points],serve,ball:ball?{...ball}:null,player:{...player},ai:{...ai},rally,rallyClock,reason:pointReason,field:mode==='volley'?{...field()}:null,serveSide,serveCrossings:[...serveCrossings],netContacts,finished:!!g._finished}},
 };if(env.testMode&&mode==='volley'){g.testVolleyServe=side=>{beginRound();serveSide=side===1?1:0;heldVolley();};g.testVolleyBall=value=>{serve=0;Object.assign(ball,value);};}return g;
 };
 
