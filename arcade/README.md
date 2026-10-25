@@ -2,6 +2,8 @@
 
 `arcade/zh/index.html`／`arcade/ja/index.html`。保留原本站 `zh/play.html`、`ja/play.html` 的 8 題情境決策分析與城市防衛戰。
 
+2026-10-25 上線後修正：大型遊戲／選角卡、中日文完整操作指南、G03–G06 七英雄圖集、排球網高與發球軌跡、快速點按保留。工程結果與待人工項目見 [視覺與操作修正紀錄](docs/19_上線後大廳視覺與球類操作修正_20261025.md)。
+
 ## 六款遊戲
 - G01：原創 2.5D 橫向格鬥。七組英雄、四種敵人使用實際 PNG 逐格圖集；包含三段連擊、命中幀、輸入緩衝、受擊中斷、閃避取消及三招式二階段 Boss。
 - G02：整合既有守護者城市防衛戰引擎，保留三波和七英雄。
@@ -27,6 +29,9 @@ node scripts/verify-arcade.mjs
 node scripts/test-arcade-engines.cjs
 node scripts/test-g01-animation.cjs
 node scripts/smoke-guardian-art.mjs
+node scripts/smoke-arcade-visual.mjs
+node scripts/test-g05-volley.cjs
+node scripts/test-arcade-sprites.cjs
 node scripts/build.mjs --check
 node scripts/verify.mjs
 ```
