@@ -154,9 +154,9 @@ function moveEnemy(e,dt){
  if(e.tele>0){const old=e.tele;e.tele=Math.max(0,e.tele-dt);if(old>0&&e.tele===0){
    if(e.type==='boss'&&e.attackKind==='slam'){
     effects.push({type:'ring',x:e.targetX,y:e.targetY-8,r:60,life:.38,color:'#fd7895'});
-    if(Math.hypot(p.x-e.targetX,(p.y-e.targetY)*1.5)<63)wound(27*mode,e);
+    if(Math.hypot(p.x-e.targetX,(p.y-e.targetY)*1.5)<(chapter===4?78:63))wound(27*mode,e);
    }else if(e.type==='boss'&&e.attackKind==='volley'){
-    for(let i=-(e.stage===2?2:1);i<=(e.stage===2?2:1);i++){
+    for(let i=-(chapter>=2&&e.stage===2?3:e.stage===2?2:1);i<=(chapter>=2&&e.stage===2?3:e.stage===2?2:1);i++){
      const target={x:p.x+i*28,y:p.y+i*20};aimAt(target,e,195,16*mode,'#ff6c9d');
     }
    }else if(e.attackKind==='charge'){
@@ -175,8 +175,18 @@ function moveEnemy(e,dt){
   if(lane>18)e.y+=(p.y>e.y?1:-1)*27*dt;
   if(e.attack<=0&&dist<235&&lane<100){
    const cycle=e.attackCount++%3;
-   e.attackKind=e.stage===2&&cycle===2?'charge':(dist<115&&cycle!==1)?'slam':'volley';
-   e.tele=e.attackKind==='charge'?.68:e.attackKind==='slam'?(e.stage===2?.62:.76):1.0;e.attack=e.stage===2?1.65:2.05;
+   // Chapter-specific boss patterns: each finale changes the required response.
+    const patterns=[
+      ['slam','volley','charge'],      // Central Street: fundamentals
+      ['volley','volley','slam'],      // Energy Factory: projectile pressure
+      ['charge','volley','charge'],    // Sky Platform: evade telegraphed dashes
+      ['slam','charge','slam'],        // Fracture District: ground danger
+      ['charge','slam','volley']       // Entropy Core: combined exam
+    ];
+    let move=patterns[chapter-1][cycle];
+    if(chapter===1&&e.stage===1&&move==='charge')move='volley';
+    e.attackKind=move;
+   e.tele=e.attackKind==='charge'?.68:e.attackKind==='slam'?(e.stage===2?.62:.76):1.0;e.attack=(e.stage===2?1.65:2.05)*(chapter===5?.88:1);
    e.tele*=pace;e.attack*=pace;
    e.targetX=p.x;e.targetY=p.y;
   }
@@ -256,7 +266,7 @@ const g={w:960,h:540,finish:env.finish,
  },
  hud(){return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo||0}</b></span><span>ENERGY <b>${Math.round(p?.energy||0)}%</b></span><span>SKILL <b>${env.I?.skillLabels?.[env.hero]||skillIds[env.hero]}</b></span><span>SCORE <b>${score}</b></span>`;}
 };
- g.inspectCombat=()=>({wave,spawn,score,kills,player:{...p,action:p.action?{...p.action}:null},enemies:enemies.map(e=>({...e})),projectiles:bolts.map(b=>({...b})),effects:effects.map(f=>({...f})),skill:skillIds[p.hero],elapsed,finished:!!g._finished});
+ g.inspectCombat=()=>({chapter,episode:episodeNames[chapter-1],bossPattern:chapter===1?'basics':chapter===2?'projectiles':chapter===3?'dash':chapter===4?'slam':'mixed',wave,spawn,score,kills,player:{...p,action:p.action?{...p.action}:null},enemies:enemies.map(e=>({...e})),projectiles:bolts.map(b=>({...b})),effects:effects.map(f=>({...f})),skill:skillIds[p.hero],elapsed,finished:!!g._finished});
  if(env.testMode)g.testCharge=()=>{p.energy=100;};
  if(env.testMode)g.testHealth=(v)=>{p.hp=between(v,1,p.max);};
  if(env.testMode)g.testWound=(amount)=>wound(amount,{type:'test'});
