@@ -57,7 +57,7 @@ for(const lang of ['zh','ja'])for(const key of keys){
   if(!html.includes('bio-city-living-city-20261024-1200.webp'))fail(file,'missing Bio-City cinematic city artwork');
   if(html.includes('creative-vision-guardians'))fail(file,'obsolete character collage in creative core');
  }
- if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="arcade-root"')&&html.includes('arcade-engine.js')&&html.includes('arcade.css')&&html.includes('arcade.css?v=20261024.24')&&html.includes('arcade-engine.js?v=20261024.24')))fail(file,'Protocol UI missing');
+ if(key==='play'&&(!html.includes('protocol-engine.js')||!html.includes('id="protocol-quiz-root"')||!html.includes('id="arcade-root"')||!html.includes('arcade-engine.js')||!html.includes('arcade.css')))fail(file,'Protocol UI missing');
  if(key==='heroes'&&(html.match(/onclick="playHeroAudio/g)||[]).length!==7)fail(file,'expected 7 hero players');
  if(key==='music'&&(html.match(/<audio\b/g)||[]).length!==4)fail(file,'expected 4 OST tracks');
  checked++;
@@ -75,7 +75,7 @@ for(const name of ['play_hero_audio','play_ost_audio','quiz_completed','game_com
 for(const folder of ['images','music']){
  if(!exists(folder)){fail(folder,'required media directory missing');continue}
  for(const filename of fs.readdirSync(path.join(root,folder))){
-  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|mp3|svg)$/.test(filename))
+  if(!/^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|mp3|svg|webp)$/.test(filename))
    fail(folder,'invalid media filename '+filename);
  }
 }

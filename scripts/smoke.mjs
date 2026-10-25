@@ -33,7 +33,7 @@ try{
     verify(state.h===1&&state.main&&state.nav,file+' @'+width+' missing structure');
     if(width>=768){
       await page.evaluate(()=>scrollTo(0,900));
-      await page.waitForTimeout(80);
+      await page.waitForFunction(()=>{const b=document.querySelector('.backtop');return b&&getComputedStyle(b).opacity!=='0'},null,{timeout:2500}).catch(()=>{});
       const arrow=await page.evaluate(()=>{const b=document.querySelector('.backtop'),r=b.getBoundingClientRect();return {right:innerWidth-r.right,left:r.left,visible:getComputedStyle(b).opacity!=='0'}});
       verify(arrow.right>=0&&arrow.right<=30&&arrow.visible,file+' @'+width+' desktop back-to-top pinned right '+JSON.stringify(arrow));
     }
@@ -95,24 +95,26 @@ try{
   }catch(e){errors.push(home+' film flow '+e.message)}finally{await page.close()}
  }
  for(const lang of locales){
-  const page=await browser.newPage({viewport:{width:390,height:844}});
+  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   try{
    await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
    await page.evaluate(()=>{window.dataLayer=[]});
-   await page.locator('#quiz-start button').click();
-   await page.locator('#quiz-options button').first().click();
-   await page.locator('#quiz-options button').nth(1).click();
-   await page.locator('#quiz-result').waitFor({state:'visible',timeout:4500});
-   let result=await page.evaluate(()=>({hero:document.getElementById('quiz-res-title').textContent,event:window.dataLayer.filter(x=>x.event==='quiz_completed').length}));
-   verify(result.event===1,lang+' quiz event');
-   verify(result.hero.includes(lang==='zh'?'葉寶':'葉宝'),lang+' tie-break result');
-   await page.locator('#quiz-result button').click();
-   verify(await page.locator('#quiz-start').isVisible(),lang+' reset quiz');
-   await page.locator('.hero-btn').first().click();
-   verify(await page.locator('#game-header').isVisible(),lang+' game start');
-   await page.keyboard.press('ArrowLeft');await page.keyboard.press('Escape');
-   verify(await page.locator('#game-ui-select').isVisible(),lang+' game keyboard reset');
+   await page.locator('[data-qaction="start"]').click();
+   verify(await page.locator('[data-answer]').count()===4,lang+' decision lab options');
+   for(let i=0;i<8;i++)await page.locator('[data-answer]').nth(i%4).click();
+   verify(await page.locator('.protocol-report-head').count()===1,lang+' decision lab report');
+   verify(await page.evaluate(()=>window.dataLayer.filter(x=>x.event==='quiz_completed').length)===1,lang+' quiz completed once');
+   await page.locator('[data-qaction="reset"]').click();
+   verify(await page.locator('[data-qaction="start"]').count()===1,lang+' quiz restart');
+   await page.locator('[data-ar-hero="0"]').click();
+   await page.locator('[data-ar-command="start"]').click();
+   verify(await page.locator('#arcade-root.arcade-immersive').count()===1,lang+' immersive arcade start');
+   await page.keyboard.press('p');
+   verify(await page.locator('#arcade-overlay').isVisible(),lang+' pause overlay');
+   await page.locator('#arcade-overlay [data-ar-command="menu"]').click();
+   verify(await page.locator('.arcade-roster').count()===1,lang+' arcade return to roster');
+   verify(!(await page.evaluate(()=>document.body.classList.contains('arcade-scroll-locked'))),lang+' body scroll restored');
   }catch(e){errors.push(lang+' interaction '+e.message)}finally{await page.close()}
  }
 }finally{await browser.close();await new Promise(done=>server.close(done))}

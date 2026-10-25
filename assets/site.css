@@ -1131,3 +1131,22 @@ body[data-page="strategy"] .creative-vision-media figcaption{z-index:2;letter-sp
 @media (prefers-reduced-motion:reduce){
  body[data-page="strategy"] .creative-vision-media>img{transition:none}
 }
+
+/* ARC-REL-v1.0 / Homepage game-center editorial feature; original navigation unchanged */
+.home-arcade-feature{display:grid;grid-template-columns:minmax(0,1.07fr) minmax(0,.93fr);gap:0;overflow:hidden;isolation:isolate;position:relative;min-height:325px;background:linear-gradient(120deg,#081d30 4%,#113b50 100%);border:1px solid #3c7791;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.home-arcade-content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;padding:clamp(23px,4.2vw,52px)}
+.home-arcade-content h2{margin:0;max-width:630px;line-height:1.3;font-size:clamp(1.65rem,3.05vw,2.8rem);color:#f4feff}
+.home-arcade-content h2 em{font-style:normal;color:#7ce8ef}
+.home-arcade-content p{margin:0;color:#c3dae8;font-size:clamp(.9rem,1.1vw,1.02rem);line-height:1.88;max-width:650px}
+.home-arcade-actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:7px}
+.home-arcade-actions .action{min-height:44px;display:inline-flex;align-items:center;gap:9px;justify-content:center}
+.home-arcade-meta{font-size:.68rem;letter-spacing:.09em;color:#96c7d8;line-height:1.6}
+.home-arcade-visual{position:relative;min-height:310px;background:radial-gradient(circle at 52% 50%,rgba(61,192,210,.24),transparent 52%),linear-gradient(90deg,#113b5000,#071c2aaa),url('../images/bio-city-living-city-20261024-1200.webp') center/cover;overflow:hidden}
+.home-arcade-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0f2d3a 0%,transparent 28%,rgba(2,14,26,.2) 100%);pointer-events:none}
+.home-arcade-visual img{position:absolute;height:clamp(205px,25vw,315px);width:auto;object-fit:contain;bottom:-7%;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))}
+.home-arcade-visual img:nth-of-type(1){left:4%;z-index:2}.home-arcade-visual img:nth-of-type(2){right:0;z-index:1;transform:scale(.92)}
+.home-arcade-hud,.home-arcade-visual-caption{position:absolute;z-index:4;letter-spacing:.13em;font:700 .68rem 'Space Mono',monospace;color:#c7faff;text-shadow:0 1px 5px #000a}
+.home-arcade-hud{top:20px;left:20px}.home-arcade-visual-caption{bottom:16px;right:17px}
+@media(max-width:900px){.home-arcade-feature{grid-template-columns:1fr}.home-arcade-content{padding:clamp(20px,4vw,34px)}.home-arcade-visual{min-height:235px;max-height:265px}.home-arcade-visual img{height:270px;bottom:-13%}.home-arcade-visual img:nth-of-type(1){left:20%}.home-arcade-visual img:nth-of-type(2){right:16%}}
+@media(max-width:550px){.home-arcade-content{padding:22px 19px 18px;gap:11px}.home-arcade-content h2{font-size:clamp(1.5rem,7vw,2rem)}.home-arcade-actions{width:100%}.home-arcade-actions .action{font-size:.82rem;padding-inline:12px}.home-arcade-visual{min-height:197px;max-height:210px}.home-arcade-visual img{height:225px;bottom:-18%}.home-arcade-visual img:nth-of-type(1){left:12%}.home-arcade-visual img:nth-of-type(2){right:8%}}
+@media(prefers-reduced-motion:reduce){.home-arcade-feature *{scroll-behavior:auto!important}}

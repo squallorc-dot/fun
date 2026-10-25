@@ -1,7 +1,7 @@
 name: FUNAI CARE bilingual quality gate
 on:
   push:
-    branches: [main]
+    branches: [main, development/bio-city-arcade-six-games, release/bio-city-arcade-v1]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -29,4 +29,37 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Test bilingual layouts and user interactions
-        run: node scripts/smoke.mjs
+        run: |
+          node scripts/smoke.mjs
+          node scripts/smoke-arcade.mjs
+          node scripts/smoke-guardian-art.mjs
+      - name: Capture actual RC desktop and mobile game screenshots
+        run: node scripts/capture-arcade-rc.mjs
+      - name: Upload release candidate visual proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: bio-city-arcade-rc-screenshots
+          path: arcade/qa/rc-v1/*.png
+          retention-days: 30
+
+  arcade-engines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate arcade modules and bilingual integration
+        run: |
+          node scripts/build.mjs --check
+          node scripts/verify.mjs
+          node scripts/verify-arcade.mjs
+          node scripts/test-arcade-engines.cjs
+          node scripts/test-arcade-reliability.cjs
+          node scripts/test-g06-race.cjs
+          node scripts/test-g01-combat.cjs
+          node scripts/test-g01-seven-skills.cjs
+          node scripts/test-g01-animation.cjs
+          node scripts/test-arcade-replay.cjs
+          node scripts/test-g05-table.cjs
+          node scripts/test-g04-stages.cjs

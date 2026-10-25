@@ -1,0 +1,156 @@
+{
+  "version": "20261025.2",
+  "tile": 160,
+  "columns": 8,
+  "rows": 9,
+  "frames": 71,
+  "anchor": {
+    "x": 80,
+    "y": 140
+  },
+  "clips": {
+    "idle": {
+      "offset": 0,
+      "frames": 6,
+      "duration": 0.84,
+      "loop": true
+    },
+    "walk": {
+      "offset": 6,
+      "frames": 8,
+      "duration": 0.64,
+      "loop": true
+    },
+    "jump": {
+      "offset": 14,
+      "frames": 4,
+      "duration": 0.48,
+      "loop": false
+    },
+    "land": {
+      "offset": 18,
+      "frames": 3,
+      "duration": 0.15,
+      "loop": false
+    },
+    "attack1": {
+      "offset": 21,
+      "frames": 6,
+      "duration": 0.3,
+      "loop": false,
+      "hit": 0.1
+    },
+    "attack2": {
+      "offset": 27,
+      "frames": 6,
+      "duration": 0.34,
+      "loop": false,
+      "hit": 0.12
+    },
+    "attack3": {
+      "offset": 33,
+      "frames": 8,
+      "duration": 0.44,
+      "loop": false,
+      "hit": 0.17
+    },
+    "hurt": {
+      "offset": 41,
+      "frames": 4,
+      "duration": 0.25,
+      "loop": false
+    },
+    "dodge": {
+      "offset": 45,
+      "frames": 6,
+      "duration": 0.28,
+      "loop": false
+    },
+    "skill": {
+      "offset": 51,
+      "frames": 8,
+      "duration": 0.64,
+      "loop": false
+    },
+    "ko": {
+      "offset": 59,
+      "frames": 6,
+      "duration": 0.55,
+      "loop": false
+    },
+    "celebrate": {
+      "offset": 65,
+      "frames": 6,
+      "duration": 0.84,
+      "loop": true
+    }
+  },
+  "atlases": [
+    {
+      "key": "burner-sister",
+      "file": "burner-sister.png",
+      "bytes": 125263,
+      "sha256": "d18c400e132760930834bb6d2f5d07f084bbbbef325e87ef9babc9a7a84e8050"
+    },
+    {
+      "key": "mj-robot",
+      "file": "mj-robot.png",
+      "bytes": 133356,
+      "sha256": "5a024c7983f38b062294edae5ab93036d43863b14a0df6eda407368bb3791a29"
+    },
+    {
+      "key": "moo-moo",
+      "file": "moo-moo.png",
+      "bytes": 187200,
+      "sha256": "9550743f75daed20c9f029be6f0f165ec1a4e28783213b073ed08feee10060c8"
+    },
+    {
+      "key": "ye-bao-ex",
+      "file": "ye-bao-ex.png",
+      "bytes": 148867,
+      "sha256": "6d914dd2f2df46b2997cb02fc191b7368be2e1a9984b9c0bf2868a58d4e69037"
+    },
+    {
+      "key": "jelly-trio",
+      "file": "jelly-trio.png",
+      "bytes": 94306,
+      "sha256": "7a4327a15284b1147c6cd9980d1b5c8bbf7cc068deb669113033e0b99695fc48"
+    },
+    {
+      "key": "veggie-kid",
+      "file": "veggie-kid.png",
+      "bytes": 158020,
+      "sha256": "9234525dfff9e74886d0e4d585b50847d4fd69c4153ecc6ee7c455242e3fd0a5"
+    },
+    {
+      "key": "oracle-guardian",
+      "file": "oracle-guardian.png",
+      "bytes": 205556,
+      "sha256": "ba2d791a0c7247bb19ef8b7be2258194f1a25bb56ee6d9459b60b407d8add170"
+    },
+    {
+      "key": "enemy-grunt",
+      "file": "enemy-grunt.png",
+      "bytes": 128544,
+      "sha256": "aaafc427dc1d34b774f7ef4083e441c823bb86a963590092d60f0953d04a7649"
+    },
+    {
+      "key": "enemy-brute",
+      "file": "enemy-brute.png",
+      "bytes": 124284,
+      "sha256": "9cee0eb7a015abd9ed1290410659177a86c76f24f40d982802b60ca90d3ae1f0"
+    },
+    {
+      "key": "enemy-ranged",
+      "file": "enemy-ranged.png",
+      "bytes": 148517,
+      "sha256": "17a0d254b2611b912ac0a84dca103431c63e053b2e915e9ef07af79c55509b73"
+    },
+    {
+      "key": "enemy-boss",
+      "file": "enemy-boss.png",
+      "bytes": 142919,
+      "sha256": "4f9720382256c9dcae2691fd9c25611532a8bec1a3f7a2c6856ceebe58023e9f"
+    }
+  ]
+}
