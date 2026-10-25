@@ -58,7 +58,7 @@ ${navigation(lang,key,c,{prefix})}
 ${footer(lang,c)}
 <button type="button" class="backtop" aria-label="${esc(l.backtop)}">↑</button>
 <div id="global-audio-player" class="floating-audio-player" aria-live="polite"><div class="f-audio-info"><span class="f-audio-label">NOW PLAYING</span><span id="f-audio-name" class="f-audio-name">FUNAI CARE</span></div><button class="f-audio-btn" onclick="stopAllHeroAudio()" type="button" aria-label="${esc(l.stop)}">⏸</button></div>
-<script defer src="${prefix}assets/navigation.js?v=${c.version}"></script><script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/protocol-engine.js?v=${c.version}"></script><script defer src="${prefix}arcade/assets/world-art.js?v=20261025.14"></script><script defer src="${prefix}arcade/assets/guardian-art.js?v=20261025.5"></script><script defer src="${prefix}assets/arcade-engine.js?v=20261025.16"></script><script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}
+<script defer src="${prefix}assets/navigation.js?v=${c.version}"></script><script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/protocol-engine.js?v=${c.version}"></script><script defer src="${prefix}arcade/assets/world-art.js?v=20261026.1"></script><script defer src="${prefix}arcade/assets/guardian-art.js?v=20261025.5"></script><script defer src="${prefix}assets/arcade-engine.js?v=20261026.1"></script><script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}
 </body></html>
 `;
 }

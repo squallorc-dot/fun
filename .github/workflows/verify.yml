@@ -36,6 +36,7 @@ jobs:
           node scripts/smoke-arcade.mjs
           node scripts/smoke-guardian-art.mjs
           node scripts/smoke-arcade-visual.mjs
+          node scripts/smoke-arcade-audio.mjs
       - name: Capture actual RC desktop and mobile game screenshots
         run: |
           node scripts/capture-arcade-rc.mjs
@@ -62,6 +63,8 @@ jobs:
           node scripts/build.mjs --check
           node scripts/verify.mjs
           node scripts/verify-arcade.mjs
+          node scripts/test-arcade-audio.cjs
+          node scripts/test-arcade-grounding.cjs
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs

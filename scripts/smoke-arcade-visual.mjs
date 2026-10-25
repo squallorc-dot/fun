@@ -38,7 +38,7 @@ try{
     await page.waitForFunction(()=>window.BioGuardianArt.inspect().atlases.some(x=>x.key==='veggie-kid'&&x.ready));
     const scene={g01:'street',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'}[id];
     await page.waitForFunction(key=>BioWorldArt.inspect().some(x=>x.key===key&&x.ready),scene);
-    const logical={g01:[800,600],g03:[480,720],g04:[600,720],g05:[640,480],g06:[640,800]}[id];
+    const logical={g01:[800,600],g03:[480,720],g04:[600,720],g05:[640,480],g06:viewport.width/viewport.height>=4/3?[960,540]:[640,800]}[id];
     const dimensions=await page.evaluate(()=>BioSuiteHub.debugState.viewport);
     check(dimensions.width===logical[0]&&dimensions.height===logical[1],id+' game world independent of screen width');
     const canvasBox=await page.locator('#hub-canvas').boundingBox();
