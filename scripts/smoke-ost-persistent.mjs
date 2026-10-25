@@ -33,6 +33,15 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  await frame.locator('a[href*="play.html"]').first().click();
  await frame.locator('body[data-page="play"]').waitFor();
  test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after second navigation');
+ const focus=await page.evaluate(()=>{
+  const m=window.BioGlobalOST,first={},second={};m.otherAudioStarted(first);m.otherAudioStarted(second);
+  const both=m.state.otherAudioCount===2;
+  m.otherAudioStopped(first);const still=m.state.otherAudio&&m.state.otherAudioCount===1;
+  m.otherAudioStopped(second);const cleared=!m.state.otherAudio&&m.state.otherAudioCount===0;
+  m.gameStart();const game=m.state.gameActive;m.gameEnd();const restored=!m.state.gameActive;
+  return {both,still,cleared,game,restored};
+ });
+ test(Object.values(focus).every(Boolean),lang+' audio focus tracks concurrent sources and game lifecycle');
  await page.close();
  }console.log('PERSISTENT OST PASS '+checks+' bilingual browser assertions');
 }finally{await browser.close();await new Promise(done=>server.close(done));}
