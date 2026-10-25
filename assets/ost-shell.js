@@ -15,7 +15,8 @@ const volume=document.querySelector('#persistent-volume');
 const panel=document.querySelector('#persistent-panel');
 const expand=document.querySelector('#persistent-expand');
 const leaveBtn=document.querySelector('#persistent-leave');
-let gameActive=false,shouldResume=false,explicitlyPaused=true,track=0;
+const prev=document.querySelector('#persistent-prev'),next=document.querySelector('#persistent-next'),seek=document.querySelector('#persistent-progress'),clock=document.querySelector('#persistent-clock'),modeChoice=document.querySelector('#persistent-mode');
+let gameActive=false,shouldResume=false,explicitlyPaused=true,track=0,playMode='list';
 const otherAudioSources=new Set();
 const manualSoundSource=Symbol('arcade soundtrack');
 const isOtherAudioPlaying=()=>otherAudioSources.size>0;
@@ -35,11 +36,18 @@ document.querySelector('#persistent-title').textContent=i18n.title;
 document.querySelector('#persistent-note').textContent=i18n.note;
 document.querySelector('#persistent-expand').setAttribute('aria-label',i18n.open);
 leaveBtn.textContent=i18n.back;
+const labels=ja?['全曲リピート','1曲リピート','シャッフル']:['清單循環','單曲循環','隨機播放'];
+[...modeChoice.options].forEach((opt,i)=>{opt.textContent=labels[i]});
+prev.setAttribute('aria-label',ja?'前の曲':'上一首');next.setAttribute('aria-label',ja?'次の曲':'下一首');
+document.querySelector('#persistent-seek-label').textContent=ja?'再生位置':'播放進度';document.querySelector('#persistent-mode-label').textContent=ja?'再生モード':'播放模式';
 tracks.forEach(([name],i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=name;select.append(opt)});
-try{const prefs=JSON.parse(localStorage.getItem('bio_persistent_ost_v1')||'{}');track=Number.isInteger(prefs.track)?Math.max(0,Math.min(3,prefs.track)):0;volume.value=Number.isFinite(prefs.volume)?Math.max(0,Math.min(100,prefs.volume)):36;}catch{volume.value=36}
-audio.loop=true;audio.volume=Number(volume.value)/100;
-function persist(){try{localStorage.setItem('bio_persistent_ost_v1',JSON.stringify({track,volume:Number(volume.value)}))}catch{}}
+try{const prefs=JSON.parse(localStorage.getItem('bio_persistent_ost_v1')||'{}');track=Number.isInteger(prefs.track)?Math.max(0,Math.min(3,prefs.track)):0;volume.value=Number.isFinite(prefs.volume)?Math.max(0,Math.min(100,prefs.volume)):40;playMode=['list','single','shuffle'].includes(prefs.mode)?prefs.mode:'list';}catch{volume.value=40}
+audio.loop=playMode==='single';audio.volume=Number(volume.value)/100;modeChoice.value=playMode;
+function persist(){try{localStorage.setItem('bio_persistent_ost_v1',JSON.stringify({track,volume:Number(volume.value),mode:playMode}))}catch{}}
 function update(){select.value=String(track);play.textContent=audio.paused?'▶ '+i18n.play:'Ⅱ '+i18n.pause;expand.textContent=(audio.paused?'♪ ':'♫ ')+'OST · '+tracks[track][0]+(panel.hidden?' ⌄':' ⌃');expand.setAttribute('aria-label',(panel.hidden?i18n.open:i18n.close)+'：'+tracks[track][0]);document.body.classList.toggle('bio-game-active',gameActive)}
+function stamp(t){if(!Number.isFinite(t)||t<0)return '--:--';t=Math.floor(t);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
+function timeDisplay(){const duration=audio.duration,valid=Number.isFinite(duration)&&duration>0;seek.disabled=!valid;seek.value=valid?String(Math.round(Math.max(0,Math.min(1,audio.currentTime/duration))*1000)):'0';clock.textContent=stamp(audio.currentTime)+' / '+stamp(duration)}
+function jump(direction){let nextIndex=(track+direction+tracks.length)%tracks.length;if(playMode==='shuffle'&&tracks.length>1){const n=Math.floor(Math.random()*(tracks.length-1));nextIndex=n>=track?n+1:n;}playIndex(nextIndex)}
 function load(i){track=Math.max(0,Math.min(3,Number(i)||0));if(audio.dataset.track!==String(track)){audio.pause();audio.src=new URL(tracks[track][1],root);audio.dataset.track=String(track)}persist();update()}
 function start(){explicitlyPaused=false;shouldResume=true;if(gameActive||isOtherAudioPlaying()){update();return;}const p=audio.play();if(p&&p.catch)p.catch(()=>{explicitlyPaused=true;update()});update()}
 function stop(){explicitlyPaused=true;shouldResume=false;audio.pause();update()}
@@ -63,6 +71,12 @@ const initial=safePage(new URL(location.href).searchParams.get('page'))||(ja?'FU
 frame.src=new URL(initial,root);
 frame.addEventListener('load',()=>{otherAudioSources.clear();gameActive=false;resume();try{if(frame.contentWindow.location.origin===location.origin){const path=frame.contentWindow.location.pathname.slice(root.pathname.length)+frame.contentWindow.location.search+frame.contentWindow.location.hash;route(path)}}catch{}});
 load(track);
+seek.disabled=true;
+seek.addEventListener('input',()=>{const d=audio.duration;if(Number.isFinite(d)&&d>0)audio.currentTime=d*Number(seek.value)/1000;timeDisplay()});
+for(const event of ['loadedmetadata','durationchange','timeupdate','seeked'])audio.addEventListener(event,timeDisplay);
+audio.addEventListener('ended',()=>{if(playMode!=='single'&&!explicitlyPaused)jump(1)});
+prev.addEventListener('click',()=>jump(-1));next.addEventListener('click',()=>jump(1));
+modeChoice.addEventListener('change',()=>{playMode=modeChoice.value;audio.loop=playMode==='single';persist()});
 select.addEventListener('change',e=>playIndex(e.target.value));
 play.addEventListener('click',()=>{audio.paused?start():stop()});
 volume.addEventListener('input',()=>{audio.volume=Number(volume.value)/100;persist()});
