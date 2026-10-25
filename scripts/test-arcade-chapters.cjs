@@ -25,4 +25,8 @@ assert.equal(chapterNames.size,5,'five named race circuits');
 assert(trackShapes.size>=4,'different curve and grade geometry in race circuits');
 assert(arcade.includes('BioArcadeChapter')&&arcade.includes("ch===3?(roll<.46?'sniper'"),'G02 chapter enemy profiles missing');
 assert(arcade.includes('chapterLandmarks'),'G02 chapter artwork must render');
+assert(arcade.includes('pulseHazards(dt)')&&arcade.includes('drawHazards(ctx)'),'G02 visible hazards must affect actual collisions');
+assert(source.includes('function roadside(ctx,p)')&&source.includes('roadside(ctx,p);'),'G06 distinct roadside scenes must be projected onto world geometry');
+assert(source.includes('VOLLEY!')&&source.includes('SLAM!'),'G01 telegraphed boss mechanics must be visible');
+
 console.log('V1.2 CHAPTERS PASS: G01-G06 across five chapters, 5 distinct boss plans, platform zones, pinball mechanics, sports AI profiles, racing routes, G02 assault tactics');
