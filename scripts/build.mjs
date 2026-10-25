@@ -38,7 +38,7 @@ return `<!DOCTYPE html>
 <link rel="alternate" hreflang="ja" href="${abs("ja",key)}">
 <link rel="alternate" hreflang="x-default" href="${abs("zh",key)}">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=20261024.25"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=20261024.24">`:""}
+<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=20261024.25"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=20261025.5">`:""}
 <script type="application/ld+json">${metaJson}</script>
 <script>(function(w,d,s,n,i){w[n]=w[n]||[];w[n].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer','${c.gtm}');</script>
 </head>
@@ -59,7 +59,7 @@ return `<!DOCTYPE html>
 <footer class="app-footer"><div class="app-width"><strong>${esc(l.brand)}</strong><p class="footer-credit">${lang==="zh"?"企劃・創作・網站製作｜家葦":"企画・クリエイティブ・Webサイト制作｜家葦"}</p><small class="footer-edition">FUNAI CARE · Bio-City · 2026</small></div></footer>
 <button type="button" class="backtop" aria-label="${esc(l.backtop)}">↑</button>
 <div id="global-audio-player" class="floating-audio-player" aria-live="polite"><div class="f-audio-info"><span class="f-audio-label">NOW PLAYING</span><span id="f-audio-name" class="f-audio-name">FUNAI CARE</span></div><button class="f-audio-btn" onclick="stopAllHeroAudio()" type="button" aria-label="${esc(l.stop)}">⏸</button></div>
-<script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/protocol-engine.js?v=${c.version}"></script><script defer src="${prefix}assets/arcade-engine.js?v=20261024.24"></script><script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}
+<script defer src="${prefix}assets/site.js?v=${c.version}"></script>${key==="play"?`<script defer src="${prefix}assets/protocol-engine.js?v=${c.version}"></script><script defer src="${prefix}arcade/assets/world-art.js?v=20261025.5"></script><script defer src="${prefix}arcade/assets/guardian-art.js?v=20261025.5"></script><script defer src="${prefix}assets/arcade-engine.js?v=20261025.5"></script><script defer src="${prefix}assets/${lang}-play.js?v=${c.version}"></script>`:""}
 </body></html>
 `;
 }

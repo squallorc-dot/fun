@@ -26,7 +26,16 @@ for(const lang of ['zh','ja']){
  assert(read(`${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} primary website lacks Arcade entrance`);
  assert(read(`content/${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} canonical content lacks Arcade entrance`);
 }
-for(const tr of ['bio-city-awakening-theme-v2.mp3','burner-sister-summoning-theme.mp3','mj-robot-kizamu-japanese-v1.mp3','mj-robot-kizamu-japanese-v2.mp3','your-body-is-a-city.mp3','your-body-superhero-universe.mp3'])assert(fs.existsSync(path.join(root,'music',tr)),`OST missing: ${tr}`);
+const tracks=['bio-city-awakening-theme-v2.mp3','burner-sister-summoning-theme.mp3','mj-robot-kizamu-japanese-v1.mp3','mj-robot-kizamu-japanese-v2.mp3'];
+for(const tr of tracks)assert(fs.existsSync(path.join(root,'music',tr)),`OST missing: ${tr}`);
+const playlist=hub.match(/const srcTrack=\[([^\]]+)\]/)?.[1].match(/'([^']+)'/g)?.map(x=>x.slice(1,-1));
+assert(JSON.stringify(playlist)===JSON.stringify(tracks),'Arcade playlist must contain exactly the four selected OSTs');
+for(const key of ['street','defense','shaft','laboratory','arena','race']){
+ const file=path.join(root,'arcade/assets/worlds',key+'.webp');
+ const bytes=fs.existsSync(file)?fs.readFileSync(file):Buffer.alloc(0);
+ assert(bytes.length>1000&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP',key+' must be a complete WebP scene');
+}
+for(const lang of ['zh','ja'])for(const page of [`arcade/${lang}/index.html`,`arcade/${lang}/shooter.html`,`${lang}/play.html`])assert(read(page).includes('world-art.js'),page+' scene renderer missing');
 for(const id of ['burner-sister','mj-robot','moo-moo','ye-bao-ex','jelly-trio','veggie-kid','oracle-guardian'])assert(fs.existsSync(path.join(root,`images/funai-care-${id}.png`)),`hero asset missing: ${id}`);
 assert(css.includes('body.stage-active{overflow:hidden}'),'scroll lock CSS missing');
 assert(css.includes('#stage-inner{width:100%'),'viewport-width stage fix missing');

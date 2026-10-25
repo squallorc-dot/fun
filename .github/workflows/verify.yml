@@ -44,7 +44,7 @@ jobs:
           name: bio-city-arcade-rc-screenshots
           path: |
             arcade/qa/rc-v1/*.png
-            arcade/qa/visual-v11/*.webp
+            arcade/qa/visual-v12/*.webp
           retention-days: 30
 
   arcade-engines:

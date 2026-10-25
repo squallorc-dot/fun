@@ -7,7 +7,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.
 let checks=0;function check(ok,message){checks++;assert.ok(ok,message);}
 try{
  for(const lang of ['zh','ja'])for(const viewport of [{width:375,height:812},{width:430,height:932},{width:768,height:1024},{width:1440,height:900},{width:844,height:390}]){
-  const page=await browser.newPage({viewport,reducedMotion:'reduce'}),errors=[];
+  const page=await browser.newPage({viewport,reducedMotion:'reduce',hasTouch:viewport.width!==1440,isMobile:[375,430,844].includes(viewport.width)}),errors=[];
   page.on('pageerror',e=>errors.push(String(e)));page.on('response',r=>{if(r.url().startsWith(origin+'/')&&r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url());});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   await page.goto(origin+`/arcade/${lang}/index.html`,{waitUntil:'networkidle'});
@@ -23,12 +23,39 @@ try{
    const card=await page.locator('.hero-chip').first().boundingBox();check(card.width>=93,id+' readable hero card at '+viewport.width);
    check(await page.evaluate(()=>{const el=document.querySelector('.setup-dialog');return el.scrollWidth<=el.clientWidth+1;}),id+' setup horizontal overflow');
    await page.locator('[data-hero="5"]').click();await page.locator('#setup-play').click();
-   if(id==='g02'){await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();}
+   if(id==='g02'){
+    await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();
+    const child=page.frames().find(f=>f.url().includes('/shooter.html'));
+    await child.waitForFunction(()=>BioWorldArt.inspect().some(x=>x.key==='defense'&&x.ready));
+    check(await child.locator('canvas').evaluate(c=>c.width===c.height&&c.width===600*Math.min(devicePixelRatio,2)),'G02 fixed square world');
+    if(viewport.width!==1440){
+     check(await child.locator('#arcade-stick').isVisible(),'G02 touchscreen receives joystick');
+     const controls=await child.locator('.arcade-action').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {w:r.width,h:r.height,x:r.x,right:r.right}}));
+     check(controls.every(r=>r.w>=44&&r.h>=44&&r.x>=0&&r.right<=viewport.width+1),'G02 reachable 44px action buttons');
+    }
+   }
    else{
     await page.waitForFunction(()=>window.BioGuardianArt.inspect().atlases.some(x=>x.key==='veggie-kid'&&x.ready));
+    const scene={g01:'street',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'}[id];
+    await page.waitForFunction(key=>BioWorldArt.inspect().some(x=>x.key===key&&x.ready),scene);
+    const logical={g01:[800,600],g03:[480,720],g04:[600,720],g05:[640,480],g06:[640,800]}[id];
+    const dimensions=await page.evaluate(()=>BioSuiteHub.debugState.viewport);
+    check(dimensions.width===logical[0]&&dimensions.height===logical[1],id+' game world independent of screen width');
+    const canvasBox=await page.locator('#hub-canvas').boundingBox();
+    check(Math.abs(canvasBox.width/canvasBox.height-logical[0]/logical[1])<.015,id+' canvas preserves game aspect ratio');
     const visible=await page.locator('[data-touch]:not([hidden])').evaluateAll(es=>es.map(e=>e.dataset.touch));
     const expected=await page.evaluate(({id,mode})=>Object.keys(BioArcadeGuide.get(id,mode||'volley').buttons),{id,mode});
     check(JSON.stringify([...visible].sort())===JSON.stringify(expected.sort()),id+' only applicable touch buttons');
+    if(await page.locator('#stage-controls').isVisible()){
+     const buttons=await page.locator('[data-touch]:not([hidden])').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {key:e.dataset.touch,x:r.x,y:r.y,width:r.width,height:r.height}}));
+     for(const b of buttons){
+      check(b.width>=43.5&&b.height>=43.5,id+' '+b.key+' minimum 44px target');
+      check(b.x>=0&&b.y>=0&&b.x+b.width<=viewport.width+1&&b.y+b.height<=viewport.height+1,id+' '+b.key+' reachable touch target');
+     }
+     for(let a=0;a<buttons.length;a++)for(let b=a+1;b<buttons.length;b++){
+      const x=buttons[a],y=buttons[b];check(x.x+x.width<=y.x+1||y.x+y.width<=x.x+1||x.y+x.height<=y.y+1||y.y+y.height<=x.y+1,id+' touch targets do not overlap');
+     }
+    }
    }
    const helpButton=await page.locator('#stage-help').boundingBox();check(helpButton.x>=0&&helpButton.x+helpButton.width<=viewport.width,id+' help remains reachable');
    await page.locator('#stage-help').click();check(await page.locator('#game-help').isVisible(),id+' in-game guide opens');

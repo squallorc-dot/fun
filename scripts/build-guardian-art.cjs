@@ -81,23 +81,40 @@ function oracle(p,clip,u){let s='';const sway=Math.sin(u*Math.PI*2)*3;
  s+=limb(-13,-72,p.lh,'#8ed3ef',6)+poly('-13,-80 14,-80 11,-51 21,-16 0,-23 -19,-15 -10,-51','#498fc5','#c1f3ff',1.6)+poly('0,-76 7,-65 0,-45 -6,-66','#a0dcf1','#daffff',1);
  s+=limb(14,-72,p.rh,'#95ddf4',6)+face(0,-99,'#bee7fc')+poly('-17,-99 -17,-112 -7,-122 8,-119 18,-106 11,-107 2,-114 -7,-109','#7bc8f2','#c5f8ff',1.5)+poly('-17,-107 -26,-91 -22,-54 -32,-37 -17,-44 -12,-77','#69b8e5aa','#baf3ff',1.3)+poly('14,-108 24,-88 19,-60 31,-46 15,-50 9,-85','#69b8e5aa','#baf3ff',1.3);
  s+=spark(0,-116,6,'#e0ffff')+circle(p.rh[0]+6,p.rh[1]-15,clip==='skill'?12:7,'#7ce6f299','#d0ffff',1.3)+spark(p.rh[0]+6,p.rh[1]-15,5,'#e4ffff');return s;}
-function enemy(id,p,clip,u){const boss=id===10,brute=id===8,ranged=id===9,c=boss?'#83375c':brute?'#ac6449':ranged?'#72538b':'#495a71',trim=boss?'#fc629a':brute?'#ffb777':ranged?'#e7b4ff':'#e493ae';let s='';
- for(const[x,y,f]of [[-9,-31,p.lf],[9,-31,p.rf]])s+=limb(x,y,f,c,brute?13:10)+rect(f[0]-6,f[1]-8,17,9,'#25334a',trim,2);
- if(ranged)s+=poly('-20,-79 -30,-18 0,-30 26,-17 18,-80','#352e52','#8b6c9b',2);
- s+=limb(-16,-66,p.lh,c,brute?16:10)+poly('-17,-80 17,-80 23,-55 14,-30 -15,-30 -23,-54',c,trim,2)+poly('-9,-71 10,-71 5,-48 -6,-48','#25344a',trim,1.7);
- for(const x of [-21,21])s+=poly(`${x-11},-80 ${x+9},-83 ${x+15},-67 ${x-9},-66`,c,trim,2);
- s+=limb(16,-64,p.rh,c,brute?16:10)+rect(p.rh[0]-7,p.rh[1]-6,16,13,'#384454',trim,3);
- s+=poly('-16,-106 -10,-119 10,-119 19,-104 12,-83 -12,-83','#293246',trim,2)+poly('-11,-103 14,-103 7,-94 -8,-94',trim,trim,1)+line('-6,-90 9,-90','#121e30',3);
- if(boss){s+=poly('-12,-114 -27,-134 -19,-108','#59364e',trim,2)+poly('12,-115 25,-133 23,-109','#59364e',trim,2)+spark(0,-62,11,trim);}
- else if(brute)s+=rect(-12,-90,25,8,'#5e3c3b','#ffc18b',2);
- else if(ranged){s+=line(`${p.rh[0]},${p.rh[1]+26} ${p.rh[0]},${p.rh[1]-35}`,'#8c87b3',4)+circle(p.rh[0],p.rh[1]-38,9,'#9a70c7',trim,2)+spark(p.rh[0],p.rh[1]-38,5,'#f2dbff');}
- else s+=poly('-17,-114 -26,-120 -21,-103','#394a66',trim,1.5);return s;}
+function enemy(id,p,clip,u){const pulse=1+Math.sin(u*Math.PI*2)*.04;let s='';
+ if(id===7){ // Spore crawler: carapace, four articulated legs and a luminous jaw.
+  for(const [x,f,phase]of [[-22,p.lf,0],[-8,p.rf,1],[10,p.lf,2],[25,p.rf,3]]){const foot=[x+(f[0]-(phase%2?10:-10))*.4,Math.min(3,f[1])];s+=limb(x,-36,foot,'#294c56',7)+poly(`${foot[0]-5},${foot[1]-6} ${foot[0]+10},${foot[1]-5} ${foot[0]+5},${foot[1]+1}`,'#668c83','#9dd6b7',1);}
+  s+=ellipse(0,-51,31,25,'#315d62','#89b5a3',2)+poly('-28,-55 -18,-73 7,-76 29,-58 15,-48 -12,-45','#638b76','#b2cda0',1.6);
+  for(const x of [-18,-3,12])s+=poly(`${x-6},-72 ${x},-89 ${x+7},-72`,'#b4c98d','#dfe8b1',1);
+  s+=poly('18,-65 38,-58 32,-37 16,-35 10,-47','#293b49','#a4ddbd',1.7)+ellipse(26,-54,10,5,'#c8f48d','#e8ffcb',1);
+  s+=poly('25,-41 36,-33 28,-28','#dce6b8','#dce6b8',1)+poly('14,-42 21,-31 15,-26','#dce6b8','#dce6b8',1);
+  s+=circle(-12,-57,5*pulse,'#96d597','#deffc7',1);if(clip.startsWith('attack'))s+=spark(40,-39,8,'#e3ffc0');
+ }else if(id===8){ // Iron-shell destroyer: rock plates and asymmetric heavy fists.
+  for(const [x,f]of [[-14,p.lf],[14,p.rf]])s+=limb(x,-38,f,'#53646d',15)+rect(f[0]-10,f[1]-12,23,13,'#313d4a','#afbeb1',3);
+  s+=poly('-27,-94 25,-94 34,-54 19,-32 -18,-32 -36,-58','#465963','#a3b9aa',2.3)+poly('-20,-89 21,-89 26,-61 0,-44 -24,-62','#788b82','#c4cec0',1.5);
+  s+=poly('-10,-76 11,-76 16,-62 0,-52 -15,-63','#ffd581','#fff0ba',2)+circle(0,-65,6*pulse,'#fff3ae');
+  for(const [x,h]of [[-30,p.lh],[30,p.rh]]){const hand=[x+h[0]*.22,Math.max(-88,Math.min(-34,h[1]))];s+=limb(x,-77,hand,'#526a70',18)+poly(`${hand[0]-13},${hand[1]-12} ${hand[0]+14},${hand[1]-9} ${hand[0]+18},${hand[1]+10} ${hand[0]-15},${hand[1]+12}`,'#74877b','#bdc8a8',2);}
+  s+=poly('-19,-106 -12,-123 14,-120 22,-102 12,-87 -14,-89','#394d59','#bacbb7',2)+rect(-13,-106,28,7,'#ffbb73','#ffe6a6',2);
+ }else if(id===9){ // Rift wisp: floating mask, layered cloak and independent spell orbs.
+  for(let n=0;n<5;n++){const x=-24+n*12;s+=`<path d="M${x} -52 Q${x+Math.sin(u*6+n)*13} -18 ${x+Math.sin(u*6+n+1)*9} 0" stroke="#8d80b8" stroke-width="7" fill="none" stroke-linecap="round"/>`;}
+  s+=poly('-25,-91 23,-93 35,-53 20,-29 0,-45 -25,-27 -37,-58','#343653','#8f8fb9',2)+poly('-14,-78 13,-78 17,-49 0,-34 -19,-48','#615a8b','#c1b1e1',1.6);
+  s+=ellipse(0,-93,20,24,'#66638b','#c6b9ec',2)+poly('-16,-100 17,-100 10,-86 -12,-86','#1c2c43','#e4ccff',1.5)+ellipse(0,-94,12,4,'#edc1ff');
+  for(const [sign,hand]of [[-1,p.lh],[1,p.rh]]){const x=sign*34+hand[0]*.12,y=Math.max(-80,Math.min(-47,hand[1]));s+=limb(sign*18,-70,[x,y],'#8c7ea8',5)+circle(x,y-9,clip==='skill'?12:8,'#9a7de6','#ead2ff',1.5)+spark(x,y-9,4,'#fff0ff');}
+ }else{ // Entropy behemoth: six limbs, horned skull and exposed animated reactor.
+  for(const [x,f]of [[-19,p.lf],[19,p.rf]])s+=limb(x,-37,[f[0]*1.35,f[1]],'#583a55',16)+poly(`${f[0]*1.35-12},${f[1]-13} ${f[0]*1.35+16},${f[1]-10} ${f[0]*1.35+19},${f[1]} ${f[0]*1.35-16},${f[1]+1}`,'#2a3449','#f48bb5',1.7);
+  s+=poly('-30,-97 28,-97 39,-69 30,-41 0,-29 -31,-44 -42,-70','#4f3b58','#dc79a6',2.4)+poly('-23,-87 23,-88 29,-61 14,-43 -16,-43 -28,-64','#7a4b6b','#ffa2c5',1.7);
+  s+=circle(0,-65,16*pulse,'#401e42','#ff82bc',2.8)+circle(0,-65,9*pulse,'#ff86b8','#ffdde9',1.6)+spark(0,-65,6,'#fff3f5');
+  for(const [sign,h]of [[-1,p.lh],[1,p.rh]]){const x=sign*39+h[0]*.17,y=Math.max(-83,Math.min(-36,h[1]));s+=limb(sign*29,-79,[x,y],'#644360',13)+poly(`${x-10},${y-9} ${x+12},${y-8} ${x+17},${y+11} ${x+3},${y+7} ${x-11},${y+14}`,'#a46b86','#ffd0d6',1.8);s+=poly(`${sign*25},-91 ${sign*55},-105 ${sign*38},-70`,'#8b5976','#ffb6cf',1.5);}
+  s+=poly('-20,-110 -12,-126 13,-125 24,-106 15,-88 -13,-88','#303148','#ed92b8',2)+poly('-18,-115 -42,-123 -31,-99 -21,-100','#d0b2b4','#ffe0d5',1.4)+poly('17,-116 42,-124 34,-99 23,-100','#d0b2b4','#ffe0d5',1.4);
+  s+=poly('-14,-108 17,-108 8,-97 -10,-97','#ff91be','#ffedf2',1.4);
+ }
+ return s;}
 function render(id,p,clip,u){const enemyId=id>=7;let body=id===2?moo({...p,rh:[n(p.rh[0]*.45),Math.max(-74,p.rh[1])]},clip):id===4?jelly(p,clip,u):id===6?oracle(p,clip,u):enemyId?enemy(id,p,clip,u):humanoid(id,p,clip,u);
  if(clip==='skill'){const colors=['#ffb44b','#8ffaff','#ffe2a6','#a6eefa','#f9b2ea','#aff084','#bcefff'],col=colors[id]||'#ff8fbd';body+=`<ellipse cx="0" cy="-48" rx="${34+u*24}" ry="${18+u*13}" fill="none" stroke="${col}" stroke-width="2" opacity="${n(.8-u*.5)}"/>`;for(let j=0;j<4;j++)body+=spark(-37+j*25,-85+Math.sin(u*6+j)*15,3+u*3,col);}
  return group(group(body,`translate(${p.lean*.27} ${p.bob}) rotate(${p.tilt} 0 -22) skewX(${-p.lean*.33}) scale(1 ${p.squash})`),`translate(${clip==='ko'?12:0} ${clip==='ko'?-30:0}) scale(${clip==='ko'?.77:.87})`);
 }
 (async()=>{const rows=Math.ceil(art.totalFrames/art.columns),manifest={version:art.version,tile:art.frameSize,columns:art.columns,rows,frames:art.totalFrames,anchor:art.anchor,clips:art.clips,atlases:[]};
- for(let id=0;id<art.keys.length;id++){let cells='';for(const[clip,c]of Object.entries(art.clips))for(let i=0;i<c.frames;i++){const frame=c.offset+i,u=i/Math.max(1,c.frames-1),x=(frame%art.columns)*160+80,y=Math.floor(frame/art.columns)*160+140;cells+=`<svg x="${x-80}" y="${y-140}" width="160" height="160" viewBox="-80 -140 160 160" overflow="hidden">${render(id,pose(clip,u),clip,u)}</svg>`;}
+ for(let id=0;id<art.keys.length;id++){if(process.argv.includes('--enemies-only')&&id<7){const file=art.keys[id]+'.png',bytes=fs.readFileSync(path.join(out,file));manifest.atlases.push({key:art.keys[id],file,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex')});continue;}let cells='';for(const[clip,c]of Object.entries(art.clips))for(let i=0;i<c.frames;i++){const frame=c.offset+i,u=i/Math.max(1,c.frames-1),x=(frame%art.columns)*160+80,y=Math.floor(frame/art.columns)*160+140;cells+=`<svg x="${x-80}" y="${y-140}" width="160" height="160" viewBox="-80 -140 160 160" overflow="hidden">${render(id,pose(clip,u),clip,u)}</svg>`;}
  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${art.columns*160}" height="${rows*160}" viewBox="0 0 ${art.columns*160} ${rows*160}">${cells}</svg>`;
  const file=art.keys[id]+'.png';await sharp(Buffer.from(svg)).png({compressionLevel:9,palette:true,colours:128,dither:0}).toFile(path.join(out,file));const stat=fs.statSync(path.join(out,file));manifest.atlases.push({key:art.keys[id],file,bytes:stat.size,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(out,file))).digest('hex')});console.log(file,stat.size+' bytes');}
  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');

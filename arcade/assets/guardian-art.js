@@ -17,11 +17,11 @@ function get(hero){const key=keyFor(hero);if(cache.has(key)){const item=cache.ge
  while(cache.size>=5)cache.delete(cache.keys().next().value);
  const image=new Image(),item={key,image,ready:false,error:false,promise:null};
  item.promise=new Promise(resolve=>{image.onload=()=>{item.ready=true;resolve(true)};image.onerror=()=>{item.error=true;resolve(false)}});
- cache.set(key,item);image.src=base+key+'.png?v=20261025.2';return item;
+ cache.set(key,item);image.src=base+key+'.png?v=20261025.5';return item;
 }
 function preload(heroes){return Promise.all(heroes.map(h=>get(h)?.promise||Promise.resolve(false)));}
 function draw(ctx,hero,clip,time,x,y,scale=1,dir=1,alpha=1){const item=get(hero);if(!item?.ready)return false;const frame=frameFor(clip,time),sx=frame%columns*frameSize,sy=Math.floor(frame/columns)*frameSize;
  ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx,sy,frameSize,frameSize,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
 }
-window.BioGuardianArt=Object.freeze({version:'20261025.2',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,inspect:()=>({cached:cache.size,atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error}))})});
+window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,inspect:()=>({cached:cache.size,atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error}))})});
 })();

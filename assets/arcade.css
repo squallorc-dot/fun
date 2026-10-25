@@ -110,6 +110,11 @@ body[data-page="play"] #arcade-root.arcade-immersive{
 .arcade-immersive .arcade-health-track{flex:0 0 4px}
 .arcade-immersive .arcade-canvas-wrap{aspect-ratio:auto!important;flex:1 1 0%;height:auto!important;min-height:0;min-width:0;overflow:hidden}
 .arcade-immersive .arcade-canvas-wrap canvas{width:100%;height:100%;touch-action:none}
+
+/* The retained shooter shares one 600 × 600 world on desktop and phone. */
+.arcade-canvas-wrap{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse,#173448,#041322)}
+.arcade-canvas-wrap canvas{flex:none;max-width:100%;max-height:100%}
+@media(max-width:720px){.arcade-stick{width:94px;height:94px;flex-basis:94px}.arcade-stick-ring{inset:17px}.arcade-touch-controls{padding:9px 14px 12px}.arcade-action--fire{width:70px;height:70px}.arcade-action{min-width:57px;min-height:45px}.arcade-control-note{display:none}}
 .arcade-immersive .arcade-control-note{display:none}
 .arcade-immersive .arcade-topbar{background:#071b2b}
 .arcade-immersive .arcade-bottombar{background:#061b2b}
@@ -149,6 +154,6 @@ body[data-page="play"] #arcade-root.arcade-immersive{
  .arcade-immersive .arcade-stick,.arcade-immersive .arcade-touch-actions{pointer-events:auto}
  .arcade-immersive .arcade-stick{width:92px;height:92px;flex-basis:92px}
  .arcade-immersive .arcade-action--fire{width:64px;height:64px}
- .arcade-immersive .arcade-action{min-height:40px}
+ .arcade-immersive .arcade-action{min-height:44px}
 }
 @media(prefers-reduced-motion:reduce){.arcade-immersive *{transition:none!important}}

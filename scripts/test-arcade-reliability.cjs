@@ -29,6 +29,17 @@ const before=stairs.debugGeometry();assert.ok(before.player.ground,'G03 player n
 for(let i=0;i<27;i++)stairs.update(.016,{...idle,down:true});
 const after=stairs.debugGeometry();assert.ok(after.player.y>before.player.y+15,`Down should drop through platforms ${before.player.y} -> ${after.player.y}`);
 console.log('G03 geometry: 900 seeded maps + down-control PASS');
+// Holding down consumes one platform only; the next safe platform still catches the player.
+const {g:held}=instance('g03',1,'normal',{w:480,h:720});
+for(let i=0;i<60;i++)held.update(1/60,idle);
+let landed=false;
+for(let i=0;i<180;i++){
+ held.update(1/60,{...idle,down:true});
+ const state=held.debugGeometry();
+ if(i>20&&state.player.ground){landed=true;assert(state.depth<330,'one press cannot skip the entire shaft');break;}
+}
+assert(landed,'holding down must land on the next reachable platform');
+console.log('G03 held drop catches next platform: PASS');
 function simulateMarble(dt){const {g}=instance('g04',117,'normal');let time=0,started=false;
  while(time<5-0.00001){const step=Math.min(dt,5-time);g.update(step,{...idle,fire:!started});started=true;time+=step;}
  return g.debugPhysics();}
@@ -39,3 +50,13 @@ for(const [x,label] of [[b,'30fps'],[c,'20fps']]){
  assert.ok(Math.abs(x.balls[0]?.x-a.balls[0]?.x||0)<5,`marble x ${label}`);
 }
 console.log('G04 fixed physics: 120/30/20 fps outcomes PASS');
+const {g:recall}=instance('g04',117);
+for(let i=0;i<60;i++)recall.update(1/60,idle);
+recall.update(1/60,{...idle,fire:true});const fired=recall.debugPhysics();
+assert(fired.balls.length>0);
+recall.update(1/60,{...idle,skill:true});
+assert.equal(recall.debugPhysics().balls.length,0,'recall immediately clears the active shot');
+assert.equal(recall.debugPhysics().shots,fired.shots,'recall does not refund ammunition');
+recall.update(1/60,{...idle,fire:true});
+assert.equal(recall.debugPhysics().shots,fired.shots-1,'player can aim and fire again after recall');
+console.log('G04 recall and next shot: PASS');

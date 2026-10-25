@@ -1,7 +1,7 @@
 // Captures only real running game canvases; these become the six playable-game covers.
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';
 import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),covers=path.join(root,'arcade/assets/covers'),qa=path.join(root,'arcade/qa/visual-v11');
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),covers=path.join(root,'arcade/assets/covers'),qa=path.join(root,'arcade/qa/visual-v12');
 fs.mkdirSync(covers,{recursive:true});fs.mkdirSync(qa,{recursive:true});
 const mime={'.html':'text/html;charset=utf-8','.css':'text/css;charset=utf-8','.js':'text/javascript;charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.json':'application/json'};
 const server=http.createServer((req,res)=>{try{const file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);}catch{res.writeHead(400);res.end();}});
@@ -20,36 +20,40 @@ try{
    let frame=page;
    if(id==='g02'){frame=page.frames().find(f=>f.url().includes('/shooter.html'));await page.frameLocator('#g02-frame').locator('canvas').waitFor();frame=page.frames().find(f=>f.url().includes('/shooter.html'));}
    await frame.waitForFunction(()=>window.BioGuardianArt?.inspect().atlases.some(x=>x.ready));
+   await frame.waitForFunction(key=>BioWorldArt.inspect().some(x=>x.key===key&&x.ready),({g01:'street',g02:'defense',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'})[id]);
    const box=await frame.locator('canvas').boundingBox();await page.setViewportSize({width:960,height:Math.round(page.viewportSize().height+540-box.height)});await page.waitForTimeout(100);
    if(id==='g01'){await page.keyboard.down('d');await page.waitForTimeout(1100);await page.keyboard.up('d');await page.keyboard.down('j');await page.waitForTimeout(500);await page.keyboard.up('j');}
-   else if(id==='g02'){await page.waitForTimeout(2500);await page.keyboard.down('Space');await page.waitForTimeout(500);await page.keyboard.up('Space');}
+   else if(id==='g02'){await page.waitForTimeout(3500);await page.keyboard.down('Space');await page.waitForTimeout(1500);await page.keyboard.up('Space');}
    else if(id==='g03'){await page.keyboard.down('s');await page.keyboard.down('d');await page.waitForTimeout(280);await page.keyboard.up('s');await page.keyboard.up('d');}
    else if(id==='g04'){await page.waitForTimeout(800);await page.keyboard.press('Space');await page.waitForTimeout(350);}
    else if(id==='g05')await page.waitForTimeout(1150);
-   else if(id==='g06')await page.waitForTimeout(2100);
+   else if(id==='g06')await page.waitForTimeout(6500);
    const url=await frame.locator('canvas').evaluate(c=>c.toDataURL('image/webp',.9));
    fs.writeFileSync(path.join(covers,id+'.webp'),Buffer.from(url.split(',')[1],'base64'));
    await page.locator('#stage-back').click();
   }
   await page.close();console.log('Captured 6 actual gameplay covers.');
  }
- for(const lang of ['zh','ja'])for(const [device,viewport]of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]){
-  const page=await browser.newPage({viewport,reducedMotion:'reduce',deviceScaleFactor:1});
+ if(!process.argv.includes('--covers-only'))for(const lang of ['zh','ja'])for(const [device,viewport]of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]){
+  const page=await browser.newPage({viewport,reducedMotion:'reduce',deviceScaleFactor:1,hasTouch:device==='mobile',isMobile:device==='mobile'});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   await page.goto(origin+`/arcade/${lang}/index.html`,{waitUntil:'networkidle'});
   await snapshot(page,`${lang}-lobby-${device}`,true);
   await page.locator('[data-launch="g01"]').click();await page.waitForFunction(()=>[...document.querySelectorAll('#hero-choices img')].filter(el=>{const b=el.getBoundingClientRect();return b.left<innerWidth&&b.right>0&&b.top<innerHeight&&b.bottom>0;}).every(el=>el.complete&&el.naturalWidth>0));
   await snapshot(page,`${lang}-selection-${device}`);
   await page.locator('#setup-cancel').click();
-  for(const id of device==='desktop'?['g03','g04','g05','g06']:['g05']){
+  for(const id of ['g01','g02','g03','g04','g05','g06']){
    await page.locator(`[data-launch="${id}"]`).click();await page.locator('[data-hero="2"]').click();
    if(id==='g05')await page.locator('[data-mode="volley"]').click();
-   await page.locator('#setup-play').click();await page.waitForTimeout(1100);
+   await page.locator('#setup-play').click();
+   const child=id==='g02'?(await page.frameLocator('#g02-frame').locator('canvas').waitFor(),page.frames().find(f=>f.url().includes('/shooter.html'))):page;
+   await child.waitForFunction(key=>BioWorldArt.inspect().some(x=>x.key===key&&x.ready),({g01:'street',g02:'defense',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'})[id]);
+   await page.waitForTimeout(id==='g01'||id==='g02'?3000:id==='g06'?6500:1100);
    await snapshot(page,`${lang}-${id}-${device}`);
    await page.locator('#stage-help').click();await snapshot(page,`${lang}-${id}-guide-${device}`);
    await page.locator('#guide-close').click();await page.locator('#stage-back').click();
   }
   await page.close();
  }
- console.log('Saved bilingual desktop/mobile visual evidence to arcade/qa/visual-v11.');
+ if(!process.argv.includes('--covers-only'))console.log('Saved bilingual desktop/mobile visual evidence to arcade/qa/visual-v12.');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

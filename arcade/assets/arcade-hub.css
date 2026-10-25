@@ -35,7 +35,7 @@ html{scroll-padding-top:90px}
 .game-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;scroll-margin-top:100px}
 .game-card{border-radius:20px;border-color:#315267;background:linear-gradient(145deg,#123047,#0a1d30);box-shadow:0 12px 26px #0002}
 .game-thumb{height:auto;aspect-ratio:16/9;background:#0a2137}
-.game-thumb img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .3s}
+.game-thumb img{width:100%;height:100%;display:block;object-fit:contain;transition:transform .3s}
 .game-card:hover .game-thumb img{transform:scale(1.035)}
 .game-thumb:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#0617279c,transparent 30%);pointer-events:none}
 .game-thumb>span{z-index:1;border-radius:8px;font-size:.8rem;background:#061827ed;padding:7px 10px}
@@ -186,4 +186,34 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
  .setup-dialog{max-height:95dvh}
  .hero-chip-wrap{grid-template-columns:repeat(4,minmax(0,1fr))}
  .stage-toolbar button{min-height:34px}
+}
+
+/* A fixed game world is fitted into the window, never stretched into a wider level. */
+#stage-inner{align-items:center;justify-content:center;background:radial-gradient(ellipse,#173448,#03101d 75%)}
+#stage[data-game="g02"] #stage-inner{align-items:stretch;justify-content:stretch}
+#hub-canvas{max-width:100%;max-height:100%;border:1px solid #477b8a;box-shadow:0 10px 50px #0009;image-rendering:auto}
+.touch-controls{padding:10px max(14px,env(safe-area-inset-right));gap:16px;align-items:center;min-height:90px}
+.touch-left,.touch-right{max-width:none!important;gap:9px}
+.touch-controls[data-layout="dpad"] .touch-left{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:3px}
+.touch-controls[data-layout="dpad"] [data-touch="up"]{grid-area:1/2}
+.touch-controls[data-layout="dpad"] [data-touch="left"]{grid-area:2/1}
+.touch-controls[data-layout="dpad"] [data-touch="right"]{grid-area:2/3}
+.touch-controls[data-layout="dpad"] [data-touch="down"]{grid-area:3/2}
+.touch-controls[data-layout="dpad"] .touch-left button{width:44px!important;height:44px!important;min-width:0;border-radius:10px}
+.touch-controls[data-layout="pair"] .touch-left{display:flex;gap:10px}
+.touch-controls[data-layout="pair"] .touch-left button{width:62px!important;height:58px!important}
+.touch-controls[data-layout="vertical"] .touch-left{display:flex;flex-direction:column}
+.touch-right{display:flex!important;flex-wrap:wrap;justify-content:flex-end;max-width:170px!important;gap:9px}
+.touch-right button{width:58px!important;height:54px!important;border-radius:16px;font-size:.78rem;min-width:0}
+.touch-right [data-touch="fire"]{width:70px!important;height:70px!important;border-radius:50%;order:1}
+.touch-right [data-touch="jump"]{order:2}.touch-right [data-touch="dodge"]{order:3}.touch-right [data-touch="skill"]{order:4}
+#stage[data-game="g01"] .touch-right{display:grid!important;grid-template-columns:70px 58px;grid-template-rows:70px 54px;gap:9px;align-items:center;justify-items:center}
+#stage[data-game="g01"] [data-touch="fire"]{grid-area:auto}
+@media(max-height:520px) and (orientation:landscape){
+ .touch-controls{bottom:28px;padding:5px 12px;min-height:0}
+ .touch-controls[data-layout="pair"] .touch-left button{width:56px!important;height:52px!important}
+ .touch-right{max-width:150px!important}
+ .touch-right button{width:54px!important;height:48px!important}
+ .touch-right [data-touch="fire"]{width:64px!important;height:64px!important}
+ #stage[data-game="g01"] .touch-right{grid-template-columns:64px 54px;grid-template-rows:64px 48px}
 }

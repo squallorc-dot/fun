@@ -1,5 +1,5 @@
 {
-  "version": "20261025.2",
+  "version": "20261025.5",
   "tile": 160,
   "columns": 8,
   "rows": 9,
@@ -131,26 +131,26 @@
     {
       "key": "enemy-grunt",
       "file": "enemy-grunt.png",
-      "bytes": 128544,
-      "sha256": "aaafc427dc1d34b774f7ef4083e441c823bb86a963590092d60f0953d04a7649"
+      "bytes": 117959,
+      "sha256": "56ad4075cab975fb05bdfaf5e802f1750799d52ae763090e71e072c99861b218"
     },
     {
       "key": "enemy-brute",
       "file": "enemy-brute.png",
-      "bytes": 124284,
-      "sha256": "9cee0eb7a015abd9ed1290410659177a86c76f24f40d982802b60ca90d3ae1f0"
+      "bytes": 144734,
+      "sha256": "81a2fc74ef68a5c27b3237e85d68aadbb2f85110fddbc75e86c45ea1872cdeff"
     },
     {
       "key": "enemy-ranged",
       "file": "enemy-ranged.png",
-      "bytes": 148517,
-      "sha256": "17a0d254b2611b912ac0a84dca103431c63e053b2e915e9ef07af79c55509b73"
+      "bytes": 160390,
+      "sha256": "83cdaf26927d9bbb697bd6ebdccf84c5147aa781837f9360a3613b4d745c976a"
     },
     {
       "key": "enemy-boss",
       "file": "enemy-boss.png",
-      "bytes": 142919,
-      "sha256": "4f9720382256c9dcae2691fd9c25611532a8bec1a3f7a2c6856ceebe58023e9f"
+      "bytes": 208908,
+      "sha256": "e2de8f78bfbb7197a4316fb8962f90b79e96625cf41f5f90a5b8a477c71394c8"
     }
   ]
 }
