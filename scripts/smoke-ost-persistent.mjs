@@ -1,0 +1,36 @@
+import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg','.json':'application/json'};
+const server=http.createServer((req,res)=>{try{const f=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile()){res.writeHead(404);res.end();return}res.setHeader('Content-Type',types[path.extname(f)]||'application/octet-stream');fs.createReadStream(f).pipe(res)}catch{res.writeHead(400);res.end()}});
+await new Promise(done=>server.listen(0,'127.0.0.1',done));
+const base='http://127.0.0.1:'+server.address().port;const browser=await chromium.launch({headless:true,args:['--no-sandbox','--autoplay-policy=no-user-gesture-required']});
+let checks=0;const test=(v,name)=>{checks++;if(!v)throw Error(name)};
+try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html']]){
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ await page.route('**/*',r=>r.request().url().startsWith(base+'/')?r.continue():r.abort());
+ await page.goto(base+'/listen.html?page='+encodeURIComponent(home),{waitUntil:'domcontentloaded'});
+ await page.locator('#bio-website').waitFor();
+ const frame=page.frameLocator('#bio-website');
+ await frame.locator('#bio-ost-entry').waitFor();
+ test(await page.evaluate(()=>!!window.BioGlobalOST),lang+' shell exists');
+ test(await frame.locator('.site-bottom-nav').count()===1,lang+' original mobile nav retained');
+ await page.locator('#persistent-expand').click();
+ await page.locator('#persistent-track').selectOption('1');
+ test((await page.evaluate(()=>window.BioGlobalOST.state.track))===1,lang+' track changes');
+ const before=await page.evaluate(()=>{window.__originalSound=window.BioGlobalOST.state.element;return window.BioGlobalOST.state.src});
+ test(before.includes('burner-sister'),lang+' selected source');
+ await frame.locator('.site-header a').filter({hasText:lang==='zh'?'世界觀':'世界観'}).first().click();
+ await frame.locator('body[data-page="world"]').waitFor();
+ test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after navigation');
+ test(new URL(page.url()).searchParams.get('page')?.includes('/world.html'),lang+' deep route state updated');
+ await frame.locator('a[href*="music.html"]').first().click();
+ await frame.locator('.ost-player-card').first().waitFor();
+ test(await frame.locator('.ost-shell-play').count()===4,lang+' songs use shared persistent audio');
+ await frame.locator('.ost-shell-play').first().click();
+ test((await page.evaluate(()=>window.BioGlobalOST.state.track))===0,lang+' song card selects OST');
+ await frame.locator('a[href*="play.html"]').first().click();
+ await frame.locator('body[data-page="play"]').waitFor();
+ test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after second navigation');
+ await page.close();
+ }console.log('PERSISTENT OST PASS '+checks+' bilingual browser assertions');
+}finally{await browser.close();await new Promise(done=>server.close(done));}

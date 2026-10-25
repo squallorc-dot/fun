@@ -32,6 +32,7 @@ jobs:
         run: |
           node scripts/smoke.mjs
           node scripts/smoke-navigation.mjs
+          node scripts/smoke-ost-persistent.mjs
           node scripts/smoke-arcade.mjs
           node scripts/smoke-guardian-art.mjs
           node scripts/smoke-arcade-visual.mjs
