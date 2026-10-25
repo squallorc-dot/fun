@@ -158,7 +158,7 @@ try{
      startEvents:window.dataLayer.filter(x=>x.event==='arcade_game_start').length,
      finishEvents:window.dataLayer.filter(x=>x.event==='arcade_game_finish').length
    }));
-   check(scores.volley==='432'&&scores.pong==='987',label+' G05 modes retain independent best');
+   check(scores.volley==='432'&&scores.pong==='1002',label+' G05 modes retain independent best after chapter progression');
    check(scores.startEvents>=6&&scores.finishEvents>=2,label+' unified game start/finish events');
    await page.locator('#stage-back').click();await inLobby();
    check(!pageErrors.length,label+' JS errors: '+pageErrors.join(' | ').slice(0,500));
