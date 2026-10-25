@@ -17,6 +17,13 @@ for(const [w,h]of [[375,460],[430,570],[768,810],[960,540],[1440,740],[844,286]]
  }
 }
 // A low ball must rebound once and move away from the net, never alternate forever inside it.
+// Regression: taller net must be physically solid, not a cosmetic drawing.
+for(const [w,h] of [[375,460],[430,570],[768,810],[960,540],[1440,740],[844,286]]){
+ const f=create(w,h,'normal').inspectMatch().field;
+ const expected=Math.min(160,h*.30);
+ assert.ok(Math.abs((f.floor-f.netTop)-expected)<.01,'raised net must be 30% of viewport height with 160px cap');
+ assert.ok(f.netTop>h*.38,'net must leave a playable overhead corridor');
+}
 const g=create(640,510,'normal'),f=g.inspectMatch().field;
 g.testVolleyBall({x:640*.5-f.r-5,y:f.netTop+40,vx:220,vy:0,serveCrossed:true});
 g.update(1/60,idle);assert.ok(g.inspectMatch().ball.vx<0,'left net face reverses incoming ball');
