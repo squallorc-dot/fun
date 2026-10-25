@@ -221,3 +221,11 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 /* v1.1 shared joystick for five arcade games */
 #stick-pad{display:none}
 @media(max-width:1100px),(pointer:coarse){.touch-controls .touch-left{display:flex!important;align-items:center;justify-content:center;max-width:100px!important;flex:0 0 90px}.touch-controls .touch-left [data-touch]{display:none!important}#stick-pad{position:relative;display:block;width:90px;height:90px;border-radius:50%;touch-action:none;user-select:none;background:radial-gradient(circle,#245f78,#092f4b);border:2px solid #73dce9;box-shadow:0 0 0 5px #05223688}#stick-knob{position:absolute;left:50%;top:50%;width:45%;height:45%;border-radius:50%;background:#9adeec;border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none}.touch-controls{min-height:0;gap:10px;padding-block:5px}.touch-controls .touch-right{max-width:64%!important}}@media(max-height:520px) and (orientation:landscape){.touch-controls{bottom:12px}}
+
+/* Bio-City Arcade v1.1: chapter/mode selection remains compact on small screens. */
+.campaign-settings{display:flex;align-items:end;gap:10px;flex-wrap:wrap;width:100%;margin:10px 0 3px;padding:12px 13px;border:1px solid #5dbdc16a;background:#10384977;border-radius:13px}
+.campaign-settings>label{display:flex;flex:1 1 150px;flex-direction:column;gap:5px;font-size:12px;color:#d6f8fb;min-width:132px}
+.campaign-settings select{width:100%;min-height:44px;padding:8px 12px;color:#eafdff;background:#0b283a;border:1px solid #50869c;border-radius:9px;font:inherit;font-size:14px}
+.campaign-settings select:disabled{opacity:.52}
+.campaign-settings small{width:100%;font-size:11px;color:#a7dadd;line-height:1.5}
+@media(max-width:580px){.campaign-settings{margin:7px 0 0;padding:10px;gap:7px}.campaign-settings>label{flex:1 1 120px;min-width:120px}}
