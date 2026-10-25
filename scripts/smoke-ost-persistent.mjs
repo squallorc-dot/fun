@@ -23,6 +23,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  await frame.locator('.site-header a').filter({hasText:lang==='zh'?'世界觀':'世界観'}).first().click();
  await frame.locator('body[data-page="world"]').waitFor();
  test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after navigation');
+ await page.waitForFunction(()=>new URL(location.href).searchParams.get('page')?.includes('/world.html'),null,{timeout:3500});
  test(new URL(page.url()).searchParams.get('page')?.includes('/world.html'),lang+' deep route state updated');
  await frame.locator('a[href*="music.html"]').first().click();
  await frame.locator('.ost-player-card').first().waitFor();
