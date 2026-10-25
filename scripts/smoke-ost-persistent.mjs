@@ -12,7 +12,10 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  await page.locator('#bio-website').waitFor();
  const frame=page.frameLocator('#bio-website');
  await frame.locator('body[data-page="home"]').waitFor();
- test(await frame.locator('#bio-ost-entry').count()===0,lang+' no duplicate music button inside continuous mode');
+ test(await frame.locator('#bio-ost-entry').count()===0,lang+' no duplicate music entry inside continuous mode');
+ test(await page.locator('#persistent-mini').count()===0,lang+' no obstructing mini player');
+ test(await page.locator('#persistent-dock #persistent-expand').count()===1,lang+' one in-flow OST control');
+ test(await page.evaluate(()=>{const bar=document.querySelector('#persistent-dock').getBoundingClientRect(),site=document.querySelector('#bio-website').getBoundingClientRect();return bar.top>=0&&bar.bottom<=site.top+1&&site.bottom<=innerHeight+1;}),lang+' desktop OST dock stays outside site viewport');
  test(await page.evaluate(()=>!!window.BioGlobalOST),lang+' shell exists');
  test(await frame.locator('.site-bottom-nav').count()===1,lang+' original mobile nav retained');
  await page.locator('#persistent-expand').click();
@@ -49,6 +52,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  await frame.locator('.experience-hero a[href*="/arcade/"]').click();
  await frame.locator('[data-launch="g01"]').waitFor();
  await page.setViewportSize({width:390,height:844});
+ test(await page.evaluate(()=>{const bar=document.querySelector('#persistent-dock').getBoundingClientRect(),site=document.querySelector('#bio-website').getBoundingClientRect();return bar.bottom<=site.top+1&&bar.width<=innerWidth&&site.bottom<=innerHeight+1;}),lang+' mobile OST dock does not cover site or bottom navigation');
  test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' music object stays alive entering Arcade on mobile');
  await frame.locator('[data-launch="g01"]').click();
  await frame.locator('#setup-play').click();

@@ -85,7 +85,8 @@ dialog.site-explore{position:fixed;inset:auto 14px calc(var(--site-bottom-height
 @media(max-height:500px){dialog.site-explore{inset:8px 14px auto;max-height:calc(100dvh - 16px)}.site-explore nav{grid-template-columns:1fr 1fr}.site-explore nav a{min-height:75px}.explore-hint{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.backtop{transition:none}}
 
-/* Opt-in cross-page OST mode; separate from the four mobile bottom-nav buttons. */
-#bio-ost-entry{position:fixed;z-index:540;left:18px;bottom:22px;min-height:44px;padding:9px 13px;border:1px solid #72d3dd;border-radius:24px;background:#123a4fea;color:#ddfbff;font:700 12px/1.5 'Noto Sans TC','Noto Sans JP',system-ui,sans-serif;box-shadow:0 5px 17px #0008;cursor:pointer}
-#bio-ost-entry:focus-visible{outline:3px solid #b7ffff;outline-offset:3px}
-@media(max-width:1100px){#bio-ost-entry{bottom:calc(84px + env(safe-area-inset-bottom));left:12px}}
+/* Opt-in OST lives in the music page, not as a permanent floating overlay. */
+#bio-ost-entry{position:static;display:inline-flex;align-items:center;justify-content:center;min-height:44px;width:auto;max-width:100%;margin:0 0 18px;padding:10px 16px;border:1px solid #72d3dd;border-radius:12px;background:#123a4f;color:#ddfbff;font:700 13px/1.5 'Noto Sans TC','Noto Sans JP',system-ui,sans-serif;cursor:pointer}
+#bio-ost-entry:hover,.ost-shell-play:hover{background:#1b5366}
+#bio-ost-entry:focus-visible,.ost-shell-play:focus-visible{outline:3px solid #b7ffff;outline-offset:3px}
+.ost-shell-play{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid #72d3dd;border-radius:10px;background:#123a4f;color:#ddfbff;font:700 13px/1.5 'Noto Sans TC','Noto Sans JP',system-ui,sans-serif;cursor:pointer}
