@@ -31,7 +31,12 @@ return `<!DOCTYPE html>
 <meta property="og:image" content="${c.ogImage}">
 <meta property="og:image:type" content="image/webp">
 <meta property="og:image:alt" content="${esc(l.alt)}">
-<meta property="og:image:width" content="1672">\n<meta property="og:image:height" content="941">\n<meta property="og:locale" content="${lang===\"zh\"?\"zh_TW\":\"ja_JP\"}">\n<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:title" content="${esc(m.title)}">\n<meta name="twitter:description" content="${esc(m.desc)}">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:locale" content="${lang==="zh"?"zh_TW":"ja_JP"}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(m.title)}">
+<meta name="twitter:description" content="${esc(m.desc)}">
 <meta name="twitter:image" content="${c.ogImage}">
 <meta name="twitter:image:alt" content="${esc(l.alt)}">
 <link rel="canonical" href="${abs(lang,key)}">
