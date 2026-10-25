@@ -1,8 +1,8 @@
 {
   "base": "https://squallorc-dot.github.io/fun/",
-  "ogImage": "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png",
+  "ogImage": "https://squallorc-dot.github.io/fun/arcade/assets/covers/bio-city-arcade-cover.webp",
   "gtm": "GTM-5M4KVKNX",
-  "version": "20261025.7",
+  "version": "20261025.8",
   "arcadeVersion": "20261025.9",
   "locales": {
     "zh": {
@@ -14,7 +14,7 @@
       "skip": "跳至內容",
       "backtop": "回到頂部",
       "stop": "停止音樂",
-      "alt": "FUNAI CARE 守護者聯盟｜Burner 姐",
+      "alt": "FUNAI CARE 守護者聯盟｜Bio-City 品牌宇宙",
       "names": [
         "首頁",
         "世界觀",
@@ -34,7 +34,7 @@
       "skip": "本文へ移動",
       "backtop": "ページ上部へ",
       "stop": "音楽を停止",
-      "alt": "FUNAI CARE ガーディアンズ｜バーナー姐さん",
+      "alt": "FUNAI CARE ガーディアンズ｜Bio-City",
       "names": [
         "ホーム",
         "世界観",
@@ -49,12 +49,12 @@
   "meta": {
     "home": {
       "zh": {
-        "title": "FUNAI CARE 守護者聯盟｜FUNAI CARE",
-        "desc": "從既有角色、原創影音及品牌資產出發，共同建立可長期發展的 Bio-City 品牌 IP 宇宙。"
+        "title": "FUNAI CARE 守護者聯盟｜Bio-City 品牌宇宙",
+        "desc": "從品牌角色與創作理念出發，打造 Bio-City 守護者聯盟！探索英雄圖鑑、原創動畫、聯盟 OST 與六款互動遊戲，走進充滿想像力的品牌宇宙。"
       },
       "ja": {
-        "title": "FUNAI CARE ガーディアンズ｜FUNAI CARE",
-        "desc": "既存キャラクターとオリジナル音楽・映像から始まる Bio-City ブランドIPプロジェクト。"
+        "title": "FUNAI CARE ガーディアンズ｜Bio-City ブランドユニバース",
+        "desc": "ブランドキャラクターと創作コンセプトから生まれた Bio-City。7組のガーディアンズ、オリジナルアニメ、OST、6つのゲームを楽しもう。"
       }
     },
     "world": {
