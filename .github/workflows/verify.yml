@@ -70,6 +70,7 @@ jobs:
           node scripts/test-g01-animation.cjs
           node scripts/test-arcade-replay.cjs
           node scripts/test-arcade-campaign.cjs
+          node scripts/test-arcade-chapters.cjs
           node scripts/test-g05-table.cjs
           node scripts/test-g05-volley.cjs
           node scripts/test-arcade-sprites.cjs
