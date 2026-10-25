@@ -1,14 +1,13 @@
-/* Opt-in soundtrack portal. SEO content stays on canonical pages in a same-origin frame. */
-:root{color-scheme:dark;font-family:'Noto Sans TC','Noto Sans JP',system-ui,sans-serif}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#061422;color:#e6faff}
-#bio-website{display:block;width:100%;height:100dvh;border:0;background:#061422}
-#bio-ost-entry{position:fixed;z-index:550;left:18px;bottom:24px;min-height:44px;padding:9px 14px;border:1px solid #64c6d8;border-radius:24px;background:#0a3549ef;color:#d7faff;font:700 12px/1.5 system-ui;box-shadow:0 5px 16px #00111d90;cursor:pointer}
-#bio-ost-entry:focus-visible{outline:3px solid #d4fffc;outline-offset:3px}
-.ost-shell-play{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:12px 0 6px;padding:10px 14px;background:#124b61;color:#e0fdff;border:1px solid #76cddd;border-radius:10px;cursor:pointer;font:700 13px system-ui}
-.ost-shell-play:focus-visible{outline:3px solid #aaf6ff;outline-offset:3px}
-#persistent-mini{position:fixed;left:14px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:300;max-width:min(270px,calc(100vw - 32px));min-height:42px;padding:8px 12px;border:1px solid #8de9ee;border-radius:22px;background:#082a3bee;color:#d9f8ff;font:700 11px system-ui;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;box-shadow:0 8px 20px #0008}
-#persistent-expand{position:fixed;right:15px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:300;min-width:44px;min-height:44px;border:1px solid #79cad6;border-radius:50%;background:#143c51;color:#e3ffff;font-size:20px;cursor:pointer}
-#persistent-panel{position:fixed;z-index:310;left:12px;bottom:calc(140px + env(safe-area-inset-bottom));width:min(360px,calc(100% - 24px));padding:18px;background:#0c2838f9;border:1px solid #75c9d6;border-radius:18px;box-shadow:0 15px 65px #000a}
+/* Bio-City OST controller stays in a slim, reserved header row rather than covering the site. */
+:root{--ost-dock-height:44px;color-scheme:dark;font-family:'Noto Sans TC','Noto Sans JP',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#061422;color:#e6faff}
+body{display:flex;flex-direction:column;min-height:0}
+#persistent-dock{position:relative;z-index:350;display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;min-height:calc(var(--ost-dock-height) + env(safe-area-inset-top));padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));border-bottom:1px solid #345a6c;background:#0a2638}
+#bio-website{display:block;flex:1 1 auto;min-height:0;height:0;width:100%;border:0;background:#061422}
+#persistent-expand{display:block;position:static;width:auto;max-width:min(420px,calc(100vw - 28px));min-height:36px;margin:0;padding:6px 16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid #69baca;border-radius:20px;background:#113e53;color:#e2fcff;font:700 12px/1.5 'Noto Sans TC','Noto Sans JP',system-ui,sans-serif;text-align:center;cursor:pointer}
+#persistent-expand:hover{background:#19546b;border-color:#a5e8f1}
+#persistent-panel{position:fixed;z-index:400;top:calc(var(--ost-dock-height) + env(safe-area-inset-top) + 8px);right:max(12px,env(safe-area-inset-right));left:auto;bottom:auto;width:min(360px,calc(100% - 24px));max-height:calc(100dvh - var(--ost-dock-height) - env(safe-area-inset-top) - 24px);overflow:auto;padding:18px;background:#0c2838fa;border:1px solid #75c9d6;border-radius:18px;box-shadow:0 15px 65px #000b}
 #persistent-panel[hidden]{display:none}
 #persistent-panel h1{font-size:16px;margin:0 0 12px;line-height:1.5}
 #persistent-panel label{display:flex;flex-direction:column;gap:6px;margin:10px 0;font-size:12px}
@@ -17,7 +16,7 @@
 #persistent-panel button{min-height:42px;margin:3px;border-radius:10px;border:1px solid #538ba2;background:#154058;color:#e1faff;padding:8px 12px;cursor:pointer}
 #persistent-panel #persistent-toggle{background:#256d7a}
 #persistent-panel p{font-size:12px;color:#c1dbe2;line-height:1.7}
-#persistent-expand:focus-visible,#persistent-mini:focus-visible,#persistent-panel :focus-visible{outline:3px solid #a9efff;outline-offset:3px}
-.bio-game-active #persistent-mini,.bio-game-active #persistent-expand,.bio-game-active #persistent-panel{display:none!important}
-@media(min-width:1101px){#persistent-mini{left:auto;right:74px;bottom:20px}#persistent-expand{right:17px;bottom:18px}#persistent-panel{left:auto;right:14px;bottom:82px}}
-@media(max-width:1100px){#bio-ost-entry{bottom:calc(86px + env(safe-area-inset-bottom));left:12px}}
+#persistent-expand:focus-visible,#persistent-panel :focus-visible{outline:3px solid #a9efff;outline-offset:3px}
+.bio-game-active #persistent-dock,.bio-game-active #persistent-panel{display:none!important}
+@media(max-width:1100px){#persistent-dock{justify-content:center}#persistent-expand{max-width:calc(100vw - 28px);padding-inline:12px}#persistent-panel{left:12px;right:12px;margin-inline:auto}}
+@media(max-height:500px){#persistent-panel{max-height:calc(100dvh - var(--ost-dock-height) - env(safe-area-inset-top) - 12px)}}

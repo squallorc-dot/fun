@@ -24,11 +24,12 @@ if(shell){
  document.addEventListener('pause',e=>{if(e.target instanceof HTMLAudioElement){controller.otherAudioStopped(e.target);}},true);
  return;
 }
-if(document.querySelector('#bio-ost-entry'))return;
+const ostList=document.querySelector('.ost-container');
+if(!ostList||document.querySelector('#bio-ost-entry'))return;
 const btn=document.createElement('button');btn.type='button';btn.id='bio-ost-entry';
 btn.textContent=ja?'♪ 連続OST':'♪ 連續OST';
 btn.title=ja?'ページを移動しても再生を続ける':'切換網站頁面也不會中斷 OST';
 btn.setAttribute('aria-label',btn.title);
 btn.addEventListener('click',()=>{const page=trackPage()||'FUNAI-CARE.html';location.assign(new URL('listen.html?page='+encodeURIComponent(page),base));});
-document.body.appendChild(btn);
+ostList.before(btn);
 })();

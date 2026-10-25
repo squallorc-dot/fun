@@ -13,7 +13,7 @@ const select=document.querySelector('#persistent-track');
 const play=document.querySelector('#persistent-toggle');
 const volume=document.querySelector('#persistent-volume');
 const panel=document.querySelector('#persistent-panel');
-const mini=document.querySelector('#persistent-mini');
+const expand=document.querySelector('#persistent-expand');
 const leaveBtn=document.querySelector('#persistent-leave');
 let gameActive=false,shouldResume=false,explicitlyPaused=true,track=0;
 const otherAudioSources=new Set();
@@ -39,7 +39,7 @@ tracks.forEach(([name],i)=>{const opt=document.createElement('option');opt.value
 try{const prefs=JSON.parse(localStorage.getItem('bio_persistent_ost_v1')||'{}');track=Number.isInteger(prefs.track)?Math.max(0,Math.min(3,prefs.track)):0;volume.value=Number.isFinite(prefs.volume)?Math.max(0,Math.min(100,prefs.volume)):36;}catch{volume.value=36}
 audio.loop=true;audio.volume=Number(volume.value)/100;
 function persist(){try{localStorage.setItem('bio_persistent_ost_v1',JSON.stringify({track,volume:Number(volume.value)}))}catch{}}
-function update(){select.value=String(track);play.textContent=audio.paused?'▶ '+i18n.play:'Ⅱ '+i18n.pause;mini.textContent=(audio.paused?'♪ ':'♫ ')+tracks[track][0];mini.setAttribute('aria-label',i18n.open);document.body.classList.toggle('bio-game-active',gameActive)}
+function update(){select.value=String(track);play.textContent=audio.paused?'▶ '+i18n.play:'Ⅱ '+i18n.pause;expand.textContent=(audio.paused?'♪ ':'♫ ')+'OST · '+tracks[track][0]+(panel.hidden?' ⌄':' ⌃');expand.setAttribute('aria-label',(panel.hidden?i18n.open:i18n.close)+'：'+tracks[track][0]);document.body.classList.toggle('bio-game-active',gameActive)}
 function load(i){track=Math.max(0,Math.min(3,Number(i)||0));if(audio.dataset.track!==String(track)){audio.pause();audio.src=new URL(tracks[track][1],root);audio.dataset.track=String(track)}persist();update()}
 function start(){explicitlyPaused=false;shouldResume=true;if(gameActive||isOtherAudioPlaying()){update();return;}const p=audio.play();if(p&&p.catch)p.catch(()=>{explicitlyPaused=true;update()});update()}
 function stop(){explicitlyPaused=true;shouldResume=false;audio.pause();update()}
@@ -67,11 +67,10 @@ select.addEventListener('change',e=>playIndex(e.target.value));
 play.addEventListener('click',()=>{audio.paused?start():stop()});
 volume.addEventListener('input',()=>{audio.volume=Number(volume.value)/100;persist()});
 audio.addEventListener('play',update);audio.addEventListener('pause',update);audio.addEventListener('ended',update);
-function show(){panel.hidden=false;panel.setAttribute('aria-hidden','false');document.querySelector('#persistent-expand').setAttribute('aria-expanded','true');select.focus({preventScroll:true})}
-function hide(){panel.hidden=true;panel.setAttribute('aria-hidden','true');document.querySelector('#persistent-expand').setAttribute('aria-expanded','false');document.querySelector('#persistent-expand').focus({preventScroll:true})}
-document.querySelector('#persistent-expand').addEventListener('click',()=>panel.hidden?show():hide());
+function show(){panel.hidden=false;panel.setAttribute('aria-hidden','false');expand.setAttribute('aria-expanded','true');update();select.focus({preventScroll:true})}
+function hide(){panel.hidden=true;panel.setAttribute('aria-hidden','true');expand.setAttribute('aria-expanded','false');update();expand.focus({preventScroll:true})}
+expand.addEventListener('click',()=>panel.hidden?show():hide());
 document.querySelector('#persistent-close').addEventListener('click',hide);
-mini.addEventListener('click',show);
 leaveBtn.addEventListener('click',()=>{let path='FUNAI-CARE.html';try{path=safePage(frame.contentWindow.location.href)||path}catch{}location.assign(new URL(path,root))});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){hide();e.preventDefault()}});
 update();
