@@ -74,6 +74,20 @@ try{
     }else await open(id);
     await page.locator('#hub-canvas').waitFor();
     check(await page.locator('#hub-canvas').count()===1,label+' '+id+' single canvas');
+    check(await page.locator('#stick-pad').count()===1,label+' '+id+' single joystick');
+    if(await page.locator('#stick-pad').isVisible()){
+      const axis=await page.locator('#stage-controls').getAttribute('data-stick-axis');
+      await page.evaluate(axis=>{
+        const el=document.querySelector('#stick-pad'),r=el.getBoundingClientRect();
+        el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:891,clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+        el.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,pointerId:891,clientX:r.left+r.width*(axis==='y'?.5:.9),clientY:r.top+r.height*(axis==='y'?.12:.5)}));
+      },axis);
+      check((await page.evaluate(()=>BioSuiteHub.debugState.stick.held)),label+' '+id+' joystick responds');
+      const keys=(await page.evaluate(()=>BioSuiteHub.debugState.stick.dirs));
+      check(keys.includes(axis==='y'?'up':'right'),label+' '+id+' correct joystick direction');
+      await page.evaluate(()=>document.querySelector('#stick-pad').dispatchEvent(new PointerEvent('pointercancel',{bubbles:true,pointerId:891})));
+      check(!(await page.evaluate(()=>BioSuiteHub.debugState.stick.held)),label+' '+id+' joystick releases');
+    }
     await page.locator('#stage-pause').click();
     check(await page.locator('#stage-dialog-layer.show').count()===1,label+' '+id+' paused');
     await page.locator('#pause-resume').click();
