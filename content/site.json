@@ -2,7 +2,7 @@
   "base": "https://squallorc-dot.github.io/fun/",
   "ogImage": "https://squallorc-dot.github.io/fun/images/funai-care-burner-sister.png",
   "gtm": "GTM-5M4KVKNX",
-  "version": "20261025.1",
+  "version": "20261025.7",
   "locales": {
     "zh": {
       "htmlLang": "zh-TW",
@@ -20,7 +20,7 @@
         "英雄圖鑑",
         "核心故事",
         "原創音樂",
-        "互動體驗",
+        "遊戲與互動",
         "創作與應用"
       ]
     },
@@ -40,7 +40,7 @@
         "ヒーロー",
         "ストーリー",
         "音楽",
-        "体験",
+        "ゲーム・体験",
         "制作・活用"
       ]
     }

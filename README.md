@@ -2,6 +2,14 @@
 
 本專案為 Bio-City 品牌 IP 展示網站。於 2026-10-24 由原有單頁提案改為中日雙語多頁式網站；保留原創音樂、故事、七組英雄、商品資料及 GTM 設定。
 
+## 2026-10-25 全站 UI/UX 整合（20261025.7）
+
+十四個中日文內容頁與兩個 Arcade 大廳共用 `scripts/site-shell.mjs`、`assets/navigation.css` 與 `assets/navigation.js`。桌機顯示七個主選單；1100px 以下使用首頁、英雄、遊戲、探索四個底部入口，探索開啟原生對話框，包含世界觀、核心故事、原創音樂、創作與應用。
+
+互動頁改為六遊戲入口、可展開的原城市防衛戰與八題決策分析；遊戲連結支援 `?game=g01` 至 `g06` 進入準備畫面，英雄圖鑑支援 `?hero=0` 至 `6` 帶入選角。遊戲、準備與說明期間隱藏網站導覽；四首指定 OST 與既有遊戲引擎保留。
+
+執行 `node scripts/build.mjs` 同步全部 16 個入口。`node scripts/verify.mjs` 包含全站 shell 與深連結檢查；CI 的 `scripts/smoke-navigation.mjs` 驗證七種寬度、兩語系、七個選單、六遊戲入口、原生選單與音訊對話框焦點，並輸出 `arcade/qa/site-ui-v7/` 的畫面至 Actions 附件。
+
 ## 正式入口
 
 - 繁體中文首頁：`FUNAI-CARE.html`
@@ -17,8 +25,8 @@
 | 英雄圖鑑 | `zh/heroes.html` | `ja/heroes.html` |
 | 核心故事 | `zh/story.html` | `ja/story.html` |
 | 原創音樂 | `zh/music.html` | `ja/music.html` |
-| 互動體驗 | `zh/play.html` | `ja/play.html` |
-| 數位策略 | `zh/strategy.html` | `ja/strategy.html` |
+| 遊戲與互動 | `zh/play.html` | `ja/play.html` |
+| 創作與應用 | `zh/strategy.html` | `ja/strategy.html` |
 
 ## 共用與語系資產
 

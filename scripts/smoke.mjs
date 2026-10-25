@@ -41,7 +41,7 @@ try{
     if(width<=430){
      const state=await page.evaluate(()=>{
       const visible=el=>!!el&&el.getClientRects().length>0&&getComputedStyle(el).display!=='none';
-      const bottom=[...document.querySelectorAll('.bottom-nav>a')].filter(visible);
+      const bottom=[...document.querySelectorAll('.bottom-nav>a,.bottom-nav>button')].filter(visible);
       const header=document.querySelector('.app-header-inner');
       return{bottom:bottom.length,headerHeight:header.getBoundingClientRect().height,
        desktopNavHidden:!visible(document.querySelector('.main-nav')),
@@ -64,8 +64,8 @@ try{
    const toggle=page.locator('.mobile-explore-toggle'),panel=page.locator('#mobile-explore-panel'),language=page.locator('.mobile-language');
    await toggle.click();
    verify(await panel.isVisible(),lang+' explore opens');
-   verify(await panel.locator('a').count()===3,lang+' exactly three secondary links');
-   verify((await page.evaluate(()=>{const a=[...document.querySelectorAll('.bottom-nav>a,.mobile-explore-panel>a')];return new Set(a.map(x=>x.href)).size}))===7,lang+' seven unique routes');
+   verify(await panel.locator('a').count()===4,lang+' exactly four secondary links');
+   verify((await page.evaluate(()=>{const a=[...document.querySelectorAll('.bottom-nav>a,.mobile-explore-panel a')];return new Set(a.map(x=>x.href)).size}))===7,lang+' seven unique routes');
    await page.keyboard.press('Escape');
    verify(!(await panel.isVisible()),lang+' Escape closes explore');
    await language.locator('summary').click();
@@ -107,6 +107,7 @@ try{
    verify(await page.evaluate(()=>window.dataLayer.filter(x=>x.event==='quiz_completed').length)===1,lang+' quiz completed once');
    await page.locator('[data-qaction="reset"]').click();
    verify(await page.locator('[data-qaction="start"]').count()===1,lang+' quiz restart');
+   await page.locator('.legacy-game-panel>summary').click();
    await page.locator('[data-ar-hero="0"]').click();
    await page.locator('[data-ar-command="start"]').click();
    verify(await page.locator('#arcade-root.arcade-immersive').count()===1,lang+' immersive arcade start');

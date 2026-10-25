@@ -1,16 +1,12 @@
 "use strict";
 (()=>{
- const s=document.querySelector(".reading-progress"),b=document.querySelector(".backtop");
- const update=()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);if(s)s.style.width=Math.round(scrollY/max*100)+"%";if(b)b.classList.toggle("is-visible",scrollY>400)};
- document.addEventListener("scroll",update,{passive:true});update();
- b?.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
  const audio=()=>[...document.querySelectorAll("audio")];
  document.addEventListener("play",e=>{if(!(e.target instanceof HTMLAudioElement))return;audio().forEach(x=>{if(x!==e.target&&!x.paused)x.pause()})},true);
- document.querySelectorAll(".char-img-clickable").forEach(el=>{el.setAttribute("tabindex","0");el.setAttribute("role","button");el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}})});
+ document.querySelectorAll(".char-img-clickable").forEach(el=>{el.setAttribute("tabindex","0");el.setAttribute("role","button");el.setAttribute("aria-pressed","false");el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}})});
  document.addEventListener("pause",e=>{
  if(!(e.target instanceof HTMLAudioElement)||!e.target.closest(".card"))return;
  const card=e.target.closest(".card");
- card.querySelectorAll(".char-img-container.is-playing").forEach(el=>el.classList.remove("is-playing"));
+ card.querySelectorAll(".char-img-container.is-playing").forEach(el=>{el.classList.remove("is-playing");el.setAttribute("aria-pressed","false")});
  if(!document.querySelector(".char-img-container.is-playing"))
   document.getElementById("global-audio-player")?.classList.remove("is-visible");
 },true);
@@ -44,7 +40,7 @@
         });
 
         document.querySelectorAll('.char-img-container').forEach(container => {
-            container.classList.remove('is-playing');
+            container.classList.remove('is-playing');container.setAttribute('aria-pressed','false');
             container.style.animation = 'none';
             container.offsetHeight; 
             container.style.animation = null;
@@ -53,6 +49,7 @@
         targetAudio.play().then(() => {
             if (targetAudio.paused) return; // Another track replaced this one before playback settled.
             imgContainer.classList.add('is-playing');
+            document.querySelectorAll('.char-img-clickable').forEach(el=>el.setAttribute('aria-pressed',String(el===imgContainer)));
             
             floatingName.innerText = heroName;
             floatingPlayer.classList.add('is-visible');
@@ -65,7 +62,7 @@
             });
 
             targetAudio.onended = function() {
-                imgContainer.classList.remove('is-playing');
+                imgContainer.classList.remove('is-playing');imgContainer.setAttribute('aria-pressed','false');
                 floatingPlayer.classList.remove('is-visible');
             };
         }).catch(error => {
@@ -82,7 +79,7 @@
         });
         
         document.querySelectorAll('.char-img-container').forEach(container => {
-            container.classList.remove('is-playing');
+            container.classList.remove('is-playing');container.setAttribute('aria-pressed','false');
         });
         
         floatingPlayer.classList.remove('is-visible');
@@ -165,7 +162,7 @@ document.addEventListener('click',function(event){
   let qualityIndex=0;
   const advance=()=>{
    qualityIndex++;
-   if(qualityIndex>=qualities.length)return;
+   if(qualityIndex>=qualities.length){img.removeAttribute('data-youtube-thumb');img.src=new URL('../images/bio-city-living-city-20261024-1200.webp',document.querySelector('script[src*="assets/site.js"]').src).href;img.removeEventListener('error',advance);img.removeEventListener('load',check);return;}
    img.src='https://i.ytimg.com/vi/'+id+'/'+qualities[qualityIndex]+'.jpg';
   };
   const check=()=>{
@@ -179,29 +176,4 @@ document.addEventListener('click',function(event){
 })();
 
 
-/* Mobile header: accessible explore drawer and language dropdown. */
-(function initMobileHeader(){
- const toggle=document.querySelector('.mobile-explore-toggle');
- const panel=document.getElementById('mobile-explore-panel');
- const languages=document.querySelector('.mobile-language');
- if(!toggle||!panel)return;
- const close=()=>{panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label',document.documentElement.lang==='ja'?'探索メニューを開く':'開啟探索選單')};
- toggle.addEventListener('click',()=>{
-  const opening=panel.hidden;
-  languages?.removeAttribute('open');
-  panel.hidden=!opening;
-  toggle.setAttribute('aria-expanded',String(opening));
-  toggle.setAttribute('aria-label',document.documentElement.lang==='ja'?(opening?'探索メニューを閉じる':'探索メニューを開く'):(opening?'關閉探索選單':'開啟探索選單'));
-  if(opening)panel.querySelector('a[aria-current="page"]')?.focus();
- });
- languages?.addEventListener('toggle',()=>{if(languages.open)close()});
- document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape')return;
-  if(!panel.hidden){close();toggle.focus()}else if(languages?.open){languages.open=false;languages.querySelector('summary')?.focus()}
- });
- document.addEventListener('click',e=>{
-  if(!panel.hidden&&!e.target.closest('.mobile-explore-panel,.mobile-explore-toggle'))close();
-  if(languages?.open&&!e.target.closest('.mobile-language'))languages.open=false;
- });
- window.addEventListener('resize',()=>{if(innerWidth>760){close();if(languages)languages.open=false}});
-})();
+// Fall back to local Bio-City artwork if all remote video poster sizes fail.

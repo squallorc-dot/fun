@@ -1,2 +1,4 @@
 # Reproducible browser screenshots are uploaded as a GitHub Actions artifact.
 arcade/qa/visual-v12/
+
+arcade/qa/site-ui-v7/

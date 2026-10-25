@@ -92,3 +92,5 @@ for(const lang of ['zh','ja']){
 }
 if(errors.length){console.error('FAIL '+errors.length+'\n'+errors.join('\n'));process.exitCode=1}
 else console.log('PASS '+checked+' pages, '+internalCount+' links/assets, build synchronization, syntax, metadata, locale and event contracts.');
+
+execFileSync(process.execPath,[path.join(root,'scripts/verify-navigation.mjs')],{stdio:'inherit'});

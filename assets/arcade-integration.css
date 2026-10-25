@@ -1,0 +1,21 @@
+/* Shared site chrome surrounding the existing six-game implementation. */
+.arcade-page .hub-main{max-width:1440px;padding:20px 32px 44px}
+.hub-context{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:0 0 20px;color:#93b7cb;font-size:12px;line-height:1.7}
+.hub-context a{color:#cae4ee;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.hub-context a:hover{color:#a8fff1}
+.hub-context>div{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.lobby-audio-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 16px;border:1px solid #426b81;border-radius:10px;background:#12364b;color:#bdf5ef;font-size:12px;font-weight:700;white-space:nowrap}
+.lobby-audio-button:hover{border-color:#8addde;background:#1b4a5e}
+.arcade-page .skip-link{position:fixed;z-index:2000;top:-100px;left:20px;padding:14px;background:#9af7e8;color:#082534;border-radius:8px;text-decoration:none}
+.arcade-page .skip-link:focus{top:10px}
+.arcade-page .hub-controls{padding:28px;border-radius:16px;margin-top:40px}
+.arcade-page .hub-controls .btn{min-height:46px}
+.arcade-page .hub-progress{align-items:center;gap:15px}
+.arcade-page .hub-progress h2{font-size:clamp(24px,2.7vw,34px);line-height:1.4}
+.arcade-page .hub-progress span{font-size:12px;color:#a6c7d8}
+.arcade-page .audio-drawer{padding-top:calc(24px + env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+@media(max-width:1100px){.arcade-page .hub-main{padding:16px 20px 40px}.arcade-page .hub-foot{padding-bottom:calc(var(--site-bottom-height) + env(safe-area-inset-bottom) + 36px)}}
+@media(max-width:760px){.arcade-page .hub-main{padding:12px 16px 32px}.hub-context{margin-bottom:14px;font-size:11px}.lobby-audio-button{padding:9px 12px}.arcade-page .hub-progress{align-items:flex-start;flex-direction:column;gap:6px}.arcade-page .hub-progress span{max-width:none;text-align:left;line-height:1.7}.arcade-page .hub-controls{padding:22px;margin-top:30px}.arcade-page .hub-hero{border-radius:16px}.arcade-page .hero-copy{padding:22px}.arcade-page .hero-stats{gap:12px;font-size:11px}.arcade-page .hero-stats>span+span{padding-left:12px}.arcade-page .game-card{border-radius:16px}}
+
+.arcade-page.audio-active{overflow:hidden}
+.arcade-page.audio-active:before{content:"";position:fixed;inset:0;background:#020e1bd9;backdrop-filter:blur(3px);z-index:999}

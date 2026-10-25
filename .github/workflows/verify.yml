@@ -1,7 +1,7 @@
 name: FUNAI CARE bilingual quality gate
 on:
   push:
-    branches: [main, development/bio-city-arcade-six-games, release/bio-city-arcade-v1]
+    branches: [main, development/bio-city-arcade-six-games, release/bio-city-arcade-v1, release/guardians-ui-20261025]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -31,6 +31,7 @@ jobs:
       - name: Test bilingual layouts and user interactions
         run: |
           node scripts/smoke.mjs
+          node scripts/smoke-navigation.mjs
           node scripts/smoke-arcade.mjs
           node scripts/smoke-guardian-art.mjs
           node scripts/smoke-arcade-visual.mjs
@@ -45,6 +46,7 @@ jobs:
           path: |
             arcade/qa/rc-v1/*.png
             arcade/qa/visual-v12/*.webp
+            arcade/qa/site-ui-v7/*.png
           retention-days: 30
 
   arcade-engines:

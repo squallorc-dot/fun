@@ -17,7 +17,7 @@ try{
    await page.goto(origin+'/'+(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'),{waitUntil:'domcontentloaded'});
    await page.locator('.home-arcade-feature').scrollIntoViewIfNeeded();await snap(lang+'-home-arcade-'+device+'.png');
    await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
-   await page.locator('.protocol-entry--three').scrollIntoViewIfNeeded();await snap(lang+'-play-three-entries-'+device+'.png');
+   await page.locator('.experience-index').scrollIntoViewIfNeeded();await snap(lang+'-play-overview-'+device+'.png');
    await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
    await page.locator('#game-list .game-card').first().waitFor();await snap(lang+'-arcade-lobby-'+device+'.png');
    await page.locator('[data-launch="g01"]').click();await page.locator('#setup.show').waitFor();await snap(lang+'-g01-select-'+device+'.png');
