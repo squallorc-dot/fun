@@ -111,7 +111,7 @@ try{
       await page.locator('#pause-resume').click();
       check((await page.evaluate(()=>BioSuiteHub.debugState)).chapter===3,label+' stage 3 continues');
 
-      check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='987',label+' G05 Pong stores independent score');
+      check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='1002',label+' G05 Pong retains best score across chapter progression');
     }
     await page.locator('#stage-back').click();
     await inLobby();
