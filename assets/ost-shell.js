@@ -45,7 +45,7 @@ function resume(){if(shouldResume&&!explicitlyPaused&&!gameActive&&!otherAudio){
 function emit(name,detail){try{const w=frame.contentWindow;w.dataLayer=w.dataLayer||[];w.dataLayer.push({event:name,...detail})}catch{}}
 function playIndex(i){load(i);start();emit('play_ost_audio',{ost_name:tracks[track][0],audio_source:'persistent_shell'});emit('ost_persistent_track',{track_id:tracks[track][1]});}
 function route(path){const next=safePage(path);if(next){const current=new URL(location.href);current.searchParams.set('page',next);history.replaceState(null,'',current);}}
-const api={route,playIndex,otherAudioStarted(){otherAudio=true;suspend()},otherAudioStopped(){otherAudio=false;resume()},gameStart(){gameActive=true;suspend()},gameEnd(){gameActive=false;resume()},get state(){return {track,src:audio.currentSrc||audio.src,paused:audio.paused,gameActive,otherAudio,route:new URL(frame.src).pathname,element:audio}}};
+const api={route,playIndex,otherAudioStarted(){otherAudio=true;suspend()},otherAudioStopped(){otherAudio=false;resume()},gameStart(){gameActive=true;suspend()},gameEnd(){gameActive=false;resume()},get state(){return {track,src:audio.src,paused:audio.paused,gameActive,otherAudio,route:new URL(frame.src).pathname,element:audio}}};
 Object.defineProperty(window,'BioGlobalOST',{value:api,writable:false});
 const initial=safePage(new URL(location.href).searchParams.get('page'))||(ja?'FUNAI-CARE_jp.html':'FUNAI-CARE.html');
 frame.src=new URL(initial,root);
