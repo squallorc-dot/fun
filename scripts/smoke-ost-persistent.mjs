@@ -6,7 +6,7 @@ await new Promise(done=>server.listen(0,'127.0.0.1',done));
 const base='http://127.0.0.1:'+server.address().port;const browser=await chromium.launch({headless:true,args:['--no-sandbox','--autoplay-policy=no-user-gesture-required']});
 let checks=0;const test=(v,name)=>{checks++;if(!v)throw Error(name)};
 try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html']]){
- const page=await browser.newPage({viewport:{width:390,height:844}});
+ const page=await browser.newPage({viewport:{width:1440,height:900}});
  await page.route('**/*',r=>r.request().url().startsWith(base+'/')?r.continue():r.abort());
  await page.goto(base+'/listen.html?page='+encodeURIComponent(home),{waitUntil:'domcontentloaded'});
  await page.locator('#bio-website').waitFor();
