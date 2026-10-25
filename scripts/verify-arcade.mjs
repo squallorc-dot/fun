@@ -21,6 +21,8 @@ for(const lang of ['zh','ja']){
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
  assert(page.includes('../assets/hub.js'),lang+' hub script missing');
+ assert(page.includes('../assets/guardian-art.js')&&page.indexOf('guardian-art.js')<page.indexOf('games-core.js'),lang+' sprite module must load before combat engine');
+ assert(shooter.includes('../arcade/assets/guardian-art.js'),lang+' isolated shooter sprite module missing');
  assert(read(`${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} primary website lacks Arcade entrance`);
  assert(read(`content/${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} canonical content lacks Arcade entrance`);
 }

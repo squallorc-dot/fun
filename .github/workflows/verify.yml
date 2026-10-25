@@ -32,6 +32,7 @@ jobs:
         run: |
           node scripts/smoke.mjs
           node scripts/smoke-arcade.mjs
+          node scripts/smoke-guardian-art.mjs
 
   arcade-engines:
     runs-on: ubuntu-latest
@@ -50,6 +51,7 @@ jobs:
           node scripts/test-g06-race.cjs
           node scripts/test-g01-combat.cjs
           node scripts/test-g01-seven-skills.cjs
+          node scripts/test-g01-animation.cjs
           node scripts/test-arcade-replay.cjs
           node scripts/test-g05-table.cjs
           node scripts/test-g04-stages.cjs

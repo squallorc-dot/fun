@@ -12,10 +12,10 @@ const neutral={up:false,down:false,left:false,right:false,jump:false,dodge:false
 function tick(g,n,action={}){for(let i=0;i<n;i++)g.update(1/60,{...neutral,...action});}
 for(const level of ['normal','hard','expert']){
  const {g,finish,reset}=harness(18,level),before=g.inspectCombat();assert.equal(before.player.combo,0);assert.equal(before.finished,false);assert.equal(before.enemies.length,0);
- const grunt=g.testSetup({dx:55,hp:350});tick(g,1,{fire:true});assert(grunt.hp<350,'first hit damages target');assert.equal(g.inspectCombat().player.combo,1);
+ const grunt=g.testSetup({dx:55,hp:350});tick(g,1,{fire:true});assert.equal(grunt.hp,350,'startup does not damage target');tick(g,8);assert(grunt.hp<350,'active animation frame damages target');assert.equal(g.inspectCombat().player.combo,1);
  tick(g,22);tick(g,1,{fire:true});assert.equal(g.inspectCombat().player.combo,2,'second strike increments combo');
  tick(g,26);tick(g,1,{fire:true});assert.equal(g.inspectCombat().player.combo,3,'third strike increments combo');
- assert(grunt.hp<290,'three-hit combo accumulated damage');
+ tick(g,18);assert(grunt.hp<290,'three-hit combo accumulated damage');
  g.start();const restart=g.inspectCombat();assert.equal(restart.enemies.length,0);assert.equal(restart.player.hp,restart.player.max);assert.equal(restart.player.combo,0);
  // Ranged attacks must emit an actual projectile, not instantly decrement player HP.
  const ranged=g.testSetup({kind:'ranged',dx:148,hp:900,remaining:0,waveNumber:2});let appeared=false,tele=false;
@@ -28,7 +28,7 @@ for(const level of ['normal','hard','expert']){
  for(let i=0;i<95;i++){g.update(1/60,neutral);if(g.inspectCombat().enemies.some(e=>e.tele>0)){warned=true;break;}}
  assert(warned,'boss displays a warning phase');
  g.start();g.testSetup({kind:'boss',dx:42,hp:2,remaining:0,waveNumber:3});tick(g,1,{fire:true});
- for(let i=0;i<20&&!finish();i++)tick(g,1);
+ for(let i=0;i<90&&!finish();i++)tick(g,1);
  assert(finish()&&finish()[0]===true,'boss defeat wins final wave');
  g.start();assert.equal(g.inspectCombat().finished,false,'retry clears ending state');
  const h2=harness(29,level,3);let outcome=null;
