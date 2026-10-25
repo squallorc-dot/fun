@@ -15,6 +15,7 @@ window.addEventListener('message',e=>{
  if(e.data.command==='guide-resume'){if(guideWasPlaying){document.querySelector('[data-ar-command="resume"]')?.click();document.querySelector('canvas')?.focus({preventScroll:true});}guideWasPlaying=false;return;}
  if(e.data.command!=='start')return;
  const hero=Math.max(0,Math.min(6,Number(e.data.hero)||0));
+ window.BioArcadeChapter=Math.max(1,Math.min(5,Number(e.data.chapter)||1));
  document.querySelector('[data-ar-hero="'+hero+'"]')?.click();
  const sel=document.querySelector('#arcade-difficulty');
  if(sel&&['normal','hard','expert'].includes(e.data.difficulty)){sel.value=e.data.difficulty;sel.dispatchEvent(new Event('change',{bubbles:true}));}
