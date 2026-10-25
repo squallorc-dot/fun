@@ -34,12 +34,14 @@ try{
   try{
    await page.goto(base+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
    await page.locator('#game-list .game-card').first().waitFor();
+   check(await page.locator('#track-select option').count()===5,label+' exactly four OST choices plus mute');
    check(await page.locator('[data-launch]').count()===6,label+' six cards');
    check(await page.locator('.hero-chip').count()===7||await page.locator('#hero-choices').count()===1,label+' seven hero selector');
    // Existing shooter records must survive migration into the new game lobby.
-   await page.evaluate(()=>localStorage.setItem('bio-city-arcade-high-v1','321'));
+   await page.evaluate(()=>{localStorage.setItem('bio-city-arcade-high-v1','321');localStorage.setItem('bio_arcade_pref_v1',JSON.stringify({track:5,volume:42,sfx:35}));});
    await page.reload({waitUntil:'domcontentloaded'});
    await page.locator('#best-g02').waitFor();
+   check((await page.locator('#track-select').inputValue())==='0',label+' removed-track preference migrates safely');
    check((await page.locator('#best-g02').textContent()).includes('321'),label+' legacy G02 high score preserved');
    await page.evaluate(()=>{window.dataLayer=[];});
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
