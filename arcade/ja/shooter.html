@@ -24,8 +24,9 @@ window.addEventListener('message',e=>{
  start.click();
  parent.postMessage({source:'bio-city-shooter',type:'started'},location.origin);
 });
+document.addEventListener('click',e=>{if(e.target.closest('[data-ar-command="resume"]'))parent.postMessage({source:'bio-city-shooter',type:'resumed'},location.origin);});
 window.addEventListener('load',()=>parent.postMessage({source:'bio-city-shooter',type:'ready'},location.origin),{once:true});
 </script>
-<script defer src="../arcade/assets/world-art.js?v=20261025.14"></script><script defer src="../arcade/assets/guardian-art.js?v=20261025.5"></script>
-<script defer src="../assets/arcade-engine.js?v=20261025.16"></script>
+<script defer src="../arcade/assets/world-art.js?v=20261026.1"></script><script defer src="../arcade/assets/guardian-art.js?v=20261025.5"></script>
+<script defer src="../assets/arcade-engine.js?v=20261026.1"></script>
 </body></html>
