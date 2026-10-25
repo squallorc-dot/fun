@@ -27,7 +27,8 @@ try{
   const pageErrors=[];
   page.on('pageerror',error=>pageErrors.push(String(error)));
   page.on('console',message=>{if(message.type()==='error'&&!/Failed to load resource: net::ERR_FAILED|ERR_ABORTED|play\(\) failed/.test(message.text()))pageErrors.push(message.text());});
-  page.on('requestfailed',request=>{if(request.url().startsWith(base+'/'))pageErrors.push('Local asset request failed: '+request.url());});
+  // Reloads and iframe disposal intentionally cancel outstanding lazy images. Actual decode failures are checked in the art/scene gate.
+  page.on('requestfailed',request=>{const reason=request.failure()?.errorText;if(request.url().startsWith(base+'/')&&reason!=='net::ERR_ABORTED')pageErrors.push('Local asset request failed ('+reason+'): '+request.url());});
   page.on('response',response=>{if(response.url().startsWith(base+'/')&&response.status()>=400)pageErrors.push('Local asset HTTP '+response.status()+': '+response.url());});
   await page.route('**/*',route=>route.request().url().startsWith(base+'/')?route.continue():route.abort());
   const label=lang+' '+viewport.width;

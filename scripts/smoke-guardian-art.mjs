@@ -29,7 +29,8 @@ try{
    await page.locator('[data-launch="g02"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
    const frame=page.frameLocator('#g02-frame');await frame.locator('.arcade-playing').waitFor();const child=page.frames().find(f=>f.url().includes('/shooter.html'));
    await child.waitForFunction(()=>window.BioGuardianArt?.inspect().atlases.some(x=>x.ready));
-   check((await child.evaluate(()=>BioGuardianArt.inspect().atlases[0].key))===manifest.atlases[hero].key,label+' G02 selected hero sprite '+hero);
+   await child.waitForFunction(key=>BioGuardianArt.inspect().atlases.some(x=>x.key===key&&x.ready),manifest.atlases[hero].key);
+   check(await child.evaluate(key=>BioGuardianArt.inspect().atlases.some(x=>x.key===key&&x.ready),manifest.atlases[hero].key),label+' G02 selected hero sprite '+hero);
    await page.locator('#stage-back').click();check(await page.locator('#g02-frame').count()===0,label+' G02 releases its atlas context '+hero);
   }
   check(errors.length===0,label+' no page errors or local 404: '+errors.join(';'));await page.close();

@@ -12,7 +12,7 @@ function setup(seed=1,difficulty='normal'){
  math.random=()=>((state=(Math.imul(state,1664525)+1013904223)>>>0)/4294967296);
  const cx={window:{},Math:math,console};vm.runInNewContext(source,cx);
  let finish=null;
- const g=cx.window.BioSuiteGames.g06({hero:3,difficulty,sfx:()=>{},finish:(...args)=>{finish=args}});
+ const g=cx.window.BioSuiteGames.g06({hero:3,difficulty,testMode:true,sfx:()=>{},finish:(...args)=>{finish=args}});
  g.w=960;g.h=540;g.start();
  return {g,getFinish:()=>finish,resetFinish:()=>{finish=null}};
 }
@@ -62,3 +62,40 @@ for(const difficulty of ['normal','hard','expert']){
 }
 console.log(`G06 ${victories} seeded complete 3-lap races at 120/60/30 fps and 3 difficulties: PASS`);
 console.log('G06 same-instance retry and state reset: PASS');
+
+// Braking must stop distance and projected road movement, while rivals keep driving.
+const stopped=setup(5).g;
+stopped.testPlace({speed:36,keepTraffic:true});
+for(let i=0;i<120;i++)stopped.update(1/60,{...empty,down:true});
+const parked=stopped.inspectRace();assert.equal(parked.car.speed,0);
+for(let i=0;i<120;i++)stopped.update(1/60,{...empty,down:true});
+const later=stopped.inspectRace();assert.equal(later.progress,parked.progress);
+assert.deepEqual(later.roadSample,parked.roadSample,'road cannot scroll when the car is stopped');
+assert(later.traffic.find(o=>o.type==='car').z>parked.traffic.find(o=>o.type==='car').z,'rivals drive independently');
+
+stopped.testPlace({lane:1.2,speed:30});
+for(let i=0;i<120;i++)stopped.update(1/60,{...empty,down:true});
+assert.equal(stopped.inspectRace().car.speed,0,'brakes also stop the car on the shoulder');
+
+// A displayed obstacle shares the player's road projection and lane collision rules.
+const collision=setup(6).g;
+collision.testPlace({distance:100,lane:.5,obstacle:{lane:.5}});
+collision.update(1/120,{...empty,down:true});assert.equal(collision.inspectRace().collisions,1);
+collision.testPlace({distance:100,lane:-.6,obstacle:{lane:.5}});
+collision.update(1/120,{...empty,down:true});assert.equal(collision.inspectRace().collisions,1,'clear adjacent lane must not collide');
+const firstLap=collision.inspectRace().roadSample;
+collision.testPlace({distance:1300,lane:-.6});
+const secondLap=collision.inspectRace().roadSample;
+assert(Math.abs(firstLap.x-secondLap.x)<.001&&Math.abs(firstLap.y-secondLap.y)<.001,'each lap uses the same closed track');
+
+// Passing an independently moving rival awards exactly one overtake bonus.
+const overtake=setup(7).g;
+overtake.testPlace({distance:100,lane:-.5,speed:74,obstacle:{type:'car',lane:.5,ahead:1,speed:38}});
+for(let i=0;i<60;i++)overtake.update(1/60,empty);
+assert.equal(overtake.inspectRace().passes,1);
+for(let distance=0;distance<3600;distance+=30)for(const lane of [-.93,0,.93]){
+ collision.testPlace({distance,lane});const screen=collision.inspectRace().playerScreen;
+ assert(screen&&screen.x>20&&screen.x<collision.w-20,'car stays inside horizontal camera frame');
+ assert(screen.y>collision.h*.65&&screen.y<collision.h*.90,'slopes cannot clip the car below the screen');
+}
+console.log('G06 stationary camera, independent rivals, world collisions, closed track, overtaking and 360 camera positions: PASS');
