@@ -23,6 +23,15 @@ R.g01=env=>{
 let p,enemies=[],bolts=[],effects=[],wave=1,spawn=0,spawnClock=0,elapsed=0,score=0,kills=0,t=0,button={},bossSpawned=false,impactStop=0;
 const mode=env.difficulty==='expert'?1.65:env.difficulty==='hard'?1.3:1;
 const health=[140,130,180,115,125,150,120];
+// Every Guardian has a distinct combat mechanic; the visible ring alone is not the skill.
+const skillIds=['burn','chain','fortify','rush','echo','garden','stasis'];
+function strike(e,damage,push=0,stun=0,color='#8eefff'){
+ if(e.hp<=0)return false;
+ e.hp=Math.max(0,e.hp-damage);e.hit=Math.max(e.hit,.24);
+ e.tele=0;e.attackKind='';e.stun=Math.max(e.stun||0,stun);
+ e.x=between(e.x+(push||0),20,g.w+40);sparks(e.x,e.y-35,color,9);
+ return true;
+} 
 function addEnemy(type='grunt'){
  const w=g.w,h=g.h;
  const e=cObj(w+35,between(h*.58+Math.random()*h*.3,h*.52,h*.87),{type,hp:(type==='boss'?520:type==='brute'?105:type==='ranged'?65:55)*mode,max:1,speed:type==='boss'?75:type==='brute'?47:type==='ranged'?64:80,hit:0,attack:0,tele:0,dir:-1,phase:0,attackKind:'',targetX:0,targetY:0});
@@ -30,7 +39,9 @@ function addEnemy(type='grunt'){
 }
 function getWave(n){wave=n;spawn=n===1?6:n===2?9:3;spawnClock=.65;bossSpawned=false;bolts=[];}
 function sparks(x,y,col,n=8){for(let i=0;i<n;i++){const a=rnd(0,TAU),v=rnd(45,170);effects.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:rnd(1,3.6),life:rnd(.12,.35),color:col});}}
-function wound(amt,source){if(p.inv>0||p.z>32||p.dash>0)return false;p.hp=Math.max(0,p.hp-amt);p.inv=.6;p.stun=.13;impactStop=.065;sparks(p.x,p.y-32,'#ff8298',12);env.sfx(125,.12);return true;}
+function wound(amt,source){if(p.inv>0||p.z>32||p.dash>0)return false;
+ if(p.shield>0){p.shield--;p.inv=.4;sparks(p.x,p.y-35,'#c8fdee',12);env.sfx(560,.08);return false;}
+ p.hp=Math.max(0,p.hp-amt);p.inv=.6;p.stun=.13;impactStop=.065;sparks(p.x,p.y-32,'#ff8298',12);env.sfx(125,.12);return true;}
 function aimAt(target,source,speed,damage,col='#ed94f8'){
  let dx=target.x-source.x,dy=target.y-source.y,mag=Math.hypot(dx,dy)||1;
  bolts.push({x:source.x,y:source.y-28,vx:dx/mag*speed,vy:dy/mag*speed,r:7,life:3.0,damage,color:col});
@@ -46,18 +57,69 @@ function attack(){if(p.attackCool>0||p.stun>0)return;const combo=p.comboTimer>0?
  }
  if(hits){p.energy=Math.min(100,p.energy+hits*10);score+=hits*(5+combo*3);impactStop=combo===3?.09:.045;env.sfx(355+combo*95,.07)}else env.sfx(160,.025);
 }
-function skill(){if(p.energy<100||p.stun>0)return;p.energy=0;p.attack=.5;p.attackCool=.48;let hits=0;
- for(const e of enemies){if(e.hp<=0)continue;if(Math.hypot(e.x-p.x,(e.y-p.y)*2)<145){e.hp-=85*(p.hero===6?1.4:1);e.hit=.43;e.tele=0;e.x+=p.dir*34;hits++;}}
- bolts=bolts.filter(b=>Math.hypot(b.x-p.x,b.y+28-p.y)>165);
- if(p.hero===5)p.hp=Math.min(p.max,p.hp+30);
- if(p.hero===2)p.inv=Math.max(p.inv,1.1);
+function skill(){
+ if(p.energy<100||p.stun>0)return;
+ p.energy=0;p.attack=.53;p.attackCool=.48;p.skillFlash=.52;
+ const targets=(range)=>enemies.filter(e=>e.hp>0&&Math.hypot(e.x-p.x,(e.y-p.y)*1.6)<range);
+ let hits=0;
+ switch(p.hero){
+  case 0: // Burner: facing flame wall plus damage-over-time. Enemies can still escape the cone.
+   for(const e of enemies){const dx=(e.x-p.x)*p.dir;if(e.hp>0&&dx>=-18&&dx<215&&Math.abs(e.y-p.y)<74){
+    if(strike(e,63,p.dir*29,.15,'#ffb36d'))hits++;
+    e.burn=Math.max(e.burn||0,2.8);e.burnTick=0;
+   }}
+   effects.push({type:'beam',x:p.x,y:p.y-34,x2:p.x+p.dir*215,y2:p.y-38,color:'#ff8a59',life:.43});
+   break;
+  case 1: // MJ: seek the four closest enemies, chain electric damage and interrupt attacks.
+   for(const e of targets(290).sort((x,y)=>Math.hypot(x.x-p.x,x.y-p.y)-Math.hypot(y.x-p.x,y.y-p.y)).slice(0,4)){
+    if(strike(e,Math.max(34,74-hits*11),0,.95,'#80f5ff'))hits++;
+    effects.push({type:'beam',x:p.x,y:p.y-38,x2:e.x,y2:e.y-35,color:'#84edff',life:.37});
+   }
+   break;
+  case 2: // Moo: area ground shock plus a two-hit protective shield.
+   p.shield=Math.min(3,p.shield+2);p.inv=Math.max(p.inv,.48);
+   for(const e of targets(166))if(strike(e,78,(e.x>=p.x?1:-1)*42,.68,'#ffe1a0'))hits++;
+   effects.push({type:'ring',x:p.x,y:p.y-12,r:170,life:.45,color:'#ffe1a0'});
+   break;
+  case 3: { // Ye Bao EX: fast, steerable forward rush across one combat lane.
+   const x0=p.x,limit=235;p.haste=Math.max(p.haste,3.3);
+   for(const e of enemies){const dx=(e.x-x0)*p.dir;if(e.hp>0&&dx>=-15&&dx<=limit+20&&Math.abs(e.y-p.y)<58){
+    if(strike(e,104,p.dir*49,.3,'#e2fb8e'))hits++;
+   }}
+   p.x=between(x0+p.dir*limit,24,g.w-24);p.inv=Math.max(p.inv,.38);
+   effects.push({type:'beam',x:x0,y:p.y-36,x2:p.x,y2:p.y-36,color:'#e4ff8a',life:.37});
+   break;
+  }
+  case 4: // Jelly Trio: three echoes continue auto-striking while the player moves.
+   p.echoTime=4.6;p.echoTick=.15;
+   for(const e of targets(160).slice(0,3))if(strike(e,40,0,.15,'#c6a2ff'))hits++;
+   break;
+  case 5: // Veggie Kid: restore health, grant shielding and short lived healing garden.
+   p.hp=Math.min(p.max,p.hp+38);p.shield=Math.min(3,p.shield+1);
+   p.gardenTime=4.2;p.gardenTick=.18;
+   for(const e of targets(95))if(strike(e,26,0,.12,'#88f6ae'))hits++;
+   break;
+  case 6: // Oracle: freeze a wide radius, dispel nearby incoming enemy projectiles.
+   for(const e of targets(255))if(strike(e,61,0,1.6,'#bdc2ff'))hits++;
+   bolts=bolts.filter(b=>Math.hypot(b.x-p.x,b.y+28-p.y)>255);
+   p.inv=Math.max(p.inv,.32);
+   effects.push({type:'ring',x:p.x,y:p.y-36,r:255,life:.56,color:'#aab7ff'});
+   break;
+ }
+ if(p.hero!==6)bolts=bolts.filter(b=>Math.hypot(b.x-p.x,b.y+28-p.y)>95);
  p.energy=Math.min(100,p.energy+Math.max(0,hits-1)*3);
- effects.push({type:'ring',x:p.x,y:p.y-42,r:150,life:.45,color:pal[p.hero]});sparks(p.x,p.y-42,pal[p.hero],24);env.sfx(790,.21);
+ effects.push({type:'ring',x:p.x,y:p.y-42,r:120,life:.46,color:pal[p.hero]});
+ sparks(p.x,p.y-42,pal[p.hero],18);env.sfx(790,.19);
 }
+
 function jump(){if(p.z>0||p.vz>0||p.stun>0)return;p.vz=400;env.sfx(530,.05)}
 function dodge(){if(p.dodge>0||p.stun>0)return;p.inv=.38;p.dodge=.9;p.dash=.19;p.dashDir=p.lastDir||1;env.sfx(660,.05)}
 function moveEnemy(e,dt){
  e.hit=Math.max(0,e.hit-dt);e.attack=Math.max(0,e.attack-dt);
+ if(e.burn>0){e.burn=Math.max(0,e.burn-dt);e.burnTick=(e.burnTick||0)+dt;
+  while(e.burnTick>=.42){e.burnTick-=.42;e.hp=Math.max(0,e.hp-6);}
+ }
+ if(e.stun>0){e.stun=Math.max(0,e.stun-dt);e.tele=0;e.attackKind='';return;}
  const dist=Math.abs(e.x-p.x),lane=Math.abs(e.y-p.y);e.dir=p.x<e.x?-1:1;
  if(e.hit>0)return;
  if(e.tele>0){const old=e.tele;e.tele=Math.max(0,e.tele-dt);if(old>0&&e.tele===0){
@@ -94,17 +156,27 @@ function moveEnemy(e,dt){
  }
 }
 const g={w:960,h:540,finish:env.finish,
- start(){g._finished=false;let w=g.w,h=g.h;p={hero:env.hero,x:w*.25,y:h*.75,z:0,vz:0,dir:1,lastDir:1,hp:health[env.hero],max:health[env.hero],energy:38,combo:0,comboTimer:0,attack:0,attackCool:0,dodge:0,dash:0,dashDir:1,inv:0,stun:0};enemies=[];bolts=[];effects=[];t=0;elapsed=0;score=0;kills=0;button={};impactStop=0;getWave(1);},
+ start(){g._finished=false;let w=g.w,h=g.h;p={hero:env.hero,x:w*.25,y:h*.75,z:0,vz:0,dir:1,lastDir:1,hp:health[env.hero],max:health[env.hero],energy:38,combo:0,comboTimer:0,attack:0,attackCool:0,dodge:0,dash:0,dashDir:1,inv:0,stun:0,shield:0,haste:0,echoTime:0,echoTick:0,gardenTime:0,gardenTick:0,skillFlash:0};enemies=[];bolts=[];effects=[];t=0;elapsed=0;score=0;kills=0;button={};impactStop=0;getWave(1);},
  onResize(ow,oh,w,h){if(!p)return;const sx=w/(ow||w),sy=h/(oh||h);p.x*=sx;p.y*=sy;for(const group of [enemies,bolts,effects])for(const e of group){e.x*=sx;e.y*=sy;if(e.targetX)e.targetX*=sx;if(e.targetY)e.targetY*=sy;}},
  update(dt,input){if(g._finished)return;
   dt=Math.max(0,Math.min(dt,.045));t+=dt;elapsed+=dt;
-  const keys=['attack','attackCool','comboTimer','dodge','dash','inv','stun'];for(const key of keys)p[key]=Math.max(0,p[key]-dt);
+  const keys=['attack','attackCool','comboTimer','dodge','dash','inv','stun','haste','echoTime','gardenTime','skillFlash'];for(const key of keys)p[key]=Math.max(0,p[key]-dt);
   if(impactStop>0){impactStop=Math.max(0,impactStop-dt);return;}
+  // Companion strikes and garden pulses use bounded intervals, not per-frame damage.
+  if(p.echoTime>0){p.echoTick-=dt;if(p.echoTick<=0){p.echoTick+=.52;
+    for(const e of enemies.filter(e=>e.hp>0&&Math.hypot(e.x-p.x,(e.y-p.y)*1.6)<165).slice(0,3)){
+      strike(e,16,0,.09,'#d3acff');score+=3;
+    }
+  }}
+  if(p.gardenTime>0){p.gardenTick-=dt;if(p.gardenTick<=0){p.gardenTick+=.6;
+    p.hp=Math.min(p.max,p.hp+3);
+    for(const e of enemies.filter(e=>e.hp>0&&Math.hypot(e.x-p.x,(e.y-p.y)*1.6)<110))strike(e,11,0,0,'#a1ffbd');
+  }}
   const vx=(input.right?1:0)-(input.left?1:0),vy=(input.down?1:0)-(input.up?1:0);
   if(vx){p.dir=vx>0?1:-1;p.lastDir=p.dir;}
   const rising=(key,pressed)=>{if(pressed&&!button[key]){button[key]=true;return true}if(!pressed)button[key]=false;return false};
   if(rising('jump',input.jump))jump();if(rising('dodge',input.dodge))dodge();if(rising('skill',input.skill))skill();if(input.fire&&p.attackCool<=0)attack();
-  const speed=env.hero===3?190:env.hero===2?125:163;
+  const speed=(env.hero===3?190:env.hero===2?125:163)*(p.haste>0?1.38:1);
   p.x=between(p.x+(p.dash>0?p.dashDir*speed*2.5:vx*speed)*dt,24,g.w-24);
   p.y=between(p.y+vy*speed*.65*dt,g.h*.55,g.h*.88);
   p.z=Math.max(0,p.z+p.vz*dt);p.vz-=920*dt;if(p.z===0)p.vz=0;
@@ -127,14 +199,22 @@ const g={w:960,h:540,finish:env.finish,
      ctx.strokeStyle='#ff7795';ctx.lineWidth=3;ctx.setLineDash([10,8]);ctx.beginPath();ctx.ellipse(e.targetX,e.targetY-8,58,37,0,0,TAU);ctx.stroke();ctx.setLineDash([]);
    }else{ctx.strokeStyle='#ff8399';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(e.x,e.y-30);ctx.lineTo(e.type==='boss'?p.x:e.x+e.dir*85,e.type==='boss'?p.y-30:e.y-30);ctx.stroke();}}}
   const sorted=[...enemies,{...p,type:'hero'}].sort((a,b)=>a.y-b.y);
-  for(const e of sorted){if(e.type==='hero'){if(p.inv>.05&&Math.floor(t*16)%2===0)continue;fighter(ctx,p.x,p.y,p.z,between(Math.min(w,h)*.095,34,55),pal[p.hero],t,p.stun?'hurt':p.attack?'attack':p.z?'jump':'walk',p.dir,p.hero);if(p.dash>0)trace(ctx,p.x,p.y-20,35,pal[p.hero]);}
+  for(const e of sorted){if(e.type==='hero'){if(p.inv>.05&&Math.floor(t*16)%2===0)continue;fighter(ctx,p.x,p.y,p.z,between(Math.min(w,h)*.095,34,55),pal[p.hero],t,p.stun?'hurt':p.attack?'attack':p.z?'jump':'walk',p.dir,p.hero);if(p.dash>0)trace(ctx,p.x,p.y-20,35,pal[p.hero]);
+   if(p.shield>0){ctx.strokeStyle='#9aefdc';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(p.x,p.y-34,35,57,0,0,TAU);ctx.stroke();}
+   if(p.echoTime>0)for(let i=0;i<3;i++){const x=p.x+(i-1)*38+Math.sin(t*4+i)*11,y=p.y-24+Math.cos(t*3+i)*9;orb(ctx,x,y,9,'#bda6ff');trace(ctx,x,y,12,'#cab8ff');}
+   if(p.gardenTime>0){ctx.strokeStyle='#72e5a1';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,105,33,0,0,TAU);ctx.stroke();}
+   }
    else{const col=e.type==='boss'?'#ff3b80':e.type==='brute'?'#fc995a':e.type==='ranged'?'#e09cff':'#ff6b8a';fighter(ctx,e.x,e.y,0,e.type==='boss'?between(Math.min(w,h)*.15,67,87):e.type==='brute'?between(Math.min(w,h)*.115,45,66):between(Math.min(w,h)*.082,31,48),e.hit?'#fff':col,t,e.hit?'hurt':e.tele?'attack':'walk',e.dir,1);bar(ctx,e.x-26,e.y-68,e.type==='boss'?66:52,4,e.hp/e.max,'#fa748d');}}
-  for(const f of effects){ctx.globalAlpha=Math.min(1,f.life/.2);if(f.type==='ring'){ctx.strokeStyle=f.color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(f.x,f.y,f.r*(1-f.life/.6),0,TAU);ctx.stroke();}else orb(ctx,f.x,f.y,f.r,f.color);}ctx.globalAlpha=1;
+  for(const f of effects){ctx.globalAlpha=Math.min(1,f.life/.2);if(f.type==='beam'){ctx.strokeStyle=f.color;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(f.x,f.y);ctx.lineTo(f.x2,f.y2);ctx.stroke();}
+   else if(f.type==='ring'){ctx.strokeStyle=f.color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(f.x,f.y,f.r*(1-f.life/.6),0,TAU);ctx.stroke();}else orb(ctx,f.x,f.y,f.r,f.color);}ctx.globalAlpha=1;
   words(ctx,`HERO  ${env.I.hero[env.hero]}`,16,h-18,12);bar(ctx,16,h-44,Math.min(200,w*.48),10,p.hp/p.max,'#72e9ca');bar(ctx,16,h-55,Math.min(200,w*.48),5,p.energy/100,'#b4a2ff');
  },
- hud(){return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo||0}</b></span><span>ENERGY <b>${Math.round(p?.energy||0)}%</b></span><span>SCORE <b>${score}</b></span>`;}
+ hud(){return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo||0}</b></span><span>ENERGY <b>${Math.round(p?.energy||0)}%</b></span><span>SKILL <b>${env.I?.skillLabels?.[env.hero]||skillIds[env.hero]}</b></span><span>SCORE <b>${score}</b></span>`;}
 };
- g.inspectCombat=()=>({wave,spawn,score,kills,player:{...p},enemies:enemies.map(e=>({...e})),projectiles:bolts.map(b=>({...b})),elapsed,finished:!!g._finished});
+ g.inspectCombat=()=>({wave,spawn,score,kills,player:{...p},enemies:enemies.map(e=>({...e})),projectiles:bolts.map(b=>({...b})),effects:effects.map(f=>({...f})),skill:skillIds[p.hero],elapsed,finished:!!g._finished});
+ if(env.testMode)g.testCharge=()=>{p.energy=100;};
+ if(env.testMode)g.testHealth=(v)=>{p.hp=between(v,1,p.max);};
+ if(env.testMode)g.testWound=(amount)=>wound(amount,{type:'test'});
  if(env.testMode)g.testSetup=({kind='grunt',dx=65,hp=null,waveNumber=null,remaining=null}={})=>{if(waveNumber!==null)wave=waveNumber;if(remaining!==null)spawn=remaining;addEnemy(kind);const e=enemies[enemies.length-1];e.x=p.x+dx;e.y=p.y;if(hp!==null){e.hp=hp;e.max=Math.max(hp,1);}if(kind==='boss')bossSpawned=true;return e;};
  return g;
 };
