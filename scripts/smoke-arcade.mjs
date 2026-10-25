@@ -37,7 +37,7 @@ try{
    await page.locator('#game-list .game-card').first().waitFor();
    check(await page.locator('#track-select option').count()===5,label+' exactly four OST choices plus mute');
    check(await page.locator('#music-mode option').count()===4,label+' exposes scene/manual/shuffle/off music modes');
-   check((await page.locator('#music-mode').inputValue())==='scene',label+' fresh user defaults to recommended soundtrack');
+   check((await page.locator('#music-mode').inputValue())==='shuffle',label+' fresh user defaults to a random soundtrack for each stage');
 
    check(await page.locator('[data-launch]').count()===6,label+' six cards');
    check(await page.locator('.hero-chip').count()===7||await page.locator('#hero-choices').count()===1,label+' seven hero selector');
