@@ -11,7 +11,8 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  await page.goto(base+'/listen.html?page='+encodeURIComponent(home),{waitUntil:'domcontentloaded'});
  await page.locator('#bio-website').waitFor();
  const frame=page.frameLocator('#bio-website');
- await frame.locator('#bio-ost-entry').waitFor();
+ await frame.locator('body[data-page="home"]').waitFor();
+ test(await frame.locator('#bio-ost-entry').count()===0,lang+' no duplicate music button inside continuous mode');
  test(await page.evaluate(()=>!!window.BioGlobalOST),lang+' shell exists');
  test(await frame.locator('.site-bottom-nav').count()===1,lang+' original mobile nav retained');
  await page.locator('#persistent-expand').click();
