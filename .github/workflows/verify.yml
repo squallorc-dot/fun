@@ -51,3 +51,4 @@ jobs:
           node scripts/test-g01-combat.cjs
           node scripts/test-arcade-replay.cjs
           node scripts/test-g05-table.cjs
+          node scripts/test-g04-stages.cjs

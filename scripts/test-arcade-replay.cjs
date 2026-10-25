@@ -53,8 +53,10 @@ for(const level of ['normal','hard','expert']){
 
  // G04: a replay while the fire key was held must permit a new shot.
  const b=make('g04','volley',level),m=b.g;
+ for(let i=0;i<50;i++)m.update(1/60,input); // Clear level intro before shooting.
  m.update(1/60,{...input,fire:true});
- assert.equal(m.debugPhysics().shots,level==='expert'?8:level==='hard'?10:13);
+ const stageShots=level==='expert'?8:level==='hard'?9:11;
+ assert.equal(m.debugPhysics().shots,stageShots-1);
  m.start();
  const fresh=m.debugPhysics();
  assert.equal(fresh.hits,0,`G04 ${level}: clears hits`);
@@ -62,8 +64,9 @@ for(const level of ['normal','hard','expert']){
  assert.equal(fresh.balls.length,0,`G04 ${level}: clears active shots`);
  assert.equal(fresh.physicsDebt,0,`G04 ${level}: clears physics debt`);
  assert.equal(m._finished,false,`G04 ${level}: clears result`);
+ for(let i=0;i<50;i++)m.update(1/60,input);
  m.update(1/60,{...input,fire:true});
- assert.equal(m.debugPhysics().shots,(level==='expert'?9:level==='hard'?11:14)-1,`G04 ${level}: first shot after replay registers`);
+ assert.equal(m.debugPhysics().shots,stageShots-1,`G04 ${level}: first shot after replay registers`);
 
  // G05: every new match starts at 0–0, both volleyball and table tennis.
  for(const mode of ['volley','pong']){
