@@ -51,6 +51,8 @@ try{
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
    const open=async(id)=>{
     await page.locator('[data-launch="'+id+'"]').click();
+    check(await page.locator('#campaign-brief').count()===1,label+' '+id+' chapter briefing shown');
+    check((await page.locator('#campaign-brief').textContent()).includes('1'),label+' '+id+' first chapter description shown');
     await page.locator('#setup-play').click();
     await page.locator('#stage.active').waitFor();
    };
@@ -61,6 +63,15 @@ try{
     await frame.locator('.arcade-playing').waitFor({timeout:10000});
     check(await page.locator('#g02-frame').count()===1,label+' G02 frame '+round);
     check(await frame.locator('#arcade-root.arcade-immersive').count()===1,label+' G02 game initialized '+round);
+    if(round===0){
+     const shooter=page.frames().find(f=>/\/(?:zh|ja)\/shooter\.html/.test(f.url()));
+     check(!!shooter,label+' G02 iframe reference');
+     const plans=await shooter.evaluate(()=>Array.from({length:5},(_,i)=>window.BioDefenseHazardPlan(i+1)));
+     check(JSON.stringify(plans.map(p=>p.length))==='[0,1,2,2,3]',label+' five G02 chapter hazard counts');
+     check(plans.slice(1).every(z=>z.every(q=>Math.hypot(q.x-300,q.y-330)>q.r+14)),label+' G02 spawn area is initially clear');
+     check(plans.slice(1).every(z=>z.every(q=>q.period>=4.5&&q.r>0)),label+' G02 hazards allow warning and escape');
+    }
+
     check(await page.evaluate(()=>document.body.classList.contains('stage-active')),label+' G02 parent stage lock '+round);
     await page.locator('#stage-back').click();
     await inLobby();

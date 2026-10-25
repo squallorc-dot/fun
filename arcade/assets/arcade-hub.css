@@ -229,3 +229,6 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 .campaign-settings select:disabled{opacity:.52}
 .campaign-settings small{width:100%;font-size:11px;color:#a7dadd;line-height:1.5}
 @media(max-width:580px){.campaign-settings{margin:7px 0 0;padding:10px;gap:7px}.campaign-settings>label{flex:1 1 120px;min-width:120px}}
+
+/* Chapter-specific preview belongs to setup, not as a blocking in-game overlay. */
+.campaign-settings .campaign-brief{width:100%;margin:3px 0 0;padding:10px 12px;border:1px solid #558e9c69;border-radius:9px;background:#082b3b;color:#d5edf6;font-size:13px;line-height:1.7;}
