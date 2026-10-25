@@ -564,13 +564,13 @@ R.g06=env=>{
   ctx.restore();}
  const g={w:640,h:800,finish:env.finish,
   start(){g._finished=false;window.BioGuardianArt?.preload([env.hero]);window.BioWorldArt?.preload('race');car={lane:0,steer:0,speed:0,health:100,inv:0,braking:false};traffic=[];progress=0;elapsed=0;t=0;score=0;collisions=0;nitro=100;checkpointIndex=0;gateFlash=0;passes=0;slipstream=false;
-   for(let n=0;n<12+(chapter-1)*4;n++)traffic.push({z:170+n*(chapter>=4?125:160),lane:pick([-.67,0,.67]),type:'barrier',speed:0,hit:false,passed:false});
+   for(let n=0;n<(chapter===1?23:12+(chapter-1)*4);n++)traffic.push({z:170+n*(chapter>=4?125:160),lane:pick([-.67,0,.67]),type:'barrier',speed:0,hit:false,passed:false});
    for(let n=0;n<5;n++)traffic.push({z:85+n*95,lane:pick([-.65,0,.65]),home:pick([-.65,0,.65]),type:'car',speed:(38+n*3)*(1+(mul-1)*.3),color:['#f2b56e','#e9798f','#8ed8b7','#a9a2f0','#c1e5ed'][n],hit:false,passed:false});
   },onResize(){},
   update(dt,input){if(g._finished)return;dt=Math.min(.05,Math.max(0,dt));const previousProgress=progress;t+=dt;elapsed+=dt;car.inv=Math.max(0,car.inv-dt);car.braking=!!input.down;
    const boost=(input.fire||input.skill)&&nitro>1&&!car.braking,desired=car.braking?0:boost?96:74;car.speed+=between(desired-car.speed,-38*dt,16*dt);nitro=boost?Math.max(0,nitro-27*dt):Math.min(100,nitro+(slipstream?18:8)*dt);
-   let turn=(input.right?1:0)-(input.left?1:0);if(input.pointer?.down)turn=between(((input.pointer.x/g.w-.5)*2-car.lane)*3,-1,1);car.steer+=between(turn-car.steer,-8*dt,8*dt);const road=trackAt(progress),bend=road.bend,gradeAhead=trackAt(progress+18).y-road.y;car.speed=Math.max(0,car.speed-Math.max(0,gradeAhead)*.018*dt+Math.max(0,-gradeAhead)*.012*dt);
-   car.lane=between(car.lane+car.steer*.9*(.65+car.speed/100)*dt-bend*Math.pow(car.speed/80,2)*.11*dt,-1.25,1.25);
+   let turn=(input.right?1:0)-(input.left?1:0);if(input.pointer?.down)turn=between(((input.pointer.x/g.w-.5)*2-car.lane)*3,-1,1);car.steer+=between(turn-car.steer,-8*dt,8*dt);const road=trackAt(progress),bend=road.bend,gradeAhead=trackAt(progress+18).y-road.y;if(chapter>1)car.speed=Math.max(0,car.speed-Math.max(0,gradeAhead)*.018*dt+Math.max(0,-gradeAhead)*.012*dt);
+   car.lane=between(car.lane+car.steer*.9*(.65+car.speed/100)*dt-bend*Math.pow(car.speed/80,2)*(chapter===1?.16:.11)*dt,-1.25,1.25);
    if(Math.abs(car.lane)>1.04){car.speed=Math.max(car.braking?0:18,car.speed-36*dt);car.health=Math.max(0,car.health-2*dt);}
    const next=progress+car.speed*dt,gate=checkpointDistances[checkpointIndex];
    if(gate!==undefined&&next>=gate){if(Math.abs(car.lane)<=.93){progress=Math.min(goal,next);checkpointIndex++;gateFlash=.65;env.sfx(820,.08);}else{progress=Math.min(next,gate-.01);car.speed=Math.min(car.speed,24);gateFlash=-.65;}}else progress=Math.min(goal,next);
