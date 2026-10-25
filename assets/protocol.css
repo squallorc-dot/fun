@@ -84,3 +84,11 @@ body[data-page="play"] #protocol-quiz,body[data-page="play"] #protocol-game{scro
  .protocol-aide-hero img{height:140px}
  .protocol-aide-hero strong{font-size:.99rem}
 }
+
+/* ARC-REL-v1.0 / keep old original shooter and decision lab while prioritizing six-game Arcade */
+.protocol-entry.protocol-entry--three{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:19px 0 39px}
+.protocol-entry--three>a{min-width:0;padding:19px 17px;min-height:138px}
+.protocol-entry--three>a.protocol-entry-featured{background:linear-gradient(145deg,#12546b,#093044);border-color:#66dce8;box-shadow:0 7px 25px rgba(29,155,186,.17)}
+.protocol-entry--three>a.protocol-entry-featured strong{color:#ecffff}
+.protocol-entry--three>a:focus-visible{outline:3px solid #b1f9ff;outline-offset:3px}
+@media(max-width:880px){.protocol-entry.protocol-entry--three{grid-template-columns:1fr;gap:10px}.protocol-entry--three>a{min-height:0;padding:17px 19px}}
