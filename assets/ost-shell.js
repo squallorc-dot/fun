@@ -15,7 +15,10 @@ const volume=document.querySelector('#persistent-volume');
 const panel=document.querySelector('#persistent-panel');
 const mini=document.querySelector('#persistent-mini');
 const leaveBtn=document.querySelector('#persistent-leave');
-let gameActive=false,otherAudio=false,shouldResume=false,explicitlyPaused=true,track=0;
+let gameActive=false,shouldResume=false,explicitlyPaused=true,track=0;
+const otherAudioSources=new Set();
+const manualSoundSource=Symbol('arcade soundtrack');
+const isOtherAudioPlaying=()=>otherAudioSources.size>0;
 function safePage(candidate){
  try{const url=new URL(candidate||'FUNAI-CARE.html',root);
  if(url.origin!==location.origin||!url.pathname.startsWith(root.pathname))return null;
@@ -38,18 +41,27 @@ audio.loop=true;audio.volume=Number(volume.value)/100;
 function persist(){try{localStorage.setItem('bio_persistent_ost_v1',JSON.stringify({track,volume:Number(volume.value)}))}catch{}}
 function update(){select.value=String(track);play.textContent=audio.paused?'▶ '+i18n.play:'Ⅱ '+i18n.pause;mini.textContent=(audio.paused?'♪ ':'♫ ')+tracks[track][0];mini.setAttribute('aria-label',i18n.open);document.body.classList.toggle('bio-game-active',gameActive)}
 function load(i){track=Math.max(0,Math.min(3,Number(i)||0));if(audio.dataset.track!==String(track)){audio.pause();audio.src=new URL(tracks[track][1],root);audio.dataset.track=String(track)}persist();update()}
-function start(){explicitlyPaused=false;shouldResume=true;if(gameActive||otherAudio){update();return;}const p=audio.play();if(p&&p.catch)p.catch(()=>{explicitlyPaused=true;update()});update()}
+function start(){explicitlyPaused=false;shouldResume=true;if(gameActive||isOtherAudioPlaying()){update();return;}const p=audio.play();if(p&&p.catch)p.catch(()=>{explicitlyPaused=true;update()});update()}
 function stop(){explicitlyPaused=true;shouldResume=false;audio.pause();update()}
 function suspend(){shouldResume=shouldResume&&!explicitlyPaused||(!audio.paused&&!explicitlyPaused);audio.pause();update()}
-function resume(){if(shouldResume&&!explicitlyPaused&&!gameActive&&!otherAudio){const p=audio.play();if(p&&p.catch)p.catch(()=>update());}update()}
+function resume(){if(shouldResume&&!explicitlyPaused&&!gameActive&&!isOtherAudioPlaying()){const p=audio.play();if(p&&p.catch)p.catch(()=>update());}update()}
 function emit(name,detail){try{const w=frame.contentWindow;w.dataLayer=w.dataLayer||[];w.dataLayer.push({event:name,...detail})}catch{}}
 function playIndex(i){load(i);start();emit('play_ost_audio',{ost_name:tracks[track][0],audio_source:'persistent_shell'});emit('ost_persistent_track',{track_id:tracks[track][1]});}
 function route(path){const next=safePage(path);if(next){const current=new URL(location.href);current.searchParams.set('page',next);history.replaceState(null,'',current);}}
-const api={route,playIndex,otherAudioStarted(){otherAudio=true;suspend()},otherAudioStopped(){otherAudio=false;resume()},gameStart(){gameActive=true;suspend()},gameEnd(){gameActive=false;resume()},get state(){return {track,src:audio.src,paused:audio.paused,gameActive,otherAudio,route:new URL(frame.src).pathname,element:audio}}};
+const api={
+ route,playIndex,
+ otherAudioStarted(source){otherAudioSources.add(source||manualSoundSource);suspend();},
+ otherAudioStopped(source){otherAudioSources.delete(source||manualSoundSource);resume();},
+ gameStart(){gameActive=true;suspend();},
+ gameEnd(){gameActive=false;resume();},
+ get state(){return {track,src:audio.src,paused:audio.paused,gameActive,
+  otherAudio:isOtherAudioPlaying(),otherAudioCount:otherAudioSources.size,
+  route:new URL(frame.src).pathname,element:audio}}
+};
 Object.defineProperty(window,'BioGlobalOST',{value:api,writable:false});
 const initial=safePage(new URL(location.href).searchParams.get('page'))||(ja?'FUNAI-CARE_jp.html':'FUNAI-CARE.html');
 frame.src=new URL(initial,root);
-frame.addEventListener('load',()=>{try{if(frame.contentWindow.location.origin===location.origin){const path=frame.contentWindow.location.pathname.slice(root.pathname.length)+frame.contentWindow.location.search+frame.contentWindow.location.hash;route(path)}}catch{}});
+frame.addEventListener('load',()=>{otherAudioSources.clear();gameActive=false;resume();try{if(frame.contentWindow.location.origin===location.origin){const path=frame.contentWindow.location.pathname.slice(root.pathname.length)+frame.contentWindow.location.search+frame.contentWindow.location.hash;route(path)}}catch{}});
 load(track);
 select.addEventListener('change',e=>playIndex(e.target.value));
 play.addEventListener('click',()=>{audio.paused?start():stop()});
