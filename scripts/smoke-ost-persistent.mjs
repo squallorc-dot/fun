@@ -53,6 +53,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
 
  // Navigate using a real player entry to the actual game center, not a mocked
  // controller. Keep the original persistent audio element across both games.
+ await page.locator('#persistent-close').click();
  await frame.locator('.experience-hero a[href*="/arcade/"]').click();
  await frame.locator('[data-launch="g01"]').waitFor();
  await page.setViewportSize({width:390,height:844});
