@@ -9,8 +9,13 @@ try{
  const inspect=await browser.newPage();await inspect.goto(base+'/arcade/qa/animation-lab.html');
  const borders=await inspect.evaluate(async manifest=>{const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=1440;const ctx=canvas.getContext('2d',{willReadFrequently:true}),fail=[];let checked=0;for(const item of manifest.atlases){const image=new Image();image.src='../assets/guardians/'+item.file;await image.decode();ctx.clearRect(0,0,1280,1440);ctx.drawImage(image,0,0);const p=ctx.getImageData(0,0,1280,1440).data;for(let f=0;f<71;f++){const sx=f%8*160,sy=Math.floor(f/8)*160;let visible=false;for(let y=0;y<160;y++)for(let x=0;x<160;x++){const alpha=p[((sy+y)*1280+sx+x)*4+3];if(alpha>0){visible=true;if(x<2||x>=158||y<2||y>=158)fail.push(item.key+' frame '+f+' clipped at '+x+','+y)}}if(!visible)fail.push(item.key+' frame '+f+' empty');checked++}}return {fail,checked}},manifest);
  check(borders.checked===781,'all 781 PNG frames decoded');check(borders.fail.length===0,borders.fail.slice(0,5).join('; '));await inspect.close();
- const fallback=await browser.newPage();await fallback.route('**/*',r=>r.request().url().includes('/guardians/burner-sister.png')||!r.request().url().startsWith(base+'/')?r.abort():r.continue());await fallback.goto(base+'/arcade/zh/index.html');await fallback.locator('[data-launch="g01"]').click();await fallback.locator('#setup-play').click();
- await fallback.waitForFunction(()=>BioGuardianArt.inspect().atlases.some(x=>x.key==='burner-sister'&&x.error));check(await fallback.evaluate(()=>BioSuiteHub.inspectGame().elapsed>=0),'failed art does not block game start');await fallback.keyboard.down('d');await fallback.waitForFunction(()=>BioSuiteHub.inspectGame().player.clip==='walk');check(true,'movement survives a missing hero atlas');await fallback.close();
+ const recovery=await browser.newPage();let missingHero=true;
+ await recovery.route('**/*',r=>missingHero&&r.request().url().includes('/guardians/burner-sister.png')||!r.request().url().startsWith(base+'/')?r.abort():r.continue());
+ await recovery.goto(base+'/arcade/zh/index.html');await recovery.locator('[data-launch="g01"]').click();await recovery.locator('#setup-play').click();
+ await recovery.locator('#stage-load-retry').waitFor();
+ check(await recovery.evaluate(()=>BioSuiteHub.inspectGame()===null&&!BioSuiteHub.debugState.rafQueued),'missing required hero art shows a retry without starting combat');
+ missingHero=false;await recovery.locator('#stage-load-retry').click();await recovery.locator('#hub-canvas').waitFor();
+ await recovery.keyboard.down('d');await recovery.waitForFunction(()=>BioSuiteHub.inspectGame().player.clip==='walk');check(true,'movement works after the required hero atlas is restored');await recovery.close();
  for(const lang of ['zh','ja'])for(const viewport of [{width:375,height:812},{width:430,height:932},{width:768,height:1024},{width:1440,height:900},{width:844,height:390}]){
   const page=await browser.newPage({viewport}),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('response',r=>{if(r.url().startsWith(base+'/')&&r.status()>=400)errors.push(r.url()+' '+r.status())});await page.route('**/*',r=>r.request().url().startsWith(base+'/')?r.continue():r.abort());
   await page.goto(base+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});const label=lang+' '+viewport.width;
@@ -18,6 +23,7 @@ try{
   const heroes=[375,1440].includes(viewport.width)?[0,1,2,3,4,5,6]:[0];
   for(const hero of heroes){
    await page.locator('[data-launch="g01"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
+   await page.locator('#hub-canvas').waitFor();
    await page.waitForFunction(()=>window.BioGuardianArt.inspect().atlases.length===5&&window.BioGuardianArt.inspect().atlases.every(x=>x.ready));
    check((await page.evaluate(()=>BioSuiteHub.inspectGame().player.hero))===hero,label+' selected G01 hero '+hero);
    check((await page.evaluate(()=>BioSuiteHub.inspectGame().player.clip))==='idle',label+' idle pose '+hero);

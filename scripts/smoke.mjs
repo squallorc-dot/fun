@@ -110,6 +110,7 @@ try{
    await page.locator('.legacy-game-panel>summary').click();
    await page.locator('[data-ar-hero="0"]').click();
    await page.locator('[data-ar-command="start"]').click();
+   await page.locator('#arcade-canvas').waitFor();
    verify(await page.locator('#arcade-root.arcade-immersive').count()===1,lang+' immersive arcade start');
    await page.keyboard.press('p');
    verify(await page.locator('#arcade-overlay').isVisible(),lang+' pause overlay');

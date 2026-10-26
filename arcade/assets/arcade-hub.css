@@ -235,3 +235,13 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 
 /* Chapter-specific preview belongs to setup, not as a blocking in-game overlay. */
 .campaign-settings .campaign-brief{grid-column:1/-1;width:100%;min-width:0;margin:3px 0 0;padding:10px 12px;border:1px solid #558e9c69;border-radius:9px;background:#082b3b;color:#d5edf6;font-size:13px;line-height:1.7;}
+
+/* Audio status has its own row; it never covers the road, enemies or touch controls. */
+.stage-audio-strip{display:flex;flex:0 0 auto;min-height:28px;align-items:center;justify-content:center;gap:10px;padding:2px 12px;background:#092334;border-bottom:1px solid #34566a;font-size:12px;color:#b6dfdf}
+.stage-audio-strip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stage-audio-strip [data-state=blocked],.stage-audio-strip [data-state=error]{color:#ffd29b}
+.stage-audio-strip button{min-height:44px;min-width:64px;border:1px solid #7dded7;border-radius:8px;background:#164d5d;color:#fff;font-size:13px}
+.stage-loading{max-width:520px;padding:28px;text-align:center;color:#d4edf3;line-height:1.8}
+.audio-diagnostics{margin-top:20px;font-size:12px;color:#a8cbd8}
+.audio-diagnostics pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.6 monospace}
+#stage[data-phase=countdown] .touch-controls{pointer-events:none}

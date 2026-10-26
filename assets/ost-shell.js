@@ -16,6 +16,7 @@ const panel=document.querySelector('#persistent-panel');
 const expand=document.querySelector('#persistent-expand');
 const leaveBtn=document.querySelector('#persistent-leave');
 const prev=document.querySelector('#persistent-prev'),next=document.querySelector('#persistent-next'),seek=document.querySelector('#persistent-progress'),clock=document.querySelector('#persistent-clock'),modeChoice=document.querySelector('#persistent-mode');
+let audioAttempt=0;
 let gameActive=false,shouldResume=false,explicitlyPaused=true,track=0,playMode='list';
 const otherAudioSources=new Set();
 const manualSoundSource=Symbol('arcade soundtrack');
@@ -49,10 +50,10 @@ function stamp(t){if(!Number.isFinite(t)||t<0)return '--:--';t=Math.floor(t);ret
 function timeDisplay(){const duration=audio.duration,valid=Number.isFinite(duration)&&duration>0;seek.disabled=!valid;seek.value=valid?String(Math.round(Math.max(0,Math.min(1,audio.currentTime/duration))*1000)):'0';clock.textContent=stamp(audio.currentTime)+' / '+stamp(duration)}
 function jump(direction){let nextIndex=(track+direction+tracks.length)%tracks.length;if(playMode==='shuffle'&&tracks.length>1){const n=Math.floor(Math.random()*(tracks.length-1));nextIndex=n>=track?n+1:n;}playIndex(nextIndex)}
 function load(i){track=Math.max(0,Math.min(3,Number(i)||0));if(audio.dataset.track!==String(track)){audio.pause();audio.src=new URL(tracks[track][1],root);audio.dataset.track=String(track)}persist();update()}
-function start(){explicitlyPaused=false;shouldResume=true;if(gameActive||isOtherAudioPlaying()){update();return;}const p=audio.play();if(p&&p.catch)p.catch(()=>{explicitlyPaused=true;update()});update()}
-function stop(){explicitlyPaused=true;shouldResume=false;audio.pause();update()}
-function suspend(){shouldResume=shouldResume&&!explicitlyPaused||(!audio.paused&&!explicitlyPaused);audio.pause();update()}
-function resume(){if(shouldResume&&!explicitlyPaused&&!gameActive&&!isOtherAudioPlaying()){const p=audio.play();if(p&&p.catch)p.catch(()=>update());}update()}
+function start(){explicitlyPaused=false;shouldResume=true;if(document.hidden||gameActive||isOtherAudioPlaying()){update();return;}const attempt=++audioAttempt,p=audio.play();if(p&&p.catch)p.catch(error=>{if(attempt===audioAttempt&&error.name!=='AbortError')explicitlyPaused=true;update()});update()}
+function stop(){audioAttempt++;explicitlyPaused=true;shouldResume=false;audio.pause();update()}
+function suspend(){audioAttempt++;shouldResume=shouldResume&&!explicitlyPaused||(!audio.paused&&!explicitlyPaused);audio.pause();update()}
+function resume(){if(!document.hidden&&shouldResume&&!explicitlyPaused&&!gameActive&&!isOtherAudioPlaying()){const p=audio.play();if(p&&p.catch)p.catch(()=>update());}update()}
 function emit(name,detail){try{const w=frame.contentWindow;w.dataLayer=w.dataLayer||[];w.dataLayer.push({event:name,...detail})}catch{}}
 function playIndex(i){load(i);start();emit('play_ost_audio',{ost_name:tracks[track][0],audio_source:'persistent_shell'});emit('ost_persistent_track',{track_id:tracks[track][1]});}
 function route(path){const next=safePage(path);if(next){const current=new URL(location.href);current.searchParams.set('page',next);history.replaceState(null,'',current);}}
@@ -87,5 +88,7 @@ expand.addEventListener('click',()=>panel.hidden?show():hide());
 document.querySelector('#persistent-close').addEventListener('click',hide);
 leaveBtn.addEventListener('click',()=>{let path='FUNAI-CARE.html';try{path=safePage(frame.contentWindow.location.href)||path}catch{}location.assign(new URL(path,root))});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){hide();e.preventDefault()}});
+document.addEventListener('visibilitychange',()=>document.hidden?suspend():resume());
+window.addEventListener('pagehide',suspend);
 update();
 })();

@@ -109,6 +109,8 @@ try{
     await page.locator('#stage-pause').click();
     check(await page.locator('#stage-dialog-layer.show').count()===1,label+' '+id+' paused');
     await page.locator('#pause-resume').click();
+    check((await page.evaluate(()=>BioSuiteHub.debugState)).countdown,label+' protected resume countdown');
+    await page.waitForFunction(()=>!BioSuiteHub.debugState.paused);
     check(await page.locator('#stage-dialog-layer.show').count()===0,label+' '+id+' resumed');
     if(id==='g05'){
       // Persistence integration test: force a synthetic result through the public
@@ -118,11 +120,13 @@ try{
       check(await page.locator('#pause-resume').textContent()!==null,label+' next stage action');
       check(await page.locator('#pause-resume').getAttribute('data-next')==='1',label+' chapter 1 victory enables next');
       await page.locator('#pause-resume').click();
+      await page.waitForFunction(()=>!BioSuiteHub.debugState.loading);
       check((await page.evaluate(()=>BioSuiteHub.debugState)).chapter===2,label+' stage 2 auto advances');
       check(await page.locator('#stage-dialog-layer.show').count()===0,label+' stage 2 starts immediately');
       await page.evaluate(()=>window.BioSuiteHub.finish(true,1002,'test pong chapter 2'));
       check(await page.locator('#pause-resume').getAttribute('data-next')==='1',label+' chapter 2 offers stage 3');
       await page.locator('#pause-resume').click();
+      await page.waitForFunction(()=>!BioSuiteHub.debugState.loading);
       check((await page.evaluate(()=>BioSuiteHub.debugState)).chapter===3,label+' stage 3 continues');
 
       check((await page.evaluate(()=>localStorage.getItem('bio_arcade_best_g05-pong')))==='1002',label+' G05 Pong retains best score across chapter progression');
@@ -139,6 +143,7 @@ try{
    check((await status()).paused&&!(await status()).rafQueued,label+' pause cancels RAF');
    for(let cycle=0;cycle<4;cycle++){
      await page.locator('#pause-resume').click();
+     await page.waitForFunction(()=>!BioSuiteHub.debugState.paused);
      check((await status()).rafQueued&&!(await status()).paused,label+' resumed RAF '+cycle);
      await page.locator('#stage-pause').click();
      check(!(await status()).rafQueued&&(await status()).paused,label+' re-pause RAF '+cycle);
@@ -147,6 +152,7 @@ try{
    await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
    check((await status()).paused&&!(await status()).rafQueued,label+' blur pauses without queued frames');
    await page.locator('#pause-resume').click();
+   await page.waitForFunction(()=>!BioSuiteHub.debugState.paused);
    await page.evaluate(()=>{
      const btn=document.querySelector('[data-touch="left"]');
      btn.dispatchEvent(new PointerEvent('pointerdown',{pointerId:511,bubbles:true}));
