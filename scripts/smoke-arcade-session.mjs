@@ -64,16 +64,16 @@ try{
   check((await read(page)).active===null&&await page.locator('#hub-canvas').count()===0,'stale startup completion is discarded');
   await context.close();
  }
- for(const locale of ['zh','ja']){
+ for(const locale of ['zh','ja'])for(const game of ['g06','g02']){
   const {context,page}=await create(locale,{width:390,height:844});
   await page.evaluate(()=>{
    const original=HTMLMediaElement.prototype.play;let rejectOnce=true;
    HTMLMediaElement.prototype.play=function(){if(this.id==='arcade-bgm'&&rejectOnce){rejectOnce=false;return Promise.reject(new DOMException('fixture: autoplay denied','NotAllowedError'));}return original.call(this);};
   });
-  await start(page,'g06');await running(page);await page.locator('#stage-audio-status[data-state="blocked"]').waitFor();
+  await start(page,game);if(game==='g02')await page.frameLocator('#g02-frame').locator('#arcade-canvas').waitFor();else await running(page);await page.locator('#stage-audio-status[data-state="blocked"]').waitFor();
   check(await page.locator('#stage-audio-play').isVisible(),'autoplay denial has a persistent play entry');
   check((await page.locator('#audio-diagnostics').textContent()).includes('NotAllowedError'),'denial is distinguishable from network failure');
-  const bar=await page.locator('.stage-audio-strip').boundingBox(),canvas=await page.locator('#hub-canvas').boundingBox();
+  const bar=await page.locator('.stage-audio-strip').boundingBox(),canvas=await page.locator(game==='g02'?'#g02-frame':'#hub-canvas').boundingBox();
   check(bar.y+bar.height<=canvas.y+1,'audio entry never covers game content');
   await page.locator('#stage-audio-play').click();await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#arcade-bgm').evaluate(el=>!el.paused&&el.readyState>=2),'retry uses actual media playback');
@@ -83,7 +83,8 @@ try{
   const {context,page}=await create('zh',{width:1440,height:900},{audioRevision:2,playMode:'manual',track:0,volume:40,sfx:55,auto:true,loop:false});let fail=true;
   await page.route('**/music/bio-city-awakening-theme-v2.mp3',route=>fail?route.fulfill({status:404,body:'missing'}):route.continue());
   await start(page,'g06');await running(page);await page.locator('#stage-audio-status[data-state="error"]').waitFor();
-  check((await page.locator('#audio-diagnostics').textContent()).includes('MediaError'),'media load failure has a distinct diagnostic');
+  const diagnostic=JSON.parse(await page.locator('#audio-diagnostics').textContent());
+  check(diagnostic.state==='error'&&diagnostic.playError!=='NotAllowedError'&&(diagnostic.mediaError>0||diagnostic.playError==='NotSupportedError'),'media load failure is distinguished by native media code or playback error, regardless of event order');
   fail=false;await page.locator('#stage-audio-play').click();await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#arcade-bgm').evaluate(el=>!el.paused&&!el.loop),'failed source reloads while preserving non-loop preference');
   await context.close();
