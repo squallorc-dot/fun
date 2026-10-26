@@ -34,6 +34,7 @@ async function start(page,id,mode){
   frame=page.frames().find(frame=>frame.url().includes('/shooter.html'));
   await frame.waitForFunction(()=>BioArcadeShooter.state.phase==='playing');
  }else await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&!BioSuiteHub.debugState.paused);
+ if(id==='g06')await page.waitForFunction(()=>BioSuiteHub.inspectGame().phase==='racing');
  return frame;
 }
 async function focus(frame,id){await frame.locator(id==='g02'?'#arcade-canvas':'#stage').focus();}
