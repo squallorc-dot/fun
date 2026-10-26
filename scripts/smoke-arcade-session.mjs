@@ -77,6 +77,16 @@ try{
   check(bar.y+bar.height<=canvas.y+1,'audio entry never covers game content');
   await page.locator('#stage-audio-play').click();await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#arcade-bgm').evaluate(el=>!el.paused&&el.readyState>=2),'retry uses actual media playback');
+  await page.locator('#arcade-bgm').evaluate(el=>el.dispatchEvent(new Event('pause')));
+  check((await read(page)).audioState==='playing','a queued pause event cannot mislabel currently playing media');
+  if(locale==='zh'&&game==='g06'){
+   await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});
+   await page.waitForFunction(()=>{const el=BioSuiteHub.musicElement;return !el.paused&&el.currentTime<1;});
+   check(await page.locator('#arcade-bgm').evaluate(el=>el.loop),'real OST loops at its end');
+  }
+  await page.locator('#arcade-bgm').evaluate(el=>{el.pause();el.dispatchEvent(new Event('playing'));});
+  await page.locator('#stage-audio-status[data-state="paused"]').waitFor();
+  check(await page.locator('#arcade-bgm').evaluate(el=>el.paused),'a queued playing event cannot mislabel paused media');
   await context.close();
  }
  {
@@ -87,6 +97,9 @@ try{
   check(diagnostic.state==='error'&&diagnostic.playError!=='NotAllowedError'&&(diagnostic.mediaError>0||diagnostic.playError==='NotSupportedError'),'media load failure is distinguished by native media code or playback error, regardless of event order');
   fail=false;await page.locator('#stage-audio-play').click();await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#arcade-bgm').evaluate(el=>!el.paused&&!el.loop),'failed source reloads while preserving non-loop preference');
+  await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});
+  await page.waitForFunction(()=>BioSuiteHub.musicElement.ended&&BioSuiteHub.musicElement.paused);
+  check((await read(page)).audioState==='paused','non-looping OST ends without restarting');
   await context.close();
  }
  for(const locale of ['zh','ja']){
@@ -104,14 +117,15 @@ try{
   await shooter.locator('[data-ar-hold="fire"]').evaluate(el=>el.dispatchEvent(new PointerEvent('lostpointercapture',{bubbles:true,pointerId:31})));
   check((await child()).fire,'releasing one finger retains the other');
   await shooter.locator('#arcade-stick').evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:33,clientX:r.right-3,clientY:r.y+r.height/2}));});
-  await shooter.locator('#arcade-root').evaluate(()=>window.dispatchEvent(new Event('blur')));
-  check((await child()).phase==='paused'&&!(await child()).fire&&(await child()).stick.id===null,'blur clears every shooter input owner');
+  await shooter.locator('#arcade-canvas').focus();await page.keyboard.down('ArrowRight');
+  await shooter.locator('#arcade-root').evaluate(()=>window.dispatchEvent(new Event('blur')));await page.keyboard.up('ArrowRight');
+  check((await child()).phase==='paused'&&!(await child()).fire&&(await child()).stick.id===null&&(await child()).keys.length===0,'blur clears every shooter input owner');
   await page.waitForFunction(()=>BioSuiteHub.musicElement.paused);
   const time=(await child()).time;
   await shooter.locator('[data-ar-command="resume"]').click();check((await child()).countdown,'G02 resume countdown is active');
   await page.waitForTimeout(350);check((await child()).time===time,'G02 is invulnerable because the world is frozen in countdown');
   await shooter.locator('#arcade-overlay[hidden]').waitFor({state:'attached'});
-  check((await child()).keys.length===0&&!(await child()).pointer.shooting,'G02 resumes without held inputs');
+  check((await child()).keys.length===0&&!(await child()).pointer.shooting&&(await child()).context==='running','G02 resumes without held inputs and with an active audio context');
   await page.locator('#stage-back').click();check(await page.locator('#g02-frame').count()===0,'G02 exit disposes the child session');
   await context.close();
  }

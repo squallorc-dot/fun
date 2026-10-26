@@ -21,7 +21,7 @@
   if(select&&['normal','hard','expert'].includes(msg.difficulty)){select.value=msg.difficulty;select.dispatchEvent(new Event('change',{bubbles:true}));}
   document.querySelector('[data-ar-command="start"]')?.click();
  });
- window.addEventListener('bio-arcade-phase',e=>send({type:e.detail}));
+ window.addEventListener('bio-arcade-phase',e=>send({type:e.detail,at:performance.timeOrigin+performance.now()}));
  window.addEventListener('bio-arcade-audio',e=>send({type:'sfx',value:e.detail}));
  window.addEventListener('DOMContentLoaded',()=>send({type:'ready'}),{once:true});
 })();

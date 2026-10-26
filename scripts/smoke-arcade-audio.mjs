@@ -29,6 +29,7 @@ try{
  }
  for(const fixture of [
   {prefs:{playMode:'scene',track:2},mode:'shuffle',playing:true},
+  {prefs:{playMode:'scene',audioRevision:2,track:2,volume:19},mode:'scene',playing:true,track:'burner-sister-summoning-theme.mp3'},
   {prefs:{playMode:'manual',track:2,volume:35},mode:'manual',playing:true,track:'mj-robot-kizamu-japanese-v1.mp3'},
   {prefs:{playMode:'off',track:1,volume:40},mode:'off',playing:false},
   {prefs:{playMode:'shuffle',volume:0},mode:'shuffle',playing:false},
