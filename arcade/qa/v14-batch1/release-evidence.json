@@ -1,0 +1,96 @@
+{
+  "batch": 1,
+  "created_at": "2026-10-26T02:40:52.648Z",
+  "base_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+  "tested_pr_head": "776a22d91caaf2429353ca858ee8642dc60678e1",
+  "production_sha": "d57cb3e14303f6c2c3d120dca348626f88d95bca",
+  "production_tree": "616ef98a2452500bc7ad31f118a528ef60849b44",
+  "pr_url": "https://github.com/squallorc-dot/fun/pull/14",
+  "backup_branch": "backup/bio-city-arcade-pre-v1.4-batch1-20261026",
+  "qa_branch": "qa/bio-city-arcade-v1.4-batch1-20261026",
+  "source_tree_matches_tested_tree": true,
+  "production_url": "https://squallorc-dot.github.io/fun/arcade/zh/index.html",
+  "pr_ci": {
+    "id": 40258201818,
+    "url": "https://github.com/squallorc-dot/fun/actions/runs/40258201818",
+    "conclusion": "success"
+  },
+  "main_ci": {
+    "id": 40259346873,
+    "url": "https://github.com/squallorc-dot/fun/actions/runs/40259346873",
+    "head_sha": "d57cb3e14303f6c2c3d120dca348626f88d95bca",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "browser",
+        "id": 121368119906,
+        "conclusion": "success"
+      },
+      {
+        "name": "arcade-engines",
+        "id": 121368120152,
+        "conclusion": "success"
+      },
+      {
+        "name": "verify",
+        "id": 121368120168,
+        "conclusion": "success"
+      },
+      {
+        "name": "arcade-session-browser",
+        "id": 121368120231,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "pages": {
+    "id": 40259346661,
+    "url": "https://github.com/squallorc-dot/fun/actions/runs/40259346661",
+    "head_sha": "d57cb3e14303f6c2c3d120dca348626f88d95bca",
+    "conclusion": "success"
+  },
+  "local_checks": {
+    "passed": 19,
+    "total": 19,
+    "path": "arcade/docs/v1.4/batch-1-test-results.json"
+  },
+  "browser_ci_pass_lines": [
+    "2026-10-26T02:30:24.7410095Z PASS 250 DOM/layout/interactive assertions across 14 pages, five viewports and two languages.",
+    "2026-10-26T02:30:48.1575746Z PASS 524 navigation/layout assertions: 16 pages, 7 widths, 2 languages, hero/game deep links and modal focus.",
+    "2026-10-26T02:30:51.5900072Z PERSISTENT OST PASS 44 bilingual browser assertions",
+    "2026-10-26T02:33:11.3311359Z ARCADE BROWSER PASS 514 assertions: six games, seven heroes, 20 G02 reentries, 20 other game sessions, bilingual mobile/desktop.",
+    "2026-10-26T02:30:54.0731909Z ARCADE SESSION BROWSER PASS 99: bilingual startup/decode gate, real media retries, preserved prefs, protected resume, cancellation and multi-pointer G02.",
+    "2026-10-26T02:31:47.1180353Z GUARDIAN ART BROWSER PASS 218 assertions: 781 nonempty/unclipped frames, seven G01/G02 heroes, 10 locale/viewport combinations.",
+    "2026-10-26T02:36:08.9257196Z VISUAL / GUIDE BROWSER PASS 1398 checks: 10 locale/viewport combinations, 7 playable modes, real key behavior, focus and responsive cards.",
+    "2026-10-26T02:36:25.2746222Z ARCADE AUDIO / MOBILE PASS 42: real playback, changing OST, nested focus, clean exit and 12 responsive locale cases.",
+    "2026-10-26T02:36:40.4385394Z RC browser screenshots captured 24: zh-home-arcade-desktop.png, zh-play-overview-desktop.png, zh-arcade-lobby-desktop.png, zh-g01-select-desktop.png, zh-g01-battle-desktop.png, zh-g05-volley-desktop.png, zh-g05-pong-desktop.png, zh-home-arcade-mobile.png, zh-play-overview-mobile.png, zh-arcade-lobby-mobile.png, zh-g01-select-mobile.png, zh-g01-battle-mobile.png, ja-home-arcade-desktop.png, ja-play-overview-desktop.png, ja-arcade-lobby-desktop.png, ja-g01-select-desktop.png, ja-g01-battle-desktop.png, ja-g05-volley-desktop.png, ja-g05-pong-desktop.png, ja-home-arcade-mobile.png, ja-play-overview-mobile.png, ja-arcade-lobby-mobile.png, ja-g01-select-mobile.png, ja-g01-battle-mobile.png",
+    "2026-10-26T02:38:19.7842640Z Saved bilingual desktop/mobile visual evidence to arcade/qa/visual-v12."
+  ],
+  "unchanged": [
+    "games-core.js physics and balance",
+    "campaign storage keys",
+    "audio defaults and migration",
+    "all 30 existing media files including the four selected OSTs"
+  ],
+  "limits": {
+    "windows_chrome_edge_reproduced": false,
+    "physical_iphone_tested": false,
+    "physical_android_tested": false,
+    "all_35_mode_chapter_wins_verified": false,
+    "remaining_batches": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "public_browser_observations": "public-browser-observations.json",
+  "screenshot": {
+    "path": "arcade/qa/v14-batch1/bio-city-v14-batch1-resume-1792981929254.jpg",
+    "bytes": 54999,
+    "sha256": "a3db1412e3558037bd8e6f2424440be8226b8aab71ed764aaa14783894241fb1",
+    "width": 1363,
+    "height": 936,
+    "format": "JPEG"
+  }
+}

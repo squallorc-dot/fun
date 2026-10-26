@@ -1,0 +1,90 @@
+{
+  "environment": "Cloud Chrome; not Windows, Edge or a physical mobile device",
+  "url": "https://squallorc-dot.github.io/fun/arcade/zh/index.html",
+  "observations": [
+    {
+      "game": "g06",
+      "audio": {
+        "currentTime": 0.066658,
+        "loop": true,
+        "paused": false,
+        "readyState": 4,
+        "src": "https://squallorc-dot.github.io/fun/music/bio-city-awakening-theme-v2.mp3"
+      },
+      "status": "♪ OST · 播放中"
+    },
+    {
+      "game": "g06",
+      "action": "pause",
+      "audioPaused": true,
+      "phase": "paused"
+    },
+    {
+      "game": "g06",
+      "action": "resume",
+      "phase": "countdown",
+      "title": "繼續 · 3"
+    },
+    {
+      "game": "g06",
+      "action": "resumed",
+      "dialogHidden": "true",
+      "status": "♪ OST · 播放中"
+    },
+    {
+      "game": "g02",
+      "sfxLabel": "ON",
+      "audio": {
+        "currentTime": 0.302785,
+        "paused": false,
+        "readyState": 4,
+        "src": "https://squallorc-dot.github.io/fun/music/mj-robot-kizamu-japanese-v2.mp3"
+      }
+    },
+    {
+      "game": "g02",
+      "action": "pause",
+      "audioPaused": true
+    },
+    {
+      "game": "g02",
+      "action": "resume",
+      "countdown": "3"
+    },
+    {
+      "game": "g02",
+      "action": "resumed",
+      "phase": "playing",
+      "audioPaused": false
+    },
+    {
+      "game": "g02",
+      "action": "exit",
+      "iframeCount": 0,
+      "audioPaused": true
+    },
+    {
+      "action": "settings",
+      "bgm": "40",
+      "sfx": "55"
+    },
+    {
+      "locale": "ja",
+      "game": "g03",
+      "status": "♪ OST · 再生中",
+      "audio": {
+        "currentTime": 0.016417,
+        "paused": false,
+        "readyState": 4,
+        "src": "https://squallorc-dot.github.io/fun/music/burner-sister-summoning-theme.mp3"
+      }
+    },
+    {
+      "locale": "ja",
+      "action": "history-return",
+      "activeStageCount": 0,
+      "audioPaused": true
+    }
+  ],
+  "screenshot": "bio-city-v14-batch1-resume-1792981929254.jpg"
+}
