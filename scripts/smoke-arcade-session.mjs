@@ -112,7 +112,7 @@ try{
   await start(page,'g02');const shooter=page.frameLocator('#g02-frame');
   await shooter.locator('#arcade-canvas').waitFor();const child=()=>shooter.locator('#arcade-root').evaluate(()=>BioArcadeShooter.state);
   check((await child()).sfx===23&&await shooter.locator('#ar-sound-label').textContent()==='ON','G02 inherits saved SFX rather than a separate OFF default');
-  await shooter.locator('[data-ar-command="sound"]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===0);
+  await shooter.locator('[data-ar-command="sound"]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===0&&document.querySelector('#sfx-volume').value==='0');
   check(await page.locator('#sfx-volume').inputValue()==='0','G02 mute updates the shared slider');
   await shooter.locator('[data-ar-command="sound"]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===23);
   const prefs=await page.evaluate(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')));
