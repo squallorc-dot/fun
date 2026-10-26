@@ -157,3 +157,22 @@ body[data-page="play"] #arcade-root.arcade-immersive{
  .arcade-immersive .arcade-action{min-height:44px}
 }
 @media(prefers-reduced-motion:reduce){.arcade-immersive *{transition:none!important}}
+
+/* G02 keeps the full square world; share one HUD instead of two status bars. */
+.arcade-immersive .arcade-topbar{flex-wrap:nowrap;gap:8px;padding:4px 8px}
+.arcade-immersive .arcade-hud{flex:1 1 auto;min-width:0;flex-wrap:wrap;justify-content:flex-start;gap:4px 12px;line-height:1.35}
+.arcade-immersive .arcade-hud span{font-size:11px}
+.arcade-immersive .arcade-hud b{font-size:13px;margin-left:3px}
+.arcade-immersive .arcade-top-actions{gap:4px}
+.arcade-immersive .arcade-small{min-width:44px;min-height:44px;padding:5px;font-size:12px}
+.arcade-immersive .arcade-sound{font:inherit}
+.arcade-immersive .arcade-action{border:1px solid #5393aa;background:#113b54;color:#fff}
+.arcade-immersive .arcade-action--fire{border-color:#ea617d;background:radial-gradient(circle,#a73e59,#4c203a)}
+.arcade-immersive .arcade-action--skill{border-color:#b5a0ff}
+.arcade-immersive .arcade-badge{display:none}
+.arcade-embedded .arcade-leave{display:none} /* The parent toolbar owns return to lobby. */
+@media(max-width:720px){
+ .arcade-immersive .arcade-hud{order:0}
+ .arcade-immersive .arcade-top-actions [data-ar-command="pause"] span{display:none}
+ .arcade-immersive #ar-sound-label{font-size:9px}
+}

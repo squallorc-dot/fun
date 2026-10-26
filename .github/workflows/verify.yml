@@ -97,6 +97,7 @@ jobs:
           node scripts/test-g05-volley.cjs
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
+          node scripts/test-g02-device-parity.cjs
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
@@ -110,13 +111,17 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Test bilingual mobile control profiles and actual gameplay
-        run: node scripts/smoke-arcade-controls.mjs
+        run: |
+          node scripts/smoke-g02-mobile.mjs
+          node scripts/smoke-arcade-controls.mjs
       - name: Upload controls evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-controls-v14
-          path: arcade/qa/controls-v14/
+          path: |
+            arcade/qa/controls-v14/
+            arcade/qa/g02-mobile-v14/
           retention-days: 30
 
   arcade-performance-browser:
