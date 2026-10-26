@@ -1,0 +1,81 @@
+// Bilingual, real-browser controls. Pointer events are explicit input fixtures; engines run normally.
+import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),qa=path.join(root,'arcade/qa/controls-v14');fs.mkdirSync(qa,{recursive:true});
+const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.mp3':'audio/mpeg','.png':'image/png','.webp':'image/webp'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,browser=await chromium.launch({headless:true,args:['--no-sandbox']});let checks=0,starts=0;const summaries=[];
+function check(ok,msg){assert(ok,msg);checks++;}
+const overlap=(a,b)=>a.x+a.width>b.x+1&&b.x+b.width>a.x+1&&a.y+a.height>b.y+1&&b.y+b.height>a.y+1;
+async function create(locale,viewport){const context=await browser.newContext({viewport,hasTouch:viewport.width!==1440,isMobile:viewport.width<900}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());await page.goto(origin+'/arcade/'+locale+'/index.html');return {context,page,errors};}
+const read=(frame,id)=>frame.evaluate(id=>id==='g02'?BioArcadeShooter.state:BioSuiteHub.debugState,id);
+async function begin(page,id,mode){await page.locator('[data-launch="'+id+'"]').click();if(mode)await page.locator('[data-mode="'+mode+'"]').click();await page.locator('#setup-play').click();starts++;let frame=page;if(id==='g02'){await page.frameLocator('#g02-frame').locator('#arcade-canvas').waitFor();frame=page.frames().find(f=>f.url().includes('/shooter.html'));await frame.waitForFunction(()=>BioArcadeShooter.state.phase==='playing');}else await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&!BioSuiteHub.debugState.paused&&BioSuiteHub.debugState.controls);await frame.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));return frame;}
+async function choose(page,profile,joystick='fixed'){await page.locator('#controls-settings').click();await page.locator('#control-profile').selectOption(profile);await page.locator('#control-joystick').selectOption(joystick);await page.locator('#controls-close').click();}
+async function input(frame,id,x,y,type='pointerdown',pointerId=81){await frame.locator(id==='g02'?'#arcade-stick':'#stick-pad').evaluate((el,{x,y,type,pointerId})=>{const r=el.getBoundingClientRect(),d=window.BioControlProfiles.prefs.stickSize,R=Number(el.querySelector('.bio-stick-base').style.width.replace('px',''))*.34||d*.34;el.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId,pointerType:'touch',clientX:r.x+r.width/2+x*R,clientY:r.y+r.height/2+y*R}));},{x,y,type,pointerId});}
+async function release(frame,pointerId=81){await frame.evaluate(pointerId=>window.dispatchEvent(new PointerEvent('pointerup',{pointerId,bubbles:true})),pointerId);}
+function coordinate(value,id,mode){if(id==='g02')return value.player.x;if(id==='g01'||id==='g03')return value.player.x;if(id==='g04')return value.angle;if(id==='g05')return value.player[mode==='pong'?'y':'x'];return value.car.steer;}
+async function world(frame,id){return frame.evaluate(id=>id==='g02'?BioArcadeShooter.state:BioSuiteHub.inspectGame(),id);}
+try{
+ const modes=[['g01'],['g02'],['g03'],['g04'],['g05','volley'],['g05','pong'],['g06']];
+ for(const locale of ['zh','ja'])for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:568,height:320},{width:844,height:390},{width:768,height:1024},{width:1440,height:900}]){
+  const {context,page,errors}=await create(locale,viewport);
+  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),locale+' lobby fits '+viewport.width);
+  for(const profile of ['two','left','right','desktop']){
+   await choose(page,profile);
+   for(const [id,mode]of modes){
+    const frame=await begin(page,id,mode),state=await read(frame,id),label=locale+'/'+viewport.width+'/'+profile+'/'+id+'/'+(mode||'');
+    check(state.controlPrefs.profile===profile,label+' profile reaches correct engine');
+    const controls=frame.locator('.bio-controls'),visible=await controls.isVisible(),canvas=await frame.locator('canvas').boundingBox();
+    check(canvas.width>55&&canvas.height>35,label+' full game remains visible');
+    if(visible){
+     const targets=await frame.locator('.bio-action:visible,.bio-stick-zone:visible').evaluateAll(es=>es.map(el=>{const r=el.getBoundingClientRect();return {id:el.dataset.touch||el.dataset.arCommand||el.dataset.arHold||el.id,x:r.x,y:r.y,width:r.width,height:r.height};}));
+     for(const target of targets){check(target.width>=44&&target.height>=44,label+' target size '+target.id);check(target.x>=-.5&&target.y>=-.5&&target.x+target.width<=viewport.width+.5&&target.y+target.height<=viewport.height+.5,label+' target inside viewport '+JSON.stringify(target));check(!overlap(canvas,target),label+' controls do not cover game '+target.id);}
+     for(let a=0;a<targets.length;a++)for(let b=a+1;b<targets.length;b++)check(!overlap(targets[a],targets[b]),label+' controls do not overlap');
+     const before=coordinate(await world(frame,id),id,mode);
+     await input(frame,id,0,0);await input(frame,id,mode==='pong'?0:.9,mode==='pong'?.9:0,'pointermove');await page.waitForTimeout(160);
+     const after=coordinate(await world(frame,id),id,mode);check(id==='g04'?after<before-.005:after>before+.005,label+' actual joystick moves game');
+     await release(frame);check(!(await read(frame,id)).controls.held&&(await read(frame,id)).controls.vector.x===0&&(await read(frame,id)).controls.vector.y===0,label+' release is immediate');
+    }
+    if(locale==='zh'&&viewport.width===390&&profile==='left'&&id==='g01'||locale==='ja'&&viewport.width===844&&profile==='right'&&id==='g06')await page.screenshot({path:path.join(qa,locale+'-'+viewport.width+'-'+profile+'-'+id+'.png')});
+    await page.locator('#stage-back').click();check((await page.evaluate(()=>BioSuiteHub.debugState)).active===null,label+' exits cleanly');
+   }
+   console.log('CONTROL MATRIX',locale,viewport.width,profile,'7 modes passed');
+  }
+  // Changing controls never writes audio settings or removes campaign/hero entries.
+  const audioAfter=await page.evaluate(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')));check(audioAfter.volume===40&&audioAfter.sfx===55&&audioAfter.auto&&audioAfter.loop,'fresh audio defaults survive all profiles');
+  check(errors.length===0,'no page errors '+errors.join(';'));summaries.push({locale,viewport,profiles:4,modes:7});await context.close();
+ }
+ for(const locale of ['zh','ja']){
+  const {context,page,errors}=await create(locale,{width:390,height:844});
+  await page.evaluate(()=>{localStorage.setItem('bio_arcade_pref_v1',JSON.stringify({audioRevision:2,playMode:'manual',track:2,volume:31,sfx:23,auto:false,loop:false}));localStorage.setItem('bio_arcade_campaign_v1','{"sentinel":"preserve"}');});await page.reload();
+  const stored=await page.evaluate(()=>({audio:localStorage.getItem('bio_arcade_pref_v1'),save:localStorage.getItem('bio_arcade_campaign_v1')}));
+  await choose(page,'right','floating');await page.reload();check(await page.evaluate(()=>BioControlProfiles.prefs.profile==='right'&&BioControlProfiles.prefs.joystick==='floating'),'profile and floating setting persist');
+  let frame=await begin(page,'g06');await input(frame,'g06',.7,0);await page.waitForTimeout(60);check((await read(frame,'g06')).controls.vector.x===0,'floating stick starts at touch with zero vector');
+  await input(frame,'g06',-.9,0,'pointermove');await page.waitForTimeout(100);check((await read(frame,'g06')).controls.vector.x<0,'floating origin follows subsequent drag');await release(frame);
+  await page.locator('#stage-controls-settings').click();const paused=await world(frame,'g06');check((await read(frame,'g06')).paused,'settings pause running game');check(await page.locator('#stage').evaluate(el=>el.inert),'game is inert under settings');
+  await page.waitForTimeout(250);check((await world(frame,'g06')).elapsed===paused.elapsed,'settings freeze world time');
+  await page.locator('#control-joystick').selectOption('fixed');await page.locator('#control-profile').selectOption('left');
+  await page.locator('#control-assist').check();await page.locator('#controls-close').click();check((await read(frame,'g06')).countdown,'closing settings uses protected resume');await page.waitForFunction(()=>!BioSuiteHub.debugState.paused);
+  const beforeBoost=(await world(frame,'g06')).nitro;await input(frame,'g06',0,0);await input(frame,'g06',0,-1,'pointermove');await page.waitForTimeout(220);check((await world(frame,'g06')).nitro<beforeBoost,'single stick upward gesture boosts');await input(frame,'g06',0,1,'pointermove');await page.waitForTimeout(80);check((await read(frame,'g06')).controls.actions.includes('down'),'same thumb downward gesture brakes');await release(frame);
+  await input(frame,'g06',0,0);await input(frame,'g06',.8,0,'pointermove');await page.setViewportSize({width:844,height:390});await page.waitForFunction(()=>BioSuiteHub.debugState.controls.layout.compact);check(!(await read(frame,'g06')).controls.held,'rotation clears held stick');check((await read(frame,'g06')).viewport.width===960,'rotation preserves complete wide game world');
+  await page.locator('#stage-pause').click();await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>BioSuiteHub.debugState.viewport.width===640);check(await page.locator('#hub-canvas').evaluate(el=>{const p=el.getContext('2d').getImageData(0,0,el.width,el.height).data;return p.some((v,i)=>i%4!==3&&v>20);}), 'paused orientation change redraws scene');await page.locator('#stage-controls-settings').click();await page.keyboard.press('Shift+Tab');check(await page.locator('#controls-reset').evaluate(el=>el===document.activeElement),'settings trap focus');await page.keyboard.press('Escape');check((await read(frame,'g06')).paused&&!(await read(frame,'g06')).countdown,'manually paused game does not auto-resume after settings');
+  await page.locator('#stage-back').click();
+  frame=await begin(page,'g02');check((await read(frame,'g02')).controlPrefs.profile==='left'&&(await read(frame,'g02')).controlPrefs.assist,'G02 bridge carries one-hand helper');
+  check(await frame.locator('[data-ar-hold="fire"]').isHidden(),'optional G02 assist removes redundant fire button');await frame.waitForFunction(()=>BioArcadeShooter.state.projectiles>0);check(true,'one-hand G02 actually fires');
+  await page.locator('#stage-controls-settings').click();await page.locator('#control-assist').uncheck();await page.locator('#control-profile').selectOption('right');await page.locator('#controls-close').click();await frame.waitForFunction(()=>BioArcadeShooter.state.phase==='playing');check((await read(frame,'g02')).controlPrefs.profile==='right'&&!(await read(frame,'g02')).controlPrefs.assist,'open G02 receives live settings');
+  const fire=frame.locator('[data-ar-hold="fire"]');await fire.evaluate(el=>{for(const pointerId of [91,92])el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId}));});check((await read(frame,'g02')).fireOwners===2,'multiple fingers have separate fire ownership');await release(frame,91);check((await read(frame,'g02')).fire,'one finger release keeps other held');await release(frame,92);check(!(await read(frame,'g02')).fire,'last release stops fire');
+  await page.locator('#stage-back').click();
+  frame=await begin(page,'g04');await frame.waitForFunction(()=>BioSuiteHub.inspectGame().transition===0);const ammo=(await world(frame,'g04')).shots,canvas=frame.locator('#hub-canvas'),r=await canvas.boundingBox();
+  await page.mouse.move(r.x+r.width*.5,r.y+r.height*.85);await page.mouse.down();await page.mouse.move(r.x+r.width*.75,r.y+r.height*.4,{steps:6});await page.waitForTimeout(80);check((await world(frame,'g04')).shots===ammo,'G04 drag holds shot');await page.mouse.up();await frame.waitForFunction(n=>BioSuiteHub.inspectGame().shots===n-1,ammo);check(true,'G04 release fires once');
+  await page.locator('#stage-restart').click();await frame.waitForFunction(()=>!BioSuiteHub.debugState.loading&&BioSuiteHub.inspectGame().transition===0);const restarted=(await world(frame,'g04')).shots;const box=await canvas.boundingBox();await page.mouse.move(box.x+box.width*.5,box.y+box.height*.7);await page.mouse.down();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.mouse.up();check((await world(frame,'g04')).shots===restarted,'blur cancels pending shot');
+  await page.locator('#stage-back').click();
+  frame=await begin(page,'g03');await frame.waitForFunction(()=>BioSuiteHub.inspectGame().player.ground);await input(frame,'g03',0,0);await input(frame,'g03',0,-1,'pointermove');await frame.waitForFunction(()=>BioSuiteHub.inspectGame().player.vy<0);check(true,'single thumb upward gesture actually jumps');await release(frame);await page.locator('#stage-restart').click();await frame.waitForFunction(()=>!BioSuiteHub.debugState.loading&&BioSuiteHub.inspectGame().player.ground);await input(frame,'g03',0,0);await input(frame,'g03',0,1,'pointermove');await frame.waitForFunction(()=>BioSuiteHub.inspectGame().player.drop>0);await page.waitForTimeout(550);check((await world(frame,'g03')).player.drop===0,'held downward gesture emits one platform drop');await release(frame);await page.locator('#stage-back').click();
+  await page.locator('#controls-settings').click();await page.locator('#controls-reset').click();await page.locator('#controls-close').click();check(await page.evaluate(()=>BioControlProfiles.prefs.profile==='two'&&BioControlProfiles.prefs.sensitivity===1),'one-click standard reset');
+  check(await page.evaluate(x=>localStorage.getItem('bio_arcade_pref_v1')===x.audio&&localStorage.getItem('bio_arcade_campaign_v1')===x.save,stored),'control edits and reset preserve existing audio and saves exactly');
+  check(errors.length===0,errors.join(';'));await context.close();
+ }
+ // Both old entry pages use the shared controller outside the hub too.
+ for(const locale of ['zh','ja']){
+  const {context,page,errors}=await create(locale,{width:390,height:844});await page.goto(origin+'/'+locale+'/play.html');await page.locator('[data-ar-command="start"]').click();await page.locator('#arcade-canvas').waitFor();await page.locator('[data-ar-command="controls"]').click();await page.locator('#control-profile').selectOption('left');await page.locator('#controls-close').click();await page.waitForFunction(()=>BioArcadeShooter.state.phase==='playing');check((await page.evaluate(()=>BioArcadeShooter.state)).controlPrefs.profile==='left','legacy '+locale+' direct entry uses shared preferences');check(errors.length===0,errors.join(';'));await context.close();
+ }
+ const result={checks,starts,contexts:summaries,physicalIPhone:'pending',physicalAndroid:'pending',windowsChromeEdge:'pending'};fs.writeFileSync(path.join(qa,'results.json'),JSON.stringify(result,null,2));console.log('ARCADE CONTROLS BROWSER PASS '+checks+' checks; '+starts+' real starts, 2 locales, 7 viewport sizes, 4 profiles, 7 playable modes.');
+}catch(error){for(const ctx of browser.contexts())for(const page of ctx.pages()){await page.screenshot({path:path.join(qa,'failure.png')}).catch(()=>{});console.error('CONTROLS FAILURE',await page.evaluate(()=>({url:location.href,main:window.BioSuiteHub?.debugState,shooter:window.BioArcadeShooter?.state})).catch(()=>null));}throw error;}finally{await browser.close();await new Promise(r=>server.close(r));}

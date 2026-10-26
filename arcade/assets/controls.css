@@ -1,0 +1,41 @@
+/* Controls are docked below the game or inside explicitly reserved side rails. */
+.bio-controls{box-sizing:border-box;min-height:0!important;flex:0 0 auto;z-index:2;user-select:none;touch-action:none;overflow:visible;padding:0 max(20px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));border-top:1px solid #315568;background:#081e2f}
+.bio-controls>.touch-left,.bio-controls>.touch-right,.bio-controls>.arcade-touch-actions,.bio-controls .arcade-touch-actions>div{display:contents!important}
+.bio-controls .bio-stick-zone{position:absolute!important;display:block!important;min-width:0!important;flex:none!important;border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important;touch-action:none;pointer-events:auto}
+.bio-controls[data-joystick=floating] .bio-stick-zone{outline:1px dashed #5796ad66;outline-offset:-2px}
+.bio-stick-base{position:absolute;display:block;box-sizing:border-box;border:2px solid #76c4d7;border-radius:50%;background:radial-gradient(circle,#22576e,#0a2d43);box-shadow:0 0 0 4px #06253b77;pointer-events:none}
+.bio-controls .bio-stick-knob{position:absolute!important;box-sizing:border-box;left:50%!important;top:50%!important;inset:auto;border:2px solid #d9f7ff;border-radius:50%;background:#91d2e1;pointer-events:none}
+.bio-controls .bio-action{position:absolute!important;box-sizing:border-box;display:flex!important;align-items:center;justify-content:center;flex-direction:column;min-width:0!important;min-height:0!important;margin:0!important;padding:3px!important;grid-area:auto!important;touch-action:none;pointer-events:auto;font-size:12px!important;line-height:1.2;border-radius:18px!important}
+.bio-controls .bio-action[data-control-hidden=true],.bio-controls .bio-action[hidden]{display:none!important}
+.bio-controls .bio-action.is-held{background:#26758e!important;border-color:#c6ffff!important;box-shadow:inset 0 0 0 2px #a4f4f799,0 0 14px #4bc7df66;transform:scale(.97)}
+.bio-controls .bio-action small{font-size:9px}
+.bio-controls[data-profile=left],.bio-controls[data-profile=right]{background:linear-gradient(180deg,#071b2c,#0b293b)}
+@media(max-height:540px) and (orientation:landscape){.bio-controls{background:transparent!important;border:0;pointer-events:none}}
+.lobby-config-actions{display:flex;align-items:center;gap:8px}
+.lobby-config-actions button{min-height:44px;border:1px solid #4c8096;background:#12364a;color:#e0f6ff;border-radius:9px;padding:8px 12px}
+.bio-control-layer{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:#03101de6;overflow:auto;overscroll-behavior:contain}
+.bio-control-layer[hidden]{display:none}
+body.bio-controls-open{overflow:hidden}
+.bio-control-dialog{box-sizing:border-box;width:min(470px,100%);max-height:94dvh;overflow:auto;overscroll-behavior:contain;border:1px solid #6195a9;border-radius:18px;padding:20px;background:#0b2639;color:#e8f6ff;font:14px/1.65 system-ui,sans-serif;box-shadow:0 24px 80px #0008}
+.bio-control-dialog header,.bio-control-dialog footer{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.bio-control-dialog h2{margin:0;font-size:21px}
+.bio-control-dialog p{font-size:13px;color:#b9d4df;margin:10px 0}
+.bio-control-dialog button,.bio-control-dialog select{min-height:44px;border:1px solid #6296a9;border-radius:8px;background:#123f55;color:#ecf9ff;padding:8px 12px;font:inherit}
+.bio-control-dialog button:focus-visible,.bio-control-dialog input:focus-visible,.bio-control-dialog select:focus-visible,.bio-control-dialog summary:focus-visible{outline:3px solid #c6ffff;outline-offset:3px}
+.bio-control-field{display:grid;gap:6px;margin:14px 0}
+.bio-control-field select,.bio-control-field input[type=range]{width:100%;min-width:0;box-sizing:border-box}
+.bio-control-field input[type=range]{min-height:44px;accent-color:#78dce8}
+.bio-control-field output{float:right;font-variant-numeric:tabular-nums;color:#91e7e1}
+.bio-control-check{display:flex;align-items:center;gap:10px;min-height:44px;margin:8px 0}
+.bio-control-check input{width:22px;height:22px;accent-color:#78dce8}
+.bio-control-dialog .bio-control-detail{font-size:12px;color:#9ec3d2;margin-top:0}
+.bio-control-dialog details{margin:16px 0;padding:12px;border:1px solid #426b7e;border-radius:10px}
+.bio-control-dialog summary{cursor:pointer;min-height:36px}
+.bio-control-dialog footer{flex-wrap:wrap;margin-top:20px;font-size:12px;color:#a0c6d4}
+#control-preview{position:relative;overflow:hidden;width:100%;border:1px solid #355b6e;border-radius:12px;background:#071d2c}
+.bio-preview-button,.bio-preview-stick{position:absolute;display:flex;align-items:center;justify-content:center;box-sizing:border-box;background:#194f65;border:1px solid #93dbe5;border-radius:20%;color:#e7ffff;font-weight:700;font-size:11px}
+.bio-preview-stick{border-radius:50%;background:#0f374c;font-size:23px}
+@media(max-height:540px) and (orientation:landscape){.bio-control-dialog{max-height:92dvh;padding:14px 20px}}
+
+.arcade-top-actions [hidden]{display:none!important}
+@media(max-width:380px){.lobby-config-actions{gap:4px}.lobby-config-actions button{padding:6px 8px;font-size:12px}.hub-head{gap:5px}}

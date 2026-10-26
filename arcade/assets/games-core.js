@@ -2,6 +2,8 @@
 (()=>{'use strict';
 const R={};window.BioSuiteGames=R;
 const pi=Math.PI,TAU=2*pi,between=(x,a,b)=>Math.max(a,Math.min(b,x)),distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),rnd=(a,b)=>Math.random()*(b-a)+a,pick=a=>a[(Math.random()*a.length)|0];
+// Analog values are optional; legacy keyboard-only engine callers retain their behavior.
+const axis=(input,name,positive,negative)=>Number.isFinite(input[name])?between(input[name],-1,1):(positive?1:0)-(negative?1:0);
 const pal=['#ff6b88','#68ddfc','#ffc576','#f5e28b','#bfa2ff','#8bf1b8','#a8f1ff'];
 function back(ctx,w,h,color='#081b2f',grid=54){ctx.fillStyle=color;ctx.fillRect(0,0,w,h);ctx.strokeStyle='#3c89a51c';ctx.lineWidth=1;for(let x=0;x<w;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=0;y<h;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}}
 function words(ctx,text,x,y,font=14,color='#e9f7ff',align='left'){ctx.fillStyle=color;ctx.font=`700 ${font}px system-ui,sans-serif`;ctx.textAlign=align;ctx.fillText(text,x,y);ctx.textAlign='left'}
@@ -224,7 +226,8 @@ const g={w:960,h:540,finish:env.finish,
  update(dt,input){if(g._finished)return;
   dt=Math.max(0,Math.min(dt,.045));t+=dt;elapsed+=dt;
   if(ending){ending.time+=dt;for(const e of fallen)e.clipTime+=dt;fallen=fallen.filter(e=>e.clipTime<.55);playerAnimation(dt);if(ending.time>=.76)ends(g,ending.win,ending.result,ending.note);return;}
-  if(input.fire&&!button.fire)p.attackBuffer=.16;button.fire=!!input.fire;
+  const fire=input.fire||input.actionAssist&&enemies.some(e=>e.hp>0&&(e.x-p.x)*p.dir>-18&&(e.x-p.x)*p.dir<62&&Math.abs(e.y-p.y)<38&&p.z<40);
+  if(fire&&!button.fire)p.attackBuffer=.16;button.fire=!!fire;
   if(impactStop>0){impactStop=Math.max(0,impactStop-dt);return;}
   const keys=['attack','attackCool','comboTimer','dodge','dash','inv','stun','haste','echoTime','gardenTime','skillFlash','land','attackBuffer'];for(const key of keys)p[key]=Math.max(0,p[key]-dt);
   // Companion strikes and garden pulses use bounded intervals, not per-frame damage.
@@ -237,12 +240,12 @@ const g={w:960,h:540,finish:env.finish,
     p.hp=Math.min(p.max,p.hp+3);
     for(const e of enemies.filter(e=>e.hp>0&&Math.hypot(e.x-p.x,(e.y-p.y)*1.6)<110))strike(e,11,0,0,'#a1ffbd');
   }}
-  const vx=(input.right?1:0)-(input.left?1:0),vy=(input.down?1:0)-(input.up?1:0);
+  const vx=axis(input,'moveX',input.right,input.left),vy=axis(input,'moveY',input.down,input.up);
   if(vx){p.lastDir=vx>0?1:-1;if(!p.action&&p.skillFlash<=0)p.dir=p.lastDir;}
   const rising=(key,pressed)=>{if(pressed&&!button[key]){button[key]=true;return true}if(!pressed)button[key]=false;return false};
   if(rising('jump',input.jump))jump();if(rising('dodge',input.dodge))dodge();if(rising('skill',input.skill))skill();
   if(p.action){const action=p.action;action.time+=dt;if(!action.connected&&action.time>=action.hit){action.connected=true;resolveAttack(action);}if(action.time>=action.duration)p.action=null;}
-  if(input.fire||p.attackBuffer>0)attack();
+  if(fire||p.attackBuffer>0)attack();
   const speed=(env.hero===3?190:env.hero===2?125:163)*(p.haste>0?1.38:1);
   const control=p.stun>0 ? 0 : p.action ? (p.action.time<p.action.hit ? .35 : .65) : 1;
   const moveX=p.stun>0?0:p.dash>0?p.dashDir*speed*2.0:vx*speed*control;
@@ -296,7 +299,7 @@ R.g03=env=>{
  const fx=particleField();
  const zones=['MAINTENANCE SHAFT','MOVING ELEVATOR','WIND TUNNEL','COLLAPSE ZONE','ENTROPY RIFT'];
 let p=null,platforms=[],camera=0,depth=0,level=0,t=0,score=0,bonus=0,pickups=0,button={},goal=1700,mult=env.difficulty==='expert'?1.35:env.difficulty==='hard'?1.18:1,spawny=0,crush=0;
-const g={w:960,h:540,finish:env.finish,start(){g._finished=false;fx.clear();depth=0;level=0;t=0;score=0;bonus=0;pickups=0;button={};goal=1700+(Math.max(1,Math.min(5,Number(env.chapter)||1))-1)*500;window.BioGuardianArt?.preload([env.hero]);const w=g.w,h=g.h;p={dir:1,x:w*.5,y:90,vx:0,vy:0,r:13,hp:3,ground:false,inv:0,drop:0,fallFrom:90};platforms=[{x:w*.5-65,y:135,w:130,type:'safe',hp:99}];spawny=230;while(spawny<Math.max(2000,goal+450))makePlatform();camera=0;crush=0;},onResize(ow,oh,w,h){const kx=w/(ow||w);if(p){p.x=between(p.x*kx,16,w-16);}for(const f of platforms){f.w=Math.min(w-28,Math.max(40,f.w*kx));f.x=between(f.x*kx,14,Math.max(14,w-f.w-14));}if(p)camera=Math.max(0,p.y-h*.48);},update(dt,input){if(g._finished)return;fx.step(dt);const wasGround=p.ground;t+=dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);if(input.down&&!button.down&&p.ground){p.vy=Math.max(85,p.vy);p.ground=false;p.drop=.22;}button.down=!!input.down;const width=g.w;if(input.left){p.vx-=850*dt;p.dir=-1;}if(input.right){p.vx+=850*dt;p.dir=1;}p.vx*=Math.exp(-5*dt);p.vx=between(p.vx,-260,260);if((input.jump||input.fire)&&p.ground&&!button.jump){p.vy=-275;p.ground=false;env.sfx(690,.07)}button.jump=!!(input.jump||input.fire);
+const g={w:960,h:540,finish:env.finish,start(){g._finished=false;fx.clear();depth=0;level=0;t=0;score=0;bonus=0;pickups=0;button={};goal=1700+(Math.max(1,Math.min(5,Number(env.chapter)||1))-1)*500;window.BioGuardianArt?.preload([env.hero]);const w=g.w,h=g.h;p={dir:1,x:w*.5,y:90,vx:0,vy:0,r:13,hp:3,ground:false,inv:0,drop:0,fallFrom:90};platforms=[{x:w*.5-65,y:135,w:130,type:'safe',hp:99}];spawny=230;while(spawny<Math.max(2000,goal+450))makePlatform();camera=0;crush=0;},onResize(ow,oh,w,h){const kx=w/(ow||w);if(p){p.x=between(p.x*kx,16,w-16);}for(const f of platforms){f.w=Math.min(w-28,Math.max(40,f.w*kx));f.x=between(f.x*kx,14,Math.max(14,w-f.w-14));}if(p)camera=Math.max(0,p.y-h*.48);},update(dt,input){if(g._finished)return;fx.step(dt);const wasGround=p.ground;t+=dt;p.inv=Math.max(0,p.inv-dt);p.drop=Math.max(0,p.drop-dt);if(input.down&&!button.down&&p.ground){p.vy=Math.max(85,p.vy);p.ground=false;p.drop=.22;}button.down=!!input.down;const width=g.w;const move=axis(input,'moveX',input.right,input.left);p.vx+=move*850*dt;if(move)p.dir=move>0?1:-1;p.vx*=Math.exp(-5*dt);p.vx=between(p.vx,-260,260);if((input.jump||input.fire)&&p.ground&&!button.jump){p.vy=-275;p.ground=false;env.sfx(690,.07)}button.jump=!!(input.jump||input.fire);
  const prevY=p.y;p.vy=Math.min(460,p.vy+650*mult*dt);p.y+=p.vy*dt;// Airflow in chapter 3 and energy turbulence in chapter 5 alter actual landings.
  const wind=chapter===3?Math.sin(t*.85)*18:chapter===5?Math.sin(t*1.7)*25:0;
  p.x=between(p.x+(p.vx+(!p.ground?wind:0))*dt,16,width-16);p.ground=false;for(const f of platforms){if(f.broken)continue;const shiftedX=platformX(f);if(p.drop<=0&&p.vy>=0&&prevY+p.r<=f.y+8&&p.y+p.r>=f.y-1&&p.x+p.r>shiftedX&&p.x-p.r<shiftedX+f.w){p.y=f.y-p.r;p.vy=0;p.ground=true;if(f.type==='trap'&&p.inv<=0){p.hp--;p.inv=1;env.sfx(130,.16)}if(f.type==='fragile'){f.hp-=dt*(chapter===4?2.2:chapter===5?1.65:1);if(f.hp<=0){f.broken=true;fx.burst(shiftedX+f.w*.5,f.y,'#deb980',12,95);}}if(f.pickup&&!f.collected&&Math.abs(p.x-(shiftedX+f.w*.5))<24){f.collected=true;fx.burst(p.x,f.y-20,'#aeefc7',9,72);pickups++;bonus+=100;p.hp=Math.min(3,p.hp+1);env.sfx(980,.09);}}}
@@ -328,10 +331,10 @@ R.g04=env=>{
   start(){g._finished=false;fx.clear();stage=1;score=0;hits=0;t=0;walls=0;buttons={};stageHistory=[];window.BioGuardianArt?.preload([env.hero]);setupStage();},
   onResize(ow,oh,w,h){const sx=w/(ow||w),sy=h/(oh||h);for(const q of [...targets,...bumpers,...balls]){q.x*=sx;q.y*=sy;if(q.baseX!==undefined)q.baseX*=sx;q.r=Math.max(6,q.r*Math.min(sx,sy));} },
   update(dt,input){if(g._finished)return;dt=Math.max(0,Math.min(.05,dt));t+=dt;fx.step(dt);for(const q of [...targets,...bumpers])q.flash=Math.max(0,(q.flash||0)-dt);transition=Math.max(0,transition-dt);
-   angle=between(angle+((input.right?-1:input.left?1:0))*dt*1.35,-1.15,1.15);
-   power=between(power+((input.up?1:input.down?-1:0))*45*dt,35,100);
-   if(input.pointer?.down){const dx=input.pointer.x-g.w*.5,dy=g.h-30-input.pointer.y;angle=between(Math.atan2(-dx,Math.max(24,dy)),-1.15,1.15);}
-   if(input.skill&&!buttons.recall&&balls.length){balls=[];env.sfx(320,.07);}buttons.recall=!!input.skill;const fire=!!(input.fire||input.pointer?.down);
+   angle=between(angle-axis(input,'moveX',input.right,input.left)*dt*1.35,-1.15,1.15);
+   power=between(power-axis(input,'moveY',input.down,input.up)*45*dt,35,100);
+   if(input.pointer?.down||input.pointer?.released){const dx=input.pointer.x-g.w*.5,dy=g.h-30-input.pointer.y;angle=between(Math.atan2(-dx,Math.max(24,dy)),-1.15,1.15);if(input.pointer.aiming&&input.pointer.moved)power=35+65*between(input.pointer.dragRatio||0,0,1);}
+   if(input.skill&&!buttons.recall&&balls.length){balls=[];env.sfx(320,.07);}buttons.recall=!!input.skill;const fire=!!(input.fire||input.pointer?.released||input.pointer?.down&&!input.pointer?.aiming);
    if(fire&&!buttons.fire&&shots>0&&balls.length===0&&transition<=0)shoot();buttons.fire=fire;
    // Chapter 3+ features real moving reflectors, not purely visual variation.
    if(chapter>=3&&stage>=2)for(const q of bumpers)q.x=between(q.baseX+Math.sin(t*(chapter===5?1.85:1.1)+q.id*1.8)*Math.min(g.w*.032,20),q.r+12,g.w-q.r-12);
@@ -383,7 +386,7 @@ R.g04=env=>{
  }
  function collide(b,q,restitution){const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),R=b.r+q.r;if(d>=R||d<=.001)return;const nx=dx/d,ny=dy/d,proj=b.vx*nx+b.vy*ny;b.x=q.x+nx*(R+1);b.y=q.y+ny*(R+1);if(proj<0){b.vx-=2*proj*nx*restitution;b.vy-=2*proj*ny*restitution;return true;}}
  function shoot(){shots--;const speed=(350+power*3.4)*Math.min(1,Math.max(.75,g.h/500));balls.push({x:g.w*.5,y:g.h-32,r:Math.max(6,Math.min(g.w,g.h)*.014),vx:-Math.sin(angle)*speed,vy:-Math.cos(angle)*speed,t:8,trail:[],locked:new Set()});env.sfx(450,.13);}
- g.debugPhysics=()=>({chapter,mechanic:chapterMechanics[chapter-1],stage,totalStages:total,stageName:STAGES[stage-1].title,balls:balls.map(({locked,...q})=>({...q})),targets:targets.map(q=>({...q})),bumpers:bumpers.map(q=>({...q})),shots,hits,score,physicsDebt,stageHistory:stageHistory.map(q=>({...q})),transition});
+ g.debugPhysics=()=>({chapter,mechanic:chapterMechanics[chapter-1],stage,totalStages:total,stageName:STAGES[stage-1].title,balls:balls.map(({locked,...q})=>({...q})),targets:targets.map(q=>({...q})),bumpers:bumpers.map(q=>({...q})),shots,hits,score,physicsDebt,stageHistory:stageHistory.map(q=>({...q})),angle,power,transition});
  // Deterministic phase-transition probe for test harnesses only; production instances do not expose it.
  if(env.testMode)g.testClearStage=()=>{for(const q of targets)q.hp=0;};
  return g;};
@@ -457,12 +460,12 @@ function tableStep(dt){
  }
 }
 function updateTable(dt,input){
- const f=table(),oldPlayerY=player.y,oldAiY=ai.y;ai.swing=Math.max(0,ai.swing-dt);if(input.up||input.left)player.y-=g.h*.83*dt;
- if(input.down||input.right)player.y+=g.h*.83*dt;
+ const f=table(),oldPlayerY=player.y,oldAiY=ai.y;ai.swing=Math.max(0,ai.swing-dt);player.y+=axis(input,'moveY',input.down||input.right,input.up||input.left)*g.h*.83*dt;
  player.y=between(player.y,f.top+10,f.bottom-10);
  player.swing=Math.max(0,player.swing-dt);player.cool=Math.max(0,player.cool-dt);
- if(input.fire&&!button.fire&&player.cool===0){player.swing=.23;player.cool=.31;env.sfx(200,.03)}
- button.fire=!!input.fire;button.up=!!(input.up||input.left);button.down=!!(input.down||input.right);
+ const fire=input.fire||input.actionAssist&&ball&&ball.lastHitter===1&&ball.bouncedReceiver&&ball.vx<0&&Math.abs(ball.x-player.x)<Math.max(14,f.radius*2.3)+Math.abs(ball.vx)*.08&&Math.abs(ball.y-player.y)<g.h*.092&&ball.z>=6&&ball.z<94;
+ if(fire&&!button.fire&&player.cool===0){player.swing=.23;player.cool=.31;env.sfx(200,.03)}
+ button.fire=!!fire;button.up=!!(input.up||input.left);button.down=!!(input.down||input.right);
  if(ball){
   const aim=(ball.vx>0&&ball.lastHitter===0)?between(ball.y+(chapter>=3?ball.vy*.12:0),f.top+10,f.bottom-10):g.h*.52;
   ai.y+=between(aim-ai.y,-g.h*.61*variant*dt,g.h*.61*variant*dt);
@@ -489,8 +492,8 @@ function hitVolley(who,input={},serving=false){
 }
 function volleyStep(dt,input){
  const w=g.w,h=g.h,f=field(),ground=f.floor-f.body;
- const firePressed=input.fire&&!button.fire;button.fire=!!input.fire;
- player.moving=!!(input.left||input.right);if(input.left)player.x-=w*.65*dt;if(input.right)player.x+=w*.65*dt;
+ const fire=input.fire||input.actionAssist&&(serve>0&&serveSide===0||serve<=0&&ball.x<w*.5&&ball.vy<0&&player.hitCool===0&&Math.hypot(ball.x-player.x,ball.y-(player.y-f.body*.55))<f.r+f.body*1.35),firePressed=fire&&!button.fire;button.fire=!!fire;
+ const move=axis(input,'moveX',input.right,input.left);player.moving=!!move;player.x+=move*w*.65*dt;
  player.x=between(player.x,f.body+3,w*.5-f.body-7);
  const targetX=serve>0?w*.78:between(ball.x+(chapter>=3?ball.vx*.075:0),w*.5+f.body+7,w-f.body-3);
  const aiDelta=between(targetX-ai.x,-w*.39*dt*variant,w*.39*dt*variant);ai.x+=aiDelta;ai.moving=Math.abs(aiDelta)>.05;
@@ -776,7 +779,7 @@ R.g06=env=>{
   },onResize(){},
   update(dt,input){if(g._finished)return;dt=Math.min(.05,Math.max(0,dt));const previousProgress=progress;t+=dt;elapsed+=dt;car.inv=Math.max(0,car.inv-dt);car.braking=!!input.down;
    const boost=(input.fire||input.skill)&&nitro>1&&!car.braking,desired=car.braking?0:boost?96:74;car.speed+=between(desired-car.speed,-38*dt,16*dt);nitro=boost?Math.max(0,nitro-27*dt):Math.min(100,nitro+(slipstream?18:8)*dt);
-   let turn=(input.right?1:0)-(input.left?1:0);if(input.pointer?.down)turn=between(((input.pointer.x/g.w-.5)*2-car.lane)*3,-1,1);car.steer+=between(turn-car.steer,-8*dt,8*dt);const road=trackAt(progress),bend=road.bend,gradeAhead=trackAt(progress+18).y-road.y;if(chapter>1)car.speed=Math.max(0,car.speed-Math.max(0,gradeAhead)*.018*dt+Math.max(0,-gradeAhead)*.012*dt);
+   let turn=axis(input,'moveX',input.right,input.left);if(input.pointer?.down)turn=between(((input.pointer.x/g.w-.5)*2-car.lane)*3,-1,1);car.steer+=between(turn-car.steer,-8*dt,8*dt);const road=trackAt(progress),bend=road.bend,gradeAhead=trackAt(progress+18).y-road.y;if(chapter>1)car.speed=Math.max(0,car.speed-Math.max(0,gradeAhead)*.018*dt+Math.max(0,-gradeAhead)*.012*dt);
    car.lane=between(car.lane+car.steer*.9*(.65+car.speed/100)*dt-bend*Math.pow(car.speed/80,2)*(chapter===1?.16:.11)*dt,-1.25,1.25);
    if(Math.abs(car.lane)>1.04){car.speed=Math.max(car.braking?0:18,car.speed-36*dt);car.health=Math.max(0,car.health-2*dt);}
    const next=progress+car.speed*dt,gate=checkpointDistances[checkpointIndex];
@@ -798,7 +801,7 @@ R.g06=env=>{
    bar(ctx,14,h-28,Math.min(160,w*.4),7,car.health/100,'#81e3c5');bar(ctx,14,h-15,Math.min(160,w*.4),5,nitro/100,'#6bc9ff');fighter(ctx,w-42,h-12,0,20,pal[env.hero],t,car.inv?'hurt':'idle',-1,env.hero);
   },
   hud(){const rank=1+traffic.filter(o=>o.type==='car'&&o.z>progress).length;return `<span>LAP <b>${Math.min(laps,Math.floor(checkpointIndex/3)+1)}/${laps}</b></span><span>GATE <b>${checkpointIndex}/${checkpointDistances.length}</b></span><span>POS <b>${rank}/6</b></span><span>HP <b>${Math.max(0,Math.ceil(car.health))}</b></span><span>BOOST <b>${Math.floor(nitro)}%</b></span>`;},
-  inspectRace(){return {progress,checkpointIndex,checkpointTotal:checkpointDistances.length,nextGate:checkpointDistances[checkpointIndex]??null,lap:Math.min(laps,Math.floor(checkpointIndex/3)+1),chapter,trackName:chapterNames[chapter-1],sector:segmentNames[Math.min(2,Math.floor((progress%lapLength)/400))],car:{...car},traffic:traffic.map(x=>({...x})),elapsed,score,collisions,passes,slipstream,roadSample:project(40),roadGrade:trackAt(progress+18).y-trackAt(progress).y,playerScreen:project(0,car.lane),finished:!!g._finished};}
+  inspectRace(){return {nitro,progress,checkpointIndex,checkpointTotal:checkpointDistances.length,nextGate:checkpointDistances[checkpointIndex]??null,lap:Math.min(laps,Math.floor(checkpointIndex/3)+1),chapter,trackName:chapterNames[chapter-1],sector:segmentNames[Math.min(2,Math.floor((progress%lapLength)/400))],car:{...car},traffic:traffic.map(x=>({...x})),elapsed,score,collisions,passes,slipstream,roadSample:project(40),roadGrade:trackAt(progress+18).y-trackAt(progress).y,playerScreen:project(0,car.lane),finished:!!g._finished};}
  };if(env.testMode)g.testRenderGeometry=()=>({strips:visibleStrips(),polygons:visibleStrips().map(s=>clippedPolygon([cameraPoint(s.d,-1),cameraPoint(s.d,1),cameraPoint(s.next,1),cameraPoint(s.next,-1)])),sceneryClearance:sceneryLane*roadHalf-sceneryUnit*1.02-roadHalf*1.15,tyre:project(0,car.lane)});if(env.testMode)g.testPlace=({distance=progress,lane=0,speed=0,obstacle=null,keepTraffic=false}={})=>{progress=distance;car.lane=lane;car.speed=speed;car.inv=0;if(!keepTraffic)traffic=obstacle?[{z:distance+(obstacle.ahead??0),lane:obstacle.lane??lane,home:obstacle.lane??lane,type:obstacle.type??'barrier',speed:obstacle.speed??0,hit:false,passed:false}]:[];};return g;
 };
 })();

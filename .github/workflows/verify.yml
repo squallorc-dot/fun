@@ -80,6 +80,7 @@ jobs:
           node scripts/verify.mjs
           node scripts/verify-arcade.mjs
           node scripts/test-arcade-session.cjs
+          node scripts/test-arcade-controls.cjs
           node scripts/test-arcade-audio.cjs
           node scripts/test-arcade-grounding.cjs
           node scripts/test-arcade-engines.cjs
@@ -95,3 +96,24 @@ jobs:
           node scripts/test-g05-volley.cjs
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
+
+  arcade-controls-browser:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test bilingual mobile control profiles and actual gameplay
+        run: node scripts/smoke-arcade-controls.mjs
+      - name: Upload controls evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bio-city-arcade-controls-v14
+          path: arcade/qa/controls-v14/
+          retention-days: 30
