@@ -1,0 +1,1302 @@
+{
+  "stage": 2,
+  "baseline": "d57cb3e14303f6c2c3d120dca348626f88d95bca",
+  "backup": "backup/bio-city-arcade-pre-v1.4-batch2-20261026",
+  "mainFirstRelease": "44effb7e1e6100fb7008cd791f808f0150a9b6a7",
+  "testedHead": "21defbe67be49c3ebfd5782a9f83bf243c84c5c9",
+  "testedTree": "0aef4aa00059908b445e2c29de65bc573556dd0b",
+  "pr": 15,
+  "qualityRun": 40279910784,
+  "pagesRun": 40280979800,
+  "guidePr": 16,
+  "controls": {
+    "checks": 6701,
+    "starts": 410,
+    "os": "linux",
+    "browserVersion": "141.0.7390.37",
+    "contexts": [
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 320,
+          "height": 740
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 568,
+          "height": 320
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 320,
+          "height": 740
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 568,
+          "height": 320
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "profiles": 4,
+        "modes": 7
+      }
+    ],
+    "physicalIPhone": "pending",
+    "physicalAndroid": "pending",
+    "windowsChromeEdge": "pending"
+  },
+  "prJobs": [
+    {
+      "id": 121430717185,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40279910784,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify build and page structure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 121430717332,
+      "name": "arcade-engines",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40279910784,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Validate arcade modules and bilingual integration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 121430717340,
+      "name": "arcade-session-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40279910784,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test real media and startup / resume lifecycle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Test decoded sprites, full game controls and OST",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Capture actual RC desktop and mobile game screenshots",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Upload release candidate visual proof",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 121430717350,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40279910784,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual layouts and user interactions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 121430717452,
+      "name": "arcade-controls-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40279910784,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual mobile control profiles and actual gameplay",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Upload controls evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    }
+  ],
+  "productionObservations": {
+    "browser": "Cloud Chrome",
+    "viewport": {
+      "width": 1363,
+      "height": 936
+    },
+    "capturedAtCommit": "44effb7e1e6100fb7008cd791f808f0150a9b6a7",
+    "localeProfilePersistence": "zh left -> ja left confirmed",
+    "audio": {
+      "playing": true,
+      "observedCurrentTime": 28.433407,
+      "bgmSetting": 40,
+      "sfxSetting": 55
+    },
+    "settingsOpenPhase": "paused",
+    "settingsClosePhase": "countdown",
+    "countdownLabel": "繼續 · 3",
+    "exit": {
+      "stageHidden": true,
+      "musicPaused": true,
+      "canvasVisible": false
+    },
+    "reset": "standard defaults restored via visible button"
+  },
+  "proofs": [
+    {
+      "path": "arcade/qa/controls-v14/ja-844-right-g06.jpg",
+      "bytes": 32253,
+      "sha256": "d3e9b27d3a130f77a04dee0dbac0575c1073fdfd7f969a9122a3dbbc90f707ea",
+      "capturedAtCommit": "21defbe67be49c3ebfd5782a9f83bf243c84c5c9"
+    },
+    {
+      "path": "arcade/qa/controls-v14/production-final-ja-g06-guide.jpg",
+      "bytes": 62218,
+      "sha256": "b19c7c9ecda89fb03853439e52dfa69d95fe3f88f91001c7ad2245b5e0e410cd",
+      "capturedAtCommit": "9b485a913daeb1a0784904dbb99e0cd22841e371"
+    },
+    {
+      "path": "arcade/qa/controls-v14/production-final-zh-settings.jpg",
+      "bytes": 86104,
+      "sha256": "36e3c85a1afea1e83cbf8b973c6f2655525223763e382d680e849bcddcb0c80f",
+      "capturedAtCommit": "9b485a913daeb1a0784904dbb99e0cd22841e371"
+    },
+    {
+      "path": "arcade/qa/controls-v14/production-ja-settings.jpg",
+      "bytes": 86412,
+      "sha256": "53c21db3b7583060778c00e90b222ab5766be791408a4f278e8382ec8ebca51c",
+      "capturedAtCommit": "44effb7e1e6100fb7008cd791f808f0150a9b6a7"
+    },
+    {
+      "path": "arcade/qa/controls-v14/production-zh-g06.jpg",
+      "bytes": 110190,
+      "sha256": "6eab2c43dc178b0205f869cb696a520c2d91af19315a47e83ea79cb23d8da457",
+      "capturedAtCommit": "44effb7e1e6100fb7008cd791f808f0150a9b6a7"
+    },
+    {
+      "path": "arcade/qa/controls-v14/production-zh-settings.jpg",
+      "bytes": 86104,
+      "sha256": "c49f53d89ce3889492ea753a221d01f67ed46b73bb334d0a6bb28fb8e2c42707",
+      "capturedAtCommit": "44effb7e1e6100fb7008cd791f808f0150a9b6a7"
+    },
+    {
+      "path": "arcade/qa/controls-v14/zh-390-left-g01.jpg",
+      "bytes": 37105,
+      "sha256": "8e05eeb6a4be3eb2885a728fbd58c1304b858801263567c6956fd8d1c2866492",
+      "capturedAtCommit": "21defbe67be49c3ebfd5782a9f83bf243c84c5c9"
+    }
+  ],
+  "finalMain": "9b485a913daeb1a0784904dbb99e0cd22841e371",
+  "finalTree": "aa6419cd47353e575250484f2b215c9eca06c83f",
+  "guideHead": "ed8f259f39355c5419a26d75471992d60def4646",
+  "guideRun": 40282135645,
+  "guideJobs": [
+    {
+      "id": 121437564525,
+      "name": "arcade-controls-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40282135645,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual mobile control profiles and actual gameplay",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Upload controls evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 121437564828,
+      "name": "arcade-session-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40282135645,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test real media and startup / resume lifecycle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Test decoded sprites, full game controls and OST",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Capture actual RC desktop and mobile game screenshots",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Upload release candidate visual proof",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 121437564904,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40282135645,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify build and page structure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 121437564984,
+      "name": "arcade-engines",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40282135645,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Validate arcade modules and bilingual integration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 121437565001,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40282135645,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual layouts and user interactions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    }
+  ],
+  "guideControls": {
+    "checks": 6701,
+    "starts": 410,
+    "os": "linux",
+    "browserVersion": "141.0.7390.37",
+    "contexts": [
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 320,
+          "height": 740
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 568,
+          "height": 320
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "zh",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 320,
+          "height": 740
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 568,
+          "height": 320
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        },
+        "profiles": 4,
+        "modes": 7
+      },
+      {
+        "locale": "ja",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "profiles": 4,
+        "modes": 7
+      }
+    ],
+    "physicalIPhone": "pending",
+    "physicalAndroid": "pending",
+    "windowsChromeEdge": "pending"
+  },
+  "firstMainQualityRun": 40280979998,
+  "firstMainJobs": [
+    {
+      "id": 121433980871,
+      "name": "arcade-session-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40280979998,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test real media and startup / resume lifecycle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Test decoded sprites, full game controls and OST",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Capture actual RC desktop and mobile game screenshots",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Upload release candidate visual proof",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 121433980962,
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40280979998,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual layouts and user interactions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 121433980987,
+      "name": "arcade-controls-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40280979998,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install Playwright and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Test bilingual mobile control profiles and actual gameplay",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Upload controls evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 121433981056,
+      "name": "arcade-engines",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40280979998,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Validate arcade modules and bilingual integration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 121433981064,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 40280979998,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify build and page structure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    }
+  ],
+  "pagesFinal": {
+    "id": 40283317628,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "9b485a913daeb1a0784904dbb99e0cd22841e371",
+    "html_url": "https://github.com/squallorc-dot/fun/actions/runs/40283317628"
+  },
+  "finalTreeMatchesTestedTree": true,
+  "finalProductionCheck": {
+    "capturedAtCommit": "9b485a913daeb1a0784904dbb99e0cd22841e371",
+    "guideVersion": "20261026.4",
+    "zhG04DragPowerAndRelease": true,
+    "jaG06OneHandGestures": true,
+    "settingsProfileRestored": "two",
+    "bgm": 40,
+    "sfx": 55,
+    "browser": "Cloud Chrome",
+    "realDevices": "not available"
+  },
+  "pendingAcceptance": [
+    "physical iPhone",
+    "physical Android",
+    "Windows Chrome",
+    "Windows Edge"
+  ],
+  "remainingBatches": [
+    3,
+    4,
+    5
+  ],
+  "recordedAtUTC": "2026-10-26T07:06:03.808102+00:00"
+}
