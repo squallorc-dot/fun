@@ -1,5 +1,6 @@
 /* Same-origin G02 bridge; shared by both language wrappers. */
 (()=>{'use strict';
+ window.BioArcadeHubBridge=true;
  window.dataLayer=window.dataLayer||[];
  const originalPush=window.dataLayer.push.bind(window.dataLayer);
  const send=data=>parent.postMessage({source:'bio-city-shooter',...data},location.origin);
@@ -8,6 +9,7 @@
  window.addEventListener('message',e=>{
   if(e.origin!==location.origin||e.source!==parent||e.data?.source!=='bio-city-hub')return;
   const api=window.BioArcadeShooter,msg=e.data;if(!api)return;
+  if(msg.command==='control-settings'){api.applyControls(msg.controls);return;}
   if(msg.command==='audio-settings'){api.applyAudio(msg.sfx);return;}
   if(msg.command==='background-pause'){guideWasPlaying=false;api.pause(true);return;}
   if(msg.command==='guide-pause'){guideWasPlaying=msg.resumeAfter===true||msg.resumeAfter===undefined&&['playing','countdown'].includes(api.state.phase);api.pause(true);return;}
@@ -15,7 +17,7 @@
   if(msg.command!=='start')return;
   const hero=Math.max(0,Math.min(6,Number(msg.hero)||0));
   window.BioArcadeChapter=Math.max(1,Math.min(5,Number(msg.chapter)||1));
-  window.BioArcadeStartPaused=!!msg.paused;api.applyAudio(msg.sfx);
+  guideWasPlaying=!!msg.resumeAfterGuide;window.BioArcadeStartPaused=!!msg.paused;api.applyAudio(msg.sfx);if(msg.controls)api.applyControls(msg.controls);
   document.querySelector('[data-ar-hero="'+hero+'"]')?.click();
   const select=document.querySelector('#arcade-difficulty');
   if(select&&['normal','hard','expert'].includes(msg.difficulty)){select.value=msg.difficulty;select.dispatchEvent(new Event('change',{bubbles:true}));}
