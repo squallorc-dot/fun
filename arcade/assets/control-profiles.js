@@ -74,17 +74,18 @@
  let prefs=defaults;try{prefs=normalize(JSON.parse(root.localStorage?.getItem(KEY)||'{}'));}catch{prefs=normalize(null);}
  function set(value,persist=true){prefs=normalize(value);if(persist)try{root.localStorage?.setItem(KEY,JSON.stringify(prefs));}catch{}if(root.dispatchEvent&&typeof CustomEvent!=='undefined')root.dispatchEvent(new CustomEvent('bio-controls-change',{detail:{...prefs}}));return {...prefs};}
  let settingsOpen=false;
- function createInput({root:element,stick,knob,buttons,context,enabled,space,onLayout=()=>{}}){
+ function createInput({root:element,stick,knob,buttons,context,enabled,space,onLayout=()=>{},onAction=()=>{}}){
   const doc=element.ownerDocument,win=doc.defaultView,abort=new AbortController(),signal=abort.signal;
   let id=null,raw={x:0,y:0},filtered={x:0,y:0},anchor={x:0,y:0},origin={x:0,y:0},signature='',pulse=new Set(),upLatch=false,downLatch=false,plan=null,queued=0,disposed=false;
-  const owners=new Map(buttons.map(b=>[b.el,new Set()])),base=doc.createElement('span');base.className='bio-stick-base';
+  const keyboardVisual=new Set(),owners=new Map(buttons.map(b=>[b.el,new Set()])),base=doc.createElement('span');base.className='bio-stick-base';
   stick.classList.add('bio-stick-zone');knob.classList.add('bio-stick-knob');base.appendChild(knob);stick.replaceChildren(base);element.classList.add('bio-controls');
   for(const b of buttons)b.el.classList.add('bio-action');
   function gestureAxis(){const c=context();return oneHand(prefs)&&prefs.gestures&&(c.game==='g03'||c.game==='g06'||c.game==='g05'&&c.mode!=='pong');}
   function target(){return vector(raw.x,raw.y,prefs,gestureAxis()?'xy':context().axis);}
   function paint(){if(!plan?.stick)return;const d=plan.stick.d,R=d*.34;base.style.left=(anchor.x-d/2)+'px';base.style.top=(anchor.y-d/2)+'px';knob.style.transform='translate(calc(-50% + '+clamp(raw.x,-1,1)*R+'px),calc(-50% + '+clamp(raw.y,-1,1)*R+'px))';}
+  function paintButtons(){for(const {el,key}of buttons){const down=owners.get(el).size>0||keyboardVisual.has(key);el.classList.toggle('is-held',down);el.setAttribute('aria-pressed',String(down));}}
   function reset(){
-   const previous=id;id=null;raw={x:0,y:0};filtered={x:0,y:0};pulse.clear();upLatch=downLatch=false;
+   const previous=id;id=null;raw={x:0,y:0};filtered={x:0,y:0};pulse.clear();keyboardVisual.clear();upLatch=downLatch=false;
    for(const [el,ids]of owners){const held=[...ids];ids.clear();el.classList.remove('is-held');el.setAttribute('aria-pressed','false');for(const pointerId of held)try{if(el.hasPointerCapture(pointerId))el.releasePointerCapture(pointerId);}catch{}}
    try{if(previous!==null&&stick.hasPointerCapture(previous))stick.releasePointerCapture(previous);}catch{}
    if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}
@@ -114,14 +115,14 @@
   function update(e){if(e.pointerId!==id||!plan)return;const r=stick.getBoundingClientRect(),R=plan.stick.d*.34;raw={x:(e.clientX-r.left-origin.x)/R,y:(e.clientY-r.top-origin.y)/R};const axis=gestureAxis()?'xy':context().axis;if(axis==='x')raw.y=0;if(axis==='y')raw.x=0;const length=Math.hypot(raw.x,raw.y);if(length>1){raw.x/=length;raw.y/=length;}paint();}
   stick.addEventListener('pointerdown',e=>{if(!enabled()||settingsOpen||id!==null||!plan?.visible)return;e.preventDefault();id=e.pointerId;const r=stick.getBoundingClientRect(),half=plan.stick.d/2;origin=prefs.joystick==='floating'?{x:e.clientX-r.left,y:e.clientY-r.top}:{x:r.width/2,y:r.height/2};anchor={x:clamp(origin.x,half,r.width-half),y:clamp(origin.y,half,r.height-half)};try{stick.setPointerCapture(id);}catch{}update(e);},{signal});
   stick.addEventListener('pointermove',update,{signal});
-  for(const {el,key}of buttons)el.addEventListener('pointerdown',e=>{if(!enabled()||settingsOpen)return;e.preventDefault();owners.get(el).add(e.pointerId);pulse.add(key);el.classList.add('is-held');el.setAttribute('aria-pressed','true');try{el.setPointerCapture(e.pointerId);}catch{}},{signal});
-  function release(e){if(id===e.pointerId){id=null;raw={x:0,y:0};filtered={x:0,y:0};upLatch=downLatch=false;if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}}for(const [el,ids]of owners){ids.delete(e.pointerId);if(!ids.size){el.classList.remove('is-held');el.setAttribute('aria-pressed','false');}}}
+  for(const {el,key}of buttons)el.addEventListener('pointerdown',e=>{if(!enabled()||settingsOpen)return;e.preventDefault();owners.get(el).add(e.pointerId);pulse.add(key);paintButtons();try{el.setPointerCapture(e.pointerId);}catch{}onAction(key,e);},{signal});
+  function release(e){if(id===e.pointerId){id=null;raw={x:0,y:0};filtered={x:0,y:0};upLatch=downLatch=false;if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}}for(const ids of owners.values())ids.delete(e.pointerId);paintButtons();}
   for(const type of ['pointerup','pointercancel','lostpointercapture'])win.addEventListener(type,release,{signal});
   win.addEventListener('resize',()=>{reset();schedule();},{signal});win.addEventListener('bio-controls-change',()=>{reset();schedule();},{signal});
   const observer=new ResizeObserver(schedule);observer.observe(space());
   function held(){const keys=new Set();for(const {el,key}of buttons)if(owners.get(el).size)keys.add(key);return keys;}
   position();
-  return {reset,layout:position,schedule,
+  return {reset,layout:position,schedule,setKeyboard(keys){keyboardVisual.clear();for(const key of keys)keyboardVisual.add(key);paintButtons();},
    read(dt){if(!enabled()||settingsOpen){reset();return {x:0,y:0,actions:new Set(),pulses:new Set(),assist:false};}
     const desired=target();filtered=smooth(filtered,desired,dt,prefs.smoothing);const actions=held(),pulses=new Set(pulse);pulse.clear();let jump=false,drop=false;
     if(gestureAxis()){
@@ -133,7 +134,7 @@
     }
     return {x:context().axis==='y'?0:filtered.x,y:context().axis==='x'?0:filtered.y,actions,pulses,assist:oneHand(prefs)&&prefs.assist};
    },
-   get debug(){const t=target(),c=context(),dirs=[];if(c.axis!=='y'){if(t.x<-.2)dirs.push('left');if(t.x>.2)dirs.push('right');}if(c.axis!=='x'){if(t.y<-.2)dirs.push('up');if(t.y>.2)dirs.push('down');}return {profile:prefs.profile,joystick:prefs.joystick,held:id!==null,id,dirs,actions:[...held()],owners:[...owners.values()].reduce((n,s)=>n+s.size,0),actionOwners:Object.fromEntries(buttons.map(b=>[b.key,owners.get(b.el).size])),vector:{...filtered},layout:plan};},
+   get debug(){const t=target(),c=context(),dirs=[];if(c.axis!=='y'){if(t.x<-.2)dirs.push('left');if(t.x>.2)dirs.push('right');}if(c.axis!=='x'){if(t.y<-.2)dirs.push('up');if(t.y>.2)dirs.push('down');}return {profile:prefs.profile,joystick:prefs.joystick,held:id!==null,id,dirs,actions:[...held()],owners:[...owners.values()].reduce((n,s)=>n+s.size,0),actionOwners:Object.fromEntries(buttons.map(b=>[b.key,owners.get(b.el).size])),vector:{...filtered},desired:{...t},layout:plan};},
    dispose(){disposed=true;reset();abort.abort();observer.disconnect();if(queued)win.cancelAnimationFrame(queued);}
   };
  }

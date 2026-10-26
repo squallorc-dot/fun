@@ -1,10 +1,13 @@
 /* Scene textures are decoration; all platforms, roads, goals and collisions remain game geometry. */
 (()=>{'use strict';
-const script=document.currentScript,base=new URL('worlds/',script.src).href,cache=new Map();
+const script=document.currentScript,base=new URL('worlds/',script.src).href,cache=new Map(),rasters=new Map(),rasterLimit=16*1024*1024;
+let rasterBytes=0,rasterHits=0,rasterBuilds=0,rasterEvictions=0;
+function removeRaster(key){const item=rasters.get(key);if(!item)return;rasters.delete(key);rasterBytes-=item.bytes;item.canvas.width=item.canvas.height=0;rasterEvictions++;}
+function dropImageRasters(image){for(const [key,item]of rasters)if(item.image===image)removeRaster(key);}
 function get(key,retry=false){
- if(retry&&cache.get(key)?.error)cache.delete(key);
- if(cache.has(key))return cache.get(key);
- while(cache.size>=3)cache.delete(cache.keys().next().value);
+ if(retry&&cache.get(key)?.error){dropImageRasters(cache.get(key).image);cache.delete(key);}
+ if(cache.has(key)){const item=cache.get(key);cache.delete(key);cache.set(key,item);return item;}
+ while(cache.size>=3){const oldest=cache.keys().next().value;dropImageRasters(cache.get(oldest).image);cache.delete(oldest);}
  const image=new Image(),item={image,ready:false,error:false,promise:null};image.decoding='async';
  item.promise=new Promise(resolve=>{
   let settled=false;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
@@ -13,9 +16,30 @@ function get(key,retry=false){
  });
  cache.set(key,item);image.src=base+key+'.webp?v=20261025.5';return item;
 }
+// Cache only static, axis-aligned cover images at the actual device pixel scale.
+// Scrolling tiles, heading pans, fractional transforms and hills keep the original draw path.
+function raster(ctx,key,item,w,h){
+ if(typeof OffscreenCanvas!=='function'&&typeof document.createElement!=='function')return null;
+ const m=typeof ctx.getTransform==='function'?ctx.getTransform():null,ratio=m?.a||1;
+ if(m&&(m.b!==0||m.c!==0||m.a!==m.d||m.a<=0||!Number.isInteger(m.e)||!Number.isInteger(m.f)))return null;
+ const pw=w*ratio,ph=h*ratio;if(!Number.isInteger(pw)||!Number.isInteger(ph)||pw<=0||ph<=0)return null;
+ const bytes=pw*ph*4;if(bytes>rasterLimit)return null;
+ const smooth=ctx.imageSmoothingEnabled!==false,quality=typeof ctx.imageSmoothingQuality==='string'?ctx.imageSmoothingQuality:'low',id=key+'/'+pw+'/'+ph+'/'+smooth+'/'+quality;
+ if(rasters.has(id)){const entry=rasters.get(id);rasters.delete(id);rasters.set(id,entry);rasterHits++;return entry.canvas;}
+ let canvas,paint;
+ try{canvas=typeof OffscreenCanvas==='function'?new OffscreenCanvas(pw,ph):document.createElement('canvas');canvas.width=pw;canvas.height=ph;paint=canvas.getContext('2d');if(!paint)return null;
+  paint.setTransform(ratio,0,0,ratio,0,0);paint.imageSmoothingEnabled=smooth;paint.imageSmoothingQuality=quality;
+  const im=item.image,zoom=Math.max(w/im.width,h/im.height),iw=im.width*zoom,ih=im.height*zoom;paint.drawImage(im,(w-iw)*.5,(h-ih)*.5,iw,ih);
+ }catch{return null;}
+ while(rasterBytes+bytes>rasterLimit&&rasters.size)removeRaster(rasters.keys().next().value);
+ rasters.set(id,{canvas,bytes,image:item.image});rasterBytes+=bytes;rasterBuilds++;return canvas;
+}
 function draw(ctx,key,w,h,{scroll=0,pan=0,shade=0,horizon=null}={}){const item=get(key);if(!item.ready)return false;const im=item.image;ctx.save();
  if(key==='shaft'){const scale=w/im.width,ih=im.height*scale,y=-((scroll*.32)%ih+ih)%ih;ctx.drawImage(im,0,y,w,ih);ctx.drawImage(im,0,y+ih,w,ih);}
- else{const safePan=Math.max(-20,Math.min(20,pan)),zoom=Number.isFinite(horizon)?(w+Math.abs(safePan)*2)/im.width:Math.max((w+Math.abs(safePan)*2)/im.width,h/im.height),iw=im.width*zoom,ih=im.height*zoom;ctx.drawImage(im,(w-iw)*.5+safePan,Number.isFinite(horizon)?horizon-im.height*.35*zoom:(h-ih)*.5,iw,ih);}
+ else{const surface=pan===0&&!Number.isFinite(horizon)?raster(ctx,key,item,w,h):null;
+  if(surface)ctx.drawImage(surface,0,0,w,h);
+  else{const safePan=Math.max(-20,Math.min(20,pan)),zoom=Number.isFinite(horizon)?(w+Math.abs(safePan)*2)/im.width:Math.max((w+Math.abs(safePan)*2)/im.width,h/im.height),iw=im.width*zoom,ih=im.height*zoom;ctx.drawImage(im,(w-iw)*.5+safePan,Number.isFinite(horizon)?horizon-im.height*.35*zoom:(h-ih)*.5,iw,ih);}
+ }
  if(shade){ctx.fillStyle=`rgba(2,13,26,${shade})`;ctx.fillRect(0,0,w,h);}ctx.restore();return true;}
 function livingScene(ctx,key,w,h,c,time){
  ctx.save();const tone=['#9ddcd9','#8fe0ba','#9ccbec','#e9ba97','#d1ace8'][c-1];ctx.strokeStyle=tone;ctx.fillStyle=tone;ctx.lineWidth=1;
@@ -65,5 +89,5 @@ function chapterLandmarks(ctx,key,w,h,chapter=1,time=0){
  ctx.restore();
 }
 
-window.BioWorldArt=Object.freeze({version:'20261026.1',preload:key=>get(key,true).promise,draw,chapterAtmosphere,chapterLandmarks,inspect:()=>[...cache.entries()].map(([key,item])=>({key,ready:item.ready,error:item.error}))});
+window.BioWorldArt=Object.freeze({version:'20261026.5',inspectRenderCache:()=>({entries:rasters.size,bytes:rasterBytes,limit:rasterLimit,hits:rasterHits,builds:rasterBuilds,evictions:rasterEvictions}),preload:key=>get(key,true).promise,draw,chapterAtmosphere,chapterLandmarks,inspect:()=>[...cache.entries()].map(([key,item])=>({key,ready:item.ready,error:item.error}))});
 })();
