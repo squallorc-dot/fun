@@ -1,0 +1,246 @@
+{
+  "assets": [
+    {
+      "path": "arcade/assets/worlds/arena.webp",
+      "width": 1280,
+      "height": 960,
+      "bytes": 196796,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/worlds/defense.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 281936,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/worlds/laboratory.webp",
+      "width": 1067,
+      "height": 1280,
+      "bytes": 192230,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/worlds/race.webp",
+      "width": 1024,
+      "height": 1280,
+      "bytes": 222174,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/worlds/shaft.webp",
+      "width": 853,
+      "height": 1280,
+      "bytes": 171774,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/worlds/street.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 194546,
+      "format": "WEBP",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "arcade/assets/guardians/burner-sister.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 125263,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/enemy-boss.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 208908,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/enemy-brute.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 144734,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/enemy-grunt.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 117959,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/enemy-ranged.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 160390,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/jelly-trio.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 94306,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/mj-robot.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 133356,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/moo-moo.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 187200,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/oracle-guardian.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 205556,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/veggie-kid.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 158020,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "arcade/assets/guardians/ye-bao-ex.png",
+      "width": 1280,
+      "height": 1440,
+      "bytes": 148867,
+      "format": "PNG",
+      "mode": "P",
+      "has_transparency": true
+    },
+    {
+      "path": "images/funai-care-burner-sister.png",
+      "width": 736,
+      "height": 861,
+      "bytes": 475539,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-jelly-trio.png",
+      "width": 736,
+      "height": 826,
+      "bytes": 432759,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-mj-robot.png",
+      "width": 736,
+      "height": 862,
+      "bytes": 487819,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-moo-moo.png",
+      "width": 736,
+      "height": 831,
+      "bytes": 423598,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-oracle-guardian.png",
+      "width": 736,
+      "height": 792,
+      "bytes": 941714,
+      "format": "PNG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-veggie-kid.png",
+      "width": 736,
+      "height": 825,
+      "bytes": 443762,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    },
+    {
+      "path": "images/funai-care-ye-bao-ex.png",
+      "width": 736,
+      "height": 827,
+      "bytes": 462534,
+      "format": "JPEG",
+      "mode": "RGB",
+      "has_transparency": false
+    }
+  ],
+  "ost": [
+    {
+      "path": "music/bio-city-awakening-theme-v2.mp3",
+      "bytes": 4347115,
+      "duration": "189.960000",
+      "bit_rate": "183074"
+    },
+    {
+      "path": "music/burner-sister-summoning-theme.mp3",
+      "bytes": 5567182,
+      "duration": "232.632000",
+      "bit_rate": "191450"
+    },
+    {
+      "path": "music/mj-robot-kizamu-japanese-v1.mp3",
+      "bytes": 5089376,
+      "duration": "223.992000",
+      "bit_rate": "181769"
+    },
+    {
+      "path": "music/mj-robot-kizamu-japanese-v2.mp3",
+      "bytes": 5389592,
+      "duration": "237.072000",
+      "bit_rate": "181871"
+    }
+  ]
+}
