@@ -34,6 +34,22 @@ jobs:
           node scripts/smoke-navigation.mjs
           node scripts/smoke-ost-persistent.mjs
           node scripts/smoke-arcade.mjs
+
+  arcade-session-browser:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test real media and startup / resume lifecycle
+        run: node scripts/smoke-arcade-session.mjs
+      - name: Test decoded sprites, full game controls and OST
+        run: |
           node scripts/smoke-guardian-art.mjs
           node scripts/smoke-arcade-visual.mjs
           node scripts/smoke-arcade-audio.mjs
@@ -50,20 +66,6 @@ jobs:
             arcade/qa/visual-v12/*.webp
             arcade/qa/site-ui-v7/*.png
           retention-days: 30
-
-  arcade-session-browser:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install Playwright and Chromium
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
-      - name: Test real media and startup / resume lifecycle
-        run: node scripts/smoke-arcade-session.mjs
 
   arcade-engines:
     runs-on: ubuntu-latest
