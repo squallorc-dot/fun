@@ -17,7 +17,7 @@
   if(msg.command!=='start')return;
   const hero=Math.max(0,Math.min(6,Number(msg.hero)||0));
   window.BioArcadeChapter=Math.max(1,Math.min(5,Number(msg.chapter)||1));
-  window.BioArcadeStartPaused=!!msg.paused;api.applyAudio(msg.sfx);if(msg.controls)api.applyControls(msg.controls);
+  guideWasPlaying=!!msg.resumeAfterGuide;window.BioArcadeStartPaused=!!msg.paused;api.applyAudio(msg.sfx);if(msg.controls)api.applyControls(msg.controls);
   document.querySelector('[data-ar-hero="'+hero+'"]')?.click();
   const select=document.querySelector('#arcade-difficulty');
   if(select&&['normal','hard','expert'].includes(msg.difficulty)){select.value=msg.difficulty;select.dispatchEvent(new Event('change',{bubbles:true}));}

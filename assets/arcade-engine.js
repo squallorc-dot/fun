@@ -150,7 +150,7 @@ const resumeClock=window.BioArcadeSession.countdown({
  done:()=>{if(document.hidden||!game||phase!=='countdown')return;resetInputs();phase='playing';root.querySelector('#arcade-overlay').hidden=true;canvas.focus({preventScroll:true});lastFrame=performance.now();frame=requestAnimationFrame(loop);notify('resumed');}
 });
 function pause(force=false){
- if(phase==='loading'){loadingHold=true;resetInputs();notify('paused');return;}
+ if(phase==='loading'){loadingHold=force||document.hidden||!loadingHold;resetInputs();notify(loadingHold?'paused':'resuming');return;}
  if(phase==='playing'||phase==='countdown'){
   resumeClock.cancel();phase='paused';cancelAnimationFrame(frame);resetInputs();notify('paused');const overlay=root.querySelector('#arcade-overlay');overlay.hidden=false;overlay.innerHTML='<div class="arcade-result"><span class="arcade-overline">BIO-CITY / SYSTEM PAUSED</span><h3>'+txt(lang.autopause)+'</h3><p>'+txt(lang.pauseHint)+'</p><button class="arcade-primary" data-ar-command="resume">'+txt(lang.resume)+' →</button><button class="arcade-secondary" data-ar-command="menu">'+txt(lang.menu)+'</button></div>';
  }else if(phase==='paused'&&!force&&!document.hidden){resetInputs();unlockSound();notify('resuming');resumeClock.start();}
