@@ -1,7 +1,7 @@
 /* Input geometry and real engine behavior. No renderer or physics stubs. */
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const dir=path.resolve(__dirname,'..'),saved=new Map([['bio_arcade_pref_v1','{"volume":31,"sfx":23,"playMode":"manual"}'],['bio_arcade_campaign_v1','keep-progress']]);
+const dir=path.resolve(__dirname,'..'),saved=new Map([['bio_arcade_pref_v1','{"volume":31,"sfx":23,"playMode":"manual"}'],['bio_arcade_campaign_v11_g01_normal','keep-progress']]);
 const scope={localStorage:{getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)}};
 vm.runInNewContext(fs.readFileSync(path.join(dir,'arcade/assets/control-profiles.js'),'utf8'),scope);const C=scope.BioControlProfiles;let checks=0,cases=0;
 function check(ok,msg){assert(ok,msg);checks++;}
@@ -9,7 +9,7 @@ check(C.prefs.profile==='two'&&C.prefs.stickSize===108,'default dual-hand contro
 for(const corrupt of [null,0,'bad',[],{profile:'invalid',joystick:'invalid',deadzone:NaN,sensitivity:Infinity}])check(C.normalize(corrupt).profile==='two','corrupt prefs have safe defaults');
 const bounded=C.normalize({stickSize:999,buttonScale:-8,gap:999,inset:999,raise:-1,sensitivity:999,deadzone:0,smoothing:999});
 check(bounded.stickSize===136&&bounded.buttonScale===.8&&bounded.gap===18&&bounded.inset===48&&bounded.raise===0&&bounded.sensitivity===1.6&&bounded.deadzone===.1&&bounded.smoothing===100,'preference ranges');
-C.set({...C.defaults,profile:'left'});check(saved.get('bio_arcade_pref_v1')==='{"volume":31,"sfx":23,"playMode":"manual"}'&&saved.get('bio_arcade_campaign_v1')==='keep-progress','input settings preserve audio and campaign');
+C.set({...C.defaults,profile:'left'});check(saved.get('bio_arcade_pref_v1')==='{"volume":31,"sfx":23,"playMode":"manual"}'&&saved.get('bio_arcade_campaign_v11_g01_normal')==='keep-progress','input settings preserve audio and campaign');
 C.set(C.defaults);check(C.prefs.profile==='two'&&saved.size===3,'reset only changes control storage');
 const p=C.defaults;
 check(C.vector(.17,0,p).x===0&&C.vector(0,-.18,p).y===0,'18% deadzone');

@@ -1,5 +1,6 @@
 /* Same-origin G02 bridge; shared by both language wrappers. */
 (()=>{'use strict';
+ window.BioArcadeHubBridge=true;
  window.dataLayer=window.dataLayer||[];
  const originalPush=window.dataLayer.push.bind(window.dataLayer);
  const send=data=>parent.postMessage({source:'bio-city-shooter',...data},location.origin);
