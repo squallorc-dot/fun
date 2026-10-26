@@ -7,7 +7,7 @@
 .bio-controls .bio-stick-knob{position:absolute!important;box-sizing:border-box;left:50%!important;top:50%!important;inset:auto;border:2px solid #d9f7ff;border-radius:50%;background:#91d2e1;pointer-events:none}
 .bio-controls .bio-action{position:absolute!important;box-sizing:border-box;display:flex!important;align-items:center;justify-content:center;flex-direction:column;min-width:0!important;min-height:0!important;margin:0!important;padding:3px!important;grid-area:auto!important;touch-action:none;pointer-events:auto;font-size:12px!important;line-height:1.2;border-radius:18px!important}
 .bio-controls .bio-action[data-control-hidden=true],.bio-controls .bio-action[hidden]{display:none!important}
-.bio-controls .bio-action.is-held{background:#26758e!important;border-color:#c6ffff!important;box-shadow:inset 0 0 0 2px #a4f4f799,0 0 14px #4bc7df66;transform:scale(.97)}
+.bio-controls .bio-action.is-held,.bio-controls .bio-action:active{background:#26758e!important;border-color:#c6ffff!important;box-shadow:inset 0 0 0 2px #a4f4f799,0 0 14px #4bc7df66;transform:scale(.97)}
 .bio-controls .bio-action small{font-size:9px}
 .bio-controls[data-profile=left],.bio-controls[data-profile=right]{background:linear-gradient(180deg,#071b2c,#0b293b)}
 @media(max-height:540px) and (orientation:landscape){.bio-controls{background:transparent!important;border:0;pointer-events:none}}

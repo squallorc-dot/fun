@@ -1,0 +1,331 @@
+{
+  "checks": 3242,
+  "physicsCases": 810,
+  "shooterCases": 126,
+  "geometryCases": 240,
+  "drawSamples": [
+    {
+      "chapter": 1,
+      "w": 640,
+      "h": 800,
+      "progress": 0,
+      "before": 2384,
+      "after": 80
+    },
+    {
+      "chapter": 1,
+      "w": 640,
+      "h": 800,
+      "progress": 300,
+      "before": 3222,
+      "after": 81
+    },
+    {
+      "chapter": 1,
+      "w": 640,
+      "h": 800,
+      "progress": 600,
+      "before": 3694,
+      "after": 79
+    },
+    {
+      "chapter": 1,
+      "w": 640,
+      "h": 800,
+      "progress": 900,
+      "before": 3730,
+      "after": 79
+    },
+    {
+      "chapter": 1,
+      "w": 960,
+      "h": 540,
+      "progress": 0,
+      "before": 2384,
+      "after": 80
+    },
+    {
+      "chapter": 1,
+      "w": 960,
+      "h": 540,
+      "progress": 300,
+      "before": 3222,
+      "after": 81
+    },
+    {
+      "chapter": 1,
+      "w": 960,
+      "h": 540,
+      "progress": 600,
+      "before": 3694,
+      "after": 79
+    },
+    {
+      "chapter": 1,
+      "w": 960,
+      "h": 540,
+      "progress": 900,
+      "before": 3730,
+      "after": 79
+    },
+    {
+      "chapter": 2,
+      "w": 640,
+      "h": 800,
+      "progress": 0,
+      "before": 1740,
+      "after": 80
+    },
+    {
+      "chapter": 2,
+      "w": 640,
+      "h": 800,
+      "progress": 300,
+      "before": 2806,
+      "after": 81
+    },
+    {
+      "chapter": 2,
+      "w": 640,
+      "h": 800,
+      "progress": 600,
+      "before": 3694,
+      "after": 79
+    },
+    {
+      "chapter": 2,
+      "w": 640,
+      "h": 800,
+      "progress": 900,
+      "before": 3550,
+      "after": 79
+    },
+    {
+      "chapter": 2,
+      "w": 960,
+      "h": 540,
+      "progress": 0,
+      "before": 1740,
+      "after": 80
+    },
+    {
+      "chapter": 2,
+      "w": 960,
+      "h": 540,
+      "progress": 300,
+      "before": 2806,
+      "after": 81
+    },
+    {
+      "chapter": 2,
+      "w": 960,
+      "h": 540,
+      "progress": 600,
+      "before": 3694,
+      "after": 79
+    },
+    {
+      "chapter": 2,
+      "w": 960,
+      "h": 540,
+      "progress": 900,
+      "before": 3550,
+      "after": 79
+    },
+    {
+      "chapter": 3,
+      "w": 640,
+      "h": 800,
+      "progress": 0,
+      "before": 1780,
+      "after": 80
+    },
+    {
+      "chapter": 3,
+      "w": 640,
+      "h": 800,
+      "progress": 300,
+      "before": 2990,
+      "after": 81
+    },
+    {
+      "chapter": 3,
+      "w": 640,
+      "h": 800,
+      "progress": 600,
+      "before": 3730,
+      "after": 79
+    },
+    {
+      "chapter": 3,
+      "w": 640,
+      "h": 800,
+      "progress": 900,
+      "before": 1442,
+      "after": 79
+    },
+    {
+      "chapter": 3,
+      "w": 960,
+      "h": 540,
+      "progress": 0,
+      "before": 1780,
+      "after": 80
+    },
+    {
+      "chapter": 3,
+      "w": 960,
+      "h": 540,
+      "progress": 300,
+      "before": 2990,
+      "after": 81
+    },
+    {
+      "chapter": 3,
+      "w": 960,
+      "h": 540,
+      "progress": 600,
+      "before": 3730,
+      "after": 79
+    },
+    {
+      "chapter": 3,
+      "w": 960,
+      "h": 540,
+      "progress": 900,
+      "before": 1442,
+      "after": 79
+    },
+    {
+      "chapter": 4,
+      "w": 640,
+      "h": 800,
+      "progress": 0,
+      "before": 1480,
+      "after": 80
+    },
+    {
+      "chapter": 4,
+      "w": 640,
+      "h": 800,
+      "progress": 300,
+      "before": 2953,
+      "after": 80
+    },
+    {
+      "chapter": 4,
+      "w": 640,
+      "h": 800,
+      "progress": 600,
+      "before": 3695,
+      "after": 79
+    },
+    {
+      "chapter": 4,
+      "w": 640,
+      "h": 800,
+      "progress": 900,
+      "before": 1507,
+      "after": 80
+    },
+    {
+      "chapter": 4,
+      "w": 960,
+      "h": 540,
+      "progress": 0,
+      "before": 1480,
+      "after": 80
+    },
+    {
+      "chapter": 4,
+      "w": 960,
+      "h": 540,
+      "progress": 300,
+      "before": 2953,
+      "after": 80
+    },
+    {
+      "chapter": 4,
+      "w": 960,
+      "h": 540,
+      "progress": 600,
+      "before": 3695,
+      "after": 79
+    },
+    {
+      "chapter": 4,
+      "w": 960,
+      "h": 540,
+      "progress": 900,
+      "before": 1507,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 640,
+      "h": 800,
+      "progress": 0,
+      "before": 1480,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 640,
+      "h": 800,
+      "progress": 300,
+      "before": 3073,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 640,
+      "h": 800,
+      "progress": 600,
+      "before": 3695,
+      "after": 79
+    },
+    {
+      "chapter": 5,
+      "w": 640,
+      "h": 800,
+      "progress": 900,
+      "before": 1411,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 960,
+      "h": 540,
+      "progress": 0,
+      "before": 1480,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 960,
+      "h": 540,
+      "progress": 300,
+      "before": 3073,
+      "after": 80
+    },
+    {
+      "chapter": 5,
+      "w": 960,
+      "h": 540,
+      "progress": 600,
+      "before": 3695,
+      "after": 79
+    },
+    {
+      "chapter": 5,
+      "w": 960,
+      "h": 540,
+      "progress": 900,
+      "before": 1411,
+      "after": 80
+    }
+  ],
+  "clockHz": 120,
+  "maxCatchUp": 0.25,
+  "rasterLimit": 16777216
+}

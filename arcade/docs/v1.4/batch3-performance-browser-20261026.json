@@ -1,0 +1,237 @@
+{
+  "checks": 243,
+  "samples": [
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g01",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.2069000000000085,
+      "elapsed": 2.2166666666666663,
+      "discarded": 0,
+      "frames": 22
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g02",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.201300000000003,
+      "elapsed": 2.1333333333333333,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g03",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.2022999999999886,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g04",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.2046000000000063,
+      "elapsed": 2.2166666666666663,
+      "discarded": 0,
+      "frames": 22
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g05",
+      "mode": "volley",
+      "fps": 10,
+      "wall": 2.2015999999999902,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g05",
+      "mode": "pong",
+      "fps": 10,
+      "wall": 2.2023000000000046,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 1440,
+      "id": "g06",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.2021999999999977,
+      "elapsed": 2.15,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g01",
+      "mode": null,
+      "fps": 15,
+      "wall": 2.2018999999999944,
+      "elapsed": 2.2,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g02",
+      "mode": null,
+      "fps": 15,
+      "wall": 2.2035,
+      "elapsed": 2.2166666666666663,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g03",
+      "mode": null,
+      "fps": 15,
+      "wall": 2.2026999999999965,
+      "elapsed": 2.2,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g04",
+      "mode": null,
+      "fps": 15,
+      "wall": 2.204899999999993,
+      "elapsed": 2.2,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g05",
+      "mode": "volley",
+      "fps": 15,
+      "wall": 2.202,
+      "elapsed": 2.2,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g05",
+      "mode": "pong",
+      "fps": 15,
+      "wall": 2.202100000000005,
+      "elapsed": 2.2,
+      "discarded": 0,
+      "frames": 33
+    },
+    {
+      "locale": "ja",
+      "width": 390,
+      "id": "g06",
+      "mode": null,
+      "fps": 15,
+      "wall": 2.202499999999997,
+      "elapsed": 2.166666666666667,
+      "discarded": 0,
+      "frames": 32
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g01",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.202,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g02",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.202299999999988,
+      "elapsed": 2.1333333333333333,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g03",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.206899999999994,
+      "elapsed": 2.2166666666666663,
+      "discarded": 0,
+      "frames": 22
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g04",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.206300000000004,
+      "elapsed": 2.2166666666666663,
+      "discarded": 0,
+      "frames": 22
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g05",
+      "mode": "volley",
+      "fps": 10,
+      "wall": 2.2017000000000113,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g05",
+      "mode": "pong",
+      "fps": 10,
+      "wall": 2.201899999999995,
+      "elapsed": 2.1166666666666667,
+      "discarded": 0,
+      "frames": 21
+    },
+    {
+      "locale": "zh",
+      "width": 844,
+      "id": "g06",
+      "mode": null,
+      "fps": 10,
+      "wall": 2.201100000000004,
+      "elapsed": 2.15,
+      "discarded": 0,
+      "frames": 21
+    }
+  ],
+  "environment": "Linux Chromium; real production loops with test-only RAF throttling. Not physical device FPS."
+}
