@@ -5,7 +5,11 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const server=http.createServer((req,res)=>{
  const file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));
  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
- res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.mp3':'audio/mpeg','.png':'image/png','.webp':'image/webp'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);
+ const size=fs.statSync(file).size;res.setHeader('Accept-Ranges','bytes');
+ const range=/^bytes=(\d+)-(\d*)$/.exec(req.headers.range||'');let start=0,end=size-1;
+ if(range){start=Number(range[1]);end=range[2]?Math.min(end,Number(range[2])):end;if(start>end||start>=size){res.writeHead(416,{'Content-Range':'bytes */'+size});res.end();return;}res.statusCode=206;res.setHeader('Content-Range','bytes '+start+'-'+end+'/'+size);}
+ res.setHeader('Content-Length',String(end-start+1));
+ res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.mp3':'audio/mpeg','.png':'image/png','.webp':'image/webp'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file,{start,end}).pipe(res);
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});let checks=0;
@@ -20,6 +24,7 @@ async function create(locale,viewport,prefs){
 async function start(page,id){await page.locator('[data-launch="'+id+'"]').click();await page.locator('#setup-play').click();}
 async function running(page){await page.locator('#hub-canvas').waitFor();await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&!BioSuiteHub.debugState.paused);}
 const read=page=>page.evaluate(()=>BioSuiteHub.debugState);
+async function seekNearEnd(page){await page.waitForFunction(()=>{const el=BioSuiteHub.musicElement;return Number.isFinite(el.duration)&&el.duration>0&&el.seekable.length>0&&el.seekable.end(el.seekable.length-1)>=el.duration-.2;});await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});}
 const hidden=(page,value)=>page.evaluate(value=>{Object.defineProperty(document,'hidden',{configurable:true,value});document.dispatchEvent(new Event('visibilitychange'));},value);
 try{
  for(const [locale,viewport]of [['zh',{width:1440,height:900}],['zh',{width:390,height:844}],['ja',{width:1440,height:900}],['ja',{width:844,height:390}]]){
@@ -80,7 +85,7 @@ try{
   await page.locator('#arcade-bgm').evaluate(el=>el.dispatchEvent(new Event('pause')));
   check((await read(page)).audioState==='playing','a queued pause event cannot mislabel currently playing media');
   if(locale==='zh'&&game==='g06'){
-   await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});
+   await seekNearEnd(page);
    await page.waitForFunction(()=>{const el=BioSuiteHub.musicElement;return !el.paused&&el.currentTime<1;});
    check(await page.locator('#arcade-bgm').evaluate(el=>el.loop),'real OST loops at its end');
   }
@@ -97,7 +102,7 @@ try{
   check(diagnostic.state==='error'&&diagnostic.playError!=='NotAllowedError'&&(diagnostic.mediaError>0||diagnostic.playError==='NotSupportedError'),'media load failure is distinguished by native media code or playback error, regardless of event order');
   fail=false;await page.locator('#stage-audio-play').click();await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#arcade-bgm').evaluate(el=>!el.paused&&!el.loop),'failed source reloads while preserving non-loop preference');
-  await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});
+  await seekNearEnd(page);
   await page.waitForFunction(()=>BioSuiteHub.musicElement.ended&&BioSuiteHub.musicElement.paused);
   check((await read(page)).audioState==='paused','non-looping OST ends without restarting');
   await context.close();
@@ -145,4 +150,4 @@ try{
   await context.close();
  }
  console.log('ARCADE SESSION BROWSER PASS '+checks+': bilingual startup/decode gate, real media retries, preserved prefs, protected resume, cancellation and multi-pointer G02.');
-}finally{await browser.close();await new Promise(r=>server.close(r));}
+}catch(error){for(const context of browser.contexts())for(const page of context.pages())console.error('SESSION FAILURE SNAPSHOT',await page.evaluate(()=>({url:location.pathname,phase:document.querySelector('#stage')?.dataset.phase,audio:[...document.querySelectorAll('audio')].map(el=>({src:el.currentSrc,paused:el.paused,ended:el.ended,loop:el.loop,currentTime:el.currentTime,duration:el.duration,readyState:el.readyState,error:el.error?.code}))})).catch(()=>null));throw error;}finally{await browser.close();await new Promise(r=>server.close(r));}
