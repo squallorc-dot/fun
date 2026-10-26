@@ -30,6 +30,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Test bilingual layouts and user interactions
         run: |
+          node scripts/smoke-arcade-session.mjs
           node scripts/smoke.mjs
           node scripts/smoke-navigation.mjs
           node scripts/smoke-ost-persistent.mjs
@@ -63,6 +64,7 @@ jobs:
           node scripts/build.mjs --check
           node scripts/verify.mjs
           node scripts/verify-arcade.mjs
+          node scripts/test-arcade-session.cjs
           node scripts/test-arcade-audio.cjs
           node scripts/test-arcade-grounding.cjs
           node scripts/test-arcade-engines.cjs

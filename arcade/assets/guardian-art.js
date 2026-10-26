@@ -11,15 +11,19 @@ const script=typeof document!=='undefined'?document.currentScript:null;
 const base=script?.src?new URL('guardians/',script.src).href:'';
 function keyFor(hero){return typeof hero==='number'?keys[Math.max(0,Math.min(6,hero|0))]:keys.includes(hero)?hero:keys[0];}
 function frameFor(name,time=0){const c=clips[name]||clips.idle;const progress=Math.max(0,Number.isFinite(time)?time:0)/c.duration;return c.offset+Math.min(c.frames-1,Math.floor((c.loop?progress%1:Math.min(progress,1))*c.frames));}
-function get(hero){const key=keyFor(hero);if(cache.has(key)){const item=cache.get(key);cache.delete(key);cache.set(key,item);return item;}
+function get(hero,retry=false){const key=keyFor(hero);if(retry&&cache.get(key)?.error)cache.delete(key);if(cache.has(key)){const item=cache.get(key);cache.delete(key);cache.set(key,item);return item;}
  if(typeof Image==='undefined')return null;
  // Five atlases = one selected hero and four enemy silhouettes, bounded on mobile.
  while(cache.size>=5)cache.delete(cache.keys().next().value);
  const image=new Image(),item={key,image,ready:false,error:false,promise:null};
- item.promise=new Promise(resolve=>{image.onload=()=>{item.ready=true;resolve(true)};image.onerror=()=>{item.error=true;resolve(false)}});
+ image.decoding='async';item.promise=new Promise(resolve=>{
+  let settled=false;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
+  const timer=setTimeout(()=>finish(false),12000);
+  image.onload=()=>{Promise.resolve().then(()=>image.decode?.()).then(()=>finish(true),()=>finish(false));};image.onerror=()=>finish(false);
+ });
  cache.set(key,item);image.src=base+key+'.png?v=20261025.5';return item;
 }
-function preload(heroes){return Promise.all(heroes.map(h=>get(h)?.promise||Promise.resolve(false)));}
+function preload(heroes){return Promise.all(heroes.map(h=>get(h,true)?.promise||Promise.resolve(false)));}
 function draw(ctx,hero,clip,time,x,y,scale=1,dir=1,alpha=1){const item=get(hero);if(!item?.ready)return false;const frame=frameFor(clip,time),sx=frame%columns*frameSize,sy=Math.floor(frame/columns)*frameSize;
  ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx,sy,frameSize,frameSize,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
 }

@@ -1,0 +1,200 @@
+{
+  "base_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+  "total": 19,
+  "passed": 19,
+  "physical_devices_tested": false,
+  "windows_chrome_edge_tested": false,
+  "checks": [
+    {
+      "command": [
+        "node",
+        "scripts/build.mjs",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.071,
+      "stdout": "All 14 pages match their central sources.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.657,
+      "stdout": "PASS 14 pages, 616 links/assets, build synchronization, syntax, metadata, locale and event contracts.\nPASS 130 shell, locale, accessibility structure and game-entry contracts across 16 pages.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-arcade.mjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.072,
+      "stdout": "Arcade gates passed: 6 games, 2 locales, routes, 7 heroes, OST, fullscreen and analytics\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-session.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.081,
+      "stdout": "SESSION PASS: protected 3s resume, cancellation/restart, failed/hung startup, image decode gate and asset retry.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-audio.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.063,
+      "stdout": "AUDIO PASS: fresh defaults, existing preference migration, explicit silence/manual modes and non-repeating random stages.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-grounding.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.068,
+      "stdout": "GROUNDING PASS: platform contact, jumping support, unsupported free fall and volleyball court shadows.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-engines.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 2.106,
+      "stdout": "g01 volley lose score 1410\ng03 volley lose score 73\ng04 volley lose score 2155\ng05 volley lose score 0\ng05 pong lose score 0\ng06 volley win score 2251\nG05 volley 105 seeded matches: PASS\nG05 pong 105 seeded matches: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-reliability.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.615,
+      "stdout": "G03 geometry: 900 seeded maps + down-control PASS\nG03 held drop catches next platform: PASS\nG03 freefall defeat and safe landing reset: PASS\nG04 fixed physics: 120/30/20 fps outcomes PASS\nG04 recall and next shot: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g06-race.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 15.965,
+      "stdout": "G06 mandatory checkpoint rejection and recovery: PASS\nG06 108 seeded complete 3-lap races at 120/60/30 fps and 3 difficulties: PASS\nG06 same-instance retry and state reset: PASS\nG06 stationary camera, independent rivals, world collisions, closed track, overtaking and 360 camera positions: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g01-combat.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.105,
+      "stdout": "G01 normal combos projectile telegraph dash boss victory defeat restart: PASS\nG01 hard combos projectile telegraph dash boss victory defeat restart: PASS\nG01 expert combos projectile telegraph dash boss victory defeat restart: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g01-seven-skills.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.099,
+      "stdout": "G01 Guardian abilities: 21 hero/difficulty scenarios PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g01-animation.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.23,
+      "stdout": "G01 animation: 63 hero/difficulty/FPS cases; 781 authored frames; boss phase, targeting, interruption and result poses PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-replay.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.098,
+      "stdout": "G03/G04/G05 replay and viewport rotation normal: PASS\nG03/G04/G05 replay and viewport rotation hard: PASS\nG03/G04/G05 replay and viewport rotation expert: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-campaign.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06,
+      "stdout": "CAMPAIGN PASS: six games, five chapters, unlocks, mode/difficulty split and storage exceptions\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-chapters.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 2.859,
+      "stdout": "V1.2 CHAPTERS PASS: G01-G06 across five chapters, 5 distinct boss plans, platform zones, pinball mechanics, sports AI profiles, racing routes, G02 assault tactics\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g05-table.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 5.44,
+      "stdout": "630 G05 modes x difficulty x viewport x seed, legal bounces, and restart: PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g05-volley.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.357,
+      "stdout": "G05 volley PASS: 144 both-side serves + 72 standing J returns, 6 viewports, 3 difficulties, 4 frame rates; net rebound exits cleanly.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-arcade-sprites.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.158,
+      "stdout": "Guardian sprite coverage PASS: 35 selected-hero/game-mode render combinations.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "scripts/test-g04-stages.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.113,
+      "stdout": "G04: 9 three-stage completion/retry suites, natural hit, ammo defeat, 120/30/20 fps PASS\n",
+      "stderr": ""
+    }
+  ]
+}

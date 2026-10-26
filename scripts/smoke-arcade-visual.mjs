@@ -72,6 +72,7 @@ try{
    await page.locator('#guide-close').click();
    if(id==='g02'){await page.frameLocator('#g02-frame').locator('#arcade-overlay[hidden]').waitFor({state:'attached'});check(true,'G02 help restores its running child');}
    if(id!=='g02'){
+    await page.waitForFunction(()=>!BioSuiteHub.debugState.paused);
     check(!(await page.evaluate(()=>BioSuiteHub.debugState)).paused,id+' help resumes prior running state');
     check(await page.evaluate(()=>document.activeElement.id==='stage'),id+' restores keyboard focus');
    }
