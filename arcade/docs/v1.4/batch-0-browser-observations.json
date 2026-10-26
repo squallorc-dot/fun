@@ -1,0 +1,50 @@
+{
+  "base_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+  "inspection_date": "2026-10-26",
+  "environment": "Cloud Chrome; live public GitHub Pages; desktop viewport; not Windows or a physical mobile device",
+  "interaction": "Selected game, clicked setup START, waited for actual audio playing state; inspected rendered DOM/media properties, then exited to lobby.",
+  "measurements": [
+    {
+      "game": "g06",
+      "canvas": {
+        "backingHeight": 540,
+        "backingWidth": 960,
+        "cssHeight": 766.6875,
+        "cssWidth": 1363,
+        "dpr": 1,
+        "requiredBackingWidth": 1363,
+        "viewportHeight": 936,
+        "viewportWidth": 1363
+      },
+      "audio": {
+        "currentSrc": "https://squallorc-dot.github.io/fun/music/bio-city-awakening-theme-v2.mp3",
+        "currentTime": 0.178437,
+        "paused": false,
+        "readyState": 4
+      }
+    },
+    {
+      "game": "g02",
+      "canvas": {
+        "backingHeight": 600,
+        "backingWidth": 600,
+        "cssHeight": 711,
+        "cssWidth": 711,
+        "dpr": 1,
+        "requiredBackingWidth": 711
+      },
+      "soundLabel": "OFF",
+      "audio": {
+        "currentSrc": "https://squallorc-dot.github.io/fun/music/mj-robot-kizamu-japanese-v2.mp3",
+        "currentTime": 0.069302,
+        "paused": false,
+        "readyState": 4
+      }
+    }
+  ],
+  "limits": [
+    "This demonstrates playback in cloud Chrome only; the reported Windows Chrome/Edge failure remains open.",
+    "Canvas sizes are one desktop observation, not a full DPI/viewport matrix.",
+    "No iPhone or Android hardware was tested."
+  ]
+}

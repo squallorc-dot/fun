@@ -1,0 +1,78 @@
+{
+  "base_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+  "inspection_date": "2026-10-26",
+  "backup_branch": "backup/bio-city-arcade-pre-v1.4-20261026",
+  "development_branch": "development/bio-city-arcade-v1.4-batch0",
+  "runs": [
+    {
+      "id": 40222808686,
+      "name": "FUNAI CARE bilingual quality gate",
+      "head_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+      "conclusion": "success",
+      "url": "https://github.com/squallorc-dot/fun/actions/runs/40222808686",
+      "completed_at": "2026-10-25T18:51:41Z"
+    },
+    {
+      "id": 40222808479,
+      "name": "pages build and deployment",
+      "head_sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+      "conclusion": "success",
+      "url": "https://github.com/squallorc-dot/fun/actions/runs/40222808479",
+      "completed_at": "2026-10-25T18:47:06Z"
+    }
+  ],
+  "browser_pass_lines": [
+    "2026-10-25T18:46:57.3667341Z PASS 250 DOM/layout/interactive assertions across 14 pages, five viewports and two languages.",
+    "2026-10-25T18:47:30.6289676Z PASS 524 navigation/layout assertions: 16 pages, 7 widths, 2 languages, hero/game deep links and modal focus.",
+    "2026-10-25T18:47:35.0799602Z PERSISTENT OST PASS 44 bilingual browser assertions",
+    "2026-10-25T18:47:53.8450333Z ARCADE BROWSER PASS 494 assertions: six games, seven heroes, 20 G02 reentries, 20 other game sessions, bilingual mobile/desktop.",
+    "2026-10-25T18:48:41.8857328Z GUARDIAN ART BROWSER PASS 218 assertions: 781 nonempty/unclipped frames, seven G01/G02 heroes, 10 locale/viewport combinations.",
+    "2026-10-25T18:49:26.6862854Z VISUAL / GUIDE BROWSER PASS 1398 checks: 10 locale/viewport combinations, 7 playable modes, real key behavior, focus and responsive cards.",
+    "2026-10-25T18:49:41.8565129Z ARCADE AUDIO / MOBILE PASS 41: real playback, changing OST, nested focus, clean exit and 12 responsive locale cases.",
+    "2026-10-25T18:49:56.5500091Z RC browser screenshots captured 24: zh-home-arcade-desktop.png, zh-play-overview-desktop.png, zh-arcade-lobby-desktop.png, zh-g01-select-desktop.png, zh-g01-battle-desktop.png, zh-g05-volley-desktop.png, zh-g05-pong-desktop.png, zh-home-arcade-mobile.png, zh-play-overview-mobile.png, zh-arcade-lobby-mobile.png, zh-g01-select-mobile.png, zh-g01-battle-mobile.png, ja-home-arcade-desktop.png, ja-play-overview-desktop.png, ja-arcade-lobby-desktop.png, ja-g01-select-desktop.png, ja-g01-battle-desktop.png, ja-g05-volley-desktop.png, ja-g05-pong-desktop.png, ja-home-arcade-mobile.png, ja-play-overview-mobile.png, ja-arcade-lobby-mobile.png, ja-g01-select-mobile.png, ja-g01-battle-mobile.png",
+    "2026-10-25T18:51:33.8795057Z Saved bilingual desktop/mobile visual evidence to arcade/qa/visual-v12."
+  ],
+  "recent_commits": [
+    {
+      "sha": "6509a183b8532b69985c1a59b0ee033b45bccb33",
+      "message": "修正賽車漂浮與路面遮擋、手機選單及遊戲隨機 OST (#12)",
+      "url": "https://github.com/squallorc-dot/fun/commit/6509a183b8532b69985c1a59b0ee033b45bccb33"
+    },
+    {
+      "sha": "7f15deb5c6b91e4dbbc1dcfed098bf415b0ae815",
+      "message": "Release Bio-City Arcade v1.3 chapter hazards, bosses and road environments",
+      "url": "https://github.com/squallorc-dot/fun/commit/7f15deb5c6b91e4dbbc1dcfed098bf415b0ae815"
+    },
+    {
+      "sha": "a8bc65455318ab549d6cb41bf71ab6ff2302bd2b",
+      "message": "Document v1.3 chapter encounter QA and remaining manual verification gates",
+      "url": "https://github.com/squallorc-dot/fun/commit/a8bc65455318ab549d6cb41bf71ab6ff2302bd2b"
+    },
+    {
+      "sha": "394e7dedb01c03a6b07d2c71b5ff54049ef99549",
+      "message": "Refresh bilingual chapter preview styles and assert briefings in browser smoke tests",
+      "url": "https://github.com/squallorc-dot/fun/commit/394e7dedb01c03a6b07d2c71b5ff54049ef99549"
+    },
+    {
+      "sha": "80612a73e5be43b23262234fb69ae7d11a169934",
+      "message": "Show bilingual gameplay differences in each chapter setup before starting",
+      "url": "https://github.com/squallorc-dot/fun/commit/80612a73e5be43b23262234fb69ae7d11a169934"
+    },
+    {
+      "sha": "d84abb2f0219801df56cbb9546dda01858bf55b6",
+      "message": "Synchronize v1.3 chapter encounter scripts across Chinese and Japanese pages",
+      "url": "https://github.com/squallorc-dot/fun/commit/d84abb2f0219801df56cbb9546dda01858bf55b6"
+    },
+    {
+      "sha": "396720701b968813421e4fcc679a1a5f9cb79459",
+      "message": "Verify five G02 hazard plans, safe spawn, G01 boss telegraphs and G06 roadside art",
+      "url": "https://github.com/squallorc-dot/fun/commit/396720701b968813421e4fcc679a1a5f9cb79459"
+    },
+    {
+      "sha": "39bfc4a9f147a9b7fa488e431c84f845d9d06f16",
+      "message": "Draw distinct G01 boss wind-up poses and clearly telegraphed charge, shockwave and volley attacks",
+      "url": "https://github.com/squallorc-dot/fun/commit/39bfc4a9f147a9b7fa488e431c84f845d9d06f16"
+    }
+  ],
+  "github_releases": []
+}
