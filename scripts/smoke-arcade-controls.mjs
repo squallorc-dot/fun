@@ -24,11 +24,11 @@ try{
    for(const [id,mode]of modes){
     const frame=await begin(page,id,mode),state=await read(frame,id),label=locale+'/'+viewport.width+'/'+profile+'/'+id+'/'+(mode||'');
     check(state.controlPrefs.profile===profile,label+' profile reaches correct engine');
-    const controls=frame.locator('.bio-controls'),visible=await controls.isVisible(),canvas=await frame.locator('canvas').boundingBox();
+    const controls=frame.locator('.bio-controls'),visible=await controls.isVisible(),canvas=await frame.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}),bounds=await frame.evaluate(()=>({width:innerWidth,height:innerHeight}));
     check(canvas.width>55&&canvas.height>35,label+' full game remains visible');
     if(visible){
      const targets=await frame.locator('.bio-action:visible,.bio-stick-zone:visible').evaluateAll(es=>es.map(el=>{const r=el.getBoundingClientRect();return {id:el.dataset.touch||el.dataset.arCommand||el.dataset.arHold||el.id,x:r.x,y:r.y,width:r.width,height:r.height};}));
-     for(const target of targets){check(target.width>=44&&target.height>=44,label+' target size '+target.id);check(target.x>=-.5&&target.y>=-.5&&target.x+target.width<=viewport.width+.5&&target.y+target.height<=viewport.height+.5,label+' target inside viewport '+JSON.stringify(target));check(!overlap(canvas,target),label+' controls do not cover game '+target.id);}
+     for(const target of targets){check(target.width>=44&&target.height>=44,label+' target size '+target.id);check(target.x>=-.5&&target.y>=-.5&&target.x+target.width<=bounds.width+.5&&target.y+target.height<=bounds.height+.5,label+' target inside viewport '+JSON.stringify(target));check(!overlap(canvas,target),label+' controls do not cover game '+target.id);}
      for(let a=0;a<targets.length;a++)for(let b=a+1;b<targets.length;b++)check(!overlap(targets[a],targets[b]),label+' controls do not overlap');
      const before=coordinate(await world(frame,id),id,mode);
      await input(frame,id,0,0);await input(frame,id,mode==='pong'?0:.9,mode==='pong'?.9:0,'pointermove');await page.waitForTimeout(160);

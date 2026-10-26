@@ -82,12 +82,12 @@
   for(const b of buttons)b.el.classList.add('bio-action');
   function gestureAxis(){const c=context();return oneHand(prefs)&&prefs.gestures&&(c.game==='g03'||c.game==='g06'||c.game==='g05'&&c.mode!=='pong');}
   function target(){return vector(raw.x,raw.y,prefs,gestureAxis()?'xy':context().axis);}
-  function paint(){if(!plan)return;const d=plan.stick.d,R=d*.34;base.style.left=(anchor.x-d/2)+'px';base.style.top=(anchor.y-d/2)+'px';knob.style.transform='translate(calc(-50% + '+clamp(raw.x,-1,1)*R+'px),calc(-50% + '+clamp(raw.y,-1,1)*R+'px))';}
+  function paint(){if(!plan?.stick)return;const d=plan.stick.d,R=d*.34;base.style.left=(anchor.x-d/2)+'px';base.style.top=(anchor.y-d/2)+'px';knob.style.transform='translate(calc(-50% + '+clamp(raw.x,-1,1)*R+'px),calc(-50% + '+clamp(raw.y,-1,1)*R+'px))';}
   function reset(){
    const previous=id;id=null;raw={x:0,y:0};filtered={x:0,y:0};pulse.clear();upLatch=downLatch=false;
    for(const [el,ids]of owners){const held=[...ids];ids.clear();el.classList.remove('is-held');el.setAttribute('aria-pressed','false');for(const pointerId of held)try{if(el.hasPointerCapture(pointerId))el.releasePointerCapture(pointerId);}catch{}}
    try{if(previous!==null&&stick.hasPointerCapture(previous))stick.releasePointerCapture(previous);}catch{}
-   if(plan){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}
+   if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}
   }
   function position(){
    if(disposed)return;const c=context(),visible=win.matchMedia('(pointer:coarse)').matches||win.innerWidth<=1100||prefs.profile!=='two';
@@ -115,7 +115,7 @@
   stick.addEventListener('pointerdown',e=>{if(!enabled()||settingsOpen||id!==null||!plan?.visible)return;e.preventDefault();id=e.pointerId;const r=stick.getBoundingClientRect(),half=plan.stick.d/2;origin=prefs.joystick==='floating'?{x:e.clientX-r.left,y:e.clientY-r.top}:{x:r.width/2,y:r.height/2};anchor={x:clamp(origin.x,half,r.width-half),y:clamp(origin.y,half,r.height-half)};try{stick.setPointerCapture(id);}catch{}update(e);},{signal});
   stick.addEventListener('pointermove',update,{signal});
   for(const {el,key}of buttons)el.addEventListener('pointerdown',e=>{if(!enabled()||settingsOpen)return;e.preventDefault();owners.get(el).add(e.pointerId);pulse.add(key);el.classList.add('is-held');el.setAttribute('aria-pressed','true');try{el.setPointerCapture(e.pointerId);}catch{}},{signal});
-  function release(e){if(id===e.pointerId){id=null;raw={x:0,y:0};filtered={x:0,y:0};upLatch=downLatch=false;if(plan){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}}for(const [el,ids]of owners){ids.delete(e.pointerId);if(!ids.size){el.classList.remove('is-held');el.setAttribute('aria-pressed','false');}}}
+  function release(e){if(id===e.pointerId){id=null;raw={x:0,y:0};filtered={x:0,y:0};upLatch=downLatch=false;if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}}for(const [el,ids]of owners){ids.delete(e.pointerId);if(!ids.size){el.classList.remove('is-held');el.setAttribute('aria-pressed','false');}}}
   for(const type of ['pointerup','pointercancel','lostpointercapture'])win.addEventListener(type,release,{signal});
   win.addEventListener('resize',()=>{reset();schedule();},{signal});win.addEventListener('bio-controls-change',()=>{reset();schedule();},{signal});
   const observer=new ResizeObserver(schedule);observer.observe(space());
