@@ -81,12 +81,32 @@ try{
    check(await fire.getAttribute('aria-pressed')==='false',label+' final release clears visual state');
 
    if(id==='g02'){
-    // Dash must use the current desired direction immediately at pointerdown.
+    // Dispatch and inspect in one browser task: a separate protocol round trip
+    // can run AFTER a 100+ ms catch-up frame and legitimately consume cooldown.
     const dash=frame.locator('[data-ar-command="dash"]');
-    await dash.evaluate(el=>el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:702,pointerType:'touch'})));
-    check(await frame.evaluate(()=>BioArcadeShooter.state.player.dash>3.2),label+' dash executes on press before the next low-FPS update');
+    const immediate=await dash.evaluate(el=>{
+     const stick=document.querySelector('#arcade-stick'),r=stick.getBoundingClientRect(),d=BioArcadeShooter.state.controls.layout?.stick?.d||108;
+     stick.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:703,clientX:r.x+r.width/2,clientY:r.y+r.height/2}));
+     stick.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,pointerId:703,clientX:r.x+r.width/2+d*.34*.9,clientY:r.y+r.height/2}));
+     // Desktop controls can be hidden. Use the same rightward keyboard intent
+     // from a valid gameplay target, as real key events do.
+     const touch=BioArcadeShooter.state.controls.layout?.visible;
+     if(!touch)document.querySelector('canvas').dispatchEvent(new KeyboardEvent('keydown',{key:'d',bubbles:true}));
+     const before=BioArcadeShooter.state;
+     el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:702,pointerType:'touch'}));
+     return {before,after:BioArcadeShooter.state,touch};
+    });
+    check(immediate.before.player.dash===0&&immediate.after.player.dash===3.3,label+' dash starts the full cooldown synchronously');
+    check(immediate.after.simulation.ticks===immediate.before.simulation.ticks&&immediate.after.player.dashTime===.18&&immediate.after.player.inv===.36,label+' dash and protection execute before any physics tick');
+    check(immediate.after.player.dvx===1&&immediate.after.player.dvy===0,label+' dash uses current rightward intent, before smoothing');
+    if(immediate.touch)check(immediate.before.controls.desired.x>.8&&immediate.before.controls.vector.x===0,label+' fixture exercises fresh unsmoothed joystick intent');
+    await frame.evaluate(()=>{window.dispatchEvent(new KeyboardEvent('keyup',{key:'d'}));window.dispatchEvent(new PointerEvent('pointerup',{pointerId:703}));});
     await frame.evaluate(()=>window.dispatchEvent(new PointerEvent('pointercancel',{pointerId:702})));
     check(await dash.getAttribute('aria-pressed')==='false',label+' cancellation releases immediate action');
+    await frame.waitForFunction(ticks=>BioArcadeShooter.state.simulation.ticks>=ticks+12,immediate.after.simulation.ticks);
+    const moved=await frame.evaluate(()=>BioArcadeShooter.state);
+    check(moved.player.x>immediate.after.player.x&&Math.abs(moved.player.y-immediate.after.player.y)<1e-8,label+' dash really moves in the requested direction');
+    check(Math.abs(moved.player.dash-(3.3-(moved.simulation.ticks-immediate.after.simulation.ticks)/120))<1e-8,label+' cooldown follows elapsed simulation time without cancel/retrigger');
    }
 
    // Preserve the shared countdown and clear the simulation/input while paused.

@@ -191,6 +191,7 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 /* A fixed game world is fitted into the window, never stretched into a wider level. */
 #stage-inner{align-items:center;justify-content:center;background:radial-gradient(ellipse,#173448,#03101d 75%)}
 #stage[data-game="g02"] #stage-inner{align-items:stretch;justify-content:stretch}
+#stage[data-game="g02"] :is(.stage-hud,.stage-footer){display:none}
 #hub-canvas{max-width:100%;max-height:100%;border:1px solid #477b8a;box-shadow:0 10px 50px #0009;image-rendering:auto}
 .touch-controls{padding:10px max(14px,env(safe-area-inset-right));gap:16px;align-items:center;min-height:90px}
 .touch-left,.touch-right{max-width:none!important;gap:9px}

@@ -44,7 +44,7 @@ return `<!DOCTYPE html>
 <link rel="alternate" hreflang="ja" href="${abs("ja",key)}">
 <link rel="alternate" hreflang="x-default" href="${abs("zh",key)}">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=20261024.25"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=20261025.5">`:""}
+<link rel="stylesheet" href="${prefix}assets/site.css?v=${c.version}">${key==="play"?`<link rel="stylesheet" href="${prefix}assets/protocol.css?v=20261024.25"><link rel="stylesheet" href="${prefix}assets/arcade.css?v=${c.arcadeVersion}">`:""}
 <link rel="stylesheet" href="${prefix}assets/navigation.css?v=${c.version}">
 <link rel="stylesheet" href="${prefix}assets/site-pages.css?v=${c.version}">
 <script type="application/ld+json">${metaJson}</script>
@@ -88,7 +88,7 @@ for(const lang of ['zh','ja']){
  const file=path.join(root,'arcade',lang,'index.html');
  const original=fs.readFileSync(file,'utf8');
  let html=original.replace(/<body[^>]*>/,'<body data-page="play" class="arcade-page">');
- html=html.replace(/(assets\/hub\.js)\?v=[^"]+/g,'$1?v='+(c.arcadeVersion||c.version));
+ html=html.replace(/(assets\/(?:hub\.js|arcade-hub\.css))\?v=[^"]+/g,'$1?v='+(c.arcadeVersion||c.version));
  const shell='<!-- SITE SHELL START -->'+navigation(lang,'play',c,{prefix:'../../',arcade:true})+'<!-- SITE SHELL END -->';
  if(html.includes('<!-- SITE SHELL START -->')) html=html.replace(/<!-- SITE SHELL START -->[\s\S]*?<!-- SITE SHELL END -->/,shell);
  else html=html.replace(/<header class="hub-head">[\s\S]*?<\/header>/,shell);

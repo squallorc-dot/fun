@@ -1,0 +1,78 @@
+{
+  "base_commit": "44cfe5058774bc05663359cd8589b089c9a6a7d1",
+  "environment": "Node 20.20.2 / Playwright 1.56.1 / Linux Chromium 154.0.8037.57 / DPR 2; not physical device FPS",
+  "layout": [
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "before_edge_css_px": 390,
+      "after_edge_css_px": 390,
+      "edge_gain_percent": 0.0
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "before_edge_css_px": 186,
+      "after_edge_css_px": 263,
+      "edge_gain_percent": 41.4
+    },
+    {
+      "viewport": [
+        568,
+        320
+      ],
+      "before_edge_css_px": 160,
+      "after_edge_css_px": 195,
+      "edge_gain_percent": 21.9
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "before_edge_css_px": 647,
+      "after_edge_css_px": 763,
+      "edge_gain_percent": 17.9
+    }
+  ],
+  "parity": {
+    "checks": 5355,
+    "device_wave_samples": 945,
+    "heroes": 7,
+    "chapters": 5,
+    "difficulties": 3,
+    "waves": 3,
+    "seconds_per_sample": 6,
+    "desktop_fps": 60,
+    "portrait_fps": 15,
+    "landscape_fps": 10
+  },
+  "g02_mobile_browser": {
+    "checks": 3378,
+    "starts": 60,
+    "locales": 2,
+    "sizes": 7,
+    "profiles": 4
+  },
+  "performance_browser": {
+    "checks": 257,
+    "scenarios": 21
+  },
+  "negative_control": "Removing the immediate pointerdown dash callback fails the synchronous full-cooldown assertion, as required.",
+  "dash_timing_probe": {
+    "immediate_cooldown": 3.3,
+    "cooldown_after_160_ms": 3.1333333333333337,
+    "original_delayed_threshold_passes": false
+  },
+  "local_regression": {
+    "node_scripts_passed": 19,
+    "browser_scripts_passed": 11,
+    "browser_checks_passed": 13425,
+    "ci_result": "not claimed; requires PR workflow",
+    "physical_devices": "pending"
+  }
+}
