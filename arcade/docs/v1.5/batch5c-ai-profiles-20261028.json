@@ -1,0 +1,2589 @@
+{
+  "method": "Actual lap crossing times; speeds sampled at 1Hz, including finish coast-down while other cars finish. Entry/exit are sampled curve-threshold transitions, not exact apex events.",
+  "sourceHashes": {
+    "before": "7e311c8238b4098daad4289c44b40ac05f5dcebe457170891070a494bc47bf97",
+    "after": "7a4cd200f1f93ab64aff3477ccd2374eaa5577d895abd9e1500a9efd62d273de"
+  },
+  "profiles": [
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.837815541626295,
+        18.80584988604088,
+        18.794607431166344
+      ],
+      "meanRemainingNitro": 63.90633333333427,
+      "sampledSpeed": 58.15668728007371,
+      "sampledCornerSpeed": 57.656657920627815,
+      "sampledStraightSpeed": 68.55409563102691,
+      "sampledEntrySpeed": 56.947991667793914,
+      "sampledExitSpeed": 69.31604421493668
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        20.113762061640205,
+        18.024386141600846,
+        17.983838971028113
+      ],
+      "meanRemainingNitro": 67.89250000000082,
+      "sampledSpeed": 60.07385944271258,
+      "sampledCornerSpeed": 61.078403470223975,
+      "sampledStraightSpeed": 71.62733783671976,
+      "sampledEntrySpeed": 59.47493497559942,
+      "sampledExitSpeed": 73.54139157151799
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        21.319110152800913,
+        19.06833406285921,
+        19.108909875486994
+      ],
+      "meanRemainingNitro": 63.71850000000092,
+      "sampledSpeed": 56.837723019034115,
+      "sampledCornerSpeed": 57.33589573791517,
+      "sampledStraightSpeed": 66.1630877864897,
+      "sampledEntrySpeed": 56.727969317908354,
+      "sampledExitSpeed": 66.83307398880571
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        19.613355365499913,
+        17.62757528414569,
+        17.643082324315028
+      ],
+      "meanRemainingNitro": 90.47800000000025,
+      "sampledSpeed": 60.62965135694003,
+      "sampledCornerSpeed": 61.467973514211835,
+      "sampledStraightSpeed": 73.16343273488319,
+      "sampledEntrySpeed": 60.8157906695819,
+      "sampledExitSpeed": 72.20360476626338
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        20.487265653443984,
+        18.708693560917155,
+        18.701418701634246
+      ],
+      "meanRemainingNitro": 77.91850000000056,
+      "sampledSpeed": 58.46015901100972,
+      "sampledCornerSpeed": 58.43578577235769,
+      "sampledStraightSpeed": 68.01557848507278,
+      "sampledEntrySpeed": 57.741917610203295,
+      "sampledExitSpeed": 68.41488984263549
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.9618588642674,
+        18.008385426046186,
+        17.943350075123664
+      ],
+      "meanRemainingNitro": 78.82300000000053,
+      "sampledSpeed": 60.651240561085125,
+      "sampledCornerSpeed": 61.729319137069524,
+      "sampledStraightSpeed": 71.89464013378789,
+      "sampledEntrySpeed": 60.13978047919948,
+      "sampledExitSpeed": 71.47409215638659
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.50644414723298,
+        17.26014772386993,
+        17.183750936346726
+      ],
+      "meanRemainingNitro": 91.72900000000021,
+      "sampledSpeed": 62.201891418761285,
+      "sampledCornerSpeed": 63.263626379806624,
+      "sampledStraightSpeed": 74.25574137470221,
+      "sampledEntrySpeed": 62.36493676742689,
+      "sampledExitSpeed": 74.03295747043983
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.61036427760536,
+        18.27098739057063,
+        18.25217421441157
+      ],
+      "meanRemainingNitro": 83.9338333333337,
+      "sampledSpeed": 58.96933095085049,
+      "sampledCornerSpeed": 60.039924589278584,
+      "sampledStraightSpeed": 68.38186133306493,
+      "sampledEntrySpeed": 59.47129524383429,
+      "sampledExitSpeed": 70.20401726143247
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.953905613727038,
+        16.729790024538957,
+        16.941392832141613
+      ],
+      "meanRemainingNitro": 92.94400000000017,
+      "sampledSpeed": 63.024240882273375,
+      "sampledCornerSpeed": 65.11024713669718,
+      "sampledStraightSpeed": 77.13609125148403,
+      "sampledEntrySpeed": 64.01649335856713,
+      "sampledExitSpeed": 77.37628525222567
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.74140604868174,
+        17.78047738439725,
+        17.978289596086146
+      ],
+      "meanRemainingNitro": 88.57600000000033,
+      "sampledSpeed": 60.7100878135224,
+      "sampledCornerSpeed": 60.91764326154999,
+      "sampledStraightSpeed": 70.49057252780453,
+      "sampledEntrySpeed": 60.83744466734522,
+      "sampledExitSpeed": 71.48931266240125
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.327302562487258,
+        17.284282351183364,
+        17.07635409992515
+      ],
+      "meanRemainingNitro": 73.45033333333373,
+      "sampledSpeed": 62.930112482685864,
+      "sampledCornerSpeed": 63.99266450679333,
+      "sampledStraightSpeed": 74.50913880687096,
+      "sampledEntrySpeed": 63.11312330157953,
+      "sampledExitSpeed": 74.99508350683111
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        18.687244274254205,
+        16.502521404037495,
+        16.344712668182137
+      ],
+      "meanRemainingNitro": 71.98900000000053,
+      "sampledSpeed": 64.58990444134645,
+      "sampledCornerSpeed": 66.5347424547997,
+      "sampledStraightSpeed": 76.62243989827297,
+      "sampledEntrySpeed": 65.80115036684555,
+      "sampledExitSpeed": 78.27803936528657
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        19.876594796911018,
+        17.536297129813928,
+        17.4043908183542
+      ],
+      "meanRemainingNitro": 76.53066666666709,
+      "sampledSpeed": 61.34120835810807,
+      "sampledCornerSpeed": 63.473913685664854,
+      "sampledStraightSpeed": 72.19679360361147,
+      "sampledEntrySpeed": 62.40693968827872,
+      "sampledExitSpeed": 75.6406640247455
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.326802580314332,
+        15.999270460846747,
+        16.027937412680547
+      ],
+      "meanRemainingNitro": 71.46766666666724,
+      "sampledSpeed": 65.41373112288281,
+      "sampledCornerSpeed": 68.14675118318549,
+      "sampledStraightSpeed": 79.3837358700273,
+      "sampledEntrySpeed": 67.21059335856712,
+      "sampledExitSpeed": 80.15242905717639
+    },
+    {
+      "version": "before",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.08381694918899,
+        17.064231315129433,
+        17.012210278866096
+      ],
+      "meanRemainingNitro": 71.81483333333394,
+      "sampledSpeed": 63.18830469157257,
+      "sampledCornerSpeed": 63.946073004912996,
+      "sampledStraightSpeed": 72.42724855718191,
+      "sampledEntrySpeed": 63.76350870635372,
+      "sampledExitSpeed": 75.43502512300323
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.733936997414094,
+        18.462521616657003
+      ],
+      "meanRemainingNitro": 64.73933333333426,
+      "sampledSpeed": 56.15609875661386,
+      "sampledCornerSpeed": 59.41905387869748,
+      "sampledStraightSpeed": 50.49058030690414,
+      "sampledEntrySpeed": 58.580617748843736,
+      "sampledExitSpeed": 68.5905886251733
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.82364942834896,
+        17.693364748076295
+      ],
+      "meanRemainingNitro": 71.08750000000072,
+      "sampledSpeed": 58.88607054988062,
+      "sampledCornerSpeed": 61.411835054634906,
+      "sampledStraightSpeed": 53.568918067327914,
+      "sampledEntrySpeed": 61.21490221501176,
+      "sampledExitSpeed": 71.0504044025907
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.99659720927062,
+        18.77601717064309
+      ],
+      "meanRemainingNitro": 70.50050000000076,
+      "sampledSpeed": 54.93408299156527,
+      "sampledCornerSpeed": 59.2133714061975,
+      "sampledStraightSpeed": 49.606262765186244,
+      "sampledEntrySpeed": 58.33825399394284,
+      "sampledExitSpeed": 69.14881491228934
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        19.29699561205892,
+        17.3636972375775
+      ],
+      "meanRemainingNitro": 93.9696666666668,
+      "sampledSpeed": 59.46038855061157,
+      "sampledCornerSpeed": 62.727745824557985,
+      "sampledStraightSpeed": 54.44741661540584,
+      "sampledEntrySpeed": 62.43322441320056,
+      "sampledExitSpeed": 72.23934977746575
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        20.152988512655618,
+        18.394166742592084
+      ],
+      "meanRemainingNitro": 85.92400000000032,
+      "sampledSpeed": 56.65643619601361,
+      "sampledCornerSpeed": 59.578063264654,
+      "sampledStraightSpeed": 51.21834902487844,
+      "sampledEntrySpeed": 59.36497802458351,
+      "sampledExitSpeed": 68.46939139408872
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.01252663867652,
+        17.676896260425572
+      ],
+      "meanRemainingNitro": 79.33600000000058,
+      "sampledSpeed": 58.54811141357742,
+      "sampledCornerSpeed": 62.05070903731173,
+      "sampledStraightSpeed": 51.75967618123262,
+      "sampledEntrySpeed": 61.5757931997171,
+      "sampledExitSpeed": 71.44826285410477
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.074808389057512,
+        16.941688014512845
+      ],
+      "meanRemainingNitro": 85.13650000000038,
+      "sampledSpeed": 61.052372859948676,
+      "sampledCornerSpeed": 64.67621262526986,
+      "sampledStraightSpeed": 56.6176703942582,
+      "sampledEntrySpeed": 64.50444022400022,
+      "sampledExitSpeed": 75.16167946763788
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.417850974770133,
+        17.959253632723325
+      ],
+      "meanRemainingNitro": 81.99550000000046,
+      "sampledSpeed": 56.96900340604682,
+      "sampledCornerSpeed": 61.65345868527594,
+      "sampledStraightSpeed": 50.751373009104185,
+      "sampledEntrySpeed": 60.815082396826064,
+      "sampledExitSpeed": 72.11414996670625
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.63049241485865,
+        16.460385990715764
+      ],
+      "meanRemainingNitro": 70.36633333333396,
+      "sampledSpeed": 61.537894405630546,
+      "sampledCornerSpeed": 66.2844488915817,
+      "sampledStraightSpeed": 55.73754620212049,
+      "sampledEntrySpeed": 65.81608908070446,
+      "sampledExitSpeed": 76.50904249118396
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.479626075894682,
+        17.447181010428793
+      ],
+      "meanRemainingNitro": 71.34766666666722,
+      "sampledSpeed": 58.95219003127477,
+      "sampledCornerSpeed": 62.93179737916211,
+      "sampledStraightSpeed": 52.89273750024878,
+      "sampledEntrySpeed": 62.25423256819642,
+      "sampledExitSpeed": 73.39445986032618
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        18.882965450261818,
+        16.94818976338178
+      ],
+      "meanRemainingNitro": 87.54333333333359,
+      "sampledSpeed": 60.96709641555969,
+      "sampledCornerSpeed": 65.9603667228857,
+      "sampledStraightSpeed": 54.59785493549886,
+      "sampledEntrySpeed": 65.26093921243508,
+      "sampledExitSpeed": 76.90619981844674
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        18.352519911162016,
+        16.19853992436281
+      ],
+      "meanRemainingNitro": 97.63516666666672,
+      "sampledSpeed": 63.17159631383801,
+      "sampledCornerSpeed": 68.41216904556353,
+      "sampledStraightSpeed": 55.17060596009306,
+      "sampledEntrySpeed": 67.63508758237664,
+      "sampledExitSpeed": 78.23851971885216
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        19.75527938197265,
+        17.069509890110343
+      ],
+      "meanRemainingNitro": 70.98100000000056,
+      "sampledSpeed": 59.07948347877078,
+      "sampledCornerSpeed": 65.02001161482639,
+      "sampledStraightSpeed": 50.52699259046917,
+      "sampledEntrySpeed": 63.76746179224004,
+      "sampledExitSpeed": 75.52888430267848
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        17.985684665901136,
+        15.73305899432292
+      ],
+      "meanRemainingNitro": 71.90650000000068,
+      "sampledSpeed": 64.72942046673275,
+      "sampledCornerSpeed": 69.32319851206688,
+      "sampledStraightSpeed": 59.62895421240098,
+      "sampledEntrySpeed": 68.92714372629509,
+      "sampledExitSpeed": 82.05137370267974
+    },
+    {
+      "version": "before",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        18.60210089085099,
+        16.73221583796507
+      ],
+      "meanRemainingNitro": 71.0638333333339,
+      "sampledSpeed": 61.341967157805556,
+      "sampledCornerSpeed": 66.39345259988418,
+      "sampledStraightSpeed": 53.52748356709859,
+      "sampledEntrySpeed": 65.85017632805499,
+      "sampledExitSpeed": 78.33362037181956
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.454640368975404,
+        18.558769543305853
+      ],
+      "meanRemainingNitro": 69.35266666666736,
+      "sampledSpeed": 56.369748789769524,
+      "sampledCornerSpeed": 58.51913591609767,
+      "sampledStraightSpeed": 68.69185479042149,
+      "sampledEntrySpeed": 58.316861307356156,
+      "sampledExitSpeed": 67.15653927447477
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.959796473211668,
+        17.817852140926682
+      ],
+      "meanRemainingNitro": 65.69933333333222,
+      "sampledSpeed": 57.76462671261235,
+      "sampledCornerSpeed": 60.42885086389227,
+      "sampledStraightSpeed": 70.46090039190395,
+      "sampledEntrySpeed": 60.03015359841619,
+      "sampledExitSpeed": 71.38381069325953
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        21.07207917630907,
+        18.864980051661433
+      ],
+      "meanRemainingNitro": 68.53033333333403,
+      "sampledSpeed": 54.96571272616389,
+      "sampledCornerSpeed": 57.61820007246847,
+      "sampledStraightSpeed": 66.55159310095581,
+      "sampledEntrySpeed": 57.42565408482778,
+      "sampledExitSpeed": 67.39869817826296
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        19.203803428565944,
+        17.398640954552217
+      ],
+      "meanRemainingNitro": 77.19400000000059,
+      "sampledSpeed": 59.668845137130276,
+      "sampledCornerSpeed": 62.03646468059316,
+      "sampledStraightSpeed": 73.22442058797957,
+      "sampledEntrySpeed": 61.83654076075766,
+      "sampledExitSpeed": 71.90219662575461
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        20.054929365026194,
+        18.45960735769319
+      ],
+      "meanRemainingNitro": 70.53400000000073,
+      "sampledSpeed": 57.02530048731053,
+      "sampledCornerSpeed": 59.11034484378445,
+      "sampledStraightSpeed": 67.43716253701113,
+      "sampledEntrySpeed": 58.844240316321276,
+      "sampledExitSpeed": 70.25297409804092
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.667013813724566,
+        17.664722442175442
+      ],
+      "meanRemainingNitro": 65.21266666666753,
+      "sampledSpeed": 59.00415968163902,
+      "sampledCornerSpeed": 61.84410476438626,
+      "sampledStraightSpeed": 71.45362262925038,
+      "sampledEntrySpeed": 61.393147799724986,
+      "sampledExitSpeed": 72.07979782351138
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.474264320606203,
+        16.977330371505385
+      ],
+      "meanRemainingNitro": 76.3046666666663,
+      "sampledSpeed": 60.192277499465085,
+      "sampledCornerSpeed": 63.67208383845473,
+      "sampledStraightSpeed": 71.5902221257128,
+      "sampledEntrySpeed": 63.15169336350195,
+      "sampledExitSpeed": 74.17239806951996
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.33715547198557,
+        17.988446039082362
+      ],
+      "meanRemainingNitro": 78.01300000000055,
+      "sampledSpeed": 57.230466807244945,
+      "sampledCornerSpeed": 60.452040080028304,
+      "sampledStraightSpeed": 69.45642040416146,
+      "sampledEntrySpeed": 60.57647895076059,
+      "sampledExitSpeed": 70.17252988629815
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.570988934064292,
+        16.700794419051167
+      ],
+      "meanRemainingNitro": 87.26033333333358,
+      "sampledSpeed": 61.25608879439102,
+      "sampledCornerSpeed": 65.42516989353746,
+      "sampledStraightSpeed": 75.3846027829293,
+      "sampledEntrySpeed": 65.03064819703047,
+      "sampledExitSpeed": 73.7240097033541
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.36915618474918,
+        17.726024691946286
+      ],
+      "meanRemainingNitro": 90.47716666666683,
+      "sampledSpeed": 58.8888542236243,
+      "sampledCornerSpeed": 61.75728387512574,
+      "sampledStraightSpeed": 70.49115572692614,
+      "sampledEntrySpeed": 61.77299250056205,
+      "sampledExitSpeed": 70.92229511800117
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.04882558678211,
+        17.043261925526615
+      ],
+      "meanRemainingNitro": 76.26366666666722,
+      "sampledSpeed": 60.73537620540509,
+      "sampledCornerSpeed": 64.76335393427419,
+      "sampledStraightSpeed": 74.24421747480807,
+      "sampledEntrySpeed": 64.42563459287909,
+      "sampledExitSpeed": 76.98365424881526
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        18.5383674900653,
+        16.285821005435945
+      ],
+      "meanRemainingNitro": 76.63466666666713,
+      "sampledSpeed": 62.57317128388418,
+      "sampledCornerSpeed": 67.06821290670572,
+      "sampledStraightSpeed": 77.20893298292583,
+      "sampledEntrySpeed": 66.60973488281509,
+      "sampledExitSpeed": 80.54697014825715
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        19.680969707049083,
+        17.303916869785567
+      ],
+      "meanRemainingNitro": 80.77033333333362,
+      "sampledSpeed": 58.73756821060326,
+      "sampledCornerSpeed": 63.61019111014782,
+      "sampledStraightSpeed": 71.42506578200012,
+      "sampledEntrySpeed": 63.343396747246565,
+      "sampledExitSpeed": 72.21806581077423
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.02286657940882,
+        15.97683515110224
+      ],
+      "meanRemainingNitro": 70.29033333333393,
+      "sampledSpeed": 63.541632539603974,
+      "sampledCornerSpeed": 67.95922356576173,
+      "sampledStraightSpeed": 77.64673703271167,
+      "sampledEntrySpeed": 67.76778571885278,
+      "sampledExitSpeed": 77.05344214953186
+    },
+    {
+      "version": "before",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        18.759269122267185,
+        16.9553748698907
+      ],
+      "meanRemainingNitro": 70.61166666666719,
+      "sampledSpeed": 60.74816751379061,
+      "sampledCornerSpeed": 64.95884112302669,
+      "sampledStraightSpeed": 71.70515974094886,
+      "sampledEntrySpeed": 64.55110081954295,
+      "sampledExitSpeed": 72.8124478988532
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.510691409991495,
+        18.5933377211853
+      ],
+      "meanRemainingNitro": 98.39716666666668,
+      "sampledSpeed": 56.22497966394406,
+      "sampledCornerSpeed": 58.86936909819296,
+      "sampledStraightSpeed": 67.22532797847357,
+      "sampledEntrySpeed": 58.74631116358103,
+      "sampledExitSpeed": 68.45187778233817
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.876518379177785,
+        17.80584037119105
+      ],
+      "meanRemainingNitro": 90.53233333333337,
+      "sampledSpeed": 57.8503935181658,
+      "sampledCornerSpeed": 61.64661686696171,
+      "sampledStraightSpeed": 70.10617899105364,
+      "sampledEntrySpeed": 61.33905532130115,
+      "sampledExitSpeed": 72.81267893564055
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        21.119663973736493,
+        18.885046217637218
+      ],
+      "meanRemainingNitro": 84.00383333333319,
+      "sampledSpeed": 54.76273630963426,
+      "sampledCornerSpeed": 58.11675623449018,
+      "sampledStraightSpeed": 64.3762858252706,
+      "sampledEntrySpeed": 57.897423088677755,
+      "sampledExitSpeed": 67.67268862211314
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        19.34182409111306,
+        17.467513780901854
+      ],
+      "meanRemainingNitro": 81.19999999999993,
+      "sampledSpeed": 58.50626884642512,
+      "sampledCornerSpeed": 62.34364615917835,
+      "sampledStraightSpeed": 70.33538915032672,
+      "sampledEntrySpeed": 62.3436041279972,
+      "sampledExitSpeed": 70.7424968877704
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        20.171206978074164,
+        18.543186331667656
+      ],
+      "meanRemainingNitro": 88.71783333333315,
+      "sampledSpeed": 56.45944500489126,
+      "sampledCornerSpeed": 59.4994380887976,
+      "sampledStraightSpeed": 66.59798380457075,
+      "sampledEntrySpeed": 59.33779545579399,
+      "sampledExitSpeed": 69.1271295153628
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.73983146862595,
+        17.761452143580332
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 58.45805586188327,
+      "sampledCornerSpeed": 62.50227529679046,
+      "sampledStraightSpeed": 69.99444505371365,
+      "sampledEntrySpeed": 62.08494328967668,
+      "sampledExitSpeed": 72.04525972839076
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.09613916292403,
+        17.012458365179793
+      ],
+      "meanRemainingNitro": 82.56566666666673,
+      "sampledSpeed": 60.42526708691566,
+      "sampledCornerSpeed": 65.03712149265465,
+      "sampledStraightSpeed": 73.6758112240857,
+      "sampledEntrySpeed": 64.47235951152592,
+      "sampledExitSpeed": 71.58364487646668
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.412203331945843,
+        18.087897249212162
+      ],
+      "meanRemainingNitro": 89.14549999999987,
+      "sampledSpeed": 56.60545711052187,
+      "sampledCornerSpeed": 61.08868133146044,
+      "sampledStraightSpeed": 65.43281431023286,
+      "sampledEntrySpeed": 60.959354879446366,
+      "sampledExitSpeed": 69.7135885659149
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.671019911252863,
+        16.690467043240755
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 60.74927241237329,
+      "sampledCornerSpeed": 65.767770447881,
+      "sampledStraightSpeed": 73.2263301615442,
+      "sampledEntrySpeed": 65.53766235407893,
+      "sampledExitSpeed": 76.23995458858438
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.452635843210526,
+        17.70913596255226
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 58.645848040612385,
+      "sampledCornerSpeed": 62.88295884953303,
+      "sampledStraightSpeed": 69.05334700644278,
+      "sampledEntrySpeed": 62.3760024928819,
+      "sampledExitSpeed": 70.07669922094563
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.10558807629632,
+        17.001047937430794
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 60.62894130598966,
+      "sampledCornerSpeed": 65.03445862402576,
+      "sampledStraightSpeed": 73.00249712776565,
+      "sampledEntrySpeed": 64.98168307179004,
+      "sampledExitSpeed": 71.03681096371815
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        18.626005974164332,
+        16.301117735839842
+      ],
+      "meanRemainingNitro": 99.6135,
+      "sampledSpeed": 62.08044178655321,
+      "sampledCornerSpeed": 67.42557569982559,
+      "sampledStraightSpeed": 75.00123113579347,
+      "sampledEntrySpeed": 67.47225849752787,
+      "sampledExitSpeed": 76.39510892736101
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        19.796096973914572,
+        17.331241485150848
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 58.61361877548725,
+      "sampledCornerSpeed": 63.83525552866315,
+      "sampledStraightSpeed": 68.49820587251725,
+      "sampledEntrySpeed": 63.83669797051132,
+      "sampledExitSpeed": 72.80124671824541
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.065041270767786,
+        15.974534361853227
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 63.151192241701445,
+      "sampledCornerSpeed": 68.89325025474425,
+      "sampledStraightSpeed": 77.07414997855956,
+      "sampledEntrySpeed": 68.73180427996883,
+      "sampledExitSpeed": 77.69365352788294
+    },
+    {
+      "version": "before",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        18.793112932881538,
+        16.94002583608199
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 60.64325556930073,
+      "sampledCornerSpeed": 65.53050156587763,
+      "sampledStraightSpeed": 72.13154352195967,
+      "sampledEntrySpeed": 65.56522489648522,
+      "sampledExitSpeed": 74.43352532698137
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        20.21842450734958,
+        18.566193937021183
+      ],
+      "meanRemainingNitro": 69.9876666666674,
+      "sampledSpeed": 56.783181452242395,
+      "sampledCornerSpeed": 59.98996865402001,
+      "sampledStraightSpeed": 68.77829619711649,
+      "sampledEntrySpeed": 59.67848788155303,
+      "sampledExitSpeed": 68.90962326517986
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.848497492127603,
+        17.761049807343326
+      ],
+      "meanRemainingNitro": 72.89650000000069,
+      "sampledSpeed": 58.72401879914316,
+      "sampledCornerSpeed": 61.870559599938304,
+      "sampledStraightSpeed": 71.65902947690613,
+      "sampledEntrySpeed": 61.62743090180439,
+      "sampledExitSpeed": 73.16161557290368
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        21.034667350886547,
+        18.881617119897758
+      ],
+      "meanRemainingNitro": 68.27050000000082,
+      "sampledSpeed": 54.7825073791248,
+      "sampledCornerSpeed": 57.87618903844182,
+      "sampledStraightSpeed": 67.02172531234095,
+      "sampledEntrySpeed": 57.35245578956479,
+      "sampledExitSpeed": 66.70631599129321
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        19.28842041002247,
+        17.45395529115064
+      ],
+      "meanRemainingNitro": 79.93766666666681,
+      "sampledSpeed": 58.93824500479697,
+      "sampledCornerSpeed": 63.11216790317226,
+      "sampledStraightSpeed": 73.40795460063225,
+      "sampledEntrySpeed": 62.85047053200008,
+      "sampledExitSpeed": 74.46866879390906
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        20.147545706419525,
+        18.529499551454585
+      ],
+      "meanRemainingNitro": 79.6820000000003,
+      "sampledSpeed": 56.57580966682385,
+      "sampledCornerSpeed": 59.63255301742324,
+      "sampledStraightSpeed": 68.44253204489846,
+      "sampledEntrySpeed": 58.85910083014081,
+      "sampledExitSpeed": 70.23256074067119
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        19.438277043044998,
+        17.800666787923582
+      ],
+      "meanRemainingNitro": 81.09933333333379,
+      "sampledSpeed": 59.215102965323105,
+      "sampledCornerSpeed": 62.779492787402,
+      "sampledStraightSpeed": 71.96718813136383,
+      "sampledEntrySpeed": 62.25142988966726,
+      "sampledExitSpeed": 71.21883508757121
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        19.301618335247895,
+        17.01589934356679
+      ],
+      "meanRemainingNitro": 79.48166666666685,
+      "sampledSpeed": 60.17261495964836,
+      "sampledCornerSpeed": 64.72453383073068,
+      "sampledStraightSpeed": 73.50486660672907,
+      "sampledEntrySpeed": 64.31971721035656,
+      "sampledExitSpeed": 72.48714029653348
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        20.24946439498627,
+        18.123598222594058
+      ],
+      "meanRemainingNitro": 81.69500000000043,
+      "sampledSpeed": 56.747326950870644,
+      "sampledCornerSpeed": 60.76549760483178,
+      "sampledStraightSpeed": 70.34468699849403,
+      "sampledEntrySpeed": 59.987410228883235,
+      "sampledExitSpeed": 70.04881693525667
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        18.657601121610565,
+        16.700174225538184
+      ],
+      "meanRemainingNitro": 75.8333333333336,
+      "sampledSpeed": 61.02560540903939,
+      "sampledCornerSpeed": 66.10134127500737,
+      "sampledStraightSpeed": 75.51718727650889,
+      "sampledEntrySpeed": 65.96042067662526,
+      "sampledExitSpeed": 78.2116272500183
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        19.53271032833409,
+        17.681543902126865
+      ],
+      "meanRemainingNitro": 81.54800000000014,
+      "sampledSpeed": 58.429812686731076,
+      "sampledCornerSpeed": 62.39632554850571,
+      "sampledStraightSpeed": 71.11730727034256,
+      "sampledEntrySpeed": 61.82133200529818,
+      "sampledExitSpeed": 73.0762476584286
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        18.895297954810367,
+        17.073623888467804
+      ],
+      "meanRemainingNitro": 94.07800000000017,
+      "sampledSpeed": 60.94031718984447,
+      "sampledCornerSpeed": 65.635446349053,
+      "sampledStraightSpeed": 75.79703733382529,
+      "sampledEntrySpeed": 65.07345804495219,
+      "sampledExitSpeed": 73.24416734250157
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        18.584876210360616,
+        16.290721127925632
+      ],
+      "meanRemainingNitro": 71.3064999999999,
+      "sampledSpeed": 62.601998598472406,
+      "sampledCornerSpeed": 67.22374522475914,
+      "sampledStraightSpeed": 77.95481503678816,
+      "sampledEntrySpeed": 66.4973725007619,
+      "sampledExitSpeed": 77.48782964499213
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        19.73972517603672,
+        17.33051431732698
+      ],
+      "meanRemainingNitro": 77.90766666666684,
+      "sampledSpeed": 58.863574363354026,
+      "sampledCornerSpeed": 63.11503477065724,
+      "sampledStraightSpeed": 74.16524434363767,
+      "sampledEntrySpeed": 61.75507239329243,
+      "sampledExitSpeed": 75.09591563331199
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        17.955852642993012,
+        15.99255593396325
+      ],
+      "meanRemainingNitro": 75.99166666666687,
+      "sampledSpeed": 63.362221315282866,
+      "sampledCornerSpeed": 69.05118147828064,
+      "sampledStraightSpeed": 80.06483333984693,
+      "sampledEntrySpeed": 68.60809273809541,
+      "sampledExitSpeed": 80.98031395307788
+    },
+    {
+      "version": "before",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        18.69365336827082,
+        16.9438124576908
+      ],
+      "meanRemainingNitro": 77.2156666666669,
+      "sampledSpeed": 60.84789639672484,
+      "sampledCornerSpeed": 65.49669938018783,
+      "sampledStraightSpeed": 75.53506245577073,
+      "sampledEntrySpeed": 65.26841417985442,
+      "sampledExitSpeed": 77.2115116033646
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.660174622268777,
+        14.94169230804589,
+        14.909412564198766
+      ],
+      "meanRemainingNitro": 71.12425356581734,
+      "sampledSpeed": 70.32867817129048,
+      "sampledCornerSpeed": 75.81137266724171,
+      "sampledStraightSpeed": 83.13055612820189,
+      "sampledEntrySpeed": 75.31644359763935,
+      "sampledExitSpeed": 79.05290292240345
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.512210457972042,
+        14.407274833765596,
+        14.407916149153355
+      ],
+      "meanRemainingNitro": 67.60766363084241,
+      "sampledSpeed": 72.26125412853185,
+      "sampledCornerSpeed": 78.09031237796071,
+      "sampledStraightSpeed": 85.72422362326702,
+      "sampledEntrySpeed": 77.97024603622702,
+      "sampledExitSpeed": 81.30790773344818
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.52131265764569,
+        15.070084143711476,
+        15.049619011851828
+      ],
+      "meanRemainingNitro": 74.05033324656043,
+      "sampledSpeed": 69.8952132194354,
+      "sampledCornerSpeed": 76.16455959142272,
+      "sampledStraightSpeed": 81.66033130561988,
+      "sampledEntrySpeed": 75.99927375703804,
+      "sampledExitSpeed": 78.86929244887808
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.721486173669796,
+        14.24764369318031,
+        14.247726635827732
+      ],
+      "meanRemainingNitro": 71.80909737199326,
+      "sampledSpeed": 73.27396367504176,
+      "sampledCornerSpeed": 77.3417906882565,
+      "sampledStraightSpeed": 91.37653603322738,
+      "sampledEntrySpeed": 77.70963271460828,
+      "sampledExitSpeed": 84.2984220247582
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        17.02974923519115,
+        14.808512561056828,
+        14.80853689288813
+      ],
+      "meanRemainingNitro": 74.94951851451737,
+      "sampledSpeed": 71.43384290275397,
+      "sampledCornerSpeed": 77.21188680597838,
+      "sampledStraightSpeed": 87.3584244146195,
+      "sampledEntrySpeed": 77.26656325150876,
+      "sampledExitSpeed": 81.7550105921913
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.47869909062657,
+        14.75874152426899,
+        14.740398968430604
+      ],
+      "meanRemainingNitro": 70.16400184310109,
+      "sampledSpeed": 70.9947189883894,
+      "sampledCornerSpeed": 78.06721623595415,
+      "sampledStraightSpeed": 83.74707829727447,
+      "sampledEntrySpeed": 77.86479067126243,
+      "sampledExitSpeed": 80.87968178797843
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.37556074146519,
+        14.12130943866317,
+        14.334499913138034
+      ],
+      "meanRemainingNitro": 37.71888980083329,
+      "sampledSpeed": 72.94593075273946,
+      "sampledCornerSpeed": 80.4702315782585,
+      "sampledStraightSpeed": 84.9043922771129,
+      "sampledEntrySpeed": 80.2916884121093,
+      "sampledExitSpeed": 83.39952783745193
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.341789518340363,
+        14.86629897946179,
+        14.885943527103672
+      ],
+      "meanRemainingNitro": 74.56953538026141,
+      "sampledSpeed": 70.60055065810965,
+      "sampledCornerSpeed": 77.94498015242915,
+      "sampledStraightSpeed": 82.73081708896392,
+      "sampledEntrySpeed": 77.82919720514384,
+      "sampledExitSpeed": 80.64873123350482
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.54334092319584,
+        14.049075297437954,
+        14.049094816941361
+      ],
+      "meanRemainingNitro": 62.280612707236976,
+      "sampledSpeed": 74.09986523755202,
+      "sampledCornerSpeed": 80.64443481489072,
+      "sampledStraightSpeed": 90.48778086757922,
+      "sampledEntrySpeed": 81.41610741282828,
+      "sampledExitSpeed": 87.85287182722291
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.85348105696033,
+        14.608188784352436,
+        14.607679695514465
+      ],
+      "meanRemainingNitro": 69.16255957018787,
+      "sampledSpeed": 72.14180707541489,
+      "sampledCornerSpeed": 78.2860689828383,
+      "sampledStraightSpeed": 87.59558054380997,
+      "sampledEntrySpeed": 78.43915689123558,
+      "sampledExitSpeed": 81.84824500894695
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.32746309129522,
+        14.50694407506244,
+        14.571225302436352
+      ],
+      "meanRemainingNitro": 26.02267340028642,
+      "sampledSpeed": 71.76137685897528,
+      "sampledCornerSpeed": 79.66241189713692,
+      "sampledStraightSpeed": 82.31020855842868,
+      "sampledEntrySpeed": 79.6199037448392,
+      "sampledExitSpeed": 80.88121892921292
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.026917757765776,
+        14.011712329629406,
+        14.179964919720563
+      ],
+      "meanRemainingNitro": 23.21202855959171,
+      "sampledSpeed": 73.87903068672522,
+      "sampledCornerSpeed": 80.30121530033024,
+      "sampledStraightSpeed": 84.30092607217813,
+      "sampledEntrySpeed": 80.28391745376747,
+      "sampledExitSpeed": 83.36825031119326
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.04553034769083,
+        14.661754460936248,
+        14.796837647668642
+      ],
+      "meanRemainingNitro": 39.71426299666307,
+      "sampledSpeed": 71.38294966767634,
+      "sampledCornerSpeed": 78.92257873623866,
+      "sampledStraightSpeed": 82.09330418129086,
+      "sampledEntrySpeed": 78.73979197419905,
+      "sampledExitSpeed": 80.61844122377396
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.31471077382839,
+        13.977526133758237,
+        13.977543764760755
+      ],
+      "meanRemainingNitro": 20.28466559350819,
+      "sampledSpeed": 75.25731065618707,
+      "sampledCornerSpeed": 81.4272665519007,
+      "sampledStraightSpeed": 91.92275467132151,
+      "sampledEntrySpeed": 80.83923291485635,
+      "sampledExitSpeed": 90.95695749606884
+    },
+    {
+      "version": "after",
+      "chapter": 1,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.660164981194285,
+        14.46497437794407,
+        14.450598162272746
+      ],
+      "meanRemainingNitro": 27.935075785770422,
+      "sampledSpeed": 72.81688238458561,
+      "sampledCornerSpeed": 79.82382753552746,
+      "sampledStraightSpeed": 86.98866008402912,
+      "sampledEntrySpeed": 79.4274662287359,
+      "sampledExitSpeed": 81.37844022182101
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.545457832708,
+        14.91121628318062
+      ],
+      "meanRemainingNitro": 80.11190896231095,
+      "sampledSpeed": 66.34259027217699,
+      "sampledCornerSpeed": 76.34445399940601,
+      "sampledStraightSpeed": 55.498337052825505,
+      "sampledEntrySpeed": 75.95343589960004,
+      "sampledExitSpeed": 79.40688148795984
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.170912971677748,
+        14.449671491139975
+      ],
+      "meanRemainingNitro": 78.7427760802879,
+      "sampledSpeed": 68.30171124051431,
+      "sampledCornerSpeed": 78.88502720472897,
+      "sampledStraightSpeed": 59.4632624339725,
+      "sampledEntrySpeed": 78.66390823077943,
+      "sampledExitSpeed": 82.47589208955407
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.425579907215035,
+        15.008428487502677
+      ],
+      "meanRemainingNitro": 77.47029600366282,
+      "sampledSpeed": 66.08901415734829,
+      "sampledCornerSpeed": 77.0473638662068,
+      "sampledStraightSpeed": 54.4416289327845,
+      "sampledEntrySpeed": 77.07385976366643,
+      "sampledExitSpeed": 79.53551030607497
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.798747932480584,
+        14.174467776841839
+      ],
+      "meanRemainingNitro": 72.51343563400627,
+      "sampledSpeed": 69.3535509386854,
+      "sampledCornerSpeed": 79.34326963114924,
+      "sampledStraightSpeed": 60.84771464387006,
+      "sampledEntrySpeed": 80.68749727531461,
+      "sampledExitSpeed": 84.87836147833036
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.99192742633153,
+        14.76462764853564
+      ],
+      "meanRemainingNitro": 84.217332623842,
+      "sampledSpeed": 67.66345405910957,
+      "sampledCornerSpeed": 78.12489207461668,
+      "sampledStraightSpeed": 60.177572339987684,
+      "sampledEntrySpeed": 78.11552048359198,
+      "sampledExitSpeed": 80.5519482456673
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.543994178297325,
+        14.695872975025347
+      ],
+      "meanRemainingNitro": 75.90241546257323,
+      "sampledSpeed": 66.73152828153152,
+      "sampledCornerSpeed": 77.43262195422811,
+      "sampledStraightSpeed": 56.83044801211923,
+      "sampledEntrySpeed": 76.96007706533625,
+      "sampledExitSpeed": 80.98660339595881
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        16.984783250646018,
+        14.083827092712193
+      ],
+      "meanRemainingNitro": 26.85194118660135,
+      "sampledSpeed": 69.43689204999272,
+      "sampledCornerSpeed": 79.4076832200834,
+      "sampledStraightSpeed": 60.08849512962396,
+      "sampledEntrySpeed": 79.35153932658137,
+      "sampledExitSpeed": 83.47353074553054
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.25908550096001,
+        14.75601200906493
+      ],
+      "meanRemainingNitro": 71.4769555999568,
+      "sampledSpeed": 67.14991846183943,
+      "sampledCornerSpeed": 78.21490058833587,
+      "sampledStraightSpeed": 58.11106996525322,
+      "sampledEntrySpeed": 77.92899386732935,
+      "sampledExitSpeed": 81.04321667901661
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.785835512685964,
+        13.963873700802935
+      ],
+      "meanRemainingNitro": 63.97551394830169,
+      "sampledSpeed": 70.01950338752987,
+      "sampledCornerSpeed": 80.95291399473277,
+      "sampledStraightSpeed": 61.39336682378837,
+      "sampledEntrySpeed": 81.55769870740811,
+      "sampledExitSpeed": 87.18032904441802
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.782871457742186,
+        14.573201262391525
+      ],
+      "meanRemainingNitro": 78.3722427719163,
+      "sampledSpeed": 68.40768907484471,
+      "sampledCornerSpeed": 79.32879871457621,
+      "sampledStraightSpeed": 57.58679672093074,
+      "sampledEntrySpeed": 79.17322145680816,
+      "sampledExitSpeed": 81.82810081534883
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.31321709198151,
+        14.396146253003376
+      ],
+      "meanRemainingNitro": 26.49534620664408,
+      "sampledSpeed": 67.82520504912483,
+      "sampledCornerSpeed": 78.6375933501142,
+      "sampledStraightSpeed": 57.807177889917426,
+      "sampledEntrySpeed": 77.89281569205703,
+      "sampledExitSpeed": 82.9164980785446
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        16.80907176364804,
+        13.997265662420416
+      ],
+      "meanRemainingNitro": 29.848113093505827,
+      "sampledSpeed": 69.87515091805615,
+      "sampledCornerSpeed": 81.28933454111512,
+      "sampledStraightSpeed": 60.13039181548204,
+      "sampledEntrySpeed": 81.46335005694176,
+      "sampledExitSpeed": 84.49590947816137
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.05727706780519,
+        14.543628213707281
+      ],
+      "meanRemainingNitro": 16.15984268779478,
+      "sampledSpeed": 67.81476136812114,
+      "sampledCornerSpeed": 78.9905387493324,
+      "sampledStraightSpeed": 58.53883858030764,
+      "sampledEntrySpeed": 78.5736769903122,
+      "sampledExitSpeed": 80.96540418201378
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.36027864650072,
+        13.835793787452577
+      ],
+      "meanRemainingNitro": 35.39262162015101,
+      "sampledSpeed": 71.32551323698716,
+      "sampledCornerSpeed": 82.36007806837078,
+      "sampledStraightSpeed": 61.723807233690714,
+      "sampledEntrySpeed": 81.3674490658194,
+      "sampledExitSpeed": 88.3802544283676
+    },
+    {
+      "version": "after",
+      "chapter": 2,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.55181569520867,
+        14.426031501933013
+      ],
+      "meanRemainingNitro": 34.25979012614748,
+      "sampledSpeed": 69.49946770421087,
+      "sampledCornerSpeed": 80.63934423167038,
+      "sampledStraightSpeed": 61.55016076055543,
+      "sampledEntrySpeed": 80.47028767776453,
+      "sampledExitSpeed": 82.99710377047407
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.555052250408366,
+        15.075932790963074
+      ],
+      "meanRemainingNitro": 99.63200412995165,
+      "sampledSpeed": 65.9343525691616,
+      "sampledCornerSpeed": 75.65568455863486,
+      "sampledStraightSpeed": 81.65847607218852,
+      "sampledEntrySpeed": 74.41143153846801,
+      "sampledExitSpeed": 81.12786359966762
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.204636981422833,
+        14.684262977728539
+      ],
+      "meanRemainingNitro": 97.85861246587497,
+      "sampledSpeed": 67.96913612310959,
+      "sampledCornerSpeed": 78.34460061856375,
+      "sampledStraightSpeed": 85.42725349664667,
+      "sampledEntrySpeed": 78.84897563451767,
+      "sampledExitSpeed": 82.91512162982731
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.53855125540113,
+        15.181693636484908
+      ],
+      "meanRemainingNitro": 99.40125735256568,
+      "sampledSpeed": 65.59266755014283,
+      "sampledCornerSpeed": 76.06878923062625,
+      "sampledStraightSpeed": 80.94604608323127,
+      "sampledEntrySpeed": 75.4446827433279,
+      "sampledExitSpeed": 80.24695653754459
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        17.05102993323784,
+        14.478256884658178
+      ],
+      "meanRemainingNitro": 93.37722725180643,
+      "sampledSpeed": 68.28746136618692,
+      "sampledCornerSpeed": 75.06206469611176,
+      "sampledStraightSpeed": 86.11086668400225,
+      "sampledEntrySpeed": 74.36482157949709,
+      "sampledExitSpeed": 85.09463640857857
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        17.180657708768905,
+        15.05819665741704
+      ],
+      "meanRemainingNitro": 99.53933719597835,
+      "sampledSpeed": 66.6623549919578,
+      "sampledCornerSpeed": 74.45144514687478,
+      "sampledStraightSpeed": 83.33906939396617,
+      "sampledEntrySpeed": 74.07229370301462,
+      "sampledExitSpeed": 82.6844679761884
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.428981076955782,
+        14.567593105278547
+      ],
+      "meanRemainingNitro": 39.454135271464686,
+      "sampledSpeed": 67.42432659765586,
+      "sampledCornerSpeed": 77.25408258643806,
+      "sampledStraightSpeed": 84.23464752898994,
+      "sampledEntrySpeed": 76.20422772301987,
+      "sampledExitSpeed": 82.95001673869638
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.01515107408339,
+        14.02347126758474
+      ],
+      "meanRemainingNitro": 9.860934831745245,
+      "sampledSpeed": 69.92451725336744,
+      "sampledCornerSpeed": 79.09099656203809,
+      "sampledStraightSpeed": 87.851317785931,
+      "sampledEntrySpeed": 79.10913439762527,
+      "sampledExitSpeed": 84.79121600508948
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.322173004728555,
+        14.658629908756268
+      ],
+      "meanRemainingNitro": 29.762170638254997,
+      "sampledSpeed": 67.18920283355476,
+      "sampledCornerSpeed": 77.89599225166957,
+      "sampledStraightSpeed": 83.07460307045456,
+      "sampledEntrySpeed": 77.87585334472318,
+      "sampledExitSpeed": 81.90912913222544
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.655655115094394,
+        14.10978875558786
+      ],
+      "meanRemainingNitro": 39.50483092801335,
+      "sampledSpeed": 69.59821749557175,
+      "sampledCornerSpeed": 77.86966714576523,
+      "sampledStraightSpeed": 89.64629928540108,
+      "sampledEntrySpeed": 77.90609649818067,
+      "sampledExitSpeed": 87.58990031118502
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        17.021975172022326,
+        14.723239861360328
+      ],
+      "meanRemainingNitro": 96.09968855967323,
+      "sampledSpeed": 67.47985530387436,
+      "sampledCornerSpeed": 76.09636646776147,
+      "sampledStraightSpeed": 84.86959705900976,
+      "sampledEntrySpeed": 75.37090346033617,
+      "sampledExitSpeed": 84.42122790210966
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.27355487534757,
+        14.518651567575715
+      ],
+      "meanRemainingNitro": 57.358674465556675,
+      "sampledSpeed": 67.52159678611967,
+      "sampledCornerSpeed": 78.48929652187526,
+      "sampledStraightSpeed": 84.86182761165945,
+      "sampledEntrySpeed": 77.55351800980478,
+      "sampledExitSpeed": 82.52558243317833
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        16.873078184291288,
+        14.016442319169188
+      ],
+      "meanRemainingNitro": 37.93729574364741,
+      "sampledSpeed": 69.66074484826248,
+      "sampledCornerSpeed": 80.42276293297161,
+      "sampledStraightSpeed": 87.83352084006536,
+      "sampledEntrySpeed": 80.3084990266967,
+      "sampledExitSpeed": 85.10898891154429
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.05257435488203,
+        14.514003782036461
+      ],
+      "meanRemainingNitro": 28.528908083793844,
+      "sampledSpeed": 67.94205133402144,
+      "sampledCornerSpeed": 79.21351840411498,
+      "sampledStraightSpeed": 84.76543110537843,
+      "sampledEntrySpeed": 79.08677290652555,
+      "sampledExitSpeed": 82.74080087990674
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.423432145562707,
+        13.98016068916924
+      ],
+      "meanRemainingNitro": 23.137279517584446,
+      "sampledSpeed": 70.42072427009393,
+      "sampledCornerSpeed": 78.08524841650828,
+      "sampledStraightSpeed": 89.32244563851336,
+      "sampledEntrySpeed": 76.99220234826264,
+      "sampledExitSpeed": 87.53636042631565
+    },
+    {
+      "version": "after",
+      "chapter": 3,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.549562489082245,
+        14.45633528935171
+      ],
+      "meanRemainingNitro": 47.37242723329971,
+      "sampledSpeed": 68.84118693945186,
+      "sampledCornerSpeed": 77.3040855243154,
+      "sampledStraightSpeed": 86.16868056699015,
+      "sampledEntrySpeed": 76.70601976791734,
+      "sampledExitSpeed": 82.06532675561193
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.59266662770825,
+        15.002369537178277
+      ],
+      "meanRemainingNitro": 97.49103381479223,
+      "sampledSpeed": 66.11482233469503,
+      "sampledCornerSpeed": 75.72818410618675,
+      "sampledStraightSpeed": 78.305640508039,
+      "sampledEntrySpeed": 75.58579506352972,
+      "sampledExitSpeed": 81.33531939664645
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.00157453005887,
+        14.386456089415214
+      ],
+      "meanRemainingNitro": 55.658467598960385,
+      "sampledSpeed": 68.69338023657342,
+      "sampledCornerSpeed": 77.94201273869912,
+      "sampledStraightSpeed": 82.0329997880272,
+      "sampledEntrySpeed": 78.13042530196785,
+      "sampledExitSpeed": 85.38266061677473
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.467433918417722,
+        15.106995670969319
+      ],
+      "meanRemainingNitro": 98.0169632692251,
+      "sampledSpeed": 65.92605812118967,
+      "sampledCornerSpeed": 76.10288346617119,
+      "sampledStraightSpeed": 78.88902133979097,
+      "sampledEntrySpeed": 76.0823801354887,
+      "sampledExitSpeed": 81.15846419386602
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.866926675290618,
+        14.421542434889115
+      ],
+      "meanRemainingNitro": 95.49547747020114,
+      "sampledSpeed": 68.69119271460052,
+      "sampledCornerSpeed": 77.27009268055635,
+      "sampledStraightSpeed": 83.65400952723225,
+      "sampledEntrySpeed": 77.32602422283898,
+      "sampledExitSpeed": 84.33313306503781
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        17.115592965177783,
+        14.942226508927678
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 66.95802413546771,
+      "sampledCornerSpeed": 75.54605877809618,
+      "sampledStraightSpeed": 80.78564132190485,
+      "sampledEntrySpeed": 75.04329886475288,
+      "sampledExitSpeed": 80.52188685329499
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.40875681996776,
+        14.648032535789843
+      ],
+      "meanRemainingNitro": 71.37122469898549,
+      "sampledSpeed": 67.35740814676261,
+      "sampledCornerSpeed": 77.37005621976958,
+      "sampledStraightSpeed": 79.69881935293435,
+      "sampledEntrySpeed": 76.9043432785637,
+      "sampledExitSpeed": 81.39253792604057
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        16.985766372657082,
+        14.075430475347614
+      ],
+      "meanRemainingNitro": 39.429206012132624,
+      "sampledSpeed": 69.1736957073993,
+      "sampledCornerSpeed": 79.7999868345888,
+      "sampledStraightSpeed": 82.40967815322733,
+      "sampledEntrySpeed": 80.1758916688653,
+      "sampledExitSpeed": 86.11545431414832
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.204600980948186,
+        14.764208486561502
+      ],
+      "meanRemainingNitro": 66.09293404994875,
+      "sampledSpeed": 67.1957506858597,
+      "sampledCornerSpeed": 77.93079712718297,
+      "sampledStraightSpeed": 81.13709073799157,
+      "sampledEntrySpeed": 77.53111013903757,
+      "sampledExitSpeed": 83.31014961599551
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.458107523909334,
+        14.069381001891594
+      ],
+      "meanRemainingNitro": 20.216815900458563,
+      "sampledSpeed": 70.7111068103915,
+      "sampledCornerSpeed": 77.85127082387227,
+      "sampledStraightSpeed": 87.23874642284238,
+      "sampledEntrySpeed": 77.85127082387227,
+      "sampledExitSpeed": 85.14979347766584
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.833652651853235,
+        14.621237773530694
+      ],
+      "meanRemainingNitro": 72.61891616294787,
+      "sampledSpeed": 68.31277031368874,
+      "sampledCornerSpeed": 77.42358515746962,
+      "sampledStraightSpeed": 82.86604682252243,
+      "sampledEntrySpeed": 77.51526672704038,
+      "sampledExitSpeed": 81.7775065461307
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.309204688528915,
+        14.451766543444378
+      ],
+      "meanRemainingNitro": 55.51680779921578,
+      "sampledSpeed": 67.65745208116782,
+      "sampledCornerSpeed": 77.98221646342265,
+      "sampledStraightSpeed": 79.44688648955459,
+      "sampledEntrySpeed": 77.55303256972975,
+      "sampledExitSpeed": 81.87882956084454
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        16.737007548353326,
+        13.999358868173202
+      ],
+      "meanRemainingNitro": 40.15123746403147,
+      "sampledSpeed": 69.89648441862435,
+      "sampledCornerSpeed": 80.33708206649258,
+      "sampledStraightSpeed": 83.39956810630385,
+      "sampledEntrySpeed": 79.70742463407372,
+      "sampledExitSpeed": 86.90303385996414
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.028423916119483,
+        14.532106302429117
+      ],
+      "meanRemainingNitro": 41.745641770377205,
+      "sampledSpeed": 67.76009421029798,
+      "sampledCornerSpeed": 79.33864539072476,
+      "sampledStraightSpeed": 81.30026716235867,
+      "sampledEntrySpeed": 78.99147040868242,
+      "sampledExitSpeed": 82.62150184314531
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.301513425972047,
+        14.07951900142065
+      ],
+      "meanRemainingNitro": 52.22739546579777,
+      "sampledSpeed": 70.77387687970288,
+      "sampledCornerSpeed": 79.35501624356986,
+      "sampledStraightSpeed": 85.47260670485583,
+      "sampledEntrySpeed": 79.35501624356986,
+      "sampledExitSpeed": 87.22161640088224
+    },
+    {
+      "version": "after",
+      "chapter": 4,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.516366969692402,
+        14.430143501269686
+      ],
+      "meanRemainingNitro": 63.83458624159504,
+      "sampledSpeed": 69.10066308183774,
+      "sampledCornerSpeed": 78.99902423339908,
+      "sampledStraightSpeed": 84.44702615130504,
+      "sampledEntrySpeed": 78.68380302770552,
+      "sampledExitSpeed": 84.03274915631822
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.573561025744922,
+        14.948653111096535
+      ],
+      "meanRemainingNitro": 97.44076274142618,
+      "sampledSpeed": 66.09162919056341,
+      "sampledCornerSpeed": 74.44219125764876,
+      "sampledStraightSpeed": 82.71493584493575,
+      "sampledEntrySpeed": 74.2443932541478,
+      "sampledExitSpeed": 81.5385257080821
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.42548694983268,
+        14.372793211083854
+      ],
+      "meanRemainingNitro": 45.62355009796827,
+      "sampledSpeed": 68.00628001264202,
+      "sampledCornerSpeed": 74.64420081018125,
+      "sampledStraightSpeed": 87.31634588519309,
+      "sampledEntrySpeed": 74.8285063097172,
+      "sampledExitSpeed": 83.29273141555224
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.479336877804805,
+        15.083883991269682
+      ],
+      "meanRemainingNitro": 97.13393269779948,
+      "sampledSpeed": 65.86934407820176,
+      "sampledCornerSpeed": 74.79679289462649,
+      "sampledStraightSpeed": 81.95103511777978,
+      "sampledEntrySpeed": 74.04443086190943,
+      "sampledExitSpeed": 79.65870208901902
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.76908687124451,
+        14.382826524304015
+      ],
+      "meanRemainingNitro": 87.60890326500521,
+      "sampledSpeed": 69.05595735824046,
+      "sampledCornerSpeed": 74.78878159416513,
+      "sampledStraightSpeed": 89.7846068672529,
+      "sampledEntrySpeed": 74.45022297363636,
+      "sampledExitSpeed": 83.74818472872288
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "normal",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        17.220845152928728,
+        15.03803728886365
+      ],
+      "meanRemainingNitro": 100,
+      "sampledSpeed": 66.15166429342445,
+      "sampledCornerSpeed": 74.3300858219139,
+      "sampledStraightSpeed": 82.4450642215029,
+      "sampledEntrySpeed": 73.31152751389561,
+      "sampledExitSpeed": 81.6298281992327
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.308052572331466,
+        14.640689147455062
+      ],
+      "meanRemainingNitro": 63.752652485068374,
+      "sampledSpeed": 67.13868490747045,
+      "sampledCornerSpeed": 75.07048090385162,
+      "sampledStraightSpeed": 84.68723607238282,
+      "sampledEntrySpeed": 75.4045118279881,
+      "sampledExitSpeed": 82.79213702109274
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.17168961327746,
+        14.169516729761007
+      ],
+      "meanRemainingNitro": 44.62283180623047,
+      "sampledSpeed": 68.86565533597603,
+      "sampledCornerSpeed": 76.90266429614806,
+      "sampledStraightSpeed": 88.13772701564585,
+      "sampledEntrySpeed": 77.33408267262894,
+      "sampledExitSpeed": 85.19367663723696
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        17.161265569428096,
+        14.748117050229734
+      ],
+      "meanRemainingNitro": 62.60206083269469,
+      "sampledSpeed": 67.39567652776,
+      "sampledCornerSpeed": 76.02750225917623,
+      "sampledStraightSpeed": 84.16036475110286,
+      "sampledEntrySpeed": 75.41978334249889,
+      "sampledExitSpeed": 81.50199846926738
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.479208982570416,
+        14.14959023891003
+      ],
+      "meanRemainingNitro": 47.872718349101916,
+      "sampledSpeed": 69.71498706892483,
+      "sampledCornerSpeed": 76.4156959493936,
+      "sampledStraightSpeed": 89.29493985962779,
+      "sampledEntrySpeed": 75.767138675076,
+      "sampledExitSpeed": 87.47637068179958
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "hard",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.802299363335784,
+        14.515175726345003
+      ],
+      "meanRemainingNitro": 49.6819987336565,
+      "sampledSpeed": 68.28443689081584,
+      "sampledCornerSpeed": 76.03381505065151,
+      "sampledStraightSpeed": 86.8935464400777,
+      "sampledEntrySpeed": 75.08026859130635,
+      "sampledExitSpeed": 82.67016305214182
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-0",
+      "races": 50,
+      "meanLaps": [
+        17.15067266755052,
+        14.404106045107662
+      ],
+      "meanRemainingNitro": 49.10033264217589,
+      "sampledSpeed": 67.92997156601402,
+      "sampledCornerSpeed": 76.34205929109456,
+      "sampledStraightSpeed": 85.76985558096453,
+      "sampledEntrySpeed": 77.04903410326669,
+      "sampledExitSpeed": 83.6991487599711
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-1",
+      "races": 50,
+      "meanLaps": [
+        17.164497500544925,
+        14.01561423466843
+      ],
+      "meanRemainingNitro": 44.739986495444136,
+      "sampledSpeed": 69.28449615723734,
+      "sampledCornerSpeed": 77.39905225445766,
+      "sampledStraightSpeed": 88.36238606134363,
+      "sampledEntrySpeed": 78.18305446985592,
+      "sampledExitSpeed": 86.33540774869894
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-2",
+      "races": 50,
+      "meanLaps": [
+        16.98611447475723,
+        14.439491623073009
+      ],
+      "meanRemainingNitro": 42.624227912467525,
+      "sampledSpeed": 68.14366546574679,
+      "sampledCornerSpeed": 77.63511974281501,
+      "sampledStraightSpeed": 85.51254345179058,
+      "sampledEntrySpeed": 76.95219229124926,
+      "sampledExitSpeed": 82.67227371579953
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-3",
+      "races": 50,
+      "meanLaps": [
+        16.2982745056104,
+        14.030632772134215
+      ],
+      "meanRemainingNitro": 41.70117433730329,
+      "sampledSpeed": 70.49253232067487,
+      "sampledCornerSpeed": 77.66465373294211,
+      "sampledStraightSpeed": 89.4087269243757,
+      "sampledEntrySpeed": 77.42082702684316,
+      "sampledExitSpeed": 88.49273383026579
+    },
+    {
+      "version": "after",
+      "chapter": 5,
+      "difficulty": "expert",
+      "id": "ai-4",
+      "races": 50,
+      "meanLaps": [
+        16.648897707660385,
+        14.309591148016294
+      ],
+      "meanRemainingNitro": 49.619940594683946,
+      "sampledSpeed": 69.17919566108917,
+      "sampledCornerSpeed": 77.68967469268644,
+      "sampledStraightSpeed": 87.4996377817475,
+      "sampledEntrySpeed": 76.5509613697319,
+      "sampledExitSpeed": 84.75258391325026
+    }
+  ]
+}

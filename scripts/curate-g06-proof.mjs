@@ -40,13 +40,14 @@ const results=JSON.parse(fs.readFileSync(path.join(gameplay,'results.json')));
 assert(results.completions===230&&results.cupDefeats===2&&results.samples.length===210,'full genuine campaign run required');
 copy(path.join(gameplay,'results.json'),'gameplay-results.json');
 const duel=JSON.parse(fs.readFileSync(path.join(gameplay,'g06-actual-cup-duel.json')));
+assert(duel.sourceHash===manifest.versions.after.sourceHash&&duel.inputs.length>100,'current engine and actual ordinary-input tape');
 verifyVideo(path.join(gameplay,'g06-actual-cup-duel.webm'),duel.frames.length,1440,900);
 assert(duel.events.some(e=>e.against==='player')&&duel.events.some(e=>e.by==='player'&&duel.events.some(c=>c.by===e.against&&c.against==='player'&&c.time<e.time)));
 for(const ext of ['json','webm'])copy(path.join(gameplay,'g06-actual-cup-duel.'+ext),'g06-actual-cup-duel.'+ext);
 for(let hero=0;hero<7;hero++)copy(path.join(gameplay,'guardian-car-'+hero+'.png'),'guardian-car-'+hero+'.png');
 copy(path.join(gameplay,'guardian-cars.json'),'guardian-cars.json');
 for(const locale of ['zh','ja'])for(const base of ['normal','hard','expert'])copy(path.join(gameplay,locale+'-g06-'+base+'-cup-final.png'),locale+'-g06-'+base+'-cup-final.png');
-manifest.genuineRace={frames:duel.frames.length,events:duel.events.length,source:'normal controls, inherited grid after four genuine rounds; no state/result setters'};
+manifest.genuineRace={frames:duel.frames.length,events:duel.events.length,scenario:duel.scenario,source:'ordinary controls, one 0.2s brake error and recovery, inherited grid after four genuine rounds; no state/result setters'};
 fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 fs.writeFileSync(path.join(out,'index.html'),`<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>第 5C 批連續畫面驗收</title>
 <style>body{margin:24px auto;padding:0 18px;max-width:1400px;background:#081d2a;color:#e1f6ed;font:16px system-ui}a{color:#99e7d8}button,select{font:inherit;padding:10px;margin:6px}video,img{max-width:100%;height:auto}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}figure{margin:0}figcaption{padding:8px}details{margin:20px 0}@media(max-width:700px){.pair{grid-template-columns:1fr}}</style>
@@ -56,7 +57,7 @@ fs.writeFileSync(path.join(out,'index.html'),`<!doctype html><html lang="zh-Hant
 <label>章節與視窗 <select id="clip">${after.clips.map(c=>`<option value="${c.name}">C${c.chapter} · ${c.view} · ${c.width}×${c.height} · ${c.frames} frames</option>`).join('')}</select></label><button id="play">同時從頭播放</button>
 <div class="pair"><figure><figcaption>修改前：main 8314ab5</figcaption><video id="before" controls muted playsinline preload="metadata"></video></figure><figure><figcaption>修改後：第 5C 批</figcaption><video id="after" controls muted playsinline preload="metadata"></video></figure></div>
 <details><summary>第五章 1012.25：近端路段單格定位（需配合連續影片）</summary><div class="pair"><img alt="修改前近端道路" src="before-c5-near-plane-1012.25.png"><img alt="修正後近端道路" src="after-c5-near-plane-1012.25.png"></div></details>
-<h2>實際第五章六車賽事</h2><p>前四章實際完賽後繼承起跑順位；普通輸入、120Hz 物理、20Hz 控制，影片 12fps。包含 AI 超越玩家及玩家再次超回。<a href="g06-actual-cup-duel.json">逐格六車位置、名次與超車事件</a></p><video controls muted playsinline preload="metadata" src="g06-actual-cup-duel.webm"></video>
+<h2>實際第五章六車賽事</h2><p>前四章實際完賽後繼承起跑順位；普通輸入、120Hz 物理、20Hz 控制，影片 12fps。包含一次第 5 秒、0.2 秒煞車失誤，之後恢復正常控制，以驗證 AI 超越與玩家追趕。這是明示的操作情境，不代表每場正常駕駛都必定被反超。<a href="g06-actual-cup-duel.json">逐格六車位置、名次與超車事件</a></p><video controls muted playsinline preload="metadata" src="g06-actual-cup-duel.webm"></video>
 <h2>七守護者原創程序車款</h2><p>車殼不同，碰撞寬度與操控性能相同。<a href="guardian-cars.json">車款資料</a></p><div class="cars">${['烈焰 GT','共振機甲','鋼鐵越野','光子疾影','三重泡影','翠葉巡遊','先知星環'].map((name,i)=>`<figure><img loading="lazy" alt="${name}" src="guardian-car-${i}.png"><figcaption>${name}</figcaption></figure>`).join('')}</div>
 <h2>五章實際結算（繁中／日文與三種基礎難度）</h2><p><a href="gameplay-results.json">230 次真實通關與兩次錦標賽失敗驗證</a>；手機／桌面視窗依原矩陣輪替，皆為 Cloud Chromium，非實體裝置。</p><div class="pair">${['zh','ja'].flatMap(locale=>['normal','hard','expert'].map(base=>`<figure><img loading="lazy" alt="${locale} ${base} 五章積分結算" src="${locale}-g06-${base}-cup-final.png"><figcaption>${locale} · ${base}</figcaption></figure>`)).join('')}</div>
 <script>const select=document.querySelector('#clip'),videos=[document.querySelector('#before'),document.querySelector('#after')];function choose(){videos.forEach((v,i)=>{v.pause();v.src=(i?'after-':'before-')+select.value+'.webm';v.load();});}select.addEventListener('change',choose);document.querySelector('#play').addEventListener('click',async()=>{videos.forEach(v=>v.currentTime=0);await Promise.allSettled(videos.map(v=>v.play()));});choose();</script></html>`);

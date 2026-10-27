@@ -1,0 +1,272 @@
+{
+  "checked": 497,
+  "failures": [],
+  "audits": [
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 0,
+      "memory": 31373105,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/burner-sister.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/burner-sister.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 1,
+      "memory": 31372865,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/mj-robot.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/mj-robot.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 2,
+      "memory": 31373105,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/moo-moo.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/moo-moo.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 3,
+      "memory": 31373093,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/ye-bao-ex.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/ye-bao-ex.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 4,
+      "memory": 31375961,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/jelly-trio.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/jelly-trio.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 5,
+      "memory": 31378357,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/veggie-kid.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/veggie-kid.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "checked": 71,
+      "failures": [],
+      "hero": 6,
+      "memory": 31379117,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/oracle-guardian.png?v=20261027.3",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-grunt.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-brute.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-ranged.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/enemy-boss.png?v=20261025.5",
+          "status": 200,
+          "type": "image/png"
+        },
+        {
+          "url": "http://127.0.0.1:44755/arcade/assets/guardians/2x/oracle-guardian.png",
+          "status": 200,
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

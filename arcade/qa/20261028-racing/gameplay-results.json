@@ -1,0 +1,4213 @@
+{
+  "checks": 2246,
+  "completions": 230,
+  "cupDefeats": 2,
+  "browser": "154.0.8037.57",
+  "manualPhysicsHz": 120,
+  "samples": [
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 4010,
+      "seconds": 29.05,
+      "saved": {
+        "unlocked": 2,
+        "best": 4010,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 4442,
+      "seconds": 34.4,
+      "saved": {
+        "unlocked": 3,
+        "best": 8452,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 4847,
+      "seconds": 36.075,
+      "saved": {
+        "unlocked": 4,
+        "best": 13299,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 5580,
+      "seconds": 65.375,
+      "saved": {
+        "unlocked": 5,
+        "best": 18879,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 25227,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 1887,
+      "seconds": 28.55,
+      "saved": {
+        "unlocked": 2,
+        "best": 1887,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2139,
+      "seconds": 33.541666666666664,
+      "saved": {
+        "unlocked": 3,
+        "best": 4026,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2209,
+      "seconds": 35.733333333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 6235,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2866,
+      "seconds": 47.80833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 9101,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11788,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 2819,
+      "seconds": 9.383333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2819,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 3921,
+      "seconds": 13.625,
+      "saved": {
+        "unlocked": 3,
+        "best": 6740,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 4818,
+      "seconds": 17.083333333333332,
+      "saved": {
+        "unlocked": 4,
+        "best": 11558,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5418,
+      "seconds": 19.025,
+      "saved": {
+        "unlocked": 5,
+        "best": 16976,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23295,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 5890,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5890,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 6115,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 12005,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 6255,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 18260,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 6210,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 24470,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 31090,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 840,
+      "seconds": 159.19166666666666,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 1080,
+      "seconds": 231.9,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 1320,
+      "seconds": 306.96666666666664,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 3290,
+      "seconds": 50.45,
+      "saved": {
+        "unlocked": 2,
+        "best": 3290,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 2413,
+      "seconds": 35.858333333333334,
+      "saved": {
+        "unlocked": 3,
+        "best": 5703,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 2413,
+      "seconds": 36.041666666666664,
+      "saved": {
+        "unlocked": 4,
+        "best": 8116,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 2398,
+      "seconds": 35.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 10514,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 2577,
+      "seconds": 34.775,
+      "saved": {
+        "unlocked": 5,
+        "best": 13091,
+        "wins": 5
+      },
+      "drivingScenario": "one 0.2s brake mistake at 5s, then skilled recovery"
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 4400,
+      "seconds": 29.7,
+      "saved": {
+        "unlocked": 2,
+        "best": 4400,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 4533,
+      "seconds": 37.083333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 8933,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 4835,
+      "seconds": 41.9,
+      "saved": {
+        "unlocked": 4,
+        "best": 13768,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 5892,
+      "seconds": 71.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 19660,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 26008,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 1788,
+      "seconds": 27.541666666666668,
+      "saved": {
+        "unlocked": 2,
+        "best": 1788,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2132,
+      "seconds": 34.8,
+      "saved": {
+        "unlocked": 3,
+        "best": 3920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2222,
+      "seconds": 35.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 6142,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2873,
+      "seconds": 49.19166666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 9015,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11702,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 2821,
+      "seconds": 9.075,
+      "saved": {
+        "unlocked": 2,
+        "best": 2821,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 3920,
+      "seconds": 13.458333333333334,
+      "saved": {
+        "unlocked": 3,
+        "best": 6741,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 4819,
+      "seconds": 16.5,
+      "saved": {
+        "unlocked": 4,
+        "best": 11560,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 5421,
+      "seconds": 19.016666666666666,
+      "saved": {
+        "unlocked": 5,
+        "best": 16981,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23300,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 5620,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5620,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 5845,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 11465,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 5985,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 17450,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 6075,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 23525,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 30145,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 840,
+      "seconds": 243.96666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 1080,
+      "seconds": 319.03333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 1320,
+      "seconds": 394.1,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2954,
+      "seconds": 49.93333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2954,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2503,
+      "seconds": 35.49166666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 5457,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2413,
+      "seconds": 35.225,
+      "saved": {
+        "unlocked": 4,
+        "best": 7870,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2398,
+      "seconds": 34.9,
+      "saved": {
+        "unlocked": 5,
+        "best": 10268,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2412,
+      "seconds": 34.875,
+      "saved": {
+        "unlocked": 5,
+        "best": 12680,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 4177,
+      "seconds": 32.68333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 4177,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 4729,
+      "seconds": 41.74166666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 8906,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5094,
+      "seconds": 45,
+      "saved": {
+        "unlocked": 4,
+        "best": 14000,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5892,
+      "seconds": 71.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 19892,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 26240,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 1828,
+      "seconds": 30.45,
+      "saved": {
+        "unlocked": 2,
+        "best": 1828,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2091,
+      "seconds": 34.541666666666664,
+      "saved": {
+        "unlocked": 3,
+        "best": 3919,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2244,
+      "seconds": 37.35,
+      "saved": {
+        "unlocked": 4,
+        "best": 6163,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2873,
+      "seconds": 49.19166666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 9036,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11723,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 2818,
+      "seconds": 8.908333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2818,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 3918,
+      "seconds": 13.291666666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 6736,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 4818,
+      "seconds": 15.441666666666666,
+      "saved": {
+        "unlocked": 4,
+        "best": 11554,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 5421,
+      "seconds": 19.016666666666666,
+      "saved": {
+        "unlocked": 5,
+        "best": 16975,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23294,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 5485,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5485,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 5710,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 11195,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 5850,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 17045,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 6075,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 23120,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 29740,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 840,
+      "seconds": 243.96666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 1080,
+      "seconds": 319.03333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 1320,
+      "seconds": 394.1,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 3395,
+      "seconds": 49.46666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 3395,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2503,
+      "seconds": 35.225,
+      "saved": {
+        "unlocked": 3,
+        "best": 5898,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2413,
+      "seconds": 34.8,
+      "saved": {
+        "unlocked": 4,
+        "best": 8311,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2398,
+      "seconds": 34.9,
+      "saved": {
+        "unlocked": 5,
+        "best": 10709,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "zh",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 2412,
+      "seconds": 34.875,
+      "saved": {
+        "unlocked": 5,
+        "best": 13121,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 4010,
+      "seconds": 29.05,
+      "saved": {
+        "unlocked": 2,
+        "best": 4010,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 4442,
+      "seconds": 34.4,
+      "saved": {
+        "unlocked": 3,
+        "best": 8452,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 4847,
+      "seconds": 36.075,
+      "saved": {
+        "unlocked": 4,
+        "best": 13299,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 5580,
+      "seconds": 65.375,
+      "saved": {
+        "unlocked": 5,
+        "best": 18879,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 25227,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 1887,
+      "seconds": 28.55,
+      "saved": {
+        "unlocked": 2,
+        "best": 1887,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2139,
+      "seconds": 33.541666666666664,
+      "saved": {
+        "unlocked": 3,
+        "best": 4026,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2209,
+      "seconds": 35.733333333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 6235,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2866,
+      "seconds": 47.80833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 9101,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11788,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 2819,
+      "seconds": 9.383333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2819,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 3921,
+      "seconds": 13.625,
+      "saved": {
+        "unlocked": 3,
+        "best": 6740,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 4818,
+      "seconds": 17.083333333333332,
+      "saved": {
+        "unlocked": 4,
+        "best": 11558,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 5418,
+      "seconds": 19.025,
+      "saved": {
+        "unlocked": 5,
+        "best": 16976,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23295,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 5890,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5890,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 6115,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 12005,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 6255,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 18260,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 6210,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 24470,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 31090,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 840,
+      "seconds": 159.19166666666666,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 1080,
+      "seconds": 231.9,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 1320,
+      "seconds": 306.96666666666664,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 3290,
+      "seconds": 50.45,
+      "saved": {
+        "unlocked": 2,
+        "best": 3290,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2413,
+      "seconds": 35.858333333333334,
+      "saved": {
+        "unlocked": 3,
+        "best": 5703,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "effective": "normal",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2413,
+      "seconds": 36.041666666666664,
+      "saved": {
+        "unlocked": 4,
+        "best": 8116,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2398,
+      "seconds": 35.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 10514,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 2412,
+      "seconds": 34.875,
+      "saved": {
+        "unlocked": 5,
+        "best": 12926,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 4400,
+      "seconds": 29.7,
+      "saved": {
+        "unlocked": 2,
+        "best": 4400,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 4533,
+      "seconds": 37.083333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 8933,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 4835,
+      "seconds": 41.9,
+      "saved": {
+        "unlocked": 4,
+        "best": 13768,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 5892,
+      "seconds": 71.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 19660,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 26008,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 1788,
+      "seconds": 27.541666666666668,
+      "saved": {
+        "unlocked": 2,
+        "best": 1788,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2132,
+      "seconds": 34.8,
+      "saved": {
+        "unlocked": 3,
+        "best": 3920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2222,
+      "seconds": 35.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 6142,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2873,
+      "seconds": 49.19166666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 9015,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11702,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 2821,
+      "seconds": 9.075,
+      "saved": {
+        "unlocked": 2,
+        "best": 2821,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 3920,
+      "seconds": 13.458333333333334,
+      "saved": {
+        "unlocked": 3,
+        "best": 6741,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 4819,
+      "seconds": 16.5,
+      "saved": {
+        "unlocked": 4,
+        "best": 11560,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 5421,
+      "seconds": 19.016666666666666,
+      "saved": {
+        "unlocked": 5,
+        "best": 16981,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "left",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23300,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 5620,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5620,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 5845,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 11465,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 5985,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 17450,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 6075,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 23525,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "right",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 30145,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "desktop",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 840,
+      "seconds": 243.96666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 1080,
+      "seconds": 319.03333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 1320,
+      "seconds": 394.1,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "two",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2954,
+      "seconds": 49.93333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2954,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2503,
+      "seconds": 35.49166666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 5457,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "effective": "hard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2413,
+      "seconds": 35.225,
+      "saved": {
+        "unlocked": 4,
+        "best": 7870,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2398,
+      "seconds": 34.9,
+      "saved": {
+        "unlocked": 5,
+        "best": 10268,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "left",
+      "score": 2412,
+      "seconds": 34.875,
+      "saved": {
+        "unlocked": 5,
+        "best": 12680,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 4177,
+      "seconds": 32.68333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 4177,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 4729,
+      "seconds": 41.74166666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 8906,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 5094,
+      "seconds": 45,
+      "saved": {
+        "unlocked": 4,
+        "best": 14000,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 5892,
+      "seconds": 71.475,
+      "saved": {
+        "unlocked": 5,
+        "best": 19892,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "right",
+      "score": 6348,
+      "seconds": 62.175,
+      "saved": {
+        "unlocked": 5,
+        "best": 26240,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 1828,
+      "seconds": 30.45,
+      "saved": {
+        "unlocked": 2,
+        "best": 1828,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 2091,
+      "seconds": 34.541666666666664,
+      "saved": {
+        "unlocked": 3,
+        "best": 3919,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 2244,
+      "seconds": 37.35,
+      "saved": {
+        "unlocked": 4,
+        "best": 6163,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 2873,
+      "seconds": 49.19166666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 9036,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "desktop",
+      "score": 2687,
+      "seconds": 50.05833333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 11723,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 2818,
+      "seconds": 8.908333333333333,
+      "saved": {
+        "unlocked": 2,
+        "best": 2818,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 3918,
+      "seconds": 13.291666666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 6736,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 4818,
+      "seconds": 15.441666666666666,
+      "saved": {
+        "unlocked": 4,
+        "best": 11554,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 5421,
+      "seconds": 19.016666666666666,
+      "saved": {
+        "unlocked": 5,
+        "best": 16975,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "two",
+      "score": 6319,
+      "seconds": 20.258333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 23294,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5485,
+      "seconds": 95.675,
+      "saved": {
+        "unlocked": 2,
+        "best": 5485,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5710,
+      "seconds": 85.74166666666666,
+      "saved": {
+        "unlocked": 3,
+        "best": 11195,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 5850,
+      "seconds": 156.80833333333334,
+      "saved": {
+        "unlocked": 4,
+        "best": 17045,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 6075,
+      "seconds": 142.61666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 23120,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "left",
+      "score": 6620,
+      "seconds": 207.63333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 29740,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 600,
+      "seconds": 132.9,
+      "saved": {
+        "unlocked": 2,
+        "best": 600,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 840,
+      "seconds": 191.96666666666667,
+      "saved": {
+        "unlocked": 3,
+        "best": 1440,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 1080,
+      "seconds": 251.03333333333333,
+      "saved": {
+        "unlocked": 4,
+        "best": 2520,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 1320,
+      "seconds": 262.26666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 3840,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "profile": "right",
+      "score": 1560,
+      "seconds": 311.76666666666665,
+      "saved": {
+        "unlocked": 5,
+        "best": 5400,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 840,
+      "seconds": 243.96666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 840,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1080,
+      "seconds": 319.03333333333336,
+      "saved": {
+        "unlocked": 3,
+        "best": 1920,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1320,
+      "seconds": 394.1,
+      "saved": {
+        "unlocked": 4,
+        "best": 3240,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1560,
+      "seconds": 469.1666666666667,
+      "saved": {
+        "unlocked": 5,
+        "best": 4800,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "profile": "desktop",
+      "score": 1800,
+      "seconds": 544.2333333333333,
+      "saved": {
+        "unlocked": 5,
+        "best": 6600,
+        "wins": 5
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 3395,
+      "seconds": 49.46666666666667,
+      "saved": {
+        "unlocked": 2,
+        "best": 3395,
+        "wins": 1
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2503,
+      "seconds": 35.225,
+      "saved": {
+        "unlocked": 3,
+        "best": 5898,
+        "wins": 2
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2413,
+      "seconds": 34.8,
+      "saved": {
+        "unlocked": 4,
+        "best": 8311,
+        "wins": 3
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2398,
+      "seconds": 34.9,
+      "saved": {
+        "unlocked": 5,
+        "best": 10709,
+        "wins": 4
+      }
+    },
+    {
+      "locale": "ja",
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "effective": "expert",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "profile": "two",
+      "score": 2412,
+      "seconds": 34.875,
+      "saved": {
+        "unlocked": 5,
+        "best": 13121,
+        "wins": 5
+      }
+    }
+  ],
+  "physicalIPhone": "pending",
+  "physicalAndroid": "pending",
+  "windows": "pending"
+}

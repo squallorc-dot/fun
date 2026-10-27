@@ -59,5 +59,7 @@ for row in range(5):
 fig.colorbar(heat, ax=axes[1, 1], fraction=.05)
 fig.suptitle("Bio-City Arcade 5C | 50 seeds x 5 circuits x 3 difficulties x 5 strategies per version", fontsize=14)
 fig.savefig(folder / "batch5c-balance-20261028.svg")
+svg = folder / "batch5c-balance-20261028.svg"
+svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
 fig.savefig(folder / "batch5c-balance-20261028.png", dpi=180)
 print("Exported balance figure from 7,500 recorded races")

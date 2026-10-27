@@ -1,0 +1,65 @@
+[
+  {
+    "zh": "烈焰 GT",
+    "ja": "フレアGT",
+    "roof": 0.72,
+    "cabin": 0.24,
+    "kind": "flame",
+    "accent": "#ffc08c",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "共振機甲",
+    "ja": "レゾナンス",
+    "roof": 0.78,
+    "cabin": 0.3,
+    "kind": "mech",
+    "accent": "#89eaff",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "鋼鐵越野",
+    "ja": "アイアンSUV",
+    "roof": 0.86,
+    "cabin": 0.32,
+    "kind": "utility",
+    "accent": "#d6e4a8",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "光子疾影",
+    "ja": "フォトン",
+    "roof": 0.59,
+    "cabin": 0.22,
+    "kind": "blade",
+    "accent": "#fff3a0",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "三重泡影",
+    "ja": "トリプルバブル",
+    "roof": 0.7,
+    "cabin": 0.28,
+    "kind": "bubble",
+    "accent": "#c8bcff",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "翠葉巡遊",
+    "ja": "リーフバギー",
+    "roof": 0.75,
+    "cabin": 0.28,
+    "kind": "leaf",
+    "accent": "#bdffd1",
+    "collisionWidth": 1.75
+  },
+  {
+    "zh": "先知星環",
+    "ja": "オラクルリング",
+    "roof": 0.66,
+    "cabin": 0.27,
+    "kind": "ring",
+    "accent": "#eec0ff",
+    "collisionWidth": 1.75
+  }
+]

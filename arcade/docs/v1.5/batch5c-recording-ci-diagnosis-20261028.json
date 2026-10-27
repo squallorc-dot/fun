@@ -1,0 +1,13 @@
+{
+  "run": "https://github.com/squallorc-dot/fun/actions/runs/40595791867",
+  "head": "6a50621",
+  "evidence": [
+    "arcade-session-browser\tInstall continuous recording tools\t2026-10-27T22:34:48.6767275Z Selecting previously unselected package ffmpeg.",
+    "arcade-session-browser\tInstall continuous recording tools\t2026-10-27T22:34:49.6862444Z Setting up ffmpeg (7:6.1.1-3ubuntu5) ...",
+    "arcade-session-browser\tTest decoded sprites, full game controls and OST\t2026-10-27T22:36:19.9575707Z GUARDIAN ART BROWSER PASS 218 assertions: 781 nonempty/unclipped frames, seven G01/G02 heroes, 10 locale/viewport combinations.",
+    "arcade-session-browser\tTest decoded sprites, full game controls and OST\t2026-10-27T22:42:03.1567953Z ART BROWSER PASS 251 checks / 48 same-seed scenes (after)",
+    "arcade-session-browser\tTest genuine bilingual five-chapter campaign completions\t2026-10-27T22:43:59.3738652Z AssertionError [ERR_ASSERTION]: continuous actual race records an AI pass and a later player retake",
+    "arcade-session-browser\tTest genuine bilingual five-chapter campaign completions\tAssertionError [ERR_ASSERTION]: continuous actual race records an AI pass and a later player retake"
+  ],
+  "interpretation": "Recording tools now install explicitly; the later race assertion assumed a perfectly driven pole-start seed must have a retake. Keep the assertion in a disclosed 0.2-second brake-error recovery scenario; do not change opponents or force passes in every race."
+}
