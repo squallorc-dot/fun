@@ -638,7 +638,7 @@ R.g06=env=>{
   {sky:'#13152d',haze:'#685b91',land:'#39374e',shade:'#302e46',shoulder:'#706783',sun:'#d9b8ed'}
  ][chapter-1];
  function basis(){
-  const offset=car.lane*.20+car.steer*.18;
+  const offset=car.lane*.20+car.steer*.18*Math.min(1,car.speed/20);
   if(!projectionBasis||projectionBasis.progress!==progress||projectionBasis.w!==g.w||projectionBasis.h!==g.h||projectionBasis.offset!==offset){
    const anchor=trackAt(progress),camera=trackAt(progress-8/anchor.rate),dx=anchor.x-camera.x,dz=anchor.z-camera.z;
    camera.x+=camera.fz*offset;camera.z-=camera.fx*offset;
@@ -893,15 +893,17 @@ R.g06=env=>{
  }
  function drive(r,plan,dt){
   const road=trackAt(r.z),grade=trackAt(r.z+18).y-road.y;
+  const holdBrake=r.braking&&plan.target===0&&r.speed<=38*dt;
   // One tyre envelope for all six cars: excessive corner entry speed causes
   // understeer and tyre scrub. It never applies an automatic perfect brake.
   const safe=cornerSpeed(Math.abs(road.bend)),excess=Math.max(0,r.speed-safe);
   const target=Math.abs(r.lane)>1.04?Math.min(plan.target,r.braking?0:35):plan.target;
   r.speed+=between((target-r.speed)/dt-Math.min(12,excess*.35),r.braking?-38:-8,plan.accel)*dt;
   if(chapter>1)r.speed=Math.max(0,r.speed-Math.max(0,grade)*.018*dt+Math.max(0,-grade)*.012*dt);
+  if(holdBrake)r.speed=0; // Static braking holds a stopped car on descending grades too.
   r.steer+=between(plan.turn-r.steer,-8*dt,8*dt);
   const grip=Math.max(.4,1-excess*.022),side=r.steer*.9*(.65+r.speed/100)*grip-road.bend*Math.pow(r.speed/80,2)*lateralForce*(1+excess*.06);
-  r.lateralVelocity=(r.lateralVelocity||0)+(side-(r.lateralVelocity||0))*(1-Math.exp(-10*dt));
+  r.lateralVelocity=r.speed===0?0:(r.lateralVelocity||0)+(side-(r.lateralVelocity||0))*(1-Math.exp(-10*dt));
   r.slip=Math.min(1,Math.max(0,r.speed-safe)/18+Math.abs(r.steer)*Math.max(0,r.speed-70)/80);
   r.lane=between(r.lane+r.lateralVelocity*dt,-1.25,1.25);
   if(Math.abs(r.lane)>1.04)r.health=Math.max(0,r.health-2*dt);
@@ -999,21 +1001,22 @@ R.g06=env=>{
   },onResize(){},
   update(dt,input){if(g._finished||!Number.isFinite(dt)||dt<=0)return;debt+=Math.min(.25,dt);while(debt+1e-10>=1/120&&!g._finished){debt=Math.max(0,debt-1/120);raceStep(1/120,input);}},
   draw(ctx){const w=g.w,h=g.h,sector=Math.min(2,Math.floor((progress%lapLength)/400));drawRaceWorld(ctx,w,h);
+   const displayScale=Math.max(.2,Number(env.renderScale)||1),small=Math.max(12,10.5/displayScale),speedFont=Math.max(26,15/displayScale),top=Math.max(37,speedFont+8),line=Math.max(20,small*1.18);
    // Mini-map samples the actual closed track, rather than an unrelated decorative oval.
    const mx=w-84,my=72;rect(ctx,w-150,14,138,123,'#062133db','#438493');ctx.beginPath();for(let n=0;n<=60;n++){const p=miniMapPoints[n],xx=mx+p.x*.24,yy=my+p.z*.24;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.strokeStyle='#70c0bf';ctx.lineWidth=3;ctx.stroke();
    for(const r of racers()){const dot=trackAt(r.z);orb(ctx,mx+dot.x*.24,my+dot.z*.24,r.player?4:3,r.player?'#fff0ac':r.color);}
-   const line=miniMapPoints[0];rect(ctx,mx+line.x*.24-4,my+line.z*.24-2,8,4,'#fff');words(ctx,'FINISH',mx,126,11,'#c3f8e8','center');
+   const finishPoint=miniMapPoints[0];rect(ctx,mx+finishPoint.x*.24-4,my+finishPoint.z*.24-2,8,4,'#fff');words(ctx,'FINISH',mx,126,Math.max(11,8/displayScale),'#c3f8e8','center');
    const watch=awareness(),gapText=(v,front)=>v?(front?jaText(env,'前車 ','前車 '):jaText(env,'後車 ','後車 '))+v.metres.toFixed(1)+'m'+(v.checkpointSeconds===null?'':' · '+jaText(env,'上個檢查點 ','前ゲート ')+v.checkpointSeconds.toFixed(2)+'s'):(front?jaText(env,'領先','先頭'):jaText(env,'最後一車','最後尾'));
-   words(ctx,`${Math.round(car.speed*3.6)} km/h`,14,37,26,'#9bf0dd');words(ctx,gapText(watch.ahead,true),14,61,12,'#f9d7a6');words(ctx,gapText(watch.behind,false),14,81,12,'#c3e5e3');words(ctx,jaText(env,models[env.hero].zh,models[env.hero].ja),14,104,12,'#e6d8ff');words(ctx,chapterNames[chapter-1],14,123,10,'#a3d6de');
+   words(ctx,`${Math.round(car.speed*3.6)} km/h`,14,top,speedFont,'#9bf0dd');words(ctx,gapText(watch.ahead,true),14,top+line+4,small,'#f9d7a6');words(ctx,gapText(watch.behind,false),14,top+line*2+4,small,'#c3e5e3');words(ctx,jaText(env,models[env.hero].zh,models[env.hero].ja),14,top+line*3+4,small,'#e6d8ff');words(ctx,chapterNames[chapter-1],14,top+line*4+4,Math.max(10,9/displayScale),'#a3d6de');
    if(racePhase==='countdown'){
     for(let n=0;n<3;n++)orb(ctx,w/2+(n-1)*34,h*.28,12,n<Math.ceil(lights)?'#fa6677':'#374956');
     words(ctx,String(Math.ceil(lights)),w/2,h*.40,48,'#fff','center');words(ctx,jaText(env,'準備起跑 · 第','スタート準備 · グリッド')+' '+(gridOrder.indexOf('player')+1)+'/6',w/2,h*.46,16,'#d9f2ed','center');
    }else if(elapsed<.7)words(ctx,'GO!',w/2,h*.35,44,'#a7ffca','center');
    if(racePhase==='finishing')words(ctx,car.status==='dnf'?jaText(env,'車輛退賽 · 等待賽事結束','DNF · レース終了を待機'):jaText(env,'已完賽 · 等待對手完賽','FINISH · ライバルのゴールを待機'),w/2,h*.27,Math.max(12,w*.022),'#fff0ac','center');
    if(slipstream)words(ctx,'SLIPSTREAM',w/2,h*.21,15,'#a4f6df','center');if(gateFlash<0)words(ctx,jaText(env,'回到道路內通過檢查點','コースに戻ってゲートを通過'),w/2,h*.21,Math.max(11,w*.025),'#ffd1b6','center');
-   if(racePhase==='racing'&&Math.abs(watch.curve)>.65)words(ctx,(watch.curve>0?'→ ':'← ')+(car.slip>.6?jaText(env,'抓地不足 · 煞車','グリップ低下 · 減速'):jaText(env,'彎道預告','カーブ予告')),w/2,h*(slipstream?.25:.21),14,'#ffd7a7','center');
-   if(watch.threats.length)words(ctx,watch.threats.map(r=>r.side==='left'?'←':'→').join(' ')+jaText(env,' 後車接近',' 後方接近'),w-82,154,11,'#ffbaac','center');
-   if(car.boostArmed===false)words(ctx,jaText(env,'放開氮氣再按','ブーストを離して再入力'),14,h-39,10,'#f9d7a6');
+   if(racePhase==='racing'&&Math.abs(watch.curve)>.65)words(ctx,(watch.curve>0?'→ ':'← ')+(car.slip>.6?jaText(env,'抓地不足 · 煞車','グリップ低下 · 減速'):jaText(env,'彎道預告','カーブ予告')),w/2,h*(slipstream?.25:.21),Math.max(14,10/displayScale),'#ffd7a7','center');
+   if(watch.threats.length)words(ctx,[...new Set(watch.threats.map(r=>r.side))].map(side=>side==='left'?'←':'→').join(' ')+jaText(env,' 後車接近',' 後方接近'),w-100,154,Math.max(11,9/displayScale),'#ffbaac','center');
+   if(car.boostArmed===false)words(ctx,jaText(env,'放開氮氣再按','ブーストを離して再入力'),14,h-39,Math.max(10,9.5/displayScale),'#f9d7a6');
    bar(ctx,14,h-28,Math.min(160,w*.4),7,car.health/100,'#81e3c5');bar(ctx,14,h-15,Math.min(160,w*.4),5,nitro/100,'#6bc9ff');fighter(ctx,w-42,h-12,0,20,pal[env.hero],t,car.inv?'hurt':'idle',-1,env.hero);
   },
   hud(){return `<span>${jaText(env,'名次','順位')} <b>${position()}/6</b></span><span>LAP <b>${Math.min(laps,Math.floor(checkpointIndex/3)+1)}/${laps}</b> · GATE ${checkpointIndex}/${checkpointDistances.length}</span><span>TIME <b>${clockText(car.finishTime??elapsed)}</b></span><span>BOOST <b>${Math.floor(nitro)}%</b></span><span>${jaText(env,'超車','追い越し')} <b>${passes}</b></span>${env.cupPoints===null||env.cupPoints===undefined?'':`<span>CUP <b>${env.cupPoints}</b></span>`}`;},

@@ -56,6 +56,7 @@ jobs:
         run: |
           node scripts/capture-arcade-rc.mjs
           node scripts/capture-arcade-visual.mjs
+          node scripts/capture-g06-sequences.mjs
       - name: Upload release candidate visual proof
         if: always()
         uses: actions/upload-artifact@v4
@@ -66,7 +67,12 @@ jobs:
             arcade/qa/visual-v12/*.webp
             arcade/qa/site-ui-v7/*.png
             arcade/qa/art-v15/
-            arcade/qa/gameplay-v15/
+            arcade/qa/gameplay-v15/*.png
+            arcade/qa/gameplay-v15/*.json
+            arcade/qa/gameplay-v15/*.webm
+            arcade/qa/racing-v15/after/*.webm
+            arcade/qa/racing-v15/after/sequences.json
+            arcade/qa/racing-v15/after/c5-desktop/0020.png
           retention-days: 30
 
   arcade-engines:
@@ -105,6 +111,20 @@ jobs:
           node scripts/test-gameplay-regressions.cjs
           node scripts/test-campaign-integrity.cjs
           node scripts/test-gameplay-matrix.cjs
+          node scripts/test-g06-projection.cjs
+          node scripts/test-g06-dynamics.cjs
+          node scripts/test-g06-cup.cjs
+          node scripts/test-g06-grid.cjs
+          node scripts/test-g06-models-hud.cjs
+          node scripts/test-g06-balance.cjs
+
+      - name: Upload seeded racing balance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bio-city-g06-balance-v15
+          path: arcade/qa/racing-v15/balance/
+          retention-days: 30
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04

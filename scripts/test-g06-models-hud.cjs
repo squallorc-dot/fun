@@ -6,6 +6,12 @@ for(let hero=0;hero<7;hero++){
  g.testPlace({distance:100,speed:82,keepTraffic:true});g.draw(ctx);const info=g.inspectVehicle();assert(info.collisionWidth===1.75&&info.zh&&info.ja,'localized original car has the common footprint');names.push(info.kind);shapes.push(crypto.createHash('sha256').update(JSON.stringify(commands)).digest('hex'));checks++;
 }
 assert(new Set(shapes).size===7&&new Set(names).size===7,'seven silhouettes differ even when all paint colors and text are ignored');checks++;
+for(let chapter=1;chapter<=5;chapter++){
+ const {g}=setup({chapter});g.testPlace({distance:500,speed:20,keepTraffic:true});for(let tick=0;tick<600;tick++)g.update(1/120,{down:true});const before=g.inspectRace();for(let tick=0;tick<120;tick++)g.update(1/120,{down:true});const after=g.inspectRace();assert(after.car.speed===0&&after.car.lateralVelocity===0&&after.progress===before.progress,'full brakes hold every downhill track without residual drift');assert(JSON.stringify(before.roadSample)===JSON.stringify(after.roadSample),'parked downhill camera is exactly stationary');checks+=2;
+}
+for(const renderScale of [.4,.55,1]){
+ const {g}=setup({renderScale}),labels=[],target={font:'',createLinearGradient:()=>({addColorStop(){}}),fillText(text){labels.push({text,font:Number(this.font.match(/([\d.]+)px/)?.[1]||0)});}};const ctx=new Proxy(target,{get:(o,k)=>k in o?o[k]:()=>{}});g.draw(ctx);const gap=labels.find(r=>r.text.startsWith('前車 '));assert(gap&&gap.font*renderScale>=10.49,'phone gap labels retain at least 10.5 CSS pixels');checks++;
+}
 {
  const {g}=setup(),ids=g.inspectRace().traffic.filter(r=>r.type==='car').map(r=>r.id);g.testRaceState({player:{z:500,speed:70,sectorTimes:[5]},rivals:ids.map((id,i)=>({id,z:i===0?520:i===1?490:100-i*10,speed:80,lane:i===1?-.5:.5,sectorTimes:[i===0?4.5:5.5]}))});const watch=g.inspectAwareness();assert(watch.ahead.metres===20&&watch.behind.metres===10,'HUD gaps use actual total track progress');assert(watch.ahead.checkpointSeconds===.5&&watch.behind.checkpointSeconds===.5,'HUD seconds use actual common gate crossing timestamps');assert(watch.threats.some(r=>r.id===ids[1]&&r.side==='left'),'rear warning uses a real closing rival and its side');checks+=3;
 }

@@ -192,7 +192,7 @@ function showCampaignResult(win,score,note){
  }
  if(active==='g06'&&game?.raceResult){
   const report=game.raceResult(),section=document.createElement('section');section.id='race-results';section.className='race-results';
-  if(continuous&&raceCupActive&&win){const next=CUP.record(raceCup,chapter,report,raceGrid);if(next.rounds.length>raceCup.rounds.length)raceCup=CUP.save(next);}
+  if(continuous&&raceCupActive&&win){const next=CUP.record(raceCup,chapter,report,raceGrid);if(next.rounds.length>raceCup.rounds.length)raceCup=CUP.save(next);$('#stage-hud').innerHTML=game.hud();}
   const clock=value=>{if(value===null)return '—';const ms=Math.round(value*1000);return Math.floor(ms/60000)+':'+String(Math.floor(ms/1000)%60).padStart(2,'0')+'.'+String(ms%1000).padStart(3,'0');};
   const add=(tag,text,parent=section)=>{const el=document.createElement(tag);el.textContent=text;parent.appendChild(el);return el;};
   add('h3',ja?'レース結果':'正式賽事成績');
@@ -261,7 +261,7 @@ async function start(g){
  if(epoch!==launchEpoch||active!==g)return;
  const gameCode=window.BioSuiteGames?.[g];if(!gameCode){toast('Game module unavailable');leave();return;}
  host.innerHTML='<canvas id="hub-canvas" aria-label="'+I.names[selected]+'" tabindex="0"></canvas>';const canvas=$('#hub-canvas');
- game=gameCode({hero:heroIdx,grid:raceGrid,cupPoints:raceCupActive?CUP.standings(raceCup).find(r=>r.id==='player').points:null,difficulty:chapterDifficulty,chapter:sessionKind==='campaign'?chapter:1,mode,I,clamp,rnd,sfx,finish,ga});installControls();resizeCanvas();game.start();loading=false;resize=new ResizeObserver(resizeCanvas);resize.observe(host);resetInputs();$('#stage-hud').textContent='';$('#stage-controls').style.display='';$('#stage-pause').disabled=false;$('#stage-restart').disabled=false;$('#stage').dataset.phase='playing';game.draw(canvas.getContext('2d'));
+ game=gameCode({hero:heroIdx,grid:raceGrid,get renderScale(){const canvas=$('#hub-canvas');return canvas&&game?canvas.clientWidth/game.w:1;},get cupPoints(){return raceCupActive?CUP.standings(raceCup).find(r=>r.id==='player').points:null;},difficulty:chapterDifficulty,chapter:sessionKind==='campaign'?chapter:1,mode,I,clamp,rnd,sfx,finish,ga});installControls();resizeCanvas();game.start();loading=false;resize=new ResizeObserver(resizeCanvas);resize.observe(host);resetInputs();$('#stage-hud').textContent='';$('#stage-controls').style.display='';$('#stage-pause').disabled=false;$('#stage-restart').disabled=false;$('#stage').dataset.phase='playing';game.draw(canvas.getContext('2d'));
  ga('game_started',{game_id:g,hero_used:HEROES[heroIdx],difficulty:chapterDifficulty,chapter:sessionKind==='campaign'?chapter:undefined,mode:g==='g05'?mode:undefined,game_version:'1'});ga('arcade_game_start',{game_id:g,hero_id:HEROES[heroIdx],difficulty:chapterDifficulty,chapter:sessionKind==='campaign'?chapter:undefined,mode:g==='g05'?mode:undefined,language:currentLocale});
  last=performance.now();if(pauseRequested||document.hidden||!$('#game-help').hidden||$('#audio-drawer').classList.contains('open')||Controls.settingsOpen)pause(true);else queueFrame();
 }
