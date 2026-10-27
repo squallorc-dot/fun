@@ -8634,7 +8634,7 @@
   },
   "localTests": {
     "existingNodeSuites": 20,
-    "newArtNodeChecks": 36,
+    "newArtNodeChecks": 41,
     "artBrowserChecks": 251,
     "highResolutionFrames": 497,
     "g02MobileChecks": 3378,

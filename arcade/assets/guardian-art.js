@@ -17,12 +17,15 @@ function get(hero,retry=false){const key=keyFor(hero);if(retry&&cache.get(key)?.
  while(cache.size>=5)cache.delete(cache.keys().next().value);
  const image=new Image(),item={key,image,resolution:key===highKey?2:1,fallback:false,ready:false,error:false,promise:null};
  image.decoding='async';item.promise=new Promise(resolve=>{
-  let settled=false;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
-  const timer=setTimeout(()=>finish(false),12000);
-  const failed=()=>{if(item.resolution===2){item.resolution=1;item.fallback=true;image.src=base+key+'.png?v=20261025.5';}else finish(false);};
-  image.onload=()=>{Promise.resolve().then(()=>image.decode?.()).then(()=>finish(true),failed);};image.onerror=failed;
+  let settled=false,timer,attempt=0;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
+  const failed=()=>{clearTimeout(timer);if(item.resolution===2){item.resolution=1;item.fallback=true;load();}else finish(false);};
+  const load=()=>{const token=++attempt;
+   image.onload=()=>{Promise.resolve().then(()=>image.decode?.()).then(()=>{if(token===attempt)finish(true);},()=>{if(token===attempt)failed();});};image.onerror=()=>{if(token===attempt)failed();};
+   timer=setTimeout(()=>{if(token===attempt)failed();},item.resolution===2?4000:item.fallback?10000:12000);
+   image.src=base+(item.resolution===2?'2x/':'')+key+'.png?v='+(item.resolution===2?'20261027.3':'20261025.5');
+  };load();
  });
- cache.set(key,item);image.src=base+(item.resolution===2?'2x/':'')+key+'.png?v='+(item.resolution===2?'20261027.3':'20261025.5');return item;
+ cache.set(key,item);return item;
 }
 function preload(heroes,options){
  if(options){const wanted=options.highResolutionHero?keyFor(heroes[0]):null;
