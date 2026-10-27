@@ -661,19 +661,24 @@ R.g06=env=>{
  }
  function roadSurface(ctx,d,next,left,right,color,height=0){surface(ctx,[cameraPoint(d,left,height),cameraPoint(d,right,height),cameraPoint(next,right,height),cameraPoint(next,left,height)],color);}
  function terrainSides(ctx,d,next,color){
-  ctx.fillStyle=color;
   for(const side of [-1,1]){
-   const point=distance=>{const p=cameraPoint(distance,side*1.25);return screenPoint({...p,forward:Math.max(nearPlane,p.forward)});};
-   const a=point(d),b=point(next),edge=side<0?-g.w*20:g.w*21;
-   ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(edge,b.y);ctx.lineTo(edge,a.y);ctx.closePath();ctx.fill();
+   const a=cameraPoint(d,side*1.25),b=cameraPoint(next,side*1.25);
+   // Extend ground at its real depth, then clip the entire polygon. Clamping
+   // depth alone used to project a different height at the near plane.
+   const outer=p=>({...p,side:side*(1000+Math.abs(p.forward)*50)});
+   surface(ctx,[a,b,outer(b),outer(a)],color);
   }
  }
  function visibleStrips(){
   const strips=[],start=Math.floor((progress-5)/stripLength)*stripLength;let ridge=g.h;
   for(let world=start;world<progress+viewDistance;world+=stripLength){
-   const d=world-progress,next=d+stripLength,a=project(d),b=project(next);
-   if(!a||!b)continue;
-   const clip=between(ridge,0,g.h),visible=b.y<a.y&&b.y<clip&&a.y>0;
+   const d=world-progress,next=d+stripLength,ac=cameraPoint(d),bc=cameraPoint(next);
+   const poly=clippedPolygon([cameraPoint(d,-1.25),cameraPoint(d,1.25),cameraPoint(next,1.25),cameraPoint(next,-1.25)]);
+   if(poly.length<3)continue;
+   const endpoint=(p,q)=>p.forward>=nearPlane?screenPoint(p):q.forward>=nearPlane?screenPoint({forward:nearPlane,side:p.side+(q.side-p.side)*(nearPlane-p.forward)/(q.forward-p.forward),up:p.up+(q.up-p.up)*(nearPlane-p.forward)/(q.forward-p.forward)}):poly[0];
+   const a=endpoint(ac,bc),b=endpoint(bc,ac),clip=between(ridge,0,g.h);
+   const area=poly.reduce((sum,p,i)=>{const q=poly[(i+1)%poly.length];return sum+p.x*q.y-q.x*p.y;},0);
+   const visible=area<-.01&&Math.min(...poly.map(p=>p.y))<clip&&Math.max(...poly.map(p=>p.y))>0;
    strips.push({world,d,next,a,b,clip,visible});
    const al=project(d,-1.25),ar=project(d,1.25),bl=project(next,-1.25),br=project(next,1.25);
    ridge=Math.min(ridge,Math.max(al?.y??a.y,ar?.y??a.y),Math.max(bl?.y??b.y,br?.y??b.y));
@@ -761,6 +766,8 @@ R.g06=env=>{
    const seg=strips[i],{d,next,a,b,world,clip}=seg;
    if(clip<=0)continue;
    ctx.save();
+   // The same crest depth mask applies to road, terrain, rails and vehicles.
+   ctx.beginPath();ctx.rect(0,0,w,clip);ctx.clip();
    if(seg.visible){
     // Full terrain strips close hills and hide scenery behind each crest.
     terrainSides(ctx,d,next,landscape.land);
@@ -775,7 +782,6 @@ R.g06=env=>{
     if(Math.floor(world/9)%3!==0)for(const lane of [-.34,.34])roadSurface(ctx,d,next,lane-.008,lane+.008,'#d3d8c3');
     const fog=between((d-85)/140,0,.42);if(fog>0){ctx.globalAlpha=fog;roadSurface(ctx,d,next,-1.25,1.25,landscape.haze);ctx.globalAlpha=1;}
    }
-   ctx.beginPath();ctx.rect(0,0,w,clip);ctx.clip();
    for(const ob of objects){
     if(ob.z<world||ob.z>=world+stripLength)continue;
     const distance=ob.z-progress;
