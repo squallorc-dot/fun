@@ -9,6 +9,13 @@ function race({chapter=5,difficulty='expert',hero=0,fps=120,tape=null,strategy='
 }
 const idle=race({strategy:'idle'});check(idle.result&&!idle.result[0]&&idle.state.rank>3,'chapter five seed seven expert cannot podium with zero inputs');
 {
+ const {g}=setup({chapter:4,difficulty:'expert'});
+ function approach(z){g.testRaceState({time:10,player:{z:600,speed:0,health:100,status:'racing'},rivals:g.inspectRace().traffic.filter(r=>r.type==='car').map(r=>({id:r.id,z,lane:0,speed:86,maxSpeed:86,health:100,status:r.id==='ai-3'?'racing':'dnf',decision:0,targetLane:0,nitro:0,boost:false,boostTime:0,boostRest:0,boostCooldown:100,inv:0}))});g.update(1/120,{down:true});return g.inspectRace().traffic.find(r=>r.id==='ai-3');}
+ const far=approach(87),near=approach(174);
+ check(far.targetSpeed>=85.9&&!far.braking,'a distant canyon bend does not cause premature braking on the approach');
+ check(near.targetSpeed<81&&near.braking&&near.speed<86,'the same driver actually brakes when reaching the bend');
+}
+{
  const {g}=setup();let starts=0,previous=g.inspectRace();for(let tick=0;tick<120*18;tick++){const s=g.inspectRace();g.update(1/120,{...control(s,'held')});const next=g.inspectRace();if(next.car.boost&&!previous.car.boost){check(previous.nitro>=25-.001,'nitro needs a real recharge before a new burst');starts++;}previous=next;}check(starts===1&&!previous.car.boost,'holding an empty tank cannot automatically retrigger nitro');g.update(1/120,{fire:false});g.update(1/120,{fire:true});check(g.inspectRace().car.boost,'release and a new press can deliberately use the recharged tank');
 }
 {

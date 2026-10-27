@@ -12,6 +12,7 @@ async function main(){
  check(mean('skilled','meanRank')<mean('held','meanRank')&&mean('skilled','meanRank')<mean('basic','meanRank'),'timed braking/nitro beats holding boost and basic steering');check(mean('held','podiumRate')<.75,'permanent boost is not near-guaranteed completion');
  check(rows.filter(r=>r.strategy==='idle'&&r.chapter===5&&r.difficulty==='expert'&&r.seed===7).every(r=>!r.win),'original seed seven failure is fixed through real driving physics');
  check(rows.some(r=>r.caughtAfterLead>0)&&rows.some(r=>r.recaptures>0)&&rows.some(r=>r.aiPasses>0),'real pursuit, AI/AI passes and regained positions occur');
+ check(rows.some(r=>r.strategy==='skilled'&&r.status==='finished'&&r.rank>1),'even the skilled controller can be beaten without changing its inputs or opponents');
  for(const row of rows){check(row.standings.length===6&&row.standings.every(r=>['finished','dnf'].includes(r.status)),'no stuck or unclassified rival');check(row.time===null||Number.isFinite(row.time)&&row.time>0,'finite actual finish time');}
  const summary={checks,races:rows.length,seedCount:50,physicsHz:120,controllerHz:20,sourceHash:reports[0].sourceHash,strategyHash:reports[0].strategyHash,groups};fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(summary,null,2)+'\n');console.log('G06 BALANCE PASS '+checks+' checks / '+rows.length+' actual races / 50 seeds');
 }

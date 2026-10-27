@@ -861,7 +861,7 @@ R.g06=env=>{
   return !!r.boost;
  }
  function aiPlan(r,field,dt){
-  const d=r.driver,corner=cornerAt(r.z,r.speed,d.look),bend=trackAt(r.z+25).bend;
+  const d=r.driver,bend=trackAt(r.z+25).bend;
   const ideal=between(bend*.28+d.line,-.62,.62),live=field.filter(o=>o.id!==r.id&&o.status==='racing');
   r.decision-=dt;
   if(elapsed<4){r.targetLane=r.gridLane??r.lane;}
@@ -880,10 +880,13 @@ R.g06=env=>{
   const nextGate=checkpointDistances[r.checkpointIndex??Math.max(0,Math.floor(r.z/400))];
   if(nextGate!==undefined&&nextGate-r.z<65)r.targetLane=between(r.targetLane,-.45,.45);
   const draft=live.some(o=>{const gap=roadGap(o.z,r.z);return gap>8&&gap<38&&Math.abs(o.lane-r.lane)<.22;});
+  // Approach each visible bend using its distance and a braking budget below
+  // the shared 38-unit physical limit. A distant corner must not cap speed now.
+  const margin=(env.difficulty==='normal'?-4:env.difficulty==='hard'?-2:-.5)+(d.style==='late-braker'?1:d.style==='technical'?-1:0),brakeBudget=d.style==='late-braker'?28:d.style==='technical'?22:25;
+  const targetCorner=Math.min(104,...[0,14+r.speed*.35,28+r.speed*.7*d.look].map(distance=>Math.sqrt(Math.pow(cornerSpeed(Math.abs(trackAt(r.z+distance).bend))+margin,2)+2*brakeBudget*distance)));
   r.boostTime=Math.max(0,(r.boostTime||0)-dt);r.boostRest=Math.max(0,(r.boostRest||0)-dt);
-  if(r.boostTime===0&&r.boostRest===0&&r.nitro>40&&corner<.75&&!ahead){r.boostTime=1.6;r.boostRest=2+d.look*1.5;}
-  const targetCorner=cornerSpeed(corner)-(env.difficulty==='normal'?4:env.difficulty==='hard'?2:0)+(d.style==='late-braker'?1:d.style==='technical'?-1:0);
-  r.braking=targetCorner<r.speed-1;boostFor(r,r.boostTime>0&&corner<.8&&!ahead,dt);
+  if(r.boostTime===0&&r.boostRest===0&&r.nitro>40&&targetCorner>94&&!ahead){r.boostTime=1.6;r.boostRest=2+d.look*1.5;}
+  r.braking=targetCorner<r.speed-1;boostFor(r,r.boostTime>0&&targetCorner>92&&!ahead,dt);
   let target=Math.min(96,targetCorner,r.maxSpeed+(r.boost?12:0)+(draft?3:0));
   if(ahead){const gap=roadGap(ahead.z,r.z);if(gap<13)target=Math.min(target,Math.max(0,ahead.speed+(gap-8)*2));}
   r.braking=target<r.speed-1;r.targetSpeed=target;r.slipstream=draft;
