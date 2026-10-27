@@ -2,10 +2,12 @@
 const clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v));
 function control(s,strategy='skilled'){
  if(strategy==='idle')return {};
- const car=s.car,wrap=d=>((d+600)%1200+1200)%1200-600;
- const obstacles=s.traffic.filter(o=>!['finished','dnf'].includes(o.status)&&!o.hit&&wrap(o.z-s.progress)>-7&&wrap(o.z-s.progress)<65);
- const cost=lane=>Math.abs(lane)*1.5+Math.abs(lane-car.lane)*2+obstacles.reduce((n,o)=>{const predicted=o.lane+(o.lateralVelocity||0)*.65;return n+((Math.abs(o.lane-lane)<.38||Math.abs(predicted-lane)<.38)?Math.max(0,65-wrap(o.z-s.progress)):0);},0);
- const target=[0,-.78,.78,-.4,.4].sort((a,b)=>cost(a)-cost(b))[0];
+ const car=s.car,wrap=d=>((d+600)%1200+1200)%1200-600,look=strategy==='skilled'?105:65;
+ const obstacles=s.traffic.filter(o=>!['finished','dnf'].includes(o.status)&&!o.hit&&wrap(o.z-s.progress)>-7&&wrap(o.z-s.progress)<look);
+ const cost=lane=>Math.abs(lane)*1.5+Math.abs(lane-car.lane)*2+obstacles.reduce((n,o)=>{const predicted=o.lane+(o.lateralVelocity||0)*.65;return n+((Math.abs(o.lane-lane)<.38||Math.abs(predicted-lane)<.38)?Math.max(0,look-wrap(o.z-s.progress)):0);},0);
+ let candidates=strategy==='skilled'?[0,-.65,.65,-.4,.4]:[0,-.78,.78,-.4,.4];
+ if(strategy==='skilled'&&s.nextGate-s.progress<85)candidates=candidates.map(l=>clamp(l,-.45,.45));
+ const target=candidates.sort((a,b)=>cost(a)-cost(b))[0];
  const excess=s.lateralForce?Math.max(0,car.speed-104/(1+.25*Math.abs(s.roadBend))):0,grip=Math.max(.4,1-excess*.022);
  const compensation=s.roadBend*Math.pow(car.speed/80,2)*(s.lateralForce??(s.chapter===1?.16:.11))*(1+excess*.06)/(.9*(.65+car.speed/100)*grip);
  const moveX=clamp((target-car.lane)*3+compensation);
