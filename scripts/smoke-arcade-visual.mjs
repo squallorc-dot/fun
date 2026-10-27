@@ -27,7 +27,7 @@ try{
     await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();
     const child=page.frames().find(f=>f.url().includes('/shooter.html'));
     await child.waitForFunction(()=>BioWorldArt.inspect().some(x=>x.key==='defense'&&x.ready));
-    check(await child.locator('canvas').evaluate(c=>c.width===c.height&&c.width===600*Math.min(devicePixelRatio,2)),'G02 fixed square world');
+    check(await child.locator('canvas').evaluate(c=>c.width===c.height&&c.width===600*Math.max(Math.min(devicePixelRatio,2),Math.min(4,Math.ceil(c.getBoundingClientRect().width/600*devicePixelRatio*4)/4))),'G02 fixed square world');
     if(viewport.width!==1440){
      check(await child.locator('#arcade-stick').isVisible(),'G02 touchscreen receives joystick');
      const controls=await child.locator('.arcade-action').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {w:r.width,h:r.height,x:r.x,right:r.right}}));

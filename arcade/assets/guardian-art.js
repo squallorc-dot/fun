@@ -6,7 +6,7 @@ const keys=['burner-sister','mj-robot','moo-moo','ye-bao-ex','jelly-trio','veggi
 const specs={idle:[6,.84,true],walk:[8,.64,true],jump:[4,.48,false],land:[3,.15,false],attack1:[6,.30,false,.10],attack2:[6,.34,false,.12],attack3:[8,.44,false,.17],hurt:[4,.25,false],dodge:[6,.28,false],skill:[8,.64,false],ko:[6,.55,false],celebrate:[6,.84,true]};
 let offset=0;const clips={};for(const [name,[frames,duration,loop,hit]]of Object.entries(specs)){clips[name]=Object.freeze({offset,frames,duration,loop,...(hit===undefined?{}:{hit})});offset+=frames;}
 Object.freeze(clips);Object.freeze(keys);
-const frameSize=160,columns=8,anchor=Object.freeze({x:80,y:140}),cache=new Map();
+const frameSize=160,columns=8,anchor=Object.freeze({x:80,y:140}),cache=new Map();let highKey=null;
 const script=typeof document!=='undefined'?document.currentScript:null;
 const base=script?.src?new URL('guardians/',script.src).href:'';
 function keyFor(hero){return typeof hero==='number'?keys[Math.max(0,Math.min(6,hero|0))]:keys.includes(hero)?hero:keys[0];}
@@ -15,17 +15,26 @@ function get(hero,retry=false){const key=keyFor(hero);if(retry&&cache.get(key)?.
  if(typeof Image==='undefined')return null;
  // Five atlases = one selected hero and four enemy silhouettes, bounded on mobile.
  while(cache.size>=5)cache.delete(cache.keys().next().value);
- const image=new Image(),item={key,image,ready:false,error:false,promise:null};
+ const image=new Image(),item={key,image,resolution:key===highKey?2:1,fallback:false,ready:false,error:false,promise:null};
  image.decoding='async';item.promise=new Promise(resolve=>{
   let settled=false;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
   const timer=setTimeout(()=>finish(false),12000);
-  image.onload=()=>{Promise.resolve().then(()=>image.decode?.()).then(()=>finish(true),()=>finish(false));};image.onerror=()=>finish(false);
+  const failed=()=>{if(item.resolution===2){item.resolution=1;item.fallback=true;image.src=base+key+'.png?v=20261025.5';}else finish(false);};
+  image.onload=()=>{Promise.resolve().then(()=>image.decode?.()).then(()=>finish(true),failed);};image.onerror=failed;
  });
- cache.set(key,item);image.src=base+key+'.png?v=20261025.5';return item;
+ cache.set(key,item);image.src=base+(item.resolution===2?'2x/':'')+key+'.png?v='+(item.resolution===2?'20261027.3':'20261025.5');return item;
 }
-function preload(heroes){return Promise.all(heroes.map(h=>get(h,true)?.promise||Promise.resolve(false)));}
+function preload(heroes,options){
+ if(options){const wanted=options.highResolutionHero?keyFor(heroes[0]):null;
+  // One 2x hero + four native enemies: at most 56.25 MiB decoded pixels,
+  // instead of promoting five atlases to 140.625 MiB on every phone.
+  for(const [key,item]of cache)if(item.resolution===2&&key!==wanted)cache.delete(key);
+  if(wanted!==highKey&&cache.get(wanted)?.resolution===1)cache.delete(wanted);highKey=wanted;
+ }
+ return Promise.all(heroes.map(h=>get(h,true)?.promise||Promise.resolve(false)));
+}
 function draw(ctx,hero,clip,time,x,y,scale=1,dir=1,alpha=1){const item=get(hero);if(!item?.ready)return false;const frame=frameFor(clip,time),sx=frame%columns*frameSize,sy=Math.floor(frame/columns)*frameSize;
- ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx,sy,frameSize,frameSize,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
+ const density=item.resolution;ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx*density,sy*density,frameSize*density,frameSize*density,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
 }
-window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,inspect:()=>({cached:cache.size,atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error}))})});
+window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,inspect:()=>({cached:cache.size,decodedBytes:[...cache.values()].reduce((n,x)=>n+(x.ready?x.image.width*x.image.height*4:0),0),atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error,resolution:x.resolution,fallback:x.fallback}))})});
 })();

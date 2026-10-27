@@ -53,6 +53,7 @@ jobs:
           node scripts/smoke-guardian-art.mjs
           node scripts/smoke-arcade-visual.mjs
           node scripts/smoke-arcade-audio.mjs
+          node scripts/smoke-arcade-art.mjs
       - name: Capture actual RC desktop and mobile game screenshots
         run: |
           node scripts/capture-arcade-rc.mjs
@@ -65,6 +66,7 @@ jobs:
             arcade/qa/rc-v1/*.png
             arcade/qa/visual-v12/*.webp
             arcade/qa/site-ui-v7/*.png
+            arcade/qa/art-v15/
           retention-days: 30
 
   arcade-engines:
@@ -99,6 +101,7 @@ jobs:
           node scripts/test-g04-stages.cjs
           node scripts/test-g02-device-parity.cjs
           node scripts/test-g06-racing.cjs
+          node scripts/test-arcade-art.cjs
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
