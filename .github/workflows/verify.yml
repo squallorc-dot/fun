@@ -49,11 +49,7 @@ jobs:
       - name: Test real media and startup / resume lifecycle
         run: node scripts/smoke-arcade-session.mjs
       - name: Test decoded sprites, full game controls and OST
-        run: |
-          node scripts/smoke-guardian-art.mjs
-          node scripts/smoke-arcade-visual.mjs
-          node scripts/smoke-arcade-audio.mjs
-          node scripts/smoke-arcade-art.mjs
+        run: node scripts/ci-browser-check.mjs scripts/smoke-guardian-art.mjs scripts/smoke-arcade-visual.mjs scripts/smoke-arcade-audio.mjs scripts/smoke-arcade-art.mjs
       - name: Test genuine bilingual five-chapter campaign completions
         run: node scripts/smoke-gameplay-campaign.mjs
       - name: Capture actual RC desktop and mobile game screenshots
