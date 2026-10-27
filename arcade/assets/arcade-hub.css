@@ -192,6 +192,23 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 #stage-inner{align-items:center;justify-content:center;background:radial-gradient(ellipse,#173448,#03101d 75%)}
 #stage[data-game="g02"] #stage-inner{align-items:stretch;justify-content:stretch}
 #stage[data-game="g02"] :is(.stage-hud,.stage-footer){display:none}
+.race-results{text-align:left;margin-top:18px;border-top:1px solid #41647b;padding-top:12px}
+.race-results h3{margin:0 0 8px;font-size:1rem}
+.race-results table{width:100%;border-collapse:collapse;font-size:.75rem;font-variant-numeric:tabular-nums}
+.race-results th,.race-results td{padding:7px 3px;border-bottom:1px solid #345568;text-align:left}
+.race-results tr[data-player=true]{color:#fff0ac;background:#36515b55}
+.race-results ol{max-height:150px;overflow:auto;padding-left:22px;font-size:.75rem;color:#bedce7}
+#stage[data-game="g06"] .stage-dialog{padding:14px;text-align:left}
+#stage[data-game="g06"] .stage-dialog>h2{font-size:1.05rem;line-height:1.3;margin:0 0 8px}
+#stage[data-game="g06"] .stage-dialog>.kicker,#stage[data-game="g06"] #dialog-desc{display:none}
+#stage[data-game="g06"] .race-results{border:0;margin:0;padding:0}
+#stage[data-game="g06"] .race-results h3{font-size:.85rem;margin:4px 0}
+#stage[data-game="g06"] .race-results h3{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#stage[data-game="g06"] .race-results table{line-height:1.25}
+#stage[data-game="g06"] .race-results th,#stage[data-game="g06"] .race-results td{padding:4px 3px}
+#stage[data-game="g06"] .race-results ol:empty{display:none}
+#stage[data-game="g06"] .race-results p{font-size:.72rem;line-height:1.4;margin:6px 0}
+#stage[data-game="g06"] .stage-dialog-actions{position:sticky;bottom:-14px;background:#0a2438;padding:8px 0;margin-top:8px}
 #hub-canvas{max-width:100%;max-height:100%;border:1px solid #477b8a;box-shadow:0 10px 50px #0009;image-rendering:auto}
 .touch-controls{padding:10px max(14px,env(safe-area-inset-right));gap:16px;align-items:center;min-height:90px}
 .touch-left,.touch-right{max-width:none!important;gap:9px}

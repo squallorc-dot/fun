@@ -1,0 +1,412 @@
+{
+  "base": "0e5a0f741d30a786d9f807c3fbdf25029aee7ca1",
+  "environment": "Node 20.20.2; Linux Chromium 154.0.8037.57 / Playwright 1.56.1; not physical device testing",
+  "complete_races": 120,
+  "ai_to_ai_pass_events": 744,
+  "note": "AI pass events include repetitions of identical seeds at four frame cadences. All six cars finished in every full-race sample. Full snapshots match across frame cadences.",
+  "matrix": [
+    {
+      "chapter": 1,
+      "difficulty": "normal",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        50.13448265765378,
+        50.48255673806771
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 1,
+      "difficulty": "hard",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        50.54986703868622,
+        50.7555882146107
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 1,
+      "difficulty": "expert",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        49.86558626125744,
+        49.94865776782651
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 2,
+      "difficulty": "normal",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.72908629649719,
+        34.7914753666017
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 2,
+      "difficulty": "hard",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.540840468458676,
+        34.54135562715231
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 2,
+      "difficulty": "expert",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        2,
+        2
+      ],
+      "time_range_seconds": [
+        34.03327213727005,
+        34.182590953472946
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 3,
+      "difficulty": "normal",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.66612354425062,
+        35.14946100850792
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 3,
+      "difficulty": "hard",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.538755215964024,
+        34.569380507771605
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 3,
+      "difficulty": "expert",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        2,
+        2
+      ],
+      "time_range_seconds": [
+        34.05496532380018,
+        34.15256742197468
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 4,
+      "difficulty": "normal",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.42689924637528,
+        34.530635517698684
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 4,
+      "difficulty": "hard",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        34.30354603254863,
+        34.65330587451496
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 4,
+      "difficulty": "expert",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        2,
+        3
+      ],
+      "time_range_seconds": [
+        34.09346551605712,
+        34.834330118755204
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 5,
+      "difficulty": "normal",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        33.761658064519274,
+        34.3076527100514
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 5,
+      "difficulty": "hard",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        33.75535971739499,
+        33.98319885025698
+      ],
+      "all_podium": true
+    },
+    {
+      "chapter": 5,
+      "difficulty": "expert",
+      "races": 8,
+      "fps": [
+        120,
+        60,
+        30,
+        10
+      ],
+      "rank_range": [
+        1,
+        1
+      ],
+      "time_range_seconds": [
+        33.798875206646336,
+        33.83625650585948
+      ],
+      "all_podium": true
+    }
+  ],
+  "additional_cases": [
+    "three-second standing grid",
+    "physical collision footprint",
+    "independent AI without rank catch-up",
+    "slipstream speed and recharge",
+    "nitro distance gain",
+    "player loses outside podium",
+    "AI overtakes player",
+    "finished vehicles coast inside guardrail",
+    "score frozen after player finish",
+    "bounded projection cache with parked player",
+    "lapped-car collision space",
+    "restart reset",
+    "DNF has no fake time",
+    "sub-tick early/late finish deadline"
+  ],
+  "browser": {
+    "checks": 164,
+    "browser": "154.0.8037.57",
+    "samples": [
+      {
+        "locale": "zh",
+        "chapter": 1,
+        "width": 1440,
+        "height": 900,
+        "profile": "desktop",
+        "rank": 1
+      },
+      {
+        "locale": "zh",
+        "chapter": 2,
+        "width": 320,
+        "height": 740,
+        "profile": "two",
+        "rank": 1
+      },
+      {
+        "locale": "zh",
+        "chapter": 3,
+        "width": 844,
+        "height": 390,
+        "profile": "left",
+        "rank": 1
+      },
+      {
+        "locale": "zh",
+        "chapter": 4,
+        "width": 430,
+        "height": 932,
+        "profile": "right",
+        "rank": 1
+      },
+      {
+        "locale": "zh",
+        "chapter": 5,
+        "width": 768,
+        "height": 1024,
+        "profile": "two",
+        "rank": 1
+      },
+      {
+        "locale": "ja",
+        "chapter": 1,
+        "width": 1440,
+        "height": 900,
+        "profile": "desktop",
+        "rank": 1
+      },
+      {
+        "locale": "ja",
+        "chapter": 2,
+        "width": 320,
+        "height": 740,
+        "profile": "two",
+        "rank": 1
+      },
+      {
+        "locale": "ja",
+        "chapter": 3,
+        "width": 844,
+        "height": 390,
+        "profile": "left",
+        "rank": 1
+      },
+      {
+        "locale": "ja",
+        "chapter": 4,
+        "width": 430,
+        "height": 932,
+        "profile": "right",
+        "rank": 1
+      },
+      {
+        "locale": "ja",
+        "chapter": 5,
+        "width": 768,
+        "height": 1024,
+        "profile": "two",
+        "rank": 1
+      }
+    ],
+    "physicalDevices": "pending"
+  }
+}

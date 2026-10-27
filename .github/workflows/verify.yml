@@ -98,6 +98,7 @@ jobs:
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
           node scripts/test-g02-device-parity.cjs
+          node scripts/test-g06-racing.cjs
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
@@ -136,11 +137,15 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Test low-FPS production loops, input ownership and cached pixels
-        run: node scripts/smoke-arcade-performance.mjs
+        run: |
+          node scripts/smoke-arcade-performance.mjs
+          node scripts/smoke-g06-racing.mjs
       - name: Upload performance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-performance-v14
-          path: arcade/qa/performance-v14/
+          path: |
+            arcade/qa/performance-v14/
+            arcade/qa/g06-racing-v15/
           retention-days: 30
