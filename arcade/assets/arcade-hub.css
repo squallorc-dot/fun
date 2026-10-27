@@ -209,7 +209,7 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 #stage[data-game="g06"] .race-results ol:empty{display:none}
 #stage[data-game="g06"] .race-results p{font-size:.72rem;line-height:1.4;margin:6px 0}
 #stage[data-game="g06"] .stage-dialog-actions{position:sticky;bottom:-14px;background:#0a2438;padding:8px 0;margin-top:8px}
-#hub-canvas{max-width:100%;max-height:100%;border:1px solid #477b8a;box-shadow:0 10px 50px #0009;image-rendering:auto}
+#hub-canvas{max-width:100%;max-height:100%;border:0;outline:1px solid #477b8a;box-shadow:0 10px 50px #0009;image-rendering:auto}
 .touch-controls{padding:10px max(14px,env(safe-area-inset-right));gap:16px;align-items:center;min-height:90px}
 .touch-left,.touch-right{max-width:none!important;gap:9px}
 .touch-controls[data-layout="dpad"] .touch-left{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:3px}

@@ -1,0 +1,134 @@
+{
+  "version": "20261027.3",
+  "logicalTile": 160,
+  "source": "scripts/build-guardian-art.cjs; SVG rasterized at density 144 (native: 72)",
+  "tile": 320,
+  "columns": 8,
+  "rows": 9,
+  "frames": 71,
+  "anchor": {
+    "x": 80,
+    "y": 140
+  },
+  "clips": {
+    "idle": {
+      "offset": 0,
+      "frames": 6,
+      "duration": 0.84,
+      "loop": true
+    },
+    "walk": {
+      "offset": 6,
+      "frames": 8,
+      "duration": 0.64,
+      "loop": true
+    },
+    "jump": {
+      "offset": 14,
+      "frames": 4,
+      "duration": 0.48,
+      "loop": false
+    },
+    "land": {
+      "offset": 18,
+      "frames": 3,
+      "duration": 0.15,
+      "loop": false
+    },
+    "attack1": {
+      "offset": 21,
+      "frames": 6,
+      "duration": 0.3,
+      "loop": false,
+      "hit": 0.1
+    },
+    "attack2": {
+      "offset": 27,
+      "frames": 6,
+      "duration": 0.34,
+      "loop": false,
+      "hit": 0.12
+    },
+    "attack3": {
+      "offset": 33,
+      "frames": 8,
+      "duration": 0.44,
+      "loop": false,
+      "hit": 0.17
+    },
+    "hurt": {
+      "offset": 41,
+      "frames": 4,
+      "duration": 0.25,
+      "loop": false
+    },
+    "dodge": {
+      "offset": 45,
+      "frames": 6,
+      "duration": 0.28,
+      "loop": false
+    },
+    "skill": {
+      "offset": 51,
+      "frames": 8,
+      "duration": 0.64,
+      "loop": false
+    },
+    "ko": {
+      "offset": 59,
+      "frames": 6,
+      "duration": 0.55,
+      "loop": false
+    },
+    "celebrate": {
+      "offset": 65,
+      "frames": 6,
+      "duration": 0.84,
+      "loop": true
+    }
+  },
+  "atlases": [
+    {
+      "key": "burner-sister",
+      "file": "burner-sister.png",
+      "bytes": 282201,
+      "sha256": "78d3451b4e4fc0100f393a719c1acb7466acd6655d5cd64a7db1be644714029c"
+    },
+    {
+      "key": "mj-robot",
+      "file": "mj-robot.png",
+      "bytes": 303674,
+      "sha256": "eb184c7bfd8963941bf45b591efdbdda1f005caf36881081ed6f2f185210b25f"
+    },
+    {
+      "key": "moo-moo",
+      "file": "moo-moo.png",
+      "bytes": 422082,
+      "sha256": "65fcbe75ab5ce8685412cf487996e77f01f644c4551dbdbce9d3c277083bea93"
+    },
+    {
+      "key": "ye-bao-ex",
+      "file": "ye-bao-ex.png",
+      "bytes": 332373,
+      "sha256": "b3570c491d5c2bfac41ad95302e990c22693930462ea5ba5abdeeec979ca2564"
+    },
+    {
+      "key": "jelly-trio",
+      "file": "jelly-trio.png",
+      "bytes": 214467,
+      "sha256": "69a542f0c2bd25693d8c2be42ea5f99646dd23b0b82c6beb432e510d831bfddf"
+    },
+    {
+      "key": "veggie-kid",
+      "file": "veggie-kid.png",
+      "bytes": 354413,
+      "sha256": "85f756ed65a1696baee148b8d8bfc76b2cd5c303345c8baf0670254007c29802"
+    },
+    {
+      "key": "oracle-guardian",
+      "file": "oracle-guardian.png",
+      "bytes": 483034,
+      "sha256": "19ffe46b52d29dedf67e18ca042fc458e49436cf5ea29b73c4813fe5845e9381"
+    }
+  ]
+}

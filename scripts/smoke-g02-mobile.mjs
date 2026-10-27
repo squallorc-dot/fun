@@ -20,7 +20,8 @@ async function geometry(frame,label,minimum=0){
    hud:rect(document.querySelector('.arcade-topbar')),targets:[...document.querySelectorAll('.bio-action,.bio-stick-zone,.arcade-small')].filter(el=>el.getClientRects().length).map(el=>({id:el.dataset.arCommand||el.dataset.arHold||el.id,...rect(el),color:getComputedStyle(el).color})),overflow:document.documentElement.scrollWidth>innerWidth};
  });
  check(Math.abs(g.canvas.width-g.canvas.height)<.5,label+' square canvas, no stretching/cropping');
- check(g.pixels.width===1200&&g.pixels.height===1200,label+' full 600-square world at DPR 2');
+ const density=Math.max(2,Math.min(4,Math.ceil(g.canvas.width/600*2*4)/4));
+ check(g.pixels.width===600*density&&g.pixels.height===600*density,label+' full 600-square world, enough pixels for actual DPR-2 display');
  check(Math.abs(g.canvas.width-Math.min(g.host.width-g.rails,g.host.height))<1.1,label+' largest available square');
  check(g.canvas.width>=minimum,label+' battlefield minimum '+minimum+' actual '+g.canvas.width);
  check(!g.overflow&&g.canvas.x>=0&&g.canvas.y>=0&&g.canvas.x+g.canvas.width<=g.viewport.width+.5&&g.canvas.y+g.canvas.height<=g.viewport.height+.5,label+' battlefield inside viewport');

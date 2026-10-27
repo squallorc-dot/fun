@@ -215,11 +215,11 @@ function resizeCanvas(){
  const canvas=$('#hub-canvas');if(!canvas||!active||active==='g02')return;const host=$('#stage-inner'),[w,h]=logicalViewport(active),space=host.getBoundingClientRect(),left=controlPlan.reservedLeft||0,right=controlPlan.reservedRight||0;
  host.style.paddingLeft=left+'px';host.style.paddingRight=right+'px';host.style.boxSizing='border-box';
  const availableWidth=Math.max(60,space.width-left-right),zoom=Math.min(availableWidth/w,Math.max(60,space.height)/h),cssW=w*zoom,cssH=h*zoom;
- canvas.style.setProperty('width',cssW+'px','important');canvas.style.setProperty('height',cssH+'px','important');canvas.style.flex='none';const ratio=Math.min(devicePixelRatio||1,2);const changed=canvas.width!==w*ratio||canvas.height!==h*ratio;
+ canvas.style.setProperty('width',cssW+'px','important');canvas.style.setProperty('height',cssH+'px','important');canvas.style.flex='none';const ratio=Math.max(Math.min(devicePixelRatio||1,2),Math.min(4,Math.ceil(zoom*(devicePixelRatio||1)*4)/4));const changed=canvas.width!==w*ratio||canvas.height!==h*ratio;
  if(changed){canvas.width=w*ratio;canvas.height=h*ratio;}canvas.getContext('2d').setTransform(ratio,0,0,ratio,0,0);if(game){game.w=w;game.h=h;if(changed&&game.paused)game.draw(canvas.getContext('2d'));}
 }
 function prewarm(g){if(g!=='g02')void Promise.all(assetsFor(g));}
-function assetsFor(g){const world=({g01:'street',g02:'defense',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'})[g];const heroes=(g==='g01'||g==='g02')?[heroIdx,'enemy-grunt','enemy-brute','enemy-ranged','enemy-boss']:g==='g05'?[heroIdx,(heroIdx+3)%7]:[heroIdx];return [window.BioWorldArt?.preload(world)||Promise.resolve(false),window.BioGuardianArt?.preload(heroes)||Promise.resolve(false)];}
+function assetsFor(g){const world=({g01:'street',g02:'defense',g03:'shaft',g04:'laboratory',g05:'arena',g06:'race'})[g];const heroes=(g==='g01'||g==='g02')?[heroIdx,'enemy-grunt','enemy-brute','enemy-ranged','enemy-boss']:g==='g05'?[heroIdx,(heroIdx+3)%7]:[heroIdx];return [window.BioWorldArt?.preload(world)||Promise.resolve(false),window.BioGuardianArt?.preload(heroes,{highResolutionHero:g==='g01'&&(devicePixelRatio||1)>1})||Promise.resolve(false)];}
 async function start(g){
  if(active)leave();simulation.reset();const epoch=++launchEpoch;active=g;loading=true;pauseRequested=false;resetInputs();parentMusic()?.gameStart();chapterDifficulty=sessionKind==='campaign'?CAMPAIGN.difficultyFor(difficulty,chapter):difficulty;
  // Keep media/AudioContext activation in the START gesture, before any asset await.
