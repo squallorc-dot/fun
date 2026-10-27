@@ -1,0 +1,1508 @@
+{
+  "physicsHz": 120,
+  "seed": 7,
+  "unchangedAutoAcceleration": true,
+  "unchangedVolleyBodyContact": true,
+  "samples": [
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 21.291666666666668,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 20.325,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 19.358333333333334,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 10.7,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 13.725,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 17.133333333333333,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 16.458333333333332,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 15.775,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 10.358333333333333,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 13.725,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 16.516666666666666,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 15.316666666666666,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 14.65,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 10.358333333333333,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g01",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 13.725,
+      "result": [
+        false,
+        0,
+        "WAVE 1 · 0 KO"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 14.866666666666667,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 12.75,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 13.425,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 11.575,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 9.808333333333334,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 12.733333333333333,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 10.808333333333334,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 11.875,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 10.775,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 9.808333333333334,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 11.55,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 9.758333333333333,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 10.225,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 10.775,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g02",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 9.808333333333334,
+      "result": [
+        false,
+        0
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 7.358333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 7.358333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 7.358333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 6.233333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 6.233333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 6.233333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 6.233333333333333,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g03",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5.45,
+      "result": [
+        false,
+        73,
+        "122 m"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g04",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 5,
+      "result": null,
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 132.9,
+      "result": [
+        false,
+        480,
+        "4 – 5"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 191.96666666666667,
+      "result": [
+        false,
+        720,
+        "6 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 251.03333333333333,
+      "result": [
+        false,
+        960,
+        "8 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 31.316666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 36.916666666666664,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 132.9,
+      "result": [
+        false,
+        480,
+        "4 – 5"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 191.96666666666667,
+      "result": [
+        false,
+        720,
+        "6 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 251.03333333333333,
+      "result": [
+        false,
+        960,
+        "8 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 31.316666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 36.916666666666664,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 132.9,
+      "result": [
+        false,
+        480,
+        "4 – 5"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 191.96666666666667,
+      "result": [
+        false,
+        720,
+        "6 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 251.03333333333333,
+      "result": [
+        false,
+        960,
+        "8 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 31.316666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 36.916666666666664,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 19.65,
+      "result": [
+        false,
+        0,
+        "0 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 25.116666666666667,
+      "result": [
+        false,
+        0,
+        "0 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 30.583333333333332,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 36.05,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 41.516666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 15"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 19.65,
+      "result": [
+        false,
+        0,
+        "0 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 25.116666666666667,
+      "result": [
+        false,
+        0,
+        "0 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 30.583333333333332,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 36.05,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 41.516666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 15"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 19.65,
+      "result": [
+        false,
+        0,
+        "0 – 7"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 25.116666666666667,
+      "result": [
+        false,
+        0,
+        "0 – 9"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 30.583333333333332,
+      "result": [
+        false,
+        0,
+        "0 – 11"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 36.05,
+      "result": [
+        false,
+        0,
+        "0 – 13"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g05",
+      "mode": "pong",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 41.516666666666666,
+      "result": [
+        false,
+        0,
+        "0 – 15"
+      ],
+      "rank": null
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 62.475,
+      "result": [
+        false,
+        1037,
+        "名次 6/6 · — · BEST —"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 68.925,
+      "result": [
+        false,
+        1261,
+        "名次 6/6 · — · BEST 0:19.239"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "seconds": 61.5,
+      "result": [
+        false,
+        1360,
+        "名次 6/6 · — · BEST 0:20.006"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 71.75,
+      "result": [
+        false,
+        1279,
+        "名次 6/6 · — · BEST 0:19.499"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "normal",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 39.983333333333334,
+      "result": [
+        true,
+        2271,
+        "名次 3/6 · 0:35.618 · BEST 0:16.413"
+      ],
+      "rank": 3
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 60.108333333333334,
+      "result": [
+        false,
+        921,
+        "名次 6/6 · — · BEST —"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 68.33333333333333,
+      "result": [
+        false,
+        1172,
+        "名次 6/6 · — · BEST 0:19.088"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "seconds": 70.81666666666666,
+      "result": [
+        false,
+        1551,
+        "名次 6/6 · — · BEST 0:19.399"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 82.29166666666667,
+      "result": [
+        false,
+        1378,
+        "名次 6/6 · — · BEST 0:18.968"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "hard",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 39.983333333333334,
+      "result": [
+        true,
+        2271,
+        "名次 3/6 · 0:35.618 · BEST 0:16.413"
+      ],
+      "rank": 3
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 57.95,
+      "result": [
+        false,
+        641,
+        "名次 6/6 · — · BEST —"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 73.03333333333333,
+      "result": [
+        false,
+        1192,
+        "名次 6/6 · — · BEST 0:18.825"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 77.48333333333333,
+      "result": [
+        false,
+        1298,
+        "名次 6/6 · — · BEST 0:18.982"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 82.29166666666667,
+      "result": [
+        false,
+        1378,
+        "名次 6/6 · — · BEST 0:18.968"
+      ],
+      "rank": 6
+    },
+    {
+      "id": "g06",
+      "mode": "volley",
+      "base": "expert",
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "seconds": 39.983333333333334,
+      "result": [
+        true,
+        2271,
+        "名次 3/6 · 0:35.618 · BEST 0:16.413"
+      ],
+      "rank": 3
+    }
+  ]
+}

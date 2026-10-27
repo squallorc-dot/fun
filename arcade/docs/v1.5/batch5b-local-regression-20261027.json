@@ -1,0 +1,200 @@
+{
+  "node": "20.20.2",
+  "playwright": "1.56.1",
+  "chromium": "154.0.8037.57 Debian 13",
+  "nodeSuites": [
+    {
+      "script": "scripts/test-arcade-art.cjs",
+      "status": "passed",
+      "summary": "ART NODE PASS 41 source, crop, tiling, layer and fallback checks"
+    },
+    {
+      "script": "scripts/test-arcade-audio.cjs",
+      "status": "passed",
+      "summary": "AUDIO PASS: fresh defaults, existing preference migration, explicit silence/manual modes and non-repeating random stages."
+    },
+    {
+      "script": "scripts/test-arcade-campaign.cjs",
+      "status": "passed",
+      "summary": "CAMPAIGN PASS: six games, five chapters, unlocks, mode/difficulty split and storage exceptions"
+    },
+    {
+      "script": "scripts/test-arcade-chapters.cjs",
+      "status": "passed",
+      "summary": "V1.2 CHAPTERS PASS: G01-G06 across five chapters, 5 distinct boss plans, platform zones, pinball mechanics, sports AI profiles, racing routes, G02 assault tactics"
+    },
+    {
+      "script": "scripts/test-arcade-controls.cjs",
+      "status": "passed",
+      "summary": "CONTROLS PASS 32 behavior checks; 120960 non-overlapping layouts, settings isolation, analog movement, legal G01 assist and G04 drag/release."
+    },
+    {
+      "script": "scripts/test-arcade-engines.cjs",
+      "status": "passed",
+      "summary": "G05 pong 105 seeded matches: PASS"
+    },
+    {
+      "script": "scripts/test-arcade-grounding.cjs",
+      "status": "passed",
+      "summary": "GROUNDING PASS: platform contact, jumping support, unsupported free fall and volleyball court shadows."
+    },
+    {
+      "script": "scripts/test-arcade-performance.cjs",
+      "status": "passed",
+      "summary": "PERFORMANCE NODE PASS 3242 checks: 810 real engine/FPS cases, 126 G02 cases, 240 exact road poses."
+    },
+    {
+      "script": "scripts/test-arcade-reliability.cjs",
+      "status": "passed",
+      "summary": "G04 recall and next shot: PASS"
+    },
+    {
+      "script": "scripts/test-arcade-replay.cjs",
+      "status": "passed",
+      "summary": "G03/G04/G05 replay and viewport rotation expert: PASS"
+    },
+    {
+      "script": "scripts/test-arcade-session.cjs",
+      "status": "passed",
+      "summary": "SESSION PASS: protected 3s resume, cancellation/restart, failed/hung startup, image decode gate and asset retry."
+    },
+    {
+      "script": "scripts/test-arcade-sprites.cjs",
+      "status": "passed",
+      "summary": "Guardian sprite coverage PASS: 35 selected-hero/game-mode render combinations."
+    },
+    {
+      "script": "scripts/test-campaign-integrity.cjs",
+      "status": "passed",
+      "summary": "CAMPAIGN INTEGRITY PASS 176 checks"
+    },
+    {
+      "script": "scripts/test-g01-animation.cjs",
+      "status": "passed",
+      "summary": "G01 animation: 63 hero/difficulty/FPS cases; 781 authored frames; boss phase, targeting, interruption and result poses PASS"
+    },
+    {
+      "script": "scripts/test-g01-combat.cjs",
+      "status": "passed",
+      "summary": "G01 expert combos projectile telegraph dash boss victory defeat restart: PASS"
+    },
+    {
+      "script": "scripts/test-g01-seven-skills.cjs",
+      "status": "passed",
+      "summary": "G01 Guardian abilities: 21 hero/difficulty scenarios PASS"
+    },
+    {
+      "script": "scripts/test-g02-device-parity.cjs",
+      "status": "passed",
+      "summary": "G02 DEVICE PARITY PASS 5355 checks; 945 device/wave samples, 7 heroes, 5 chapters, 3 difficulties, all 3 waves, desktop 60 / portrait 15 / landscape 10 FPS."
+    },
+    {
+      "script": "scripts/test-g04-stages.cjs",
+      "status": "passed",
+      "summary": "G04: 9 three-stage completion/retry suites, natural hit, ammo defeat, 120/30/20 fps PASS"
+    },
+    {
+      "script": "scripts/test-g05-table.cjs",
+      "status": "passed",
+      "summary": "630 G05 modes x difficulty x viewport x seed, legal bounces, and restart: PASS"
+    },
+    {
+      "script": "scripts/test-g05-volley.cjs",
+      "status": "passed",
+      "summary": "G05 volley PASS: 144 both-side serves + 72 standing J returns, 6 viewports, 3 difficulties, 4 frame rates; net rebound exits cleanly."
+    },
+    {
+      "script": "scripts/test-g06-race.cjs",
+      "status": "passed",
+      "summary": "G06 stationary camera, independent rivals, world collisions, closed track, overtaking and 360 camera positions: PASS"
+    },
+    {
+      "script": "scripts/test-g06-racing.cjs",
+      "status": "passed",
+      "summary": "G06 RACING PASS 1189 checks; 120 complete races, five chapters, three difficulties, two seeds, 120/60/30/10 FPS; AI passes 744."
+    },
+    {
+      "script": "scripts/test-gameplay-matrix.cjs",
+      "status": "passed",
+      "summary": "GAMEPLAY MATRIX PASS 868 checks; 105 genuine seven-mode / chapter / difficulty completions, 42 same-input 10–240 FPS routes"
+    },
+    {
+      "script": "scripts/test-gameplay-regressions.cjs",
+      "status": "passed",
+      "summary": "GAMEPLAY REGRESSION PASS 260 checks"
+    }
+  ],
+  "browserSuites": [
+    {
+      "script": "scripts/smoke.mjs",
+      "status": "passed",
+      "summary": "PASS 250 DOM/layout/interactive assertions across 14 pages, five viewports and two languages."
+    },
+    {
+      "script": "scripts/smoke-navigation.mjs",
+      "status": "passed",
+      "summary": "PASS 524 navigation/layout assertions: 16 pages, 7 widths, 2 languages, hero/game deep links and modal focus."
+    },
+    {
+      "script": "scripts/smoke-ost-persistent.mjs",
+      "status": "passed",
+      "summary": "PERSISTENT OST PASS 44 bilingual browser assertions"
+    },
+    {
+      "script": "scripts/smoke-arcade.mjs",
+      "status": "passed",
+      "summary": "ARCADE BROWSER PASS 514 assertions: six games, seven heroes, 20 G02 reentries, 20 other game sessions, bilingual mobile/desktop."
+    },
+    {
+      "script": "scripts/smoke-arcade-session.mjs",
+      "status": "passed",
+      "summary": "ARCADE SESSION BROWSER PASS 99: bilingual startup/decode gate, real media retries, preserved prefs, protected resume, cancellation and multi-pointer G02."
+    },
+    {
+      "script": "scripts/smoke-guardian-art.mjs",
+      "status": "passed",
+      "summary": "GUARDIAN ART BROWSER PASS 218 assertions: 781 nonempty/unclipped frames, seven G01/G02 heroes, 10 locale/viewport combinations."
+    },
+    {
+      "script": "scripts/smoke-arcade-visual.mjs",
+      "status": "passed",
+      "summary": "VISUAL / GUIDE BROWSER PASS 1398 checks: 10 locale/viewport combinations, 7 playable modes, real key behavior, focus and responsive cards."
+    },
+    {
+      "script": "scripts/smoke-arcade-audio.mjs",
+      "status": "passed",
+      "summary": "ARCADE AUDIO / MOBILE PASS 42: real playback, changing OST, nested focus, clean exit and 12 responsive locale cases."
+    },
+    {
+      "script": "scripts/smoke-arcade-art.mjs",
+      "status": "passed",
+      "summary": "ART BROWSER PASS 251 checks / 48 same-seed scenes (after)"
+    },
+    {
+      "script": "scripts/smoke-g02-mobile.mjs",
+      "status": "passed",
+      "summary": "G02 MOBILE BROWSER PASS 3378 checks; 60 starts, 2 languages, 7 sizes, 4 profiles, rotation and standalone entry."
+    },
+    {
+      "script": "scripts/smoke-arcade-performance.mjs",
+      "status": "passed",
+      "summary": "PERFORMANCE BROWSER PASS 257 checks; 21 bilingual desktop/portrait/landscape low-FPS scenarios."
+    },
+    {
+      "script": "scripts/smoke-g06-racing.mjs",
+      "status": "passed",
+      "summary": "G06 RACING BROWSER PASS 164 checks; two languages, all five circuits, desktop/portrait/landscape, four input profiles, lights/pause/boost/result/storage."
+    },
+    {
+      "script": "scripts/smoke-arcade-controls.mjs",
+      "status": "passed",
+      "summary": "ARCADE CONTROLS BROWSER PASS 6701 checks; 410 real starts, 2 locales, 7 viewport sizes, 4 profiles, 7 playable modes."
+    },
+    {
+      "script": "scripts/smoke-gameplay-campaign.mjs",
+      "status": "passed",
+      "summary": "GAMEPLAY CAMPAIGN BROWSER PASS 1546 checks; 220 real completions"
+    }
+  ],
+  "physicalDevices": "pending"
+}

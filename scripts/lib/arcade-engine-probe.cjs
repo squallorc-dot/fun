@@ -21,8 +21,8 @@ async function shooter({hero=0,chapter=1,difficulty='normal',seed=71,source,view
  vm.runInNewContext(fs.readFileSync(path.join(root,'arcade/assets/session-runtime.js'),'utf8'),scope);
  let code=source||fs.readFileSync(path.join(root,'assets/arcade-engine.js'),'utf8');
  const marker='shell();\n})();';if(!code.includes(marker))throw Error('G02 probe marker missing');
- code=code.replace(marker,"window.__engineProbe={start,loop,draw,beginWave,setOptions(h,c,d){chosen=h;window.BioArcadeChapter=c;difficulty=d;},setKeys(values){keys.clear();for(const k of values)keys.add(k);},snapshot(){return JSON.stringify({phase,game});}};"+marker);
+ code=code.replace(marker,"window.__engineProbe={start,loop,draw,refreshHud,beginWave,updateStep:update,dash,skill,liveGame:()=>game,setOptions(h,c,d){chosen=h;window.BioArcadeChapter=c;difficulty=d;},setKeys(values){keys.clear();for(const k of values)keys.add(k);},snapshot(){return JSON.stringify({phase,game});}};"+marker);
  vm.runInNewContext(code,scope);const probe=win.__engineProbe;probe.setOptions(hero,chapter,difficulty);await probe.start();
- return {...probe,get randomCalls(){return randomCalls;},context:ctx,state:()=>win.BioArcadeShooter.state};
+ return {...probe,element:node,get randomCalls(){return randomCalls;},context:ctx,state:()=>win.BioArcadeShooter.state};
 }
 module.exports={shooter,canvasContext};

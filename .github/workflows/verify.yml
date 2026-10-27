@@ -49,16 +49,15 @@ jobs:
       - name: Test real media and startup / resume lifecycle
         run: node scripts/smoke-arcade-session.mjs
       - name: Test decoded sprites, full game controls and OST
-        run: |
-          node scripts/smoke-guardian-art.mjs
-          node scripts/smoke-arcade-visual.mjs
-          node scripts/smoke-arcade-audio.mjs
-          node scripts/smoke-arcade-art.mjs
+        run: node scripts/ci-browser-check.mjs scripts/smoke-guardian-art.mjs scripts/smoke-arcade-visual.mjs scripts/smoke-arcade-audio.mjs scripts/smoke-arcade-art.mjs
+      - name: Test genuine bilingual five-chapter campaign completions
+        run: node scripts/smoke-gameplay-campaign.mjs
       - name: Capture actual RC desktop and mobile game screenshots
         run: |
           node scripts/capture-arcade-rc.mjs
           node scripts/capture-arcade-visual.mjs
       - name: Upload release candidate visual proof
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-rc-screenshots
@@ -67,6 +66,7 @@ jobs:
             arcade/qa/visual-v12/*.webp
             arcade/qa/site-ui-v7/*.png
             arcade/qa/art-v15/
+            arcade/qa/gameplay-v15/
           retention-days: 30
 
   arcade-engines:
@@ -102,6 +102,9 @@ jobs:
           node scripts/test-g02-device-parity.cjs
           node scripts/test-g06-racing.cjs
           node scripts/test-arcade-art.cjs
+          node scripts/test-gameplay-regressions.cjs
+          node scripts/test-campaign-integrity.cjs
+          node scripts/test-gameplay-matrix.cjs
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
