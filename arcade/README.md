@@ -8,6 +8,8 @@ v1.4 第 4A 批：G02 合併戰場資訊列、擴大手機橫向可視空間，�
 
 第 4B 批：依實際顯示大小配置 Canvas 像素、六款地面與物件分層、G03 鏡像接合背景、G06 天空裁切與一致光影；七英雄由現有向量原稿重製可選用的 2x 圖集。背景缺少高解析原稿的限制、同種子前後圖及量測見 [場景分層與解析度驗收](docs/34_v1.5_第4B批_場景分層與解析度_20261027.md)。保留 G02 手機戰場、G06 競速和 G05 桌球視角。
 
+第 5B 批：修正 G01 遠程敵人退出可攻擊範圍、G02 Boss 提前結算與提示時脈、G03 移動平台承載、G05 桌球 AI 重複抽取接球成功率，以及第五章失敗重試／重複結算／儲存失敗。七模式的真實通關矩陣、未調整的 G06 空操作平衡限制與 Cloud 瀏覽器診斷見 [玩法與闖關精修驗收](docs/35_v1.5_第5B批_六款遊戲玩法與闖關精修_20261027.md)。
+
 2026-10-25 上線後修正：大型遊戲／選角卡、中日文完整操作指南、G03–G06 七英雄圖集、排球網高與發球軌跡、快速點按保留。工程結果與待人工項目見 [視覺與操作修正紀錄](docs/19_上線後大廳視覺與球類操作修正_20261025.md)。
 
 2026-10-25 第二批更新：六款場景、四種怪物、固定遊戲尺度、依玩法配置觸控；G06 封閉透視賽道與五輛對手、G03 單層下穿及補給、G04 收球。詳見 [場景、怪物與操作更新](docs/20_六款場景怪物賽道與觸控更新_20261025.md)。
@@ -50,6 +52,10 @@ node scripts/test-g06-racing.cjs
 node scripts/smoke-g06-racing.mjs
 node scripts/test-arcade-art.cjs
 node scripts/smoke-arcade-art.mjs
+node scripts/test-gameplay-regressions.cjs
+node scripts/test-campaign-integrity.cjs
+node scripts/test-gameplay-matrix.cjs
+node scripts/smoke-gameplay-campaign.mjs
 ```
 
 上線前需檢查實際手機瀏覽器音訊解鎖、Android / iOS 遊戲鍵、旋轉方向、GA4 DebugView 和 OST 的授權範圍。

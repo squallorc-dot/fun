@@ -1,0 +1,87 @@
+{
+  "baseline": "bdb02a84adabbd4bc59de181ce9b3043265459db",
+  "node": "20.20.2",
+  "playwright": "1.56.1",
+  "chromium": "154.0.8037.57 Debian 13",
+  "regressions": [
+    {
+      "localLog": "5b-red-banner-g02.log",
+      "red": "AssertionError [ERR_ASSERTION]: G02 wave banner follows simulation time, not elapsed wall time"
+    },
+    {
+      "localLog": "5b-red-campaign-blocked.log",
+      "red": "AssertionError [ERR_ASSERTION]: quota failure preserves unlocks for this page session"
+    },
+    {
+      "localLog": "5b-red-campaign-browser.log",
+      "red": "AssertionError [ERR_ASSERTION]: failed final chapter must retry chapter 5, never jump back to chapter 1"
+    },
+    {
+      "localLog": "5b-red-campaign-finite.log",
+      "red": "AssertionError [ERR_ASSERTION]: nonfinite score cannot erase a valid previous best"
+    },
+    {
+      "localLog": "5b-red-g01.log",
+      "red": "AssertionError [ERR_ASSERTION]: G01 ranged enemy cannot retreat forever beyond the playable right edge"
+    },
+    {
+      "localLog": "5b-red-g02.log",
+      "red": "AssertionError [ERR_ASSERTION]: G02 killing Boss cannot skip pending third-wave enemies"
+    },
+    {
+      "localLog": "5b-red-g03.log",
+      "red": "AssertionError [ERR_ASSERTION]: G03 moving platform carries a standing player without slipping"
+    },
+    {
+      "localLog": "5b-red-g05.log",
+      "red": "AssertionError [ERR_ASSERTION]: G05 AI cannot reroll a missed stroke on the next physics tick"
+    },
+    {
+      "localLog": "5b-red-replay-browser.log",
+      "red": "AssertionError [ERR_ASSERTION]: replaying a won chapter cannot double campaign total"
+    },
+    {
+      "localLog": "5b-red-terminal-g02.log",
+      "red": "AssertionError [ERR_ASSERTION]: G02 score cannot change after the defeat was reported"
+    }
+  ],
+  "cloudControlDiagnostic": {
+    "priorFailures": "baseline stage-back actionability; G02 iframe ready; setup-play hidden; G06 resume phase",
+    "currentBaselineRuns": [
+      {
+        "playwright": "1.56.1",
+        "heartbeat": true,
+        "trace": true,
+        "starts": 410,
+        "checks": 6701,
+        "result": "pass"
+      },
+      {
+        "playwright": "1.63.0 (isolated diagnostic only)",
+        "heartbeat": true,
+        "trace": true,
+        "starts": 410,
+        "checks": 6701,
+        "result": "pass"
+      },
+      {
+        "playwright": "1.56.1",
+        "heartbeat": false,
+        "trace": false,
+        "starts": 410,
+        "checks": 6701,
+        "result": "pass"
+      },
+      {
+        "playwright": "1.63.0 (isolated diagnostic only)",
+        "heartbeat": false,
+        "trace": false,
+        "starts": 410,
+        "checks": 6701,
+        "result": "pass"
+      }
+    ],
+    "rootCause": "unreproduced; driver mismatch not proven; no engine fix claimed",
+    "testRelaxations": false
+  }
+}
