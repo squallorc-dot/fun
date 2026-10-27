@@ -68,5 +68,5 @@ async function runDefense(options={}){const {shooter}=require('./arcade-engine-p
  for(let frame=0;frame<fps*max&&v.state().phase==='playing';frame++)clock.advance(1/fps,dt=>{if(tick%6===0){const input=decide(options,'g02',v.liveGame(),tick,inputs);v.setKeys(input.keys);if(input.dodge)v.dash();if(input.skill)v.skill();}v.updateStep(dt);tick++;return v.state().phase==='playing';});
  const state=JSON.parse(v.snapshot());return {outcome:['victory','defeat'].includes(state.phase)?[state.phase==='victory',state.game.score]:null,state:state.game,initial,ticks:tick,inputs,retry:async()=>{await v.start();return JSON.parse(v.snapshot()).game;}};
 }
-const browserDrivers=()=>`const clamp=${clamp.toString()};const raceDriver=${raceDriver.toString()};${[fighter,stairs,pinball,sport,driver,defense,policy].map(fn=>fn.toString()).join('\n')};window.BioGameplayDriver={policy,defense};`;
+const browserDrivers=()=>`const clamp=${clamp.toString()};const raceControl=${require('./race-strategies.cjs').control.toString()};const raceDriver=${raceDriver.toString()};${[fighter,stairs,pinball,sport,driver,defense,policy].map(fn=>fn.toString()).join('\n')};window.BioGameplayDriver={policy,defense};`;
 module.exports={create,policy,run,defense,runDefense,browserDrivers};

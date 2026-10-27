@@ -17,12 +17,10 @@ function setup(seed=1,difficulty='normal'){
  return {g,getFinish:()=>finish,resetFinish:()=>{finish=null}};
 }
 const empty={up:true,down:false,fire:false,skill:false,left:false,right:false};
-function inputFor(g){const r=g.inspectRace(),lane=r.car.lane;
- const next=r.traffic.filter(o=>!o.hit&&o.z>r.progress).sort((a,b)=>a.z-b.z)[0];
- let target=0;
- if(next&&next.z-r.progress<115)target=next.lane>0?-.85:.85;
- return {...empty,left:lane>target+.025,right:lane<target-.025};
-}
+// The same 108 routes and completion assertions now use the new tyre/brake
+// rules. The old no-brake strategy remains measured in the 50-seed balance suite.
+const {pilot}=require('./lib/race-probe.cjs');
+function inputFor(g){return {...empty,...pilot(g.inspectRace())};}
 // A player who drives off the road is physically blocked at an unmet checkpoint,
 // and can recover by steering into the valid lane before crossing.
 const blocked=setup(3);
