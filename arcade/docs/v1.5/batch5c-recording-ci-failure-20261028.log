@@ -1,0 +1,28 @@
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	﻿2026-10-27T22:28:25.7125470Z ##[group]Run node scripts/smoke-gameplay-campaign.mjs
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:28:25.7125940Z [36;1mnode scripts/smoke-gameplay-campaign.mjs[0m
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:28:25.7188511Z shell: /usr/bin/bash -e {0}
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:28:25.7188794Z ##[endgroup]
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:12.9778394Z GAMEPLAY BROWSER zh/g01/volley/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:16.1415566Z GAMEPLAY BROWSER zh/g02/volley/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:17.4802210Z GAMEPLAY BROWSER zh/g03/volley/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:19.5525866Z GAMEPLAY BROWSER zh/g04/volley/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:21.3262825Z GAMEPLAY BROWSER zh/g05/volley/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:29:23.4070914Z GAMEPLAY BROWSER zh/g05/pong/normal five real chapters PASS
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8451598Z ACTIONABILITY DIAGNOSTICS /home/runner/work/fun/fun/arcade/qa/gameplay-v15/failure-diagnostics-0.json [{"url":"http://127.0.0.1:44555/arcade/zh/index.html","hidden":false,"timerGap":288.5999999999767,"phase":"g06"}]
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8782005Z node:internal/modules/run_main:123
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8782567Z     triggerUncaughtException(
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8783011Z     ^
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8783206Z
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8783567Z AssertionError [ERR_ASSERTION]: ffmpeg unavailable
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8784466Z     at check (file:///home/runner/work/fun/fun/scripts/smoke-gameplay-campaign.mjs:19:72)
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8785170Z     at recordDuel (file:///home/runner/work/fun/fun/scripts/smoke-gameplay-campaign.mjs:65:295)
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8785856Z     at async file:///home/runner/work/fun/fun/scripts/smoke-gameplay-campaign.mjs:92:88 {
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8786307Z   generatedMessage: false,
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8786562Z   code: 'ERR_ASSERTION',
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8786798Z   actual: false,
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8787040Z   expected: true,
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8788314Z   operator: '=='
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8788673Z }
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8788849Z
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8881340Z Node.js v20.20.2
+arcade-session-browser	Test genuine bilingual five-chapter campaign completions	2026-10-27T22:30:42.8893986Z ##[error]Process completed with exit code 1.

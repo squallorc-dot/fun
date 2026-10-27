@@ -26,17 +26,26 @@ try{for(const locale of ['zh','ja'])for(const [width,height,dpr]of sizes){
  check(!errors.length,errors.join(';'));await context.close();
 }
 if(label!=='before'){
- const page=await browser.newPage();await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());await page.goto(origin+'/arcade/zh/index.html');
- const atlas=await page.evaluate(async()=>{
+ const atlas={checked:0,failures:[],audits:[]};
+ for(let hero=0;hero<7;hero++){
+ const page=await browser.newPage(),requests=[];
+ page.on('requestfailed',request=>{if(request.url().startsWith(origin+'/'))requests.push({url:request.url(),failure:request.failure()});});
+ page.on('response',response=>{if(response.url().includes('/guardians/'))requests.push({url:response.url(),status:response.status(),type:response.headers()['content-type']});});
+ await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());await page.goto(origin+'/arcade/zh/index.html');
+ try{const one=await page.evaluate(async hero=>{
   let checked=0;const failures=[],canvas=document.createElement('canvas');canvas.width=2560;canvas.height=2880;const ctx=canvas.getContext('2d',{willReadFrequently:true});
-  for(let hero=0;hero<7;hero++){
+
    await BioGuardianArt.preload([hero,'enemy-grunt','enemy-brute','enemy-ranged','enemy-boss'],{highResolutionHero:true});
    const info=BioGuardianArt.inspect();if(info.cached!==5||info.decodedBytes>56.25*1024*1024||info.atlases.filter(x=>x.resolution===2).length!==1)failures.push('cache '+hero);
-   const image=new Image();image.src='../assets/guardians/2x/'+BioGuardianArt.keyFor(hero)+'.png';await image.decode();if(image.width!==2560||image.height!==2880)failures.push('dimensions '+hero);
+   const image=new Image();image.src='../assets/guardians/2x/'+BioGuardianArt.keyFor(hero)+'.png';try{await image.decode();}catch(error){throw Error('Atlas decode '+JSON.stringify({hero,url:image.currentSrc||image.src,width:image.naturalWidth,cache:info,memory:performance.memory?.usedJSHeapSize,error:String(error)}));}if(image.width!==2560||image.height!==2880)failures.push('dimensions '+hero);
    ctx.clearRect(0,0,2560,2880);ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,2560,2880).data;
    for(let f=0;f<71;f++){let visible=false;const sx=f%8*320,sy=Math.floor(f/8)*320;for(let y=0;y<320;y++)for(let x=0;x<320;x++){if(data[((sy+y)*2560+sx+x)*4+3]){visible=true;if(x<4||x>=316||y<4||y>=316)failures.push('clipped '+hero+'/'+f);}}if(!visible)failures.push('empty '+hero+'/'+f);checked++;}
-  }return {checked,failures};
- });check(atlas.checked===497,'all high-resolution animation frames decoded');check(!atlas.failures.length,atlas.failures.slice(0,5).join(';'));await page.close();
+  return {checked,failures,hero,memory:performance.memory?.usedJSHeapSize};
+ },hero);atlas.checked+=one.checked;atlas.failures.push(...one.failures);atlas.audits.push({...one,requests});
+ }catch(error){atlas.failures.push({hero,error:String(error),requests});throw error;
+ }finally{fs.writeFileSync(path.join(out,'atlas-audit.json'),JSON.stringify(atlas,null,2));await page.close();}
+ }
+ fs.writeFileSync(path.join(out,'atlas-audit.json'),JSON.stringify(atlas,null,2));check(atlas.checked===497,'all high-resolution animation frames decoded');check(!atlas.failures.length,atlas.failures.slice(0,5).join(';'));
  const recovery=await browser.newPage();await recovery.route('**/*',r=>r.request().url().includes('/guardians/2x/')||!r.request().url().startsWith(origin+'/')?r.abort():r.continue());await recovery.goto(origin+'/arcade/ja/index.html');
  const fallback=await recovery.evaluate(async()=>{await BioGuardianArt.preload([0],{highResolutionHero:true});const c=document.createElement('canvas');return {info:BioGuardianArt.inspect(),drawn:BioGuardianArt.draw(c.getContext('2d'),0,'idle',0,80,140)};});
  check(fallback.drawn&&fallback.info.atlases[0].fallback&&fallback.info.atlases[0].resolution===1&&fallback.info.atlases[0].ready,'missing optional 2x atlas falls back to decoded native image');await recovery.close();

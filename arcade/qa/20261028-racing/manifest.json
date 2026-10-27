@@ -1,0 +1,236 @@
+{
+  "export": "VP9 CQ18, yuv444p; full source dimensions and all 12fps frames retained",
+  "versions": {
+    "before": {
+      "sourceHash": "7e311c8238b4098daad4289c44b40ac05f5dcebe457170891070a494bc47bf97",
+      "clips": 15,
+      "frames": 568
+    },
+    "after": {
+      "sourceHash": "7a4cd200f1f93ab64aff3477ccd2374eaa5577d895abd9e1500a9efd62d273de",
+      "clips": 15,
+      "frames": 568
+    }
+  },
+  "files": [
+    {
+      "file": "before-c1-desktop.webm",
+      "sha256": "0ffc202a51ccd67558e4b315724e9839152987b858263522fbdb4c3d512b7111",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "before-c1-portrait.webm",
+      "sha256": "c88da70703c547a611ec0f16ef9cc3c649d1bb71e0b12a2e387b51e0f3dfaa55",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "before-c1-landscape.webm",
+      "sha256": "727cd967d28ee0a53ed8282d31d0dd5f261ece56d45669511eaabdd64a39b248",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "before-c2-desktop.webm",
+      "sha256": "8b00756f6518d2e3f8ba0dcba72738c1af8c51ff1bf204fbc9d8ac2c9594e2d5",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "before-c2-portrait.webm",
+      "sha256": "7b6ceca0f75ada0a5201a415e38e9e9d86ef72a81f86165c68c5a04d2e693f4b",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "before-c2-landscape.webm",
+      "sha256": "1661bd0a2c79a38ef772255b70d75b29bcb4f8665241ca92965f25d32b3512d2",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "before-c3-desktop.webm",
+      "sha256": "c29b0b74e776bf358e34462ea71bc5ad9f244d643947bb6a9551c3455fcc3bb4",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "before-c3-portrait.webm",
+      "sha256": "f257b3f20acbd2d7b93622a74a4413bace16044c6fd56dc0aeffa7c24f4850bc",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "before-c3-landscape.webm",
+      "sha256": "4bedbd261cd67228947c1f8216976ee176688fb9f7f804794401e5fe2bd1eb6f",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "before-c4-desktop.webm",
+      "sha256": "10fba2cc5a7ff9c19fa204acd002dfa937717659876f090bf6375a1f4b8fb676",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "before-c4-portrait.webm",
+      "sha256": "63f7e5431bde89ac559d7aec43760c23f66e53d8a601b6d85092387368660a87",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "before-c4-landscape.webm",
+      "sha256": "529671a7b66ab80b50691969926397c0fc7f7ddd4c7222b4293806a62264b948",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "before-c5-desktop.webm",
+      "sha256": "3c81caae07a86b41e833ec5a81b6b304802456f4bb02f0bc761c72426b61caf3",
+      "frames": 64,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "before-c5-portrait.webm",
+      "sha256": "8121d2200b0dffacaa66cb1809142786a04485f02c5161ea35ab6a7b1c91a28d",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "before-c5-landscape.webm",
+      "sha256": "b911c98da81a664163f87cc59f46c11fb9245e0528d4779dcff29dcb5012ac6c",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "after-c1-desktop.webm",
+      "sha256": "767a3ac3a6096be7439958a18e923422c7a7aec63fdb5d58c921d756983613b0",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "after-c1-portrait.webm",
+      "sha256": "89e109331aec03ddbab138e4f4a5fab048911568ae57bf536cf42213ca4ef4ed",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "after-c1-landscape.webm",
+      "sha256": "e6193de2798ec67b2ea8a1bdfafc75697edb169ced36a9228c33305e976c2b45",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "after-c2-desktop.webm",
+      "sha256": "d2b2a1fe8b5275a016ae66ce1a2dee6dd9707d4ec111c6bc891ff4bed96926b6",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "after-c2-portrait.webm",
+      "sha256": "501139201567137cfa7f70d4ba67c6e6bb21adeb5d9a757ba36718229fc3ebc6",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "after-c2-landscape.webm",
+      "sha256": "8089e082187757849aa954609ad31e4b0034ca70713bbc3515e1bf8d428a7fa6",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "after-c3-desktop.webm",
+      "sha256": "d5ff515e094bbe86922166e0772285b9e1fbc09607c99636eedfbd2dfceac880",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "after-c3-portrait.webm",
+      "sha256": "eb0af7c3560c9eee0bbf558803975781da03a58207c0e198fee4c710e0b88e2f",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "after-c3-landscape.webm",
+      "sha256": "d7d03936b957bcabc7ed6c0a7272d5e6c65fb3283db33ee9d6891b9781997e0b",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "after-c4-desktop.webm",
+      "sha256": "50d52611d302097d761a180030c6e646053a942b4d2c01f281f5d8737aedb59b",
+      "frames": 36,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "after-c4-portrait.webm",
+      "sha256": "356193c98908bbc209b6dc145e4e8816809103451a06cfdc900f4391b41253d0",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "after-c4-landscape.webm",
+      "sha256": "be3da8e99523ca4c70b889203c65d0840bd76563f259dcd27cd6d932f262797a",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "file": "after-c5-desktop.webm",
+      "sha256": "23943c0999587074a56aa6e87e6a45f11bae289bfb4ba04fdb21f35a9e8db0f6",
+      "frames": 64,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "after-c5-portrait.webm",
+      "sha256": "50720c2119d2eba48f47b19bfe17e9e4b6e45629b0972af250640da3e8d48040",
+      "frames": 36,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "after-c5-landscape.webm",
+      "sha256": "85a3e8b3e93e28edff7e1bd74353bd651cbde9836b8bec533a498bb61e0baf67",
+      "frames": 36,
+      "width": 844,
+      "height": 390
+    }
+  ],
+  "genuineRace": {
+    "frames": 418,
+    "events": 6,
+    "scenario": {
+      "brakeAt": 5,
+      "brakeDuration": 0.2
+    },
+    "source": "ordinary controls, one 0.2s brake error and recovery, inherited grid after four genuine rounds; no state/result setters"
+  }
+}

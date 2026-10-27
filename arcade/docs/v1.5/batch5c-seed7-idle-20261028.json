@@ -1,0 +1,77 @@
+[
+  {
+    "label": "main-baseline",
+    "ref": "8314ab5",
+    "sourceHash": "7e311c8238b4098daad4289c44b40ac05f5dcebe457170891070a494bc47bf97",
+    "hero": 0,
+    "seed": 7,
+    "chapter": 5,
+    "difficulty": "expert",
+    "input": {},
+    "physicsHz": 120,
+    "initial": {
+      "progress": 0,
+      "lane": 0,
+      "rank": 6
+    },
+    "win": true,
+    "rank": 3,
+    "status": "finished",
+    "health": 53.89447320354188,
+    "progress": 2400,
+    "checkpoints": 6,
+    "elapsed": 36.98333333333188,
+    "totalTime": 35.61839139569978,
+    "ticks": 4798
+  },
+  {
+    "label": "physics-with-original-grid",
+    "ref": "958a67b",
+    "sourceHash": "f48f01b9e86b420008b46471c41e9ea09a703acc50a8ed9d51392f913b5a48cd",
+    "hero": 0,
+    "seed": 7,
+    "chapter": 5,
+    "difficulty": "expert",
+    "input": {},
+    "physicsHz": 120,
+    "initial": {
+      "progress": 0,
+      "lane": 0,
+      "rank": 6
+    },
+    "win": false,
+    "rank": 6,
+    "status": "dnf",
+    "health": 0,
+    "progress": 1199.99,
+    "checkpoints": 2,
+    "elapsed": 49.37499999999784,
+    "totalTime": null,
+    "ticks": 6285
+  },
+  {
+    "label": "integrated",
+    "ref": null,
+    "sourceHash": "7a4cd200f1f93ab64aff3477ccd2374eaa5577d895abd9e1500a9efd62d273de",
+    "hero": 0,
+    "seed": 7,
+    "chapter": 5,
+    "difficulty": "expert",
+    "input": {},
+    "physicsHz": 120,
+    "initial": {
+      "progress": 0,
+      "lane": 0.6,
+      "rank": 6
+    },
+    "win": false,
+    "rank": 6,
+    "status": "dnf",
+    "health": 0,
+    "progress": 1199.99,
+    "checkpoints": 2,
+    "elapsed": 53.5999999999976,
+    "totalTime": null,
+    "ticks": 6792
+  }
+]
