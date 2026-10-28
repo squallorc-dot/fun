@@ -50,9 +50,11 @@ try{
  save();assert.equal(report.errors.length,0,report.errors.join('; '));console.log('FRIENDS ACCEPTANCE PASS: 20 conditions, >=10 min, both-side effective contacts, reconnect');
 }catch(error){report.errors.push(String(error).slice(0,500));save();await safeFailure(v.pages,out);throw error;}finally{
  save();
- const evidence={matrix:report.matrix,contacts:report.contacts,exchanges:report.exchanges,stressDurationMs:report.stressDurationMs,stressRounds:report.stress.length,firstStress:report.stress[0]?.peers,lastStress:report.stress.at(-1)?.peers,simulatedFocusLoss:report.simulatedFocusLoss,repair:report.repair,errors:report.errors};
- // Bounded, anonymous metrics in Checks API remain available if artifact downloads are restricted.
- const summary=JSON.stringify(evidence).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');
- console.log('::notice file=scripts/acceptance-friends-v16.mjs::'+summary);await v.close();
+ const sendNotice=value=>{const text=JSON.stringify(value).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');console.log('::notice file=scripts/acceptance-friends-v16.mjs::'+text);};
+ const compact=p=>({phase:p.phase,epoch:p.epoch,resultCount:p.resultCount,totalResults:p.totalResults,timers:p.timers,pendingPings:p.pendingPings,pendingInputs:p.pendingInputs,heap:p.heap,metrics:p.metrics});
+ // Keep each notice under the Checks API's per-annotation limit.
+ for(let i=0;i<report.matrix.length;i+=3)sendNotice({matrix:report.matrix.slice(i,i+3).map(r=>({targetRttMs:r.targetRttMs,loss:r.loss,mode:r.mode,pass:r.pass,contacts:r.contacts,peers:r.peers?.map(compact)}))});
+ sendNotice({contacts:report.contacts,exchanges:report.exchanges,stressDurationMs:report.stressDurationMs,stressRounds:report.stress.length,firstStress:report.stress[0]?.peers.map(compact),lastStress:report.stress.at(-1)?.peers.map(compact),simulatedFocusLoss:report.simulatedFocusLoss?.paused&&report.simulatedFocusLoss?.resumed,repair:report.repair?.pass,errors:report.errors});
+ await v.close();
 }
 
