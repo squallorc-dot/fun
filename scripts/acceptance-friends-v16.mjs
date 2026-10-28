@@ -21,6 +21,8 @@ try{
   const mode=(report.matrix.length%2?'volley':'pong');const row={targetRttMs:rtt,loss,mode};report.matrix.push(row);
   try{
    await Promise.all([a,b].map(p=>p.evaluate(({rtt,loss})=>BioFriendsApp.session.link.simulate({delay:rtt/2,loss,jitter:0}),{rtt,loss})));
+   await wait(500); // drain replies from the previous condition before resetting measurement windows
+   await Promise.all([a,b].map(p=>p.evaluate(()=>{const s=BioFriendsApp.session;s.link.stats.rtts.length=0;s.link.stats.dropped=0;s.inputLatency.length=0;})));
    await start(a,b,mode);await observe(a,mode);await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
    await Promise.all([driver(a,0,{missAfter:999}),driver(b,1,{missAfter:999})]);await wait(8000);
    await Promise.all([a,b].map(p=>p.evaluate(()=>window.__stopFriendDriver?.())));row.peers=await Promise.all([a,b].map(health));row.contacts=await collect(a,mode);
