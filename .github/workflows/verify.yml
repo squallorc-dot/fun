@@ -46,6 +46,9 @@ jobs:
       - name: Measure real multiplayer network conditions and prolonged play
         timeout-minutes: 45
         run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-v16.mjs
+      - name: Validate high latency matches and CDP resource lifecycle
+        timeout-minutes: 40
+        run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-final-v16.mjs
       - name: Package byte-exact friends evidence with recoverable aliases
         if: always()
         run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/friends 'arcade/qa/friends-v16/results/'
