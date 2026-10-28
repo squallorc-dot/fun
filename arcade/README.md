@@ -61,3 +61,10 @@ node scripts/smoke-gameplay-campaign.mjs
 ```
 
 上線前需檢查實際手機瀏覽器音訊解鎖、Android / iOS 遊戲鍵、旋轉方向、GA4 DebugView 和 OST 的授權範圍。
+
+
+## v1.6 第 6 階段（規劃／未發布）
+
+[完整第 6 階段架構與驗收規格](docs/37_v1.6_第6階段_好友連線與多人架構_20261028.md)｜[總工作單 #27](https://github.com/squallorc-dot/fun/issues/27)｜[6A-0 #26](https://github.com/squallorc-dot/fun/issues/26)。
+
+第一輪選擇完全不增加主機費的 GitHub Pages＋原生 JavaScript／WebRTC；手動交換 offer／answer／ICE，無 STUN／TURN／自動房間，僅先測同 LAN 雙設備。隔離的 [P2P 傳輸診斷頁](qa/p2p-v16/index.html) 僅測真正資料通道、ping 與遠端按鍵，不是 G05 真正雙人遊戲。未通過開發、CI、真機和授權之前，不得將此功能標為正式可玩多人模式。
