@@ -43,6 +43,9 @@ jobs:
         run: node scripts/ci-browser-check.mjs scripts/smoke-p2p-v16.mjs
       - name: Test real two-browser G05 games and shared lobby
         run: node scripts/ci-browser-check.mjs scripts/smoke-friends-v16.mjs
+      - name: Measure real multiplayer network conditions and prolonged play
+        timeout-minutes: 45
+        run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-v16.mjs
       - name: Package byte-exact friends evidence with recoverable aliases
         if: always()
         run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/friends 'arcade/qa/friends-v16/results/'
