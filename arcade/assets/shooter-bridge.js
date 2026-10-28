@@ -12,6 +12,7 @@
   // Co-op messages retain the same parent identity and origin checks as all hub commands.
   if(msg.command==='coop-config'){if(Object.keys(msg).every(k=>['source','command','hero'].includes(k))&&Number.isInteger(msg.hero)&&msg.hero>=0&&msg.hero<=6)api.configureCoop({hero:msg.hero});return;}
   if(msg.command==='coop-input'){if(Object.keys(msg).every(k=>['source','command','input'].includes(k)))api.setRemoteInput(msg.input);return;}
+  if(msg.command==='coop-snapshot'){if(Object.keys(msg).every(k=>['source','command'].includes(k)))send({type:'coop-snapshot',state:api.coopSnapshot()});return;}
   if(msg.command==='control-settings'){api.applyControls(msg.controls);return;}
   if(msg.command==='audio-settings'){api.applyAudio(msg.sfx);return;}
   if(msg.command==='background-pause'){guideWasPlaying=false;api.pause(true);return;}
