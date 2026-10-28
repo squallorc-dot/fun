@@ -9,7 +9,12 @@ function snapshot(v){
  const keys=['players','enemies','fallen','bolts','effects','wave','spawn','spawnClock','elapsed','score','kills','t','bossSpawned','impactStop','ending','revives','rescueCooldown','finished'];
  if(!fields(v,keys)||Object.keys(v).length!==keys.length||!data(v)||!Array.isArray(v.players)||v.players.length!==2||!v.players.every(p=>obj(p)&&Number.isInteger(p.hero)&&p.hero>=0&&p.hero<=6&&finite(p.x)&&finite(p.y)&&finite(p.hp)&&finite(p.max)&&p.max>0&&p.hp>=0&&p.hp<=p.max&&typeof p.down==='boolean'&&typeof p.clip==='string'&&finite(p.clipTime)&&obj(p.buttons)))return false;
  if(!['enemies','fallen','bolts','effects'].every(k=>Array.isArray(v[k]))||v.enemies.length>80||v.fallen.length>80||v.bolts.length>200||v.effects.length>512)return false;
- if(!v.enemies.every(e=>obj(e)&&['boss','grunt','brute','ranged'].includes(e.type)&&finite(e.x)&&finite(e.y)&&finite(e.hp)&&finite(e.max)&&e.max>0&&Number.isSafeInteger(e.netId)&&e.netId>0&&typeof e.clip==='string'&&finite(e.clipTime)))return false;
+ const enemy=e=>obj(e)&&['boss','grunt','brute','ranged'].includes(e.type)&&finite(e.x)&&finite(e.y)&&finite(e.hp)&&finite(e.max)&&e.max>0&&Number.isSafeInteger(e.netId)&&e.netId>0&&typeof e.clip==='string'&&finite(e.clipTime);
+ if(!v.enemies.every(enemy)||!v.fallen.every(enemy)||new Set(v.enemies.map(e=>e.netId)).size!==v.enemies.length)return false;
+ if(!v.players.every(p=>finite(p.z)&&p.z>=0&&finite(p.dir)&&[-1,1].includes(p.dir)&&p.down===(p.hp===0)&&(p.action===null||obj(p.action)&&Number.isInteger(p.action.combo)&&p.action.combo>=1&&p.action.combo<=3&&finite(p.action.time)&&finite(p.action.hit)&&finite(p.action.duration)&&typeof p.action.connected==='boolean'&&[-1,1].includes(p.action.dir))))return false;
+ if(!v.bolts.every(b=>obj(b)&&['x','y','vx','vy','r','life','damage'].every(k=>finite(b[k]))&&b.r>=0&&typeof b.color==='string'))return false;
+ if(!v.effects.every(f=>obj(f)&&finite(f.x)&&finite(f.y)&&finite(f.life)&&typeof f.color==='string'&&(f.type==='beam'?finite(f.x2)&&finite(f.y2):f.type==='slash'?[-1,1].includes(f.dir)&&Number.isInteger(f.combo):f.type==='ring'?finite(f.r)&&f.r>=0:f.type===undefined&&finite(f.r)&&f.r>=0)))return false;
+ if(v.finished&&v.ending===null)return false;
  if(!Number.isInteger(v.wave)||v.wave<1||v.wave>3||!Number.isInteger(v.spawn)||v.spawn<0||!Number.isInteger(v.kills)||v.kills<0||!Number.isInteger(v.revives)||v.revives<0||v.revives>2||typeof v.finished!=='boolean'||typeof v.bossSpawned!=='boolean'||!['score','elapsed','t','spawnClock','impactStop','rescueCooldown'].every(k=>finite(v[k])))return false;
  return v.ending===null||obj(v.ending)&&typeof v.ending.win==='boolean'&&finite(v.ending.result)&&typeof v.ending.note==='string'&&finite(v.ending.time);
 }

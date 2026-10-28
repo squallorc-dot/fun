@@ -47,6 +47,9 @@ jobs:
         run: node scripts/ci-browser-check.mjs scripts/smoke-friends-v16.mjs
       - name: Test G01 co-op and G05 switching over real RTC
         run: node scripts/ci-browser-check.mjs scripts/smoke-g01-friends-6b.mjs
+      - name: Compare G01 state across real RTC network conditions
+        timeout-minutes: 20
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g01-matrix-6b.mjs
       - name: Measure real multiplayer network conditions and prolonged play
         timeout-minutes: 45
         run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-v16.mjs

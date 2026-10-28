@@ -1,0 +1,15 @@
+// Real RTC, application-layer impairment, real G01 inputs and host/guest state comparison.
+import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {setup,pair,start,root,safeFailure} from './lib/friends-browser.mjs';
+const v=await setup(),[a,b]=v.pages,out=path.join(root,'arcade/qa/friends-v16/results'),rows=[];fs.mkdirSync(out,{recursive:true});
+try{await pair(a,b);for(const rtt of [0,50,100,150,200])for(const loss of [0,.01,.03,.05]){
+ await Promise.all(v.pages.map(p=>p.evaluate(({rtt,loss})=>BioFriendsApp.session.link.simulate({delay:rtt/2,loss,jitter:0}),{rtt,loss})));await new Promise(r=>setTimeout(r,500));await Promise.all(v.pages.map(p=>p.evaluate(()=>{const s=BioFriendsApp.session;s.link.stats.rtts.length=0;s.inputLatency.length=0;s.link.stats.dropped=0;})));await start(a,b,'coop');await Promise.all(v.pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
+ for(const p of v.pages)await p.evaluate(()=>{let on=false;window.__g01matrix=setInterval(()=>{on=!on;document.body.dispatchEvent(new KeyboardEvent(on?'keydown':'keyup',{key:'j',bubbles:true}));},180);document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'d',bubbles:true}));});
+ await new Promise(r=>setTimeout(r,6500));for(const p of v.pages)await p.evaluate(()=>{clearInterval(window.__g01matrix);for(const k of ['d','j'])document.body.dispatchEvent(new KeyboardEvent('keyup',{key:k,bubbles:true}));});
+ await a.locator('#pause').click();await Promise.all(v.pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='paused')));
+ const peers=await Promise.all(v.pages.map(p=>p.evaluate(()=>{const x=BioFriendsApp.inspect();return {phase:x.session.phase,metrics:x.session.metrics,world:{wave:x.combat.wave,score:x.combat.score,kills:x.combat.kills,enemies:x.combat.enemies,players:x.match.players.map(q=>({x:q.x,y:q.y,hp:q.hp,energy:q.energy,down:q.down}))}};})));
+ assert.deepEqual(peers[0].world,peers[1].world,'authoritative paused state must agree');assert(peers.every(p=>p.metrics.state==='connected'));
+ rows.push({rtt,loss,peers:peers.map(p=>p.metrics),world:{wave:peers[0].world.wave,score:peers[0].world.score,kills:peers[0].world.kills,players:peers[0].world.players},stateConsistent:true});
+ await b.locator('#return').click();await Promise.all(v.pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
+ }
+ fs.writeFileSync(path.join(out,'g01-matrix.json'),JSON.stringify({method:'native RTC; app-layer half-RTT each side; loss only input/snapshot; 6.5s real keyboard; reliable pause then compare world; no human quality conclusion',rows},null,2));for(let i=0;i<rows.length;i+=3)console.log('::notice file=scripts/smoke-g01-matrix-6b.mjs::'+JSON.stringify({matrix:rows.slice(i,i+3)}));console.log('G01 RTC MATRIX PASS: 20 conditions, paused state consistent');
+}catch(e){fs.writeFileSync(path.join(out,'g01-matrix-partial.json'),JSON.stringify({rows,error:String(e)},null,2));await safeFailure(v.pages,out);throw e;}finally{await v.close();}
