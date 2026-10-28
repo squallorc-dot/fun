@@ -48,4 +48,11 @@ try{
  report.pageErrors=v.errors;assert.equal(v.errors.length,0,'no browser exceptions');
  for(const mode of ['pong','volley'])if(!report.contacts[mode].every(n=>n>0)||!report.exchanges[mode])report.errors.push(`${mode}: both-side effective contacts and alternating rally not demonstrated`);
  save();assert.equal(report.errors.length,0,report.errors.join('; '));console.log('FRIENDS ACCEPTANCE PASS: 20 conditions, >=10 min, both-side effective contacts, reconnect');
-}catch(error){report.errors.push(String(error).slice(0,500));save();await safeFailure(v.pages,out);throw error;}finally{save();await v.close();}
+}catch(error){report.errors.push(String(error).slice(0,500));save();await safeFailure(v.pages,out);throw error;}finally{
+ save();
+ const evidence={matrix:report.matrix,contacts:report.contacts,exchanges:report.exchanges,stressDurationMs:report.stressDurationMs,stressRounds:report.stress.length,firstStress:report.stress[0]?.peers,lastStress:report.stress.at(-1)?.peers,simulatedFocusLoss:report.simulatedFocusLoss,repair:report.repair,errors:report.errors};
+ // Bounded, anonymous metrics in Checks API remain available if artifact downloads are restricted.
+ const summary=JSON.stringify(evidence).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');
+ console.log('::notice file=scripts/acceptance-friends-v16.mjs::'+summary);await v.close();
+}
+
