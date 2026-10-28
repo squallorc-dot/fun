@@ -1,0 +1,4 @@
+'use strict';
+const assert=require('node:assert/strict'),{shooter}=require('./lib/arcade-engine-probe.cjs');
+(async()=>{for(const difficulty of ['normal','hard','expert'])for(let chapter=1;chapter<=5;chapter++){let expected;for(const fps of [10,15,30,60,120,240]){const p=await shooter({hero:0,coopHero:3,chapter,difficulty,seed:71});p.setRemoteInput({moveX:.3,moveY:-.1,fire:true});p.setKeys(['d',' ']);for(let n=1;n<=fps*6;n++)p.loop(n/fps*1000);const state=JSON.parse(p.snapshot());assert.equal(p.state().simulation.ticks,720);assert.equal(state.phase,'playing');const value=JSON.stringify(state);if(expected)assert.equal(value,expected,`co-op physics must match at ${fps} FPS`);else expected=value;}}
+console.log('G02 COOP FPS PASS: 90 chapter/difficulty/frame-rate samples, 10–240 FPS, shared 600 world');})().catch(e=>{console.error(e);process.exitCode=1;});
