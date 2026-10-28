@@ -45,7 +45,12 @@ try{
  }
  assert.equal(report.cases.length,12);assert.equal(v.errors.length,0,JSON.stringify(v.errors));report.pageErrors=v.errors;save();console.log('FINAL 6A: twelve complete input-driven games, six reconnect cycles, CDP resource snapshots');
 }catch(e){report.errors.push(String(e).slice(0,400));save();await safeFailure(v.pages,out);throw e;}finally{
- save();for(const r of report.cases)notice({case:{rtt:r.targetRttMs,loss:r.loss,mode:r.mode,connected:r.connected,resultConsistent:r.resultConsistent,result:r.game?.result,contacts:r.contacts,experience:r.experience,peers:r.game?.peers}});
- for(const s of report.resources)notice({resources:s});if(report.errors.length)notice({errors:report.errors});
+ save();
+ // Checks limits annotations per step; group compact data to preserve every case and sample.
+ const compactCase=r=>({rtt:r.targetRttMs,loss:r.loss,mode:r.mode,connected:r.connected,resultConsistent:r.resultConsistent,result:r.game?.result,contacts:r.contacts,experience:r.experience,peers:r.game?.peers.map(p=>({metrics:p.metrics,driver:p.driver}))});
+ const compactSample=pair=>pair.map(v=>({label:v.label,heap:v.heap.usedSize,dom:v.dom,native:v.native,app:v.app}));
+ for(let i=0;i<report.cases.length;i+=3)notice({cases:report.cases.slice(i,i+3).map(compactCase)});
+ for(let i=0;i<report.resources.length;i+=3)notice({resources:report.resources.slice(i,i+3).map(compactSample)});
+ if(report.errors.length)notice({errors:report.errors});
  for(const c of cdps)await c.detach();await v.close();
 }
