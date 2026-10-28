@@ -89,7 +89,7 @@ jobs:
           name: bio-city-arcade-rc-screenshots
           path: arcade/qa/artifact-v16/rc/
           compression-level: 9
-          retention-days: ${{ (failure() || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-engines:
     runs-on: ubuntu-latest
@@ -147,7 +147,7 @@ jobs:
           name: bio-city-g06-balance-v15
           path: arcade/qa/artifact-v16/balance/
           compression-level: 9
-          retention-days: ${{ (failure() || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
@@ -174,7 +174,7 @@ jobs:
           name: bio-city-arcade-controls-v14
           path: arcade/qa/artifact-v16/controls/
           compression-level: 9
-          retention-days: ${{ (failure() || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-performance-browser:
     runs-on: ubuntu-24.04
@@ -201,4 +201,4 @@ jobs:
           name: bio-city-arcade-performance-v14
           path: arcade/qa/artifact-v16/performance/
           compression-level: 9
-          retention-days: ${{ (failure() || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
