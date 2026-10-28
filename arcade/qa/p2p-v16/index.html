@@ -48,138 +48,22 @@ code{color:#b1f8e1}#status{font-weight:700}#metrics{font-variant-numeric:tabular
 <p class="muted">在對方畫面的「最新按鍵」中看到動作，才代表真的透過 WebRTC 收到資料。</p>
 </div>
 <p class="foot">試驗版本 v1.6-P2P-LAB；不寫入單人存檔、不使用外部連線服務、不載入遊戲素材、不計入正式通關記錄。</p>
-<script>
-"use strict";
-(() => {
- const $ = id => document.getElementById(id);
- const MAX = 120000, VERSION=1, rtcSupported=typeof RTCPeerConnection!=="undefined";
- let pc=null,control=null,input=null,role="",samples=[],pingTimer=null,inputTimer=null,seq=0,receivedSeq=-1,sent=0,received=0;
- const held={up:false,down:false,fire:false};
- const setStatus=txt=>{$("status").textContent=txt;};
- const open=dc=>dc && dc.readyState==="open";
- function metrics(){
-   const v=samples.slice().sort((a,b)=>a-b),at=q=>v.length?v[Math.ceil(v.length*q)-1].toFixed(1)+" ms":"—";
-   $("rtt50").textContent=at(.5);$("rtt95").textContent=at(.95);
-   $("counts").textContent=sent+"／"+received;
-   $("channels").textContent=open(control)&&open(input)?"control + input 已連通":"尚未全部連通";
-   document.querySelectorAll("[data-key]").forEach(b=>b.disabled=!open(input));
- }
- function reset(){
-   clearInterval(pingTimer);clearInterval(inputTimer);pingTimer=null;inputTimer=null;
-   for(const dc of [control,input])try{dc?.close();}catch{}
-   try{pc?.close();}catch{}
-   pc=null;control=null;input=null;role="";seq=0;receivedSeq=-1;sent=0;received=0;samples=[];Object.keys(held).forEach(k=>held[k]=false);
-   $("role").textContent="—";$("remoteKeys").textContent="—";$("local").value="";metrics();setStatus("尚未建立");
- }
- function send(dc,payload){
-   if(!open(dc)||dc.bufferedAmount>131072)return false;
-   dc.send(JSON.stringify(payload));return true;
- }
- function attach(dc){
-   if(!["control","input"].includes(dc.label)){dc.close();return;}
-   if(dc.label==="control"){if(control&&control!==dc){dc.close();return;}control=dc;}
-   else {if(input&&input!==dc){dc.close();return;}input=dc;}
-   dc.addEventListener("open",()=>{
-     metrics();if(open(control)&&open(input)){setStatus("已連線，可傳送輸入");}
-     if(dc.label==="control"&&!pingTimer)pingTimer=setInterval(()=>{
-       send(control,{v:VERSION,type:"ping",time:performance.now()});
-     },750);
-     if(dc.label==="input"&&!inputTimer)inputTimer=setInterval(()=>{
-       if(send(input,{v:VERSION,type:"input",seq:seq++,...held}))sent++;
-       metrics();
-     },50);
-   });
-   dc.addEventListener("close",()=>{metrics();setStatus("資料通道中斷，請重設並重新配對");});
-   dc.addEventListener("message",ev=>{
-     if(typeof ev.data!=="string"||ev.data.length>2048)return;
-     let msg;try{msg=JSON.parse(ev.data);}catch{return;}
-     if(!msg||msg.v!==VERSION||typeof msg.type!=="string")return;
-     if(dc.label==="control"&&msg.type==="ping"&&Number.isFinite(msg.time))send(control,{v:VERSION,type:"pong",time:msg.time});
-     if(dc.label==="control"&&msg.type==="pong"&&Number.isFinite(msg.time)){
-       const ms=performance.now()-msg.time;
-       if(ms>=0&&ms<30000){samples.push(ms);if(samples.length>100)samples.shift();metrics();}
-     }
-     if(dc.label==="input"&&msg.type==="input"&&Number.isSafeInteger(msg.seq)&&msg.seq>receivedSeq&&
-       typeof msg.up==="boolean"&&typeof msg.down==="boolean"&&typeof msg.fire==="boolean"){
-       receivedSeq=msg.seq;received++;$("remoteKeys").textContent=[msg.up?"上":null,msg.down?"下":null,msg.fire?"擊球":null].filter(Boolean).join("＋")||"無";metrics();
-     }
-   });
- }
- function make(roleName){
-   reset();if(!rtcSupported)throw Error("此瀏覽器不支援 WebRTC");
-   role=roleName;$("role").textContent=roleName==="host"?"A／房主":"B／受邀";
-   pc=new RTCPeerConnection({iceServers:[]});
-   pc.addEventListener("connectionstatechange",()=>{
-     const s=pc?.connectionState;if(!s)return;
-     if(s==="failed"||s==="disconnected"||s==="closed")setStatus("連線 "+s+"；可重設後再試");
-     else if(s==="connecting")setStatus("正在建立點對點連線");
-   });
-   pc.addEventListener("datachannel",event=>attach(event.channel));
-   if(roleName==="host"){
-     attach(pc.createDataChannel("control",{ordered:true}));
-     attach(pc.createDataChannel("input",{ordered:false,maxRetransmits:0}));
-   }
- }
- async function gather(){
-   if(!pc)throw Error("未建立連線");
-   if(pc.iceGatheringState!=="complete")await new Promise((resolve,reject)=>{
-     const current=pc;
-     const cleanup=()=>{clearTimeout(timer);current.removeEventListener("icegatheringstatechange",onState);};
-     const onState=()=>{if(current.iceGatheringState==="complete"){cleanup();resolve();}};
-     const timer=setTimeout(()=>{cleanup();reject(Error("ICE 收集逾時，請重設並重試"));},15000);
-     current.addEventListener("icegatheringstatechange",onState);onState();
-   });
-   return pc.localDescription?.sdp;
- }
- function parse(kind){
-   const s=$("remote").value;
-   if(s.length<30||s.length>MAX)throw Error("連線資訊長度不符");
-   let obj;try{obj=JSON.parse(s);}catch{throw Error("連線資訊不是有效 JSON");}
-   if(!obj||obj.v!==VERSION||obj.kind!==kind||typeof obj.sdp!=="string"||obj.sdp.length>MAX||
-      !obj.sdp.startsWith("v=0")||Object.keys(obj).some(k=>!["v","kind","sdp"].includes(k)))throw Error("版本、類型或 SDP 格式不符");
-   return {type:kind,sdp:obj.sdp};
- }
- async function act(task){
-   for(const id of ["host","guest","accept"])$(id).disabled=true;
-   try{await task();}catch(err){setStatus("失敗："+String(err?.message||err).slice(0,160));}
-   finally{for(const id of ["host","guest","accept"])$(id).disabled=false;}
- }
- $("host").addEventListener("click",()=>act(async()=>{
-   make("host");setStatus("正在產生邀請與收集 ICE...");
-   await pc.setLocalDescription(await pc.createOffer());
-   const sdp=await gather();if(!sdp)throw Error("沒有可分享的 SDP");
-   $("local").value=JSON.stringify({v:VERSION,kind:"offer",sdp});
-   setStatus("A 邀請已產生，請複製給 B");
- }));
- $("guest").addEventListener("click",()=>act(async()=>{
-   const remote=parse("offer");make("guest");setStatus("正在產生回覆與收集 ICE...");
-   await pc.setRemoteDescription(remote);
-   await pc.setLocalDescription(await pc.createAnswer());
-   const sdp=await gather();if(!sdp)throw Error("沒有可分享的 SDP");
-   $("local").value=JSON.stringify({v:VERSION,kind:"answer",sdp});
-   setStatus("B 回覆已產生，請複製給 A");
- }));
- $("accept").addEventListener("click",()=>act(async()=>{
-   if(role!=="host"||!pc||pc.signalingState!=="have-local-offer")throw Error("請先在 A 產生邀請");
-   await pc.setRemoteDescription(parse("answer"));setStatus("已匯入回覆，等待資料通道開啟...");
- }));
- $("reset").addEventListener("click",reset);
- $("copy").addEventListener("click",async()=>{
-   const val=$("local").value;if(!val)return;
-   try{await navigator.clipboard.writeText(val);$("copyStatus").textContent="已複製";}
-   catch{$("local").focus();$("local").select();$("copyStatus").textContent="請手動複製反白文字";}
- });
- document.querySelectorAll("[data-key]").forEach(btn=>{
-   const k=btn.dataset.key;
-   btn.addEventListener("pointerdown",e=>{e.preventDefault();held[k]=true;btn.setPointerCapture(e.pointerId);});
-   for(const event of ["pointerup","pointercancel","lostpointercapture"])btn.addEventListener(event,()=>{held[k]=false;});
- });
- const mapping={KeyW:"up",ArrowUp:"up",KeyS:"down",ArrowDown:"down",Space:"fire"};
- document.addEventListener("keydown",e=>{const k=mapping[e.code];if(k&&open(input)&&!["TEXTAREA","INPUT"].includes(document.activeElement?.tagName)){e.preventDefault();held[k]=true;}});
- document.addEventListener("keyup",e=>{const k=mapping[e.code];if(k){held[k]=false;}});
- document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(held).forEach(k=>held[k]=false);});
- window.addEventListener("beforeunload",reset);
- if(!rtcSupported)setStatus("目前瀏覽器不支援 RTCPeerConnection");
- metrics();
+<!-- Shared transport keeps iceServers:[]; this isolated lab retains its original controls. -->
+<script src="../../assets/peer-link.js"></script><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),held={up:false,down:false,fire:false};let sent=0,received=0;
+const labels={idle:'尚未建立',pairing:'配對中',connected:'已連線，可傳送輸入',disconnected:'資料通道中斷，請重設並重新配對',closed:'資料通道中斷，請重設並重新配對',failed:'失敗，請重設',timeout:'連線逾時',incompatible:'版本不相容'};
+const link=new BioPeer.Link({onState:s=>{$('status').textContent=labels[s]||'連線已中斷';if(s!=='connected')Object.keys(held).forEach(k=>held[k]=false);},onMessage:(type,d)=>{if(type==='lab-input'&&Object.keys(d).length===3&&['up','down','fire'].every(k=>typeof d[k]==='boolean')){received++;$('remoteKeys').textContent=[d.up?'上':null,d.down?'下':null,d.fire?'擊球':null].filter(Boolean).join('＋')||'無';}}});
+async function act(task){try{await task();}catch{$('status').textContent='失敗：請檢查連線資訊或重設後重試';}}
+$('host').onclick=()=>act(async()=>{$('local').value=await link.offer();$('role').textContent='A／房主';});
+$('guest').onclick=()=>act(async()=>{$('local').value=await link.answer($('remote').value);$('role').textContent='B／受邀';$('remote').value='';});
+$('accept').onclick=()=>act(async()=>{await link.accept($('remote').value);$('remote').value='';$('local').value='';});
+$('reset').onclick=()=>{link.close();$('local').value=$('remote').value='';sent=received=0;};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('local').value);$('copyStatus').textContent='已複製';}catch{$('local').select();$('copyStatus').textContent='請手動複製';}};
+document.querySelectorAll('[data-key]').forEach(b=>{b.onpointerdown=e=>{e.preventDefault();held[b.dataset.key]=true;b.setPointerCapture(e.pointerId);};for(const t of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(t,()=>held[b.dataset.key]=false);});
+window.BioP2PLab={inspect:()=>({...link.measure(),connection:link.pc?.connectionState,ice:link.pc?.iceConnectionState,signaling:link.pc?.signalingState,localType:link.pc?.localDescription?.type,remoteType:link.pc?.remoteDescription?.type,application:link.pc?.localDescription?.sdp.includes('m=application'),candidates:(link.pc?.localDescription?.sdp.match(/^a=candidate/gm)||[]).length,remoteCandidates:(link.pc?.remoteDescription?.sdp.match(/^a=candidate/gm)||[]).length,channels:Object.entries(link.channels).map(([name,c])=>({name,state:c.readyState}))})};
+const mapping={KeyW:'up',ArrowUp:'up',KeyS:'down',ArrowDown:'down',Space:'fire'};window.addEventListener('keydown',e=>{if(!['TEXTAREA','INPUT'].includes(document.activeElement?.tagName)&&mapping[e.code]){e.preventDefault();held[mapping[e.code]]=true;}});window.addEventListener('keyup',e=>{if(mapping[e.code])held[mapping[e.code]]=false;});
+const timer=setInterval(()=>{if(link.send('lab-input',{...held},true))sent++;const m=link.measure();$('rtt50').textContent=m.rtt50===null?'—':m.rtt50.toFixed(1)+' ms';$('rtt95').textContent=m.rtt95===null?'—':m.rtt95.toFixed(1)+' ms';$('counts').textContent=sent+'／'+received;$('channels').textContent=link.state==='connected'?'control + input 已連通':'尚未全部連通';document.querySelectorAll('[data-key]').forEach(b=>b.disabled=link.state!=='connected');},50);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)Object.keys(held).forEach(k=>held[k]=false);});window.addEventListener('pagehide',()=>{clearInterval(timer);link.close();});
 })();
 </script></body></html>

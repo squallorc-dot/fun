@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');const w={};vm.runInNewContext(fs.readFileSync('arcade/assets/games-core.js','utf8'),{window:w,Math});vm.runInNewContext(fs.readFileSync('arcade/assets/g05-network.js','utf8'),{window:w,structuredClone,performance});let checks=0;const check=(v,s)=>{assert(v,s);checks++;};
+for(const mode of ['pong','volley']){
+ let finished=0;const g=w.BioSuiteGames.g05({hero:0,remoteHero:6,multiplayer:true,mode,sfx(){},finish(){finished++;}});g.w=640;g.h=480;g.start();const initial=g.inspectMatch();
+ for(let i=0;i<60;i++){g.setRemoteInput({});g.update(1/120,{});}const still=g.inspectMatch();check(still.ai.x===initial.ai.x&&still.ai.y===initial.ai.y,'second human has no AI movement');
+ g.setRemoteInput(mode==='pong'?{moveY:1}:{moveX:1,jump:true,fire:true});g.update(1/120,{});const moved=g.inspectMatch();check(mode==='pong'?moved.ai.y>still.ai.y:moved.ai.x>still.ai.x&&!moved.ai.ground,'remote axes/jump control the right player');
+ const state=g.networkSnapshot();check(w.BioG05Network.snapshot(JSON.parse(JSON.stringify(state)),mode),'complete legitimate network state accepted');
+ const guest=new w.BioG05Network.Adapter({mode,host:false,hero:0});check(guest.receive(100,JSON.parse(JSON.stringify(state)),true),'guest accepts host snapshot');const frozen=JSON.stringify(guest.game.inspectMatch());guest.game.update(.1,{fire:true,moveX:1,moveY:1});check(JSON.stringify(guest.game.inspectMatch())===frozen,'guest cannot run score/ball physics');
+ check(!guest.receive(99,state),'older snapshot rejected');check(!guest.receive(100,state),'duplicate fast snapshot rejected');check(!w.BioG05Network.snapshot({...state,points:[999,0]},mode),'impossible scores rejected');check(!w.BioG05Network.snapshot({...state,fx:{clock:0,particles:Array(101).fill({})}},mode),'unbounded effects rejected');check(!w.BioG05Network.snapshot({...state,player:{...state.player,x:NaN}},mode),'non-finite state rejected');check(!w.BioG05Network.snapshot({...state,arbitrary:1},mode),'unknown state fields rejected');
+ for(let t=0;t<120*180&&!g._finished;t++){g.setRemoteInput({moveY:-1,moveX:-1});g.update(1/120,{});}check(g._finished&&finished===1,'ordinary inputs complete one authoritative match');g.update(1,{});check(finished===1,'result cannot fire twice');guest.dispose();
+}
+for(const input of [{moveX:Infinity},{moveY:2},{fire:'true'},{points:[7,0]},JSON.parse('{"__proto__":{"x":1}}')])check(!w.BioG05Network.input(input),'malformed input rejected');
+console.log('G05 MULTIPLAYER PASS '+checks+' explicit opt-in, two human inputs, authority, full snapshots and bounded validation checks');

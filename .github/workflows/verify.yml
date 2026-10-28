@@ -34,8 +34,17 @@ jobs:
           node scripts/smoke-navigation.mjs
           node scripts/smoke-ost-persistent.mjs
           node scripts/smoke-arcade.mjs
-      - name: Verify phase 6A-0 direct WebRTC peer-to-peer lab (two isolated browser contexts)
-        run: node scripts/smoke-p2p-v16.mjs
+      - name: Verify existing direct WebRTC transport lab (two isolated browser contexts)
+        run: node scripts/ci-browser-check.mjs scripts/smoke-p2p-v16.mjs
+      - name: Test real two-browser G05 games and shared lobby
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friends-v16.mjs
+      - name: Upload private multiplayer validation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bio-city-friends-v16
+          path: arcade/qa/friends-v16/results/
+          retention-days: 7
 
   arcade-session-browser:
     runs-on: ubuntu-24.04
@@ -107,6 +116,7 @@ jobs:
           node scripts/test-arcade-chapters.cjs
           node scripts/test-g05-table.cjs
           node scripts/test-g05-volley.cjs
+          node scripts/test-g05-multiplayer.cjs
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
           node scripts/test-g02-device-parity.cjs

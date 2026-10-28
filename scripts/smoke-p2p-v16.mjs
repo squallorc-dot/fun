@@ -8,11 +8,12 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const file=path.join(root,'arcade/qa/p2p-v16/index.html');
-const source=fs.readFileSync(file,'utf8');
-assert(source.includes('iceServers:[]'),'First phase must not use STUN/TURN');
+const source=fs.readFileSync(file,'utf8'),transport=fs.readFileSync(path.join(root,'arcade/assets/peer-link.js'),'utf8');
+assert(transport.includes('iceServers:[]'),'First phase must not use STUN/TURN');
 assert(!/https?:\/\/[^"']+/.test(source),'No external transport service URLs in lab');
 const server=http.createServer((req,res)=>{
  const pathname=new URL(req.url,'http://localhost').pathname;
+ if(pathname==='/arcade/assets/peer-link.js'){res.setHeader('Content-Type','text/javascript');res.end(transport);return;}
  if(pathname!=='/arcade/qa/p2p-v16/index.html'){res.writeHead(404);res.end();return;}
  res.setHeader('Content-Type','text/html; charset=utf-8');res.end(source);
 });
@@ -62,4 +63,4 @@ try{
  check(true,'Closing one peer notifies the other');
  await Promise.all([aCtx.close(),bCtx.close()]);
  console.log('P2P LAB BROWSER PASS '+checkCount+' checks — genuine localhost ICE, DataChannel RTT and manual SDP; NOT real LAN or G05 gameplay');
-}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
+}catch(error){for(const context of browser?.contexts()||[])for(const page of context.pages())console.error('P2P SAFE DIAGNOSTIC '+JSON.stringify(await page.evaluate(()=>window.BioP2PLab?.inspect())));throw error;}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

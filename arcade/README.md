@@ -68,3 +68,5 @@ node scripts/smoke-gameplay-campaign.mjs
 [完整第 6 階段架構與驗收規格](docs/37_v1.6_第6階段_好友連線與多人架構_20261028.md)｜[總工作單 #27](https://github.com/squallorc-dot/fun/issues/27)｜[6A-0 #26](https://github.com/squallorc-dot/fun/issues/26)。
 
 第一輪選擇完全不增加主機費的 GitHub Pages＋原生 JavaScript／WebRTC；手動交換 offer／answer／ICE，無 STUN／TURN／自動房間，僅先測同 LAN 雙設備。隔離的 [P2P 傳輸診斷頁](qa/p2p-v16/index.html) 僅測真正資料通道、ping 與遠端按鍵，不是 G05 真正雙人遊戲。未通過開發、CI、真機和授權之前，不得將此功能標為正式可玩多人模式。
+
+第 6A 批實作中：沿用 PR #33，抽離共用 WebRTC、好友大廳與 G05 雙人輸入／權威快照；私有驗收入口 `arcade/qa/friends-v16/index.html`，不加入正式遊戲目錄。原傳輸實驗保留並共用模組。整局雙瀏覽器、受控網路與真機測試依驗收紀錄分開列示，不能只依程式存在宣稱完成。
