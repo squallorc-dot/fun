@@ -61,11 +61,11 @@ class Link{
  receive(channel,text){
   if(typeof text!=='string'||text.length>MAX_PACKET||!this.rate(channel)){this.stats.rejected++;return;}
   let v;try{v=JSON.parse(text);}catch{this.stats.rejected++;return;}
-  if(!keys(v,['v','sid','seq','type','data'])||v.v!==V||v.sid!==this.sid||!Number.isSafeInteger(v.seq)||v.seq<0||v.seq<=this.received[channel]||v.seq>1e9||typeof v.type!=='string'||v.type.length>32||!object(v.data)){this.stats.rejected++;return;}
+  if(!keys(v,['v','sid','seq','type','data'])||v.v!==V||v.sid!==this.sid||!Number.isSafeInteger(v.seq)||v.seq<0||v.seq<=this.received[channel]||v.seq>1e9||v.seq-this.received[channel]>1000||typeof v.type!=='string'||v.type.length>32||!object(v.data)){this.stats.rejected++;return;}
   if(v.type==='ping'||v.type==='pong'){
    if(channel!=='control'||!keys(v.data,['id'])||!Number.isSafeInteger(v.data.id)){this.stats.rejected++;return;}
-   if(v.type==='ping')this.send('pong',{id:v.data.id});else{const sent=this.pendingPings.get(v.data.id);if(sent!==undefined){this.pendingPings.delete(v.data.id);const rtt=performance.now()-sent;if(rtt>=0&&rtt<10000){this.stats.rtts.push(rtt);if(this.stats.rtts.length>256)this.stats.rtts.shift();}}}
-  }else this.onMessage(v.type,v.data,channel);
+   if(v.type==='ping')this.send('pong',{id:v.data.id});else{const sent=this.pendingPings.get(v.data.id);if(sent!==undefined){this.pendingPings.delete(v.data.id);const rtt=performance.now()-sent;if(rtt>=0&&rtt<10000){this.stats.rtts.push(rtt);if(this.stats.rtts.length>2048)this.stats.rtts.shift();}}}
+  }else if(this.onMessage(v.type,v.data,channel)===false)return;
   this.received[channel]=v.seq;this.lastReceived=performance.now();this.stats.received++;
  }
  send(type,data,fast=false){

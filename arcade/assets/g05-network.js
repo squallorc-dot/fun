@@ -22,6 +22,8 @@ class Adapter{
   if(!MODES.includes(mode))throw Error('mode');this.mode=mode;this.host=host;this.queue=[];this.lastTick=-1;this.corrections=0;
   this.game=root.BioSuiteGames.g05({hero,remoteHero,mode,multiplayer:true,authority:host,chapter:1,difficulty:'normal',I:{hero:[locale==='ja'?'バーナー':'Burner']},finish,sfx});this.game.w=640;this.game.h=480;this.game.start();
  }
+ result(state=this.capture()){return {points:[...state.points],winner:state.points[0]>state.points[1]?0:1};}
+ reliableKey(state){return state.points.join(':')+':'+state.serveSide;}
  step(dt,local,remote){if(!this.host)throw Error('guest-authority');this.game.setRemoteInput(remote);this.game.update(dt,local);}
  capture(){if(!this.host)throw Error('guest-authority');return this.game.networkSnapshot();}
  receive(tick,value,immediate=false){
@@ -46,5 +48,5 @@ class Adapter{
  }
  dispose(){this.queue=[];this.game.setRemoteInput({});}
 }
-root.BioG05Network=Object.freeze({TAG,MODES,input,snapshot,Adapter});
+root.BioG05Network=Object.freeze({TAG,MODES,input,snapshot,Adapter,prepare:heroes=>[root.BioGuardianArt?.preload(heroes)||Promise.resolve(true),root.BioWorldArt?.preload('arena')||Promise.resolve(true)]});
 })(typeof window==='undefined'?globalThis:window);

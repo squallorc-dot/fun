@@ -1,5 +1,5 @@
 // Two real browsers / native RTC / actual G05 points. No fake links or score setters.
-import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {setup,pair,start,complete,safeFailure,root}from'./lib/friends-browser.mjs';
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {setup,pair,start,complete,safeFailure,recordCanvas,saveCanvasVideo,root}from'./lib/friends-browser.mjs';
 const out=path.join(root,'arcade/qa/friends-v16/results');fs.mkdirSync(out,{recursive:true});let checks=0;const check=(v,s)=>{assert(v,s);checks++;};const v=await setup(),[a,b]=v.pages,results=[];
 try{
  await pair(a,b);check(true,'genuine independent-browser RTC paired');const generations=await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation)));
@@ -7,7 +7,7 @@ try{
   await start(a,b,mode);await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
   await a.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='paused')));const paused=await a.evaluate(()=>JSON.stringify(BioFriendsApp.inspect().match));await new Promise(r=>setTimeout(r,250));check(await a.evaluate(s=>JSON.stringify(BioFriendsApp.inspect().match)===s,paused),'pause freezes actual host physics');
   await a.locator('#pause').click();await b.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
-  results.push(await complete(a,b,mode));checks+=3;for(const [i,p]of [a,b].entries())await p.screenshot({path:path.join(out,mode+'-'+i+'.png')});
+  await recordCanvas(a);results.push(await complete(a,b,mode));await saveCanvasVideo(a,path.join(out,mode+'-gameplay.webm'));checks+=3;for(const [i,p]of [a,b].entries())await p.screenshot({path:path.join(out,mode+'-'+i+'.png')});
   await b.locator('#return').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));check(true,'return to common lobby');
  }
  check(JSON.stringify(generations)===JSON.stringify(await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation)))),'same RTC session across both sports');

@@ -1,40 +1,42 @@
 /* Versioned lobby and host-authoritative rounds, independent of any test page. */
 ((root)=>{'use strict';
-const PROTOCOL=1,ACTIVE=['countdown','playing','paused'];
+const PROTOCOL=1,APP_TAG='friends-v1',ACTIVE=['countdown','playing','paused'];
 const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,list)=>object(v)&&Object.keys(v).every(k=>list.includes(k));
 const integer=(v,max=1e8)=>Number.isSafeInteger(v)&&v>=0&&v<=max,hero=v=>integer(v,6),name=v=>typeof v==='string'&&v.length<=48&&!/[\u0000-\u001f\u007f]/.test(v);
 const q=(a,p)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*p)-1]:null;
 class Session{
- constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh'}={}){
+ constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh',adapters={g05:root.BioG05Network}}={}){
+  this.adapters=Object.freeze({...adapters});this.capabilities=Object.entries(this.adapters).flatMap(([id,m])=>m.MODES.map(mode=>id+':'+mode+'@'+m.TAG)).sort();
   this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m)});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.closed=false;
  }
+ meta(game=this.config?.game||'g05'){return this.adapters[game];}
  changed(){this.onChange(this.inspect());}
  transport(state){
-  if(state==='connected'){this.phase='lobby';this.link.send('hello',{protocol:PROTOCOL,engine:root.BioG05Network.TAG,role:this.role,hero:this.hero,room:this.room||'',games:['g05:pong','g05:volley']});if(this.role==='host'&&this.peerHello)this.configure('pong');}
+  if(state==='connected'){this.phase='lobby';this.link.send('hello',{protocol:PROTOCOL,engine:APP_TAG,role:this.role,hero:this.hero,room:this.room||'',games:this.capabilities});if(this.role==='host'&&this.peerHello)this.configure('pong');}
   else if(state==='pairing')this.phase='pairing';
   else {this.clearRound();this.phase=state==='idle'?'idle':'disconnected';}
   this.changed();
  }
- clearRound(){this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.held={};this.edges={fire:0,jump:0};this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.readyTask=(this.readyTask||0)+1;}
+ clearRound(){this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.held={};this.edges={fire:0,jump:0};this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.readyTask=(this.readyTask||0)+1;}
  async host(room='',selectedHero=0){if(!name(room)||!hero(selectedHero))throw Error('room-settings');this.peerHello=null;this.role='host';this.room=room;this.hero=selectedHero;this.epoch=0;return this.link.offer();}
  async join(text,selectedHero=3){if(!hero(selectedHero))throw Error('hero');this.peerHello=null;this.role='guest';this.hero=selectedHero;this.epoch=0;return this.link.answer(text);}
  accept(text){return this.link.accept(text);}
- configure(mode=this.config?.mode||'pong'){
-  if(this.role!=='host'||this.link.state!=='connected'||!this.peerHello||!root.BioG05Network.MODES.includes(mode)||ACTIVE.includes(this.phase))return false;
-  this.clearRound();this.epoch++;this.config={game:'g05',mode,engine:root.BioG05Network.TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
+ configure(mode=this.config?.mode||'pong',game=this.config?.game||'g05'){
+  if(this.role!=='host'||this.link.state!=='connected'||!this.peerHello||!this.meta(game)?.MODES.includes(mode)||!this.peerHello.games.includes(game+':'+mode+'@'+this.meta(game).TAG)||ACTIVE.includes(this.phase))return false;
+  this.clearRound();this.epoch++;this.config={game,mode,engine:this.meta(game).TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
  }
  async ready(value=true){
   if(this.phase!=='lobby'||!this.config||!this.configAck)return false;const epoch=this.epoch,task=++this.readyTask;
-  if(value){this.preparing=true;this.changed();try{await root.BioArcadeSession.prepare([root.BioGuardianArt?.preload(this.config.heroes)||Promise.resolve(true),root.BioWorldArt?.preload('arena')||Promise.resolve(true)]);}catch{if(task!==this.readyTask)return false;this.preparing=false;this.changed();throw Error('asset-unavailable');}if(task!==this.readyTask||epoch!==this.epoch||this.phase!=='lobby')return false;}
+  if(value){this.preparing=true;this.changed();try{await root.BioArcadeSession.prepare(this.meta().prepare(this.config.heroes));}catch{if(task!==this.readyTask)return false;this.preparing=false;this.changed();throw Error('asset-unavailable');}if(task!==this.readyTask||epoch!==this.epoch||this.phase!=='lobby')return false;}
   this.preparing=false;this.readyFlags[this.role==='host'?0:1]=!!value;this.link.send('ready',{epoch:this.epoch,value:!!value});this.tryStart();this.changed();return true;
  }
  createRound(){
   this.adapter?.dispose();this.clock.clear();this.tick=0;this.resultCount=0;this.result=null;this.inputSeq=0;this.lastInputSeq=-1;this.edges={fire:0,jump:0};this.held={};this.remote={};this.pulses={};this.remoteEdges={fire:0,jump:0};this.remoteAt=performance.now();this.sentInputs.clear();this.countdown=3;this.phase='countdown';
-  this.adapter=new root.BioG05Network.Adapter({mode:this.config.mode,hero:this.config.heroes[0],remoteHero:this.config.heroes[1],host:this.role==='host',locale:this.locale,sfx:(freq,len)=>{this.sfx(freq,len);if(this.role==='host')this.link.send('sound',{epoch:this.epoch,freq,len});},finish:()=>this.finish()});
+  this.adapter=new (this.meta().Adapter)({mode:this.config.mode,hero:this.config.heroes[0],remoteHero:this.config.heroes[1],host:this.role==='host',locale:this.locale,sfx:(freq,len)=>{this.sfx(freq,len);if(this.role==='host')this.link.send('sound',{epoch:this.epoch,freq,len});},finish:()=>this.finish()});
  }
  tryStart(){if(this.role==='host'&&this.phase==='lobby'&&this.configAck&&this.readyFlags.every(Boolean)){this.createRound();this.link.send('start',{epoch:this.epoch,engine:this.config.engine,mode:this.config.mode});this.publish(true);}}
  finish(){
-  if(this.role!=='host'||this.resultCount||!this.adapter)return;this.resultCount=1;this.totalResults++;this.phase='finished';this.remote={};const state=this.adapter.capture();this.result={points:[...state.points],winner:state.points[0]>state.points[1]?0:1};this.publish(true,'result');this.changed();
+  if(this.role!=='host'||this.resultCount||!this.adapter)return;this.resultCount=1;this.totalResults++;this.phase='finished';this.remote={};const state=this.adapter.capture();this.result=this.adapter.result(state);this.publish(true,'result');this.changed();
  }
  publish(reliable=false,type='frame'){
   if(!this.adapter||this.role!=='host')return;this.link.send(type,{epoch:this.epoch,tick:this.tick,phase:this.phase,countdown:this.countdown,ack:this.lastInputSeq,state:this.adapter.capture()},!reliable);
@@ -52,15 +54,15 @@ class Session{
   this.clearRound();this.phase='lobby';return this.configure(this.config?.mode||'pong');
  }
  leave(){this.link.send('leave',{});this.link.close('closed');this.clearRound();this.phase='disconnected';this.changed();}
- receive(type,d,channel){try{if(!this.handle(type,d,channel))this.rejected++;}catch{this.rejected++;}}
+ receive(type,d,channel){try{const valid=this.handle(type,d,channel);if(!valid)this.rejected++;return !!valid;}catch{this.rejected++;return false;}}
  handle(type,d,channel){
   if(type==='hello'){
-   if(channel!=='control'||!keys(d,['protocol','engine','role','hero','room','games'])||d.protocol!==PROTOCOL||d.engine!==root.BioG05Network.TAG||d.role===(this.role)||!['host','guest'].includes(d.role)||!hero(d.hero)||!name(d.room)||!Array.isArray(d.games)||d.games.join('|')!=='g05:pong|g05:volley'){this.link.close('incompatible');return false;}
+   if(channel!=='control'||!keys(d,['protocol','engine','role','hero','room','games'])||d.protocol!==PROTOCOL||d.engine!==APP_TAG||d.role===(this.role)||!['host','guest'].includes(d.role)||!hero(d.hero)||!name(d.room)||!Array.isArray(d.games)||d.games.length>16||!d.games.every(x=>typeof x==='string'&&x.length<100)||!d.games.some(x=>this.capabilities.includes(x))){this.link.close('incompatible');return false;}
    if(this.peerHello)return JSON.stringify(this.peerHello)===JSON.stringify(d);this.peerHello=d;if(this.role==='guest')this.room=d.room;else if(this.link.state==='connected')this.configure('pong');this.changed();return true;
   }
   if(type==='leave'){if(channel!=='control'||!keys(d,[]))return false;this.link.close('closed');return true;}
   if(type==='config'){
-   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['game','mode','engine','heroes','room','epoch'])||d.game!=='g05'||!root.BioG05Network.MODES.includes(d.mode)||d.engine!==root.BioG05Network.TAG||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero||!name(d.room))return false;
+   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['game','mode','engine','heroes','room','epoch'])||!this.meta(d.game)?.MODES.includes(d.mode)||d.engine!==this.meta(d.game).TAG||!this.capabilities.includes(d.game+':'+d.mode+'@'+d.engine)||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero||!name(d.room))return false;
    this.clearRound();this.epoch=d.epoch;this.config=structuredClone(d);this.room=d.room;this.phase='lobby';this.configAck=true;this.link.send('ack',{epoch:this.epoch});this.changed();return true;
   }
   if(!integer(d.epoch)||d.epoch!==this.epoch||!this.config)return false;
@@ -72,7 +74,7 @@ class Session{
    if(this.role!=='guest'||channel!=='control'||this.phase!=='lobby'||!this.readyFlags.every(Boolean)||!keys(d,['epoch','engine','mode'])||d.mode!==this.config.mode||d.engine!==this.config.engine)return false;this.createRound();this.changed();return true;
   }
   if(type==='input'){
-   if(this.role!=='host'||channel!=='input'||!ACTIVE.includes(this.phase)||!keys(d,['epoch','seq','tick','input','edges'])||!integer(d.seq)||d.seq<=this.lastInputSeq||!integer(d.tick)||Math.abs(d.tick-this.tick)>240||!root.BioG05Network.input(d.input)||!keys(d.edges,['fire','jump'])||!integer(d.edges.fire)||!integer(d.edges.jump))return false;
+   if(this.role!=='host'||channel!=='input'||!ACTIVE.includes(this.phase)||!keys(d,['epoch','seq','tick','input','edges'])||!integer(d.seq)||d.seq<=this.lastInputSeq||!integer(d.tick)||Math.abs(d.tick-this.tick)>240||!this.meta().input(d.input)||!keys(d.edges,['fire','jump'])||!integer(d.edges.fire)||!integer(d.edges.jump))return false;
    for(const key of ['fire','jump']){if(d.edges[key]<this.remoteEdges[key]||d.edges[key]-this.remoteEdges[key]>8)return false;}
    for(const key of ['fire','jump']){if(d.edges[key]>this.remoteEdges[key])this.pulses[key]=true;this.remoteEdges[key]=d.edges[key];}
    this.lastInputSeq=d.seq;this.remote={...d.input};this.remoteAt=performance.now();return true;
@@ -88,7 +90,7 @@ class Session{
    if(d.ack>=0&&this.sentInputs.has(d.ack)){this.inputLatency.push(performance.now()-this.sentInputs.get(d.ack));if(this.inputLatency.length>512)this.inputLatency.shift();for(const key of this.sentInputs.keys())if(key<=d.ack)this.sentInputs.delete(key);}
    this.tick=Math.max(this.tick,d.tick);this.countdown=d.countdown;
    const old=this.phase;this.phase=d.phase;
-   if(type==='result'&&!this.resultCount){this.resultCount=1;this.totalResults++;this.result={points:[...d.state.points],winner:d.state.points[0]>d.state.points[1]?0:1};}
+   if(type==='result'&&!this.resultCount){this.resultCount=1;this.totalResults++;this.result=this.adapter.result(d.state);}
    if(old!==this.phase){this.clock.clear();this.changed();}return true;
   }
   return false;
@@ -102,7 +104,7 @@ class Session{
    this.clock.advance(dt,step=>{
     this.tick++;if(this.countdown>0){this.countdown=Math.max(0,this.countdown-step);if(this.countdown<1e-8){this.countdown=0;this.phase='playing';this.remote={};this.pulses={};this.publish(true);this.changed();}}
     else{const remote=performance.now()-this.remoteAt>350?{}:{...this.remote,...this.pulses};this.pulses={};this.adapter.step(step,this.readInput(step),remote);}
-    const state=this.adapter.capture(),score=state.points.join();if(score!==this.lastScore){this.lastScore=score;this.publish(true);}else if(this.tick%6===0)this.publish();
+    const state=this.adapter.capture(),score=this.adapter.reliableKey(state);if(score!==this.lastScore){this.lastScore=score;this.publish(true);}else if(this.tick%6===0)this.publish();
     return !this.adapter.game._finished&&this.phase!=='paused';
    });
   }else{
@@ -113,5 +115,5 @@ class Session{
  }
  inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
 }
-root.BioFriends=Object.freeze({Session,PROTOCOL});
+root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network})});
 })(typeof window==='undefined'?globalThis:window);

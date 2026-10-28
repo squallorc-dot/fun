@@ -22,14 +22,14 @@ export async function start(a,b,mode){await a.locator('#mode').selectOption(mode
 // Ordinary keyboard events drive both human input paths. No entity/result setter.
 export async function driver(page,side,{missAfter=12}={}){
  await page.evaluate(({side,missAfter})=>{
-  let held=new Set();window.__friendDriver={samples:0,actions:0,axes:0,side};
-  const timer=setInterval(()=>{const view=BioFriendsApp.inspect(),s=view.match;if(!s||view.session.phase!=='playing')return;const keys=new Set(),p=side?s.ai:s.player,b=s.ball,miss=s.t>missAfter&&side===1;window.__friendDriver.samples++;
+  let held=new Set(),previous=null,lastRally=0;window.__friendDriver={samples:0,actions:0,axes:0,moved:0,swung:0,contacts:0,side};
+  const timer=setInterval(()=>{const view=BioFriendsApp.inspect(),s=view.match;if(!s||view.session.phase!=='playing')return;const keys=new Set(),p=side?s.ai:s.player,b=s.ball,time=view.session.tick/120-3,miss=time>missAfter&&side===1;window.__friendDriver.samples++;if(previous&&Math.hypot(p.x-previous.x,p.y-previous.y)>.5)window.__friendDriver.moved++;if(p.swing>0)window.__friendDriver.swung++;if(s.rally>lastRally&&b?.lastHitter===side)window.__friendDriver.contacts++;lastRally=s.rally;previous={x:p.x,y:p.y};
    if(s.mode==='pong'){
     const target=miss?125:b?.y??250,dy=target-p.y;if(dy>7)keys.add('s');if(dy<-7)keys.add('w');
-    if(!miss&&b&&b.lastHitter!==side&&Math.abs(b.x-p.x)<135&&Math.floor(s.t*12)%4<2)keys.add('j');
+    if(!miss&&b&&b.lastHitter!==side&&Math.abs(b.x-p.x)<70+(side?Math.min(150,view.session.metrics.rtt50||0)*.5:0)&&Math.floor(time*12)%4<2)keys.add('j');
    }else{
     const target=miss?355:b?.x??(side?500:140),dx=target-p.x;if(dx>8)keys.add('d');if(dx<-8)keys.add('a');
-    if(!miss&&b&&Math.abs(b.x-p.x)<95&&b.y<330&&b.vy>0)keys.add('k');if(!miss&&Math.floor(s.t*10)%4<2)keys.add('j');
+    if(!miss&&b&&Math.abs(b.x-p.x)<95&&b.y<330&&b.vy>0)keys.add('k');if(!miss&&Math.floor(time*10)%4<2)keys.add('j');
    }
    for(const key of held)if(!keys.has(key))document.body.dispatchEvent(new KeyboardEvent('keyup',{key,bubbles:true}));
    for(const key of keys)if(!held.has(key)){document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));if(['j','k'].includes(key))window.__friendDriver.actions++;else window.__friendDriver.axes++;}held=keys;
@@ -39,7 +39,10 @@ export async function driver(page,side,{missAfter=12}={}){
 export async function complete(a,b,mode){
  await Promise.all([driver(a,0),driver(b,1)]);await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000})));
  const views=await Promise.all([a,b].map(p=>p.evaluate(()=>({view:BioFriendsApp.inspect(),driver:window.__friendDriver}))));await Promise.all([a,b].map(p=>p.evaluate(()=>window.__stopFriendDriver?.())));
- assert.deepEqual(views[0].view.session.result,views[1].view.session.result,'same authoritative winner and score');assert(views.every(v=>v.view.session.resultCount===1),'settles exactly once');assert(views.every(v=>v.driver.axes>0&&v.driver.actions>0),'both browsers actually move and swing/jump via keyboard');
+ assert.deepEqual(views[0].view.session.result,views[1].view.session.result,'same authoritative winner and score');assert(views.every(v=>v.view.session.resultCount===1),'settles exactly once');assert(views.every(v=>v.driver.axes>0&&v.driver.actions>0&&v.driver.moved>0&&v.driver.swung>0),'both browsers actually move and swing/jump via keyboard');
  const points=views[0].view.session.result.points;assert(Math.max(...points)===(mode==='pong'?7:5));return {mode,result:views[0].view.session.result,peers:views.map(v=>({metrics:v.view.session.metrics,driver:v.driver}))};
 }
 export async function safeFailure(pages,out){fs.mkdirSync(out,{recursive:true});const safe=[];for(const [i,p]of pages.entries()){safe.push(await p.evaluate(()=>{const x=BioFriendsApp.inspect();return {phase:x.session.phase,role:x.session.role,epoch:x.session.epoch,tick:x.session.tick,ready:x.session.ready,configAck:x.session.configAck,result:x.session.result,metrics:x.session.metrics,controls:x.controls,match:x.match,iceState:BioFriendsApp.session.link.pc?.iceConnectionState,candidates:(BioFriendsApp.session.link.pc?.localDescription?.sdp.match(/^a=candidate/gm)||[]).length};}));await p.evaluate(()=>{document.querySelector('#local').value='';document.querySelector('#remote').value='';});await p.screenshot({path:path.join(out,'failure-'+i+'.png')});}fs.writeFileSync(path.join(out,'failure-safe.json'),JSON.stringify(safe,null,2));console.error('FRIENDS SAFE FAILURE '+JSON.stringify(safe.map(s=>({phase:s.phase,role:s.role,ice:s.iceState,candidates:s.candidates,metrics:s.metrics}))));}
+
+export async function recordCanvas(page){await page.evaluate(()=>{const chunks=[],stream=document.querySelector('#game-canvas').captureStream(20),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:4000000});recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};window.__finishCanvasVideo=()=>new Promise(resolve=>{recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.readAsDataURL(new Blob(chunks,{type:'video/webm'}));};recorder.stop();});recorder.start(1000);});}
+export async function saveCanvasVideo(page,file){const data=await page.evaluate(()=>window.__finishCanvasVideo());const bytes=Buffer.from(data,'base64');assert(bytes.length>1000,'actual canvas-only video recorded');fs.writeFileSync(file,bytes);}

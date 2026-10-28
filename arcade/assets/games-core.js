@@ -593,7 +593,7 @@ const g={w:960,h:540,finish:env.finish,
    for(const [who,p]of [[0,player],[1,ai]]){const id=who===0?env.hero:otherHero,clip=p.swing>0?'attack1':!p.ground?'jump':p.moving?'walk':'idle';fighter(ctx,p.x,ground,Math.max(0,ground-p.y-f.body),between(Math.min(w,h)*.075,26,39),pal[id],p.swing>0?.23-p.swing:t,clip,who===0?1:-1,id);}
    ctx.save();ctx.globalAlpha=.18;ctx.fillStyle='#071f2a';ctx.beginPath();ctx.ellipse(ball.x,ground,Math.max(5,f.r*(1-between((ground-ball.y)/h,0,.7))),3,0,0,TAU);ctx.fill();ctx.restore();fx.draw(ctx);motionTrail(ctx,trail,f.r,'#fff4ce');kineticBall(ctx,ball.x,ball.y,f.r,'#f8f3c0','#fffdee',ball.contact,ball.impactAngle||0,true);if(serve>0)words(ctx,jaText(env,'發球','サーブ')+' '+Math.ceil(serve),w*.5,h*.25,16,'#b9fff0','center');
   }
-  if(pointFlashTime>0)words(ctx,pointFlash===0?jaText(env,'我方得分！','ポイント！'):jaText(env,'對手得分','相手のポイント'),w*.5,h*.23,17,pointFlash===0?'#b7f5db':'#f0c0a6','center');
+  if(pointFlashTime>0)words(ctx,dual?(pointFlash===0?'HOST':'GUEST')+' '+jaText(env,'得分','ポイント'):pointFlash===0?jaText(env,'我方得分！','ポイント！'):jaText(env,'對手得分','相手のポイント'),w*.5,h*.23,17,pointFlash===0?'#b7f5db':'#f0c0a6','center');
   words(ctx,`${points[0]}    :    ${points[1]}`,w/2,37,24,'#ebfcff','center');
   words(ctx,mode==='pong'?'TABLE TENNIS':'ENERGY VOLLEYBALL',15,h*.135,12,'#8de4eb');
  },
