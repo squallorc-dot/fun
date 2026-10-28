@@ -15,7 +15,7 @@ async function objects(cdp,expr,kind){
 async function sample(page,cdp,label){
  await cdp.send('HeapProfiler.collectGarbage');await wait(150);await cdp.send('HeapProfiler.collectGarbage');
  const heap=await cdp.send('Runtime.getHeapUsage'),dom=await cdp.send('Memory.getDOMCounters');
- const native={pc:await objects(cdp,'RTCPeerConnection.prototype','rtc'),dataChannel:await objects(cdp,'RTCDataChannel.prototype','dc'),audioContexts:await objects(cdp,'AudioContext.prototype','count')};
+ const native={pc:await objects(cdp,'RTCPeerConnection.prototype','rtc'),dataChannel:await objects(cdp,'RTCDataChannel.prototype','dc'),audioContexts:await objects(cdp,'AudioContext.prototype','count'),oscillators:await objects(cdp,'OscillatorNode.prototype','count')};
  const app=await page.evaluate(()=>{const s=BioFriendsApp.session,l=s.link;return {phase:s.phase,adapter:!!s.adapter,remoteKeys:Object.keys(s.remote).length,pulses:Object.keys(s.pulses).length,pendingInputs:s.sentInputs.size,linkTimers:l.timers.size,gathers:l.gatherCancel.size,pcPresent:!!l.pc,channels:Object.keys(l.channels).length,mediaElements:document.querySelectorAll('audio').length};});
  return {label,heap,dom,native,app};
 }
@@ -24,6 +24,8 @@ const v=await setup(),[a,b]=v.pages,cdps=[];
 try{
  for(const p of v.pages){const c=await p.context().newCDPSession(p);cdps.push(c);await c.send('HeapProfiler.enable');}
  await resources(v.pages,cdps,'initial-disconnected');
+ // Exercise real score and action sounds; controls are changed via the same UI change path.
+ await Promise.all(v.pages.map(p=>p.evaluate(()=>{const input=document.querySelector('#sfx');input.value='50';input.dispatchEvent(new Event('change',{bubbles:true}));}))); 
  for(const rtt of [100,150,200])for(const loss of [0,.03]){
   await pair(a,b);if(rtt===100&&loss===0)await resources(v.pages,cdps,'paired-lobby');
   for(const mode of ['pong','volley']){
