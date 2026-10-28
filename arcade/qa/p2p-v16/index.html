@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Bio-City Arcade｜WebRTC 雙人連線實驗 v1.6</title>
+<style>
+:root{font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif;color-scheme:dark;background:#0e1925;color:#ecf8fc}
+*{box-sizing:border-box}body{max-width:920px;margin:0 auto;padding:24px 16px 52px}h1{font-size:1.55rem;margin:.3rem 0}.muted{color:#bdc9d7}
+.panel{border:1px solid #465365;border-radius:16px;padding:16px;margin:14px 0;background:#162838}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+button{border:1px solid #477e91;border-radius:10px;background:#1f6577;color:white;padding:10px 14px;font-size:1rem;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}button.secondary{background:#25394a}
+textarea{display:block;width:100%;min-height:116px;resize:vertical;border-radius:10px;background:#0b1926;color:#e7f8ff;border:1px solid #53687b;padding:12px;word-break:break-all;font:12px/1.5 ui-monospace,monospace}
+code{color:#b1f8e1}#status{font-weight:700}#metrics{font-variant-numeric:tabular-nums}.pad button{min-width:70px;touch-action:none;user-select:none}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kv div{padding:10px;background:#0d2230;border-radius:10px}
+.warn{color:#ffe1a3}small{display:block}.foot{font-size:.82rem;color:#b7cbd5}
+</style></head>
+<body>
+<h1>Bio-City Arcade｜第 6A-0 批 WebRTC 連線實驗</h1>
+<p class="muted">僅供開發驗證：此頁測試兩台裝置是否真的建立資料通道，不包含 G05 桌球引擎，也沒有自動配對伺服器。</p>
+<div class="panel">
+<strong>連線方式</strong>
+<p>建議兩台裝置先連到<strong>同一個 Wi-Fi</strong>、使用 HTTPS。A 建立邀請，複製完整內容給 B；B 貼上邀請並產生回覆，複製給 A；A 貼上回覆完成連線。</p>
+<p class="warn">連線描述可能包含網路位置資訊，請只傳給可信任的朋友。此頁不會把內容上傳、寫入 localStorage 或傳給分析工具。沒有 STUN／TURN，跨不同網路可能無法連線。</p>
+<div class="row"><button id="host">A｜建立邀請</button><button id="guest" class="secondary">B｜讀取邀請並產生回覆</button><button id="accept" class="secondary">A｜讀取 B 的回覆</button><button id="reset" class="secondary">重設連線</button></div>
+<label for="local"><strong>本機產生的連線資訊（分享給另一位玩家）</strong></label>
+<textarea id="local" readonly aria-label="本機連線資訊"></textarea>
+<div class="row"><button id="copy" class="secondary">複製本機資訊</button><span id="copyStatus" aria-live="polite"></span></div>
+<label for="remote"><strong>從另一位玩家取得的連線資訊（貼在這裡）</strong></label>
+<textarea id="remote" maxlength="120000" spellcheck="false" aria-label="貼上遠端連線資訊"></textarea>
+</div>
+<div class="panel">
+<div class="row"><strong>連線狀態：</strong><span id="status" role="status" aria-live="polite">尚未建立</span></div>
+<div class="kv">
+<div>角色：<strong id="role">—</strong></div>
+<div>資料通道：<strong id="channels">尚未開啟</strong></div>
+<div>RTT 中位數：<strong id="rtt50">—</strong></div>
+<div>RTT p95：<strong id="rtt95">—</strong></div>
+<div>發送／接收輸入：<strong id="counts">0／0</strong></div>
+<div>對方最新按鍵：<strong id="remoteKeys">—</strong></div>
+</div>
+<p class="foot">這裡的 RTT 是資料通道 ping 回應的往返時間，不是操作到螢幕畫面出現的總延遲。此頁尚未實作真正遊戲同步、掉包修復或可信比分。</p>
+</div>
+<div class="panel">
+<strong>雙人按鍵傳輸測試</strong>
+<p>兩端都可以用鍵盤 W／S／空白鍵，或按住下方按鈕傳送自己的輸入；對方可以看到最新按鍵。這不是桌球比賽。</p>
+<div class="row pad"><button data-key="up" disabled>↑ 上</button><button data-key="down" disabled>↓ 下</button><button data-key="fire" disabled>擊球</button></div>
+<p class="muted">在對方畫面的「最新按鍵」中看到動作，才代表真的透過 WebRTC 收到資料。</p>
+</div>
+<p class="foot">試驗版本 v1.6-P2P-LAB；不寫入單人存檔、不使用外部連線服務、不載入遊戲素材、不計入正式通關記錄。</p>
+<script>
+"use strict";
+(() => {
+ const $ = id => document.getElementById(id);
+ const MAX = 120000, VERSION=1, rtcSupported=typeof RTCPeerConnection!=="undefined";
+ let pc=null,control=null,input=null,role="",samples=[],pingTimer=null,inputTimer=null,seq=0,receivedSeq=-1,sent=0,received=0;
+ const held={up:false,down:false,fire:false};
+ const setStatus=txt=>{$("status").textContent=txt;};
+ const open=dc=>dc && dc.readyState==="open";
+ function metrics(){
+   const v=samples.slice().sort((a,b)=>a-b),at=q=>v.length?v[Math.ceil(v.length*q)-1].toFixed(1)+" ms":"—";
+   $("rtt50").textContent=at(.5);$("rtt95").textContent=at(.95);
+   $("counts").textContent=sent+"／"+received;
+   $("channels").textContent=open(control)&&open(input)?"control + input 已連通":"尚未全部連通";
+   document.querySelectorAll("[data-key]").forEach(b=>b.disabled=!open(input));
+ }
+ function reset(){
+   clearInterval(pingTimer);clearInterval(inputTimer);pingTimer=null;inputTimer=null;
+   for(const dc of [control,input])try{dc?.close();}catch{}
+   try{pc?.close();}catch{}
+   pc=null;control=null;input=null;role="";seq=0;receivedSeq=-1;sent=0;received=0;samples=[];Object.keys(held).forEach(k=>held[k]=false);
+   $("role").textContent="—";$("remoteKeys").textContent="—";$("local").value="";metrics();setStatus("尚未建立");
+ }
+ function send(dc,payload){
+   if(!open(dc)||dc.bufferedAmount>131072)return false;
+   dc.send(JSON.stringify(payload));return true;
+ }
+ function attach(dc){
+   if(!["control","input"].includes(dc.label)){dc.close();return;}
+   if(dc.label==="control"){if(control&&control!==dc){dc.close();return;}control=dc;}
+   else {if(input&&input!==dc){dc.close();return;}input=dc;}
+   dc.addEventListener("open",()=>{
+     metrics();if(open(control)&&open(input)){setStatus("已連線，可傳送輸入");}
+     if(dc.label==="control"&&!pingTimer)pingTimer=setInterval(()=>{
+       send(control,{v:VERSION,type:"ping",time:performance.now()});
+     },750);
+     if(dc.label==="input"&&!inputTimer)inputTimer=setInterval(()=>{
+       if(send(input,{v:VERSION,type:"input",seq:seq++,...held}))sent++;
+       metrics();
+     },50);
+   });
+   dc.addEventListener("close",()=>{metrics();setStatus("資料通道中斷，請重設並重新配對");});
+   dc.addEventListener("message",ev=>{
+     if(typeof ev.data!=="string"||ev.data.length>2048)return;
+     let msg;try{msg=JSON.parse(ev.data);}catch{return;}
+     if(!msg||msg.v!==VERSION||typeof msg.type!=="string")return;
+     if(dc.label==="control"&&msg.type==="ping"&&Number.isFinite(msg.time))send(control,{v:VERSION,type:"pong",time:msg.time});
+     if(dc.label==="control"&&msg.type==="pong"&&Number.isFinite(msg.time)){
+       const ms=performance.now()-msg.time;
+       if(ms>=0&&ms<30000){samples.push(ms);if(samples.length>100)samples.shift();metrics();}
+     }
+     if(dc.label==="input"&&msg.type==="input"&&Number.isSafeInteger(msg.seq)&&msg.seq>receivedSeq&&
+       typeof msg.up==="boolean"&&typeof msg.down==="boolean"&&typeof msg.fire==="boolean"){
+       receivedSeq=msg.seq;received++;$("remoteKeys").textContent=[msg.up?"上":null,msg.down?"下":null,msg.fire?"擊球":null].filter(Boolean).join("＋")||"無";metrics();
+     }
+   });
+ }
+ function make(roleName){
+   reset();if(!rtcSupported)throw Error("此瀏覽器不支援 WebRTC");
+   role=roleName;$("role").textContent=roleName==="host"?"A／房主":"B／受邀";
+   pc=new RTCPeerConnection({iceServers:[]});
+   pc.addEventListener("connectionstatechange",()=>{
+     const s=pc?.connectionState;if(!s)return;
+     if(s==="failed"||s==="disconnected"||s==="closed")setStatus("連線 "+s+"；可重設後再試");
+     else if(s==="connecting")setStatus("正在建立點對點連線");
+   });
+   pc.addEventListener("datachannel",event=>attach(event.channel));
+   if(roleName==="host"){
+     attach(pc.createDataChannel("control",{ordered:true}));
+     attach(pc.createDataChannel("input",{ordered:false,maxRetransmits:0}));
+   }
+ }
+ async function gather(){
+   if(!pc)throw Error("未建立連線");
+   if(pc.iceGatheringState!=="complete")await new Promise((resolve,reject)=>{
+     const current=pc;
+     const cleanup=()=>{clearTimeout(timer);current.removeEventListener("icegatheringstatechange",onState);};
+     const onState=()=>{if(current.iceGatheringState==="complete"){cleanup();resolve();}};
+     const timer=setTimeout(()=>{cleanup();reject(Error("ICE 收集逾時，請重設並重試"));},15000);
+     current.addEventListener("icegatheringstatechange",onState);onState();
+   });
+   return pc.localDescription?.sdp;
+ }
+ function parse(kind){
+   const s=$("remote").value;
+   if(s.length<30||s.length>MAX)throw Error("連線資訊長度不符");
+   let obj;try{obj=JSON.parse(s);}catch{throw Error("連線資訊不是有效 JSON");}
+   if(!obj||obj.v!==VERSION||obj.kind!==kind||typeof obj.sdp!=="string"||obj.sdp.length>MAX||
+      !obj.sdp.startsWith("v=0")||Object.keys(obj).some(k=>!["v","kind","sdp"].includes(k)))throw Error("版本、類型或 SDP 格式不符");
+   return {type:kind,sdp:obj.sdp};
+ }
+ async function act(task){
+   for(const id of ["host","guest","accept"])$(id).disabled=true;
+   try{await task();}catch(err){setStatus("失敗："+String(err?.message||err).slice(0,160));}
+   finally{for(const id of ["host","guest","accept"])$(id).disabled=false;}
+ }
+ $("host").addEventListener("click",()=>act(async()=>{
+   make("host");setStatus("正在產生邀請與收集 ICE...");
+   await pc.setLocalDescription(await pc.createOffer());
+   const sdp=await gather();if(!sdp)throw Error("沒有可分享的 SDP");
+   $("local").value=JSON.stringify({v:VERSION,kind:"offer",sdp});
+   setStatus("A 邀請已產生，請複製給 B");
+ }));
+ $("guest").addEventListener("click",()=>act(async()=>{
+   const remote=parse("offer");make("guest");setStatus("正在產生回覆與收集 ICE...");
+   await pc.setRemoteDescription(remote);
+   await pc.setLocalDescription(await pc.createAnswer());
+   const sdp=await gather();if(!sdp)throw Error("沒有可分享的 SDP");
+   $("local").value=JSON.stringify({v:VERSION,kind:"answer",sdp});
+   setStatus("B 回覆已產生，請複製給 A");
+ }));
+ $("accept").addEventListener("click",()=>act(async()=>{
+   if(role!=="host"||!pc||pc.signalingState!=="have-local-offer")throw Error("請先在 A 產生邀請");
+   await pc.setRemoteDescription(parse("answer"));setStatus("已匯入回覆，等待資料通道開啟...");
+ }));
+ $("reset").addEventListener("click",reset);
+ $("copy").addEventListener("click",async()=>{
+   const val=$("local").value;if(!val)return;
+   try{await navigator.clipboard.writeText(val);$("copyStatus").textContent="已複製";}
+   catch{$("local").focus();$("local").select();$("copyStatus").textContent="請手動複製反白文字";}
+ });
+ document.querySelectorAll("[data-key]").forEach(btn=>{
+   const k=btn.dataset.key;
+   btn.addEventListener("pointerdown",e=>{e.preventDefault();held[k]=true;btn.setPointerCapture(e.pointerId);});
+   for(const event of ["pointerup","pointercancel","lostpointercapture"])btn.addEventListener(event,()=>{held[k]=false;});
+ });
+ const mapping={KeyW:"up",ArrowUp:"up",KeyS:"down",ArrowDown:"down",Space:"fire"};
+ document.addEventListener("keydown",e=>{const k=mapping[e.code];if(k&&open(input)&&!["TEXTAREA","INPUT"].includes(document.activeElement?.tagName)){e.preventDefault();held[k]=true;}});
+ document.addEventListener("keyup",e=>{const k=mapping[e.code];if(k){held[k]=false;}});
+ document.addEventListener("visibilitychange",()=>{if(document.hidden)Object.keys(held).forEach(k=>held[k]=false);});
+ window.addEventListener("beforeunload",reset);
+ if(!rtcSupported)setStatus("目前瀏覽器不支援 RTCPeerConnection");
+ metrics();
+})();
+</script></body></html>
