@@ -833,7 +833,7 @@ R.g06=env=>{
      const center=project(distance,0,5.2);if(center){const sw=at.x-bt.x;rect(ctx,center.x-Math.abs(sw)*.25,center.y-8*a.scale,Math.abs(sw)*.5,15*a.scale,'#163b42');words(ctx,gate===goal?'FINISH':gate%lapLength===0?'LAP':'CHECKPOINT',center.x,center.y+3*a.scale,Math.max(3,9*a.scale),'#ecf5d6','center');}continue;
     }
     const p=project(distance,ob.lane);if(!p)continue;const size=Math.max(.8,Math.min(w*.22,vehicleWidth*p.scale*w*.5));
-    if(ob.type==='car')vehicle(ctx,p.x,p.y,size,ob.color,ob.steer||0,!!ob.braking,!!ob.boost,{model:ob.remote?remoteHero:[0,1,2,3,6][Number(ob.id?.split('-')[1])||0],speed:ob.speed,impact:Math.max(0,ob.inv-.35),side:1});
+    if(ob.type==='car')vehicle(ctx,p.x,p.y,size,ob.color,ob.steer||0,!!ob.braking,!!ob.boost,{model:ob.model??(ob.remote?remoteHero:[0,1,2,3,6][Number(ob.id?.split('-')[1])||0]),speed:ob.speed,impact:Math.max(0,ob.inv-.35),side:1});
     else{
      const bh=size*.55;ctx.fillStyle='#10212a66';ctx.beginPath();ctx.ellipse(p.x,p.y,size*.65,size*.09,0,0,TAU);ctx.fill();rect(ctx,p.x-size*.55,p.y-bh,size*1.1,bh,'#b37a4c','#e4bd88');rect(ctx,p.x-size*.52,p.y-bh,size*1.04,bh*.16,'#e2b57d');
      ctx.strokeStyle='#3e3230';ctx.lineWidth=Math.max(.7,size*.07);for(const xx of [-.3,.15]){ctx.beginPath();ctx.moveTo(p.x+size*xx,p.y-bh*.15);ctx.lineTo(p.x+size*(xx+.18),p.y-bh*.78);ctx.stroke();}
@@ -861,7 +861,7 @@ R.g06=env=>{
  });}
  function position(){return raceOrder().findIndex(r=>r===car)+1;}
  function clockText(value){if(value===null||!Number.isFinite(value))return '—';const ms=Math.round(value*1000);return Math.floor(ms/60000)+':'+String(Math.floor(ms/1000)%60).padStart(2,'0')+'.'+String(ms%1000).padStart(3,'0');}
- function classification(){return raceOrder().map((r,i)=>({id:r.id,name:r.player?(env.I?.hero?.[env.hero]||jaText(env,'玩家','プレイヤー')):r.name,position:i+1,player:!!r.player,...(multiplayer?{human:!!(r.player||r.remote)}:{}),status:r.status,laps:Math.min(laps,Math.floor(r.z/lapLength)),progress:r.z,time:r.finishTime,bestLap:r.lapTimes.length?Math.min(...r.lapTimes):null,overtakes:r.overtakes||0}));}
+ function classification(){return raceOrder().map((r,i)=>({id:r.id,name:r.player?(env.I?.hero?.[env.hero]||jaText(env,'玩家','プレイヤー')):r.name,position:i+1,player:!!r.player,...(multiplayer?{human:!!(r.player||r.remote),collisions:r.collisions||0}:{}),status:r.status,laps:Math.min(laps,Math.floor(r.z/lapLength)),progress:r.z,time:r.finishTime,bestLap:r.lapTimes.length?Math.min(...r.lapTimes):null,overtakes:r.overtakes||0}));}
  function nextLap(r,before,after,dt){
   for(let line=(Math.floor(before/lapLength)+1)*lapLength;line<=Math.min(goal,after);line+=lapLength){
    const at=elapsed-dt+between((line-before)/Math.max(1e-9,after-before),0,1)*dt;
@@ -939,6 +939,7 @@ R.g06=env=>{
   rear.speed=Math.max(0,Math.min(rear.speed,front.speed*.85));front.speed=Math.max(0,front.speed-Math.min(5,closing*.10));
   if(a.inv>0||b.inv>0){a.inv=b.inv=Math.max(a.inv,b.inv);return;} // Preserve the shared impact window, but still resolve contact.
   const damage=4+Math.min(6,closing*.15);a.health=Math.max(0,a.health-damage);b.health=Math.max(0,b.health-damage);a.inv=b.inv=.65;
+  if(multiplayer){for(const r of [a,b])if(r.player||r.remote)r.collisions=(r.collisions||0)+1;}
   if(a.player||b.player){collisions++;feel.impact=1;feel.side=Math.sign(car.lane-(a.player?b:a).lane)||1;env.sfx(95,.10);}
  }
  function recordPasses(field){
@@ -1008,6 +1009,7 @@ R.g06=env=>{
   for(const ob of traffic)if(ob.type==='barrier'&&!ob.hit)for(const r of field){
    if(r.status!=='racing'||r.inv>0||Math.abs(roadGap(ob.z,r.z))>=3.6||Math.abs(ob.lane-r.lane)>=barrierContact)continue;
    r.health=Math.max(0,r.health-16*mul);r.speed*=.65;r.inv=1.2;ob.hit=true;
+   if(multiplayer&&(r.player||r.remote))r.collisions=(r.collisions||0)+1;
    if(r.player){collisions++;feel.impact=1;feel.side=Math.sign(r.lane-ob.lane)||1;env.sfx(95,.14);}
   }
   recordPasses(field);for(const r of field)if(r.health<=0&&r.status==='racing')r.status='dnf';
@@ -1040,9 +1042,9 @@ R.g06=env=>{
    words(ctx,`${Math.round(car.speed*3.6)} km/h`,14,top,speedFont,'#9bf0dd');words(ctx,gapText(watch.ahead,true),14,top+line+4,small,'#f9d7a6');words(ctx,gapText(watch.behind,false),14,top+line*2+4,small,'#c3e5e3');words(ctx,jaText(env,models[env.hero].zh,models[env.hero].ja),14,top+line*3+4,small,'#e6d8ff');words(ctx,chapterNames[chapter-1],14,top+line*4+4,Math.max(10,9/displayScale),'#a3d6de');
    if(racePhase==='countdown'){
     for(let n=0;n<3;n++)orb(ctx,w/2+(n-1)*34,h*.28,12,n<Math.ceil(lights)?'#fa6677':'#374956');
-    words(ctx,String(Math.ceil(lights)),w/2,h*.40,48,'#fff','center');words(ctx,jaText(env,'準備起跑 · 第','スタート準備 · グリッド')+' '+(gridOrder.indexOf('player')+1)+'/6',w/2,h*.46,16,'#d9f2ed','center');
+    words(ctx,String(Math.ceil(lights)),w/2,h*.40,48,'#fff','center');words(ctx,jaText(env,'準備起跑 · 第','スタート準備 · グリッド')+' '+(gridOrder.indexOf(car.id)+1)+'/6',w/2,h*.46,16,'#d9f2ed','center');
    }else if(elapsed<.7)words(ctx,'GO!',w/2,h*.35,44,'#a7ffca','center');
-   if(racePhase==='finishing')words(ctx,car.status==='dnf'?jaText(env,'車輛退賽 · 等待賽事結束','DNF · レース終了を待機'):jaText(env,'已完賽 · 等待對手完賽','FINISH · ライバルのゴールを待機'),w/2,h*.27,Math.max(12,w*.022),'#fff0ac','center');
+   if(racePhase==='finishing'&&car.status!=='racing')words(ctx,car.status==='dnf'?jaText(env,'車輛退賽 · 等待賽事結束','DNF · レース終了を待機'):jaText(env,'已完賽 · 等待對手完賽','FINISH · ライバルのゴールを待機'),w/2,h*.27,Math.max(12,w*.022),'#fff0ac','center');
    if(slipstream)words(ctx,'SLIPSTREAM',w/2,h*.21,15,'#a4f6df','center');if(gateFlash<0)words(ctx,jaText(env,'回到道路內通過檢查點','コースに戻ってゲートを通過'),w/2,h*.21,Math.max(11,w*.025),'#ffd1b6','center');
    if(racePhase==='racing'&&Math.abs(watch.curve)>.65)words(ctx,(watch.curve>0?'→ ':'← ')+(car.slip>.6?jaText(env,'抓地不足 · 煞車','グリップ低下 · 減速'):jaText(env,'彎道預告','カーブ予告')),w/2,h*(slipstream?.25:.21),Math.max(14,10/displayScale),'#ffd7a7','center');
    if(watch.threats.length)words(ctx,[...new Set(watch.threats.map(r=>r.side))].map(side=>side==='left'?'←':'→').join(' ')+jaText(env,' 後車接近',' 後方接近'),w-100,154,Math.max(11,9/displayScale),'#ffbaac','center');
@@ -1055,7 +1057,21 @@ R.g06=env=>{
   inspectAwareness:awareness,
   inspectVehicle:()=>({...models[env.hero],collisionWidth:vehicleWidth}),
   inspectRace(){return {grid:gridOrder.slice(),gridPosition:gridOrder.indexOf('player')+1,phase:racePhase,lights,rank:position(),lapTimes:[...car.lapTimes],standings:classification(),events:events.map(e=>({...e})),mapPositions:racers().map(r=>({id:r.id,...trackAt(r.z)})),feedback:{...feel},nitro,progress,checkpointIndex,checkpointTotal:checkpointDistances.length,nextGate:checkpointDistances[checkpointIndex]??null,lap:Math.min(laps,Math.floor(checkpointIndex/3)+1),chapter,trackName:chapterNames[chapter-1],sector:segmentNames[Math.min(2,Math.floor((progress%lapLength)/400))],car:{...car},traffic:traffic.map(x=>({...x})),elapsed,score,collisions,passes,slipstream,roadSample:project(40),roadGrade:trackAt(progress+18).y-trackAt(progress).y,playerScreen:project(0,car.lane),roadBend:trackAt(progress).bend,cornerAhead:cornerAt(progress,car.speed),roadPreview:Array.from({length:9},(_,i)=>({distance:i*12,bend:trackAt(progress+i*12).bend})),lateralForce,cruiseSpeed:82,safeSpeed:cornerSpeed(cornerAt(progress,car.speed)),finished:!!g._finished};}
- };if(env.testMode)g.testRaceState=({time=elapsed,energy=nitro,player={},rivals=[]}={})=>{elapsed=time;nitro=between(energy,0,100);car.nitro=nitro;racePhase='racing';lights=0;debt=0;Object.assign(car,player);progress=car.z;checkpointIndex=Math.min(checkpointDistances.length,Math.floor(progress/400));for(const patch of rivals){const r=traffic.find(o=>o.id===patch.id);if(r){Object.assign(r,patch);r.checkpointIndex=Math.max(0,Math.floor(r.z/400));}}pairOrder=new Map();const field=racers();for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++)pairOrder.set(field[i].id+'/'+field[j].id,field[i].z>field[j].z||field[i].z===field[j].z&&field[i].id.localeCompare(field[j].id)<0);};if(env.testMode)g.testRenderGeometry=()=>({strips:visibleStrips(),polygons:visibleStrips().map(s=>clippedPolygon([cameraPoint(s.d,-1),cameraPoint(s.d,1),cameraPoint(s.next,1),cameraPoint(s.next,-1)])),sceneryClearance:sceneryLane*roadHalf-sceneryUnit*1.02-roadHalf*1.15,tyre:project(0,car.lane)});if(env.testMode)g.testPlace=({distance=progress,lane=0,speed=0,obstacle=null,keepTraffic=false}={})=>{
+ };
+ // Render a temporary view of the same authoritative race; no simulation runs here.
+ function guestView(fn){
+  const guest=multiplayer&&traffic.find(r=>r.remote);if(!guest)return null;
+  const saved={car,traffic,progress,nitro,checkpointIndex,passes,collisions,slipstream,gateFlash,feel,hero:env.hero};
+  try{
+   const host={...car,player:false,model:env.hero,color:pal[env.hero]};car={...guest,player:true};traffic=[host,...traffic.filter(r=>r!==guest)];
+   progress=car.z;nitro=car.nitro;checkpointIndex=car.checkpointIndex||0;passes=car.overtakes||0;collisions=car.collisions||0;slipstream=!!car.slipstream;gateFlash=0;feel={pitch:0,impact:Math.max(0,(car.inv||0)-.35),side:1};env.hero=remoteHero;
+   projectionBasis=null;sampleProgress=NaN;projectionSamples.clear();return fn();
+  }finally{
+   ({car,traffic,progress,nitro,checkpointIndex,passes,collisions,slipstream,gateFlash,feel}=saved);env.hero=saved.hero;projectionBasis=null;sampleProgress=NaN;projectionSamples.clear();
+  }
+ }
+ g.drawGuest=ctx=>guestView(()=>g.draw(ctx));g.guestHud=()=>guestView(()=>g.hud());
+ if(env.testMode)g.testRaceState=({time=elapsed,energy=nitro,player={},rivals=[]}={})=>{elapsed=time;nitro=between(energy,0,100);car.nitro=nitro;racePhase='racing';lights=0;debt=0;Object.assign(car,player);progress=car.z;checkpointIndex=Math.min(checkpointDistances.length,Math.floor(progress/400));for(const patch of rivals){const r=traffic.find(o=>o.id===patch.id);if(r){Object.assign(r,patch);r.checkpointIndex=Math.max(0,Math.floor(r.z/400));}}pairOrder=new Map();const field=racers();for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++)pairOrder.set(field[i].id+'/'+field[j].id,field[i].z>field[j].z||field[i].z===field[j].z&&field[i].id.localeCompare(field[j].id)<0);};if(env.testMode)g.testRenderGeometry=()=>({strips:visibleStrips(),polygons:visibleStrips().map(s=>clippedPolygon([cameraPoint(s.d,-1),cameraPoint(s.d,1),cameraPoint(s.next,1),cameraPoint(s.next,-1)])),sceneryClearance:sceneryLane*roadHalf-sceneryUnit*1.02-roadHalf*1.15,tyre:project(0,car.lane)});if(env.testMode)g.testPlace=({distance=progress,lane=0,speed=0,obstacle=null,keepTraffic=false}={})=>{
   progress=distance;car.z=distance;car.lane=lane;car.speed=speed;car.inv=0;debt=0;racePhase='racing';lights=0;
   if(!keepTraffic){traffic=[];if(obstacle){const r={z:distance+(obstacle.ahead??0),lane:obstacle.lane??lane,type:obstacle.type??'barrier',speed:obstacle.speed??0,hit:false};if(r.type==='car')Object.assign(r,{id:'fixture',name:'FIXTURE',driver:{...drivers[0]},maxSpeed:r.speed,steer:0,health:100,inv:0,status:'racing',finishTime:null,lapTimes:[],lastLapAt:0,overtakes:0,decision:0,targetLane:r.lane,nitro:0,boostTime:0,boostCooldown:100,color:'#f2b56e'});traffic.push(r);}}
   pairOrder=new Map();const field=racers();for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++)pairOrder.set(field[i].id+'/'+field[j].id,field[i].z>field[j].z||field[i].z===field[j].z&&field[i].id.localeCompare(field[j].id)<0);

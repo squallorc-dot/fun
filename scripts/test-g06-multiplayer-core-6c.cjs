@@ -1,5 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),{setup}=require('./lib/race-probe.cjs');
+const {canvasContext}=require('./lib/arcade-engine-probe.cjs');
 let cases=0;
 for(let chapter=1;chapter<=5;chapter++)for(const difficulty of ['normal','hard','expert']){
  const g=setup({chapter,difficulty,multiplayer:true,hero:0,remoteHero:6}).g,initial=g.inspectRace();
@@ -10,6 +11,13 @@ for(let chapter=1;chapter<=5;chapter++)for(const difficulty of ['normal','hard',
  const s=g.inspectRace(),guest=s.traffic.find(x=>x.id==='guest');assert(guest&&guest.remote&&guest.model===6);assert(guest.z>initial.standings.find(x=>x.id==='guest').progress+5,'guest accelerates independently');assert.equal(s.car.speed,0,'host braking does not stop guest');assert(guest.nitro<100,'guest boost consumes its own nitro');assert.equal(s.standings.length,6);g.setRemoteInput({});for(let i=0;i<360;i++)g.update(1/120,{down:true});assert.equal(g.inspectRace().traffic.find(x=>x.id==='guest').speed,0,'neutral input cannot leave throttle held');cases++;
 }
 const solo=setup().g;assert.equal(solo.setRemoteInput({fire:true}),false);assert.equal(solo.inspectRace().standings.filter(x=>x.id.startsWith('ai-')).length,5);
+// Fixture only arranges an approach; real collision physics resolves the impact.
+const collision=setup({multiplayer:true}).g;collision.testRaceState({player:{z:100,lane:0,speed:40},rivals:[{id:'guest',z:102,lane:0,speed:20}]});
+collision.setRemoteInput({up:true});collision.update(1/120,{});let standings=collision.inspectRace().standings;
+assert.equal(standings.find(x=>x.id==='player').collisions,1);assert.equal(standings.find(x=>x.id==='guest').collisions,1);
+for(let i=0;i<5;i++)collision.update(1/120,{});standings=collision.inspectRace().standings;assert.equal(standings.find(x=>x.id==='player').collisions,1);assert.equal(standings.find(x=>x.id==='guest').collisions,1,'shared invulnerability does not double-count one impact');
+const view=setup({multiplayer:true,hero:0,remoteHero:6}).g;view.testRaceState({player:{z:100,nitro:90},rivals:[{id:'guest',z:810,nitro:31,overtakes:3}]});
+const original=JSON.stringify(view.inspectRace()),guestHud=view.guestHud();assert(guestHud.includes('GATE 2/')&&guestHud.includes('31%')&&guestHud.includes('<b>3</b>'),'guest HUD uses guest gate, nitro and overtakes');view.drawGuest(canvasContext());assert.equal(JSON.stringify(view.inspectRace()),original,'guest rendering never advances or changes the authoritative race');
 for(const fps of [10,15,30,60,120,240]){
  const g=setup({chapter:2,multiplayer:true}).g;g.setRemoteInput({moveX:0,up:true,fire:true});for(let i=0;i<fps*10;i++)g.update(1/fps,{});const s=g.inspectRace(),r=s.traffic.find(x=>x.id==='guest');
  if(fps===10)global.reference={progress:s.progress,guest:r.z,speed:r.speed,nitro:r.nitro};else for(const [k,v]of Object.entries({progress:s.progress,guest:r.z,speed:r.speed,nitro:r.nitro}))assert(Math.abs(v-global.reference[k])<1e-6,`${fps} fps ${k}`);
