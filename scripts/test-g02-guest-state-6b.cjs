@@ -6,7 +6,12 @@ const assert=require('node:assert/strict'),{shooter}=require('./lib/arcade-engin
   assert.equal(guest.rafCalls,0);assert.equal(guest.networkStep({},{}),false,'guest cannot advance authority physics');
   for(let tick=0;tick<1200;tick++){
    assert(host.networkStep({moveX:-.2,fire:true},{moveX:.2,fire:true}));
-   if(tick%12===0){const s=host.encode(host.coopSnapshot());assert(s,`valid snapshot chapter ${chapter} ${difficulty} tick ${tick}`);assert(guest.networkApply(s));const received=guest.coopSnapshot();assert.equal(received.game.t,s.game.t);assert.equal(received.game.score,s.game.score);assert.equal(received.game.p2.x,s.game.p2.x);assert.equal(received.game.enemies.length,s.game.enemies.length);}
+   if(tick%12===0){const s=host.encode(host.coopSnapshot());assert(s,`valid snapshot chapter ${chapter} ${difficulty} tick ${tick}`);assert(guest.networkApply(s));const me=s.game.p2,ally=s.game.p;
+    assert.equal(guest.element('#ar-hp').textContent,Math.ceil(me.hp)+'/'+me.maxHp+' · '+Math.ceil(ally.hp)+'/'+ally.maxHp,'guest HP must lead the HUD');
+    assert.equal(guest.element('#ar-health-fill').style.width,me.hp/me.maxHp*100+'%','guest health bar must be local');
+    assert(guest.element('#ar-skill-state').textContent.endsWith(' '+Math.floor(me.skill)+'%'),'guest skill meter must be local');
+    assert(guest.element('#ar-dash-state').textContent.endsWith(me.dash>0?me.dash.toFixed(1)+'s':'就緒'),'guest dodge meter must be local');
+    const received=guest.coopSnapshot();assert.equal(received.game.t,s.game.t);assert.equal(received.game.score,s.game.score);assert.equal(received.game.p2.x,s.game.p2.x);assert.equal(received.game.enemies.length,s.game.enemies.length);}
   }
   const s=host.encode(host.coopSnapshot()),bad=JSON.parse(JSON.stringify(s)),before=JSON.stringify(guest.coopSnapshot());assert(guest.networkPaint());assert.equal(JSON.stringify(guest.coopSnapshot()),before,'visual rendering cannot advance guest state');bad.game.p2.x=999;assert(!guest.networkApply(bad));assert.equal(JSON.stringify(guest.coopSnapshot()),before,'rejected data cannot modify guest state');
   assert(!guest.valid({...s,unexpected:true}));assert(!guest.valid({...s,game:{...s.game,fx:Array(513).fill({x:0,y:0})}}));
