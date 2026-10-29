@@ -114,7 +114,7 @@ async function start(){
  window.BioArcadeChapter=Math.max(1,Math.min(5,Number(window.BioArcadeChapter)||1));unlockSound();phase='loading';notify('loading');enterImmersive();
  if(canvas?._resizeObserver)canvas._resizeObserver.disconnect();canvas=null;game=null;
  root.querySelector('#arcade-screen').innerHTML='<div class="arcade-result" role="status"><h3>'+txt(lang.loading)+'</h3><p>'+(ja?'シーンとガーディアンを準備中…':'正在準備場景與守護者…')+'</p><button class="arcade-secondary" data-ar-command="menu">'+txt(lang.menu)+'</button></div>';
- try{await window.BioArcadeSession.prepare([window.BioGuardianArt?.preload([chosen,'enemy-grunt','enemy-brute','enemy-ranged','enemy-boss'])||Promise.resolve(false),window.BioWorldArt?.preload('defense')||Promise.resolve(false)]);}catch(error){
+ try{await window.BioArcadeSession.prepare([window.BioGuardianArt?.preload([chosen,...(coopConfig?[coopConfig.hero]:[]),'enemy-grunt','enemy-brute','enemy-ranged','enemy-boss'])||Promise.resolve(false),window.BioWorldArt?.preload('defense')||Promise.resolve(false)]);}catch(error){
   if(epoch!==startEpoch)return;phase='load-error';notify('load-error');root.querySelector('#arcade-screen').innerHTML='<div class="arcade-result" role="alert"><h3>'+(ja?'読み込みに失敗しました':'素材載入失敗')+'</h3><p>'+(ja?'接続を確認して再試行してください。':'請確認連線後重試。')+'</p><button class="arcade-primary" data-ar-command="retry">'+txt(lang.playAgain)+'</button><button class="arcade-secondary" data-ar-command="menu">'+txt(lang.menu)+'</button></div>';return;
  }
  if(epoch!==startEpoch)return;const h=HEROES[chosen],mode=diff[difficulty];phase='playing';renderPlay();const now=performance.now();

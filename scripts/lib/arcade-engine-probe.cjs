@@ -11,9 +11,9 @@ async function shooter({hero=0,chapter=1,difficulty='normal',seed=71,source,view
  function node(name){if(nodes.has(name))return nodes.get(name);const el={name,style:{setProperty(){},removeProperty(){}},dataset:{},classList:classList(),hidden:true,value:'normal',innerHTML:'',addEventListener(){},setAttribute(){},removeAttribute(){},focus(){},getBoundingClientRect:()=>({width:viewport.width,height:viewport.height,left:0,top:0}),getContext:()=>ctx,querySelector:node,querySelectorAll:()=>[]};nodes.set(name,el);return el;}
  const host=node('root'),canvas=node('canvas');canvas.parentElement=node('canvas-parent');
  host.querySelector=selector=>selector==='canvas'||selector==='#arcade-canvas'?canvas:node(selector);
- const storage=new Map(),body=node('body'),html=node('html');html.lang='zh-TW';
+ const storage=new Map(),body=node('body'),html=node('html'),preloadedHeroes=[];html.lang='zh-TW';
  const document={getElementById:()=>host,documentElement:html,body,hidden:false,activeElement:canvas,addEventListener(){}};
- const win={document,Math:math,performance:{now:()=>0},scrollY:0,scrollTo(){},dataLayer:[],devicePixelRatio:1,addEventListener(){},dispatchEvent(){},matchMedia:()=>({matches:false}),BioArcadeChapter:chapter,BioArcadeAudioPolicy:{normalize:()=>({sfx:0})},BioWorldArt:{preload:async()=>true,draw:()=>false},BioGuardianArt:{preload:async()=>[true],draw:()=>false},BioControlProfiles:{settingsOpen:false,prefs:{profile:'two'},set(){},createSettings:()=>({open(){},close(){}}),createInput:()=>({reset(){},dispose(){},setKeyboard(){},read:()=>({x:0,y:0,actions:new Set(),pulses:new Set(),assist:false}),debug:{id:null,actions:[],actionOwners:{},desired:{x:0,y:0}}})}};
+ const win={document,Math:math,performance:{now:()=>0},scrollY:0,scrollTo(){},dataLayer:[],devicePixelRatio:1,addEventListener(){},dispatchEvent(){},matchMedia:()=>({matches:false}),BioArcadeChapter:chapter,BioArcadeAudioPolicy:{normalize:()=>({sfx:0})},BioWorldArt:{preload:async()=>true,draw:()=>false},BioGuardianArt:{preload:async heroes=>{preloadedHeroes.push([...heroes]);return [true];},draw:()=>false},BioControlProfiles:{settingsOpen:false,prefs:{profile:'two'},set(){},createSettings:()=>({open(){},close(){}}),createInput:()=>({reset(){},dispose(){},setKeyboard(){},read:()=>({x:0,y:0,actions:new Set(),pulses:new Set(),assist:false}),debug:{id:null,actions:[],actionOwners:{},desired:{x:0,y:0}}})}};
  win.innerWidth=viewport.width;win.innerHeight=viewport.height;
  win.matchMedia=query=>({matches:coarse&&query.includes('pointer:coarse')});
  win.parent=win;win.window=win;
@@ -23,6 +23,6 @@ async function shooter({hero=0,chapter=1,difficulty='normal',seed=71,source,view
  const marker='shell();\n})();';if(!code.includes(marker))throw Error('G02 probe marker missing');
  code=code.replace(marker,"window.__engineProbe={start,loop,draw,refreshHud,beginWave,updateStep:update,dash,skill,harm,liveGame:()=>game,setOptions(h,c,d){chosen=h;window.BioArcadeChapter=c;difficulty=d;},setKeys(values){keys.clear();for(const k of values)keys.add(k);},snapshot(){return JSON.stringify({phase,game});}};"+marker);
  vm.runInNewContext(code,scope);const probe=win.__engineProbe;probe.setOptions(hero,chapter,difficulty);if(coopHero!==null&&!win.BioArcadeShooter.configureCoop({hero:coopHero}))throw Error('invalid co-op configuration');await probe.start();
- return {...probe,setRemoteInput:value=>win.BioArcadeShooter.setRemoteInput(value),coopSnapshot:()=>win.BioArcadeShooter.coopSnapshot(),element:node,get randomCalls(){return randomCalls;},context:ctx,state:()=>win.BioArcadeShooter.state};
+ return {...probe,preloadedHeroes,setRemoteInput:value=>win.BioArcadeShooter.setRemoteInput(value),coopSnapshot:()=>win.BioArcadeShooter.coopSnapshot(),element:node,get randomCalls(){return randomCalls;},context:ctx,state:()=>win.BioArcadeShooter.state};
 }
 module.exports={shooter,canvasContext};
