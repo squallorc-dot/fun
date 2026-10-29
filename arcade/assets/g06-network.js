@@ -26,7 +26,7 @@ class Adapter{
  }
  step(dt,local,remote){if(!this.host)throw Error('guest-authority');const r={};for(const k of ['moveX','left','right','up','down','fire'])if(remote[k]!==undefined)r[k]=remote[k];if(!this.game.setRemoteInput(r))throw Error('invalid-input');this.game.update(dt,local);}
  capture(){if(!this.host)throw Error('guest-authority');return this.game.networkSnapshot();}
- result(s=this.capture()){return {standings:s.standings,players:['player','guest'].map(id=>{const r=[s.car,...s.traffic].find(x=>x.id===id),rank=s.standings.find(x=>x.id===id);return {id,rank:rank.position,status:r.status,time:r.finishTime,bestLap:r.lapTimes.length?Math.min(...r.lapTimes):null,overtakes:r.overtakes,collisions:r.collisions||0};})};}
+ result(s=this.capture()){return {standings:s.standings,players:['player','guest'].map(id=>{const r=[s.car,...s.traffic].find(x=>x.id===id),rank=s.standings.find(x=>x.id===id);return {id,rank:rank.position,status:r.status,time:r.finishTime,bestLap:r.lapTimes.length?Math.min(...r.lapTimes):null,checkpoints:r.checkpointIndex||0,overtakes:r.overtakes,collisions:r.collisions||0};})};}
  reliableKey(s){return s.phase+':'+s.standings.map(r=>r.id+':'+r.status).join(',')+':'+s.car.checkpointIndex+':'+s.traffic.find(r=>r.id==='guest').checkpointIndex;}
  receive(tick,s,immediate=false){if(!Number.isSafeInteger(tick)||tick<0||tick<this.lastTick||tick===this.lastTick&&!immediate||!snapshot(s,this.chapter))return false;this.lastTick=tick;this.queue=[{tick,state:structuredClone(s)}];this.game.applyNetworkState(s);return true;}
  render(){} // Only host snapshots change the guest world.
