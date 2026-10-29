@@ -20,7 +20,7 @@ const HEROES=[
 ];
 const diff={normal:{enemyHp:1,enemyDmg:1,spawn:1},hard:{enemyHp:1.25,enemyDmg:1.2,spawn:1.16},expert:{enemyHp:1.55,enemyDmg:1.4,spawn:1.3}};
 let chosen=0,difficulty='normal',phase='select',pausedFrom='playing',game=null,canvas=null,ctx=null,W=960,H=540,dpr=1,lastFrame=0,lastHudPaint=0,frame=0;
-let coopConfig=null,remoteInput={},remoteHeld={},remoteActing=false,remoteAt=0,networkClock=false;
+let coopConfig=null,remoteInput={},remoteHeld={},remoteActing=false,remoteAt=0,networkClock=false,networkRole=null;
 const keys=new Set(),pointer={active:false,x:0,y:0},stick={id:null,x:0,y:0},touch={fire:false};
 let stars=[];
 let soundEnabled=true,soundVolume=55,lastSoundVolume=55,audioCtx=null,startEpoch=0,loadingHold=false;
@@ -159,7 +159,7 @@ function pause(force=false){
   resumeClock.cancel();simulation.clear();phase='paused';cancelAnimationFrame(frame);resetInputs();notify('paused');const overlay=root.querySelector('#arcade-overlay');overlay.hidden=false;overlay.innerHTML='<div class="arcade-result"><span class="arcade-overline">BIO-CITY / SYSTEM PAUSED</span><h3>'+txt(lang.autopause)+'</h3><p>'+txt(lang.pauseHint)+'</p><button class="arcade-primary" data-ar-command="resume">'+txt(lang.resume)+' →</button><button class="arcade-secondary" data-ar-command="menu">'+txt(lang.menu)+'</button></div>';
  }else if(phase==='paused'&&!force&&!document.hidden){resetInputs();unlockSound();notify('resuming');resumeClock.start();}
 }
-function menu(){coopConfig=null;networkClock=false;window.BioGuardianArt?.setCacheCapacity?.(5);remoteInput={};remoteHeld={};startEpoch++;simulation.reset();controlInput?.dispose();controlInput=null;controlPlan={reservedLeft:0,reservedRight:0};resumeClock.cancel();cancelAnimationFrame(frame);resetInputs();if(canvas?._resizeObserver)canvas._resizeObserver.disconnect();canvas=null;renderSelect();exitImmersive();notify('menu');}
+function menu(){coopConfig=null;networkClock=false;networkRole=null;window.BioGuardianArt?.setCacheCapacity?.(5);remoteInput={};remoteHeld={};startEpoch++;simulation.reset();controlInput?.dispose();controlInput=null;controlPlan={reservedLeft:0,reservedRight:0};resumeClock.cancel();cancelAnimationFrame(frame);resetInputs();if(canvas?._resizeObserver)canvas._resizeObserver.disconnect();canvas=null;renderSelect();exitImmersive();notify('menu');}
 function loop(now){if(phase!=='playing')return;const dt=Math.max(0,(now-lastFrame)/1000);lastFrame=now;simulation.advance(dt,step=>{readControls(step);update(step);return phase==='playing';});draw();if(now-lastHudPaint>=100){refreshHud();lastHudPaint=now;}if(phase==='playing')frame=requestAnimationFrame(loop);}
 function update(dt){if(phase!=='playing'||!game)return;const g=game,p=g.p;g.t+=dt;p.shot=Math.max(0,p.shot-dt);p.dash=Math.max(0,p.dash-dt);p.inv=Math.max(0,p.inv-dt);p.shield=Math.max(0,p.shield-dt);p.dashTime=Math.max(0,p.dashTime-dt);p.skill=Math.min(100,p.skill+dt*3.5);g.shake=Math.max(0,g.shake-dt*18);
  let dx=(p.down?0:stick.x)+(p.down?0:(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0));let dy=(p.down?0:stick.y)+(p.down?0:(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0));let mag=Math.hypot(dx,dy);if(mag>1){dx/=mag;dy/=mag;}if(p.dashTime>0){dx=p.dvx*3;dy=p.dvy*3;}p.x=clamp(p.x+dx*g.hero.speed*dt,18,W-18);p.y=clamp(p.y+dy*g.hero.speed*dt,20,H-20);pulseHazards(dt);if(phase!=='playing')return;
@@ -234,15 +234,20 @@ let networkHostHeld={};
 window.BioArcadeShooter={pause,applyAudio,applyControls:value=>Controls.set(value,false),resetInputs,
  configureCoop(value){if(phase!=='select'||!value||!Number.isInteger(value.hero)||value.hero<0||value.hero>6)return false;coopConfig={hero:value.hero};return true;},
  // Experimental host-only integration: the caller owns the sole 120 Hz clock.
- configureNetworkHost(value){if(phase!=='select'||!value||!Number.isInteger(value.hero)||value.hero<0||value.hero>6)return false;coopConfig={hero:value.hero};networkClock=true;networkHostHeld={};return true;},
+ configureNetworkHost(value){if(phase!=='select'||!value||!Number.isInteger(value.hero)||value.hero<0||value.hero>6)return false;coopConfig={hero:value.hero};networkClock=true;networkRole='host';networkHostHeld={};return true;},
+ configureNetworkGuest(value){if(phase!=='select'||!value||!Number.isInteger(value.hero)||value.hero<0||value.hero>6)return false;coopConfig={hero:value.hero};networkClock=true;networkRole='guest';networkHostHeld={};return true;},
  networkStep(local,remote){
-  if(!networkClock||phase!=='playing'||!game?.p2||!networkInputValid(local)||!networkInputValid(remote))return false;
+  if(networkRole!=='host'||phase!=='playing'||!game?.p2||!networkInputValid(local)||!networkInputValid(remote))return false;
   remoteInput={...remote};remoteAt=game.t;
   keys.clear();stick.x=Number(local.moveX)||0;stick.y=Number(local.moveY)||0;if(local.fire)keys.add(' ');
   if(local.dodge&&!networkHostHeld.dodge)dash();if(local.skill&&!networkHostHeld.skill)skill();networkHostHeld={dodge:!!local.dodge,skill:!!local.skill};
   update(1/120);return true;
  },
  networkPaint(){if(!networkClock||!game)return false;draw();refreshHud();return true;},
+ networkApply(value){
+  if(networkRole!=='guest'||!game?.p2||!window.BioG02State?.valid(value)||value.chapter!==window.BioArcadeChapter||value.difficulty!==difficulty||value.game.p2.heroIndex!==coopConfig.hero)return false;
+  const s=JSON.parse(JSON.stringify(value));game=s.game;game.p1=game.p;game.hero=HEROES[chosen];game.hero2=HEROES[coopConfig.hero];game.mode=diff[difficulty];phase=s.phase;draw();refreshHud();return true;
+ },
  networkPause(paused){if(!networkClock||typeof paused!=='boolean'||!game)return false;if(paused){if(phase==='playing')pause(true);return phase==='paused';}if(phase!=='paused'||document.hidden)return false;resumeClock.cancel();resetInputs();networkHostHeld={};remoteInput={};remoteHeld={};remoteAt=game.t;phase='playing';root.querySelector('#arcade-overlay').hidden=true;notify('resumed');return true;},
  networkClose(){if(!networkClock)return false;menu();return true;},
  // Read-only cooperative state for a future authority adapter; never includes inputs, SDP or storage.

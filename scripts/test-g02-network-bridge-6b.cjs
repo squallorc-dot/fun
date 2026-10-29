@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 let listener,configured=0,steps=0,pauses=0,starts=0,closes=0,oversized=false;const sent=[];
 const parent={postMessage:data=>sent.push(data)},api={configureNetworkHost:()=>{configured++;return true;},networkStep:()=>{steps++;return true;},networkPaint:()=>{},coopSnapshot:()=>oversized?{data:'x'.repeat(31000)}:{version:1},networkPause:()=>{pauses++;return true;},networkClose:()=>{closes++;return true;}};
-const window={dataLayer:[],BioArcadeShooter:api,addEventListener:(name,fn)=>{if(name==='message')listener=fn;}};
+const window={dataLayer:[],BioArcadeShooter:api,BioG02State:{encode:x=>x},addEventListener:(name,fn)=>{if(name==='message')listener=fn;}};
 const document={querySelector:q=>q.includes('start')?{click(){starts++;}}:q.includes('hero')?{click(){}}:null};
 vm.runInNewContext(fs.readFileSync('arcade/assets/shooter-bridge.js','utf8'),{window,parent,document,location:{origin:'https://example.test'},Number,Object,JSON});
 const deliver=(data,origin='https://example.test',source=parent)=>listener({origin,source,data});
@@ -16,4 +16,9 @@ oversized=true;deliver({...step,seq:1});assert.equal(sent[1].type,'coop-net-over
 deliver({source:'bio-city-hub',command:'coop-net-pause',version:1,epoch:3,seq:0,paused:true});assert.equal(pauses,0);
 const pause={source:'bio-city-hub',command:'coop-net-pause',version:1,epoch:4,seq:0,paused:true};deliver(pause);deliver(pause);assert.equal(pauses,1);
 deliver({source:'bio-city-hub',command:'coop-net-close',version:1,epoch:4,seq:0});assert.equal(closes,0);deliver({source:'bio-city-hub',command:'coop-net-close',version:1,epoch:4,seq:1});assert.equal(closes,1);
+let guestListener,applied=0;const guestApi={configureNetworkGuest:()=>true,networkApply:()=>{applied++;return true;}};const guestWindow={dataLayer:[],BioArcadeShooter:guestApi,addEventListener:(name,fn)=>{if(name==='message')guestListener=fn;}};
+vm.runInNewContext(fs.readFileSync('arcade/assets/shooter-bridge.js','utf8'),{window:guestWindow,parent,document,location:{origin:'https://example.test'},Number,Object,JSON});
+const receive=(data,origin='https://example.test',source=parent)=>guestListener({origin,source,data});receive({...init,role:'guest'});
+const apply={source:'bio-city-hub',command:'coop-net-apply',version:1,epoch:4,seq:8,state:{}};
+receive(apply,'https://evil.test');receive(apply,'https://example.test',{});receive({...apply,epoch:3});assert.equal(applied,0);receive(apply);receive(apply);receive({...apply,seq:7});assert.equal(applied,1,'guest rejects forged origin, source, epoch and stale snapshots');
 console.log('G02 NETWORK BRIDGE PASS: source, origin, version, epoch, sequence and replay checks');
