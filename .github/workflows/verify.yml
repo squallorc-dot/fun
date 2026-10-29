@@ -43,6 +43,9 @@ jobs:
         run: node scripts/ci-browser-check.mjs scripts/smoke-p2p-v16.mjs
       - name: Test real two-browser G05 games and shared lobby
         run: node scripts/ci-browser-check.mjs scripts/smoke-friends-v16.mjs
+      - name: Test G06 racing over real RTC and lobby switching
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g06-friends-6c.mjs
       - name: Measure real multiplayer network conditions and prolonged play
         timeout-minutes: 45
         run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-v16.mjs
@@ -118,6 +121,7 @@ jobs:
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs
           node scripts/test-g06-multiplayer-core-6c.cjs
+          node scripts/test-g06-network-6c.cjs
           node scripts/test-g01-combat.cjs
           node scripts/test-g01-seven-skills.cjs
           node scripts/test-g01-animation.cjs

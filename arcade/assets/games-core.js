@@ -977,7 +977,7 @@ R.g06=env=>{
  function raceStep(dt,input){
   if(racePhase!=='countdown')dt=Math.min(dt,Math.max(0,timeLimit-elapsed));
   const previousSpeed=car.speed;t+=dt;feel.impact=Math.max(0,feel.impact-dt*4);
-  car.braking=!!input.down;
+  car.braking=!!input.down||multiplayer&&!(input.up||input.accelerate);
   if(racePhase==='countdown'){
    const before=Math.ceil(lights);lights=Math.max(0,lights-dt);
    if(Math.ceil(lights)!==before)env.sfx(lights>1e-8?460:920,.08);
@@ -1024,13 +1024,14 @@ R.g06=env=>{
   start(){g._finished=false;window.BioGuardianArt?.preload([env.hero]);window.BioWorldArt?.preload('race');
    car={id:'player',player:true,type:'car',z:0,lane:0,steer:0,speed:0,health:100,inv:0,braking:false,status:'racing',finishTime:null,lapTimes:[],lastLapAt:0,overtakes:0,nitro:100,boost:false,boostCooldown:0,lateralVelocity:0,slip:0};
    traffic=[];progress=0;elapsed=0;t=0;score=0;collisions=0;nitro=100;checkpointIndex=0;gateFlash=0;passes=0;slipstream=false;racePhase='countdown';lights=3;debt=0;events=[];pairOrder=new Map();projectionBasis=null;sampleProgress=NaN;projectionSamples.clear();feel={pitch:0,impact:0,side:1};
+   if(multiplayer&&env.sessionCountdown){racePhase='racing';lights=0;}
    for(let n=0;n<2;n++)traffic.push({z:410+n*430,lane:(chapter+n)%2?.86:-.86,type:'barrier',speed:0,hit:false});
    for(let n=0;n<(multiplayer?4:5);n++){const driver=drivers[n];traffic.push({id:'ai-'+n,name:driver.name,driver:{...driver},z:8+Math.floor(n/2)*8,lane:n%2?.60:-.60,gridLane:n%2?.60:-.60,steer:0,type:'car',speed:0,maxSpeed:driver.pace+6+(mul-1)*4+(chapter-1)*.3+rnd(-.4,.4),health:100,inv:0,color:['#f2b56e','#e9798f','#8ed8b7','#a9a2f0','#c1e5ed'][n],status:'racing',finishTime:null,lapTimes:[],lastLapAt:0,overtakes:0,targetLane:null,decision:0,nitro:100,boostTime:0,boostCooldown:2+n});}
    if(multiplayer){remoteInput={};traffic.push({id:'guest',name:env.I?.hero?.[remoteHero]||'Guest',remote:true,model:remoteHero,type:'car',z:0,lane:0,steer:0,speed:0,health:100,inv:0,braking:false,color:pal[remoteHero],status:'racing',finishTime:null,lapTimes:[],lastLapAt:0,overtakes:0,nitro:100,boost:false,boostCooldown:0,lateralVelocity:0,slip:0});}
    const field=racers();for(const r of field){const slot=gridOrder.indexOf(r.id);r.z=[24,20,16,12,8,0][slot];r.lane=slot%2?.6:-.6;r.gridLane=r.lane;}progress=car.z;
    for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++)pairOrder.set(field[i].id+'/'+field[j].id,field[i].z>field[j].z||field[i].z===field[j].z&&field[i].id.localeCompare(field[j].id)<0);
   },onResize(){},
-  update(dt,input){if(g._finished||!Number.isFinite(dt)||dt<=0)return;debt+=Math.min(.25,dt);while(debt+1e-10>=1/120&&!g._finished){debt=Math.max(0,debt-1/120);raceStep(1/120,input);}},
+  update(dt,input){if(env.authority===false||g._finished||!Number.isFinite(dt)||dt<=0)return;debt+=Math.min(.25,dt);while(debt+1e-10>=1/120&&!g._finished){debt=Math.max(0,debt-1/120);raceStep(1/120,input);}},
   setRemoteInput(input){if(!multiplayer||!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['moveX','left','right','up','accelerate','down','fire','skill'].includes(k))||Object.entries(input).some(([k,v])=>k==='moveX'?typeof v!=='number'||!Number.isFinite(v)||Math.abs(v)>1:typeof v!=='boolean'))return false;remoteInput={...input};return true;},
   draw(ctx){const w=g.w,h=g.h,sector=Math.min(2,Math.floor((progress%lapLength)/400));drawRaceWorld(ctx,w,h);
    const displayScale=Math.max(.2,Number(env.renderScale)||1),small=Math.max(12,10.5/displayScale),speedFont=Math.max(26,15/displayScale),top=Math.max(37,speedFont+8),line=Math.max(20,small*1.18);
@@ -1070,7 +1071,16 @@ R.g06=env=>{
    ({car,traffic,progress,nitro,checkpointIndex,passes,collisions,slipstream,gateFlash,feel}=saved);env.hero=saved.hero;projectionBasis=null;sampleProgress=NaN;projectionSamples.clear();
   }
  }
- g.drawGuest=ctx=>guestView(()=>g.draw(ctx));g.guestHud=()=>guestView(()=>g.hud());
+ g.drawGuest=ctx=>guestView(()=>g.draw(ctx));g.guestHud=()=>guestView(()=>g.hud());g.inspectGuestRace=()=>guestView(()=>g.inspectRace());
+ g.networkSnapshot=()=>{
+  if(!multiplayer||env.authority===false)throw Error('host authority required');
+  return JSON.parse(JSON.stringify({version:1,chapter,phase:racePhase,t,elapsed,lights,car,traffic,progress,nitro,checkpointIndex,passes,collisions,slipstream,gateFlash,feel,score,finished:!!g._finished,standings:classification()}));
+ };
+ g.applyNetworkState=value=>{
+  if(!multiplayer||env.authority!==false)throw Error('guest renderer required');
+  const s=JSON.parse(JSON.stringify(value));car=s.car;traffic=s.traffic;racePhase=s.phase;t=s.t;elapsed=s.elapsed;lights=s.lights;progress=s.progress;nitro=s.nitro;checkpointIndex=s.checkpointIndex;passes=s.passes;collisions=s.collisions;slipstream=s.slipstream;gateFlash=s.gateFlash;feel=s.feel;score=s.score;g._finished=s.finished;
+  projectionBasis=null;sampleProgress=NaN;projectionSamples.clear();
+ };
  if(env.testMode)g.testRaceState=({time=elapsed,energy=nitro,player={},rivals=[]}={})=>{elapsed=time;nitro=between(energy,0,100);car.nitro=nitro;racePhase='racing';lights=0;debt=0;Object.assign(car,player);progress=car.z;checkpointIndex=Math.min(checkpointDistances.length,Math.floor(progress/400));for(const patch of rivals){const r=traffic.find(o=>o.id===patch.id);if(r){Object.assign(r,patch);r.checkpointIndex=Math.max(0,Math.floor(r.z/400));}}pairOrder=new Map();const field=racers();for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++)pairOrder.set(field[i].id+'/'+field[j].id,field[i].z>field[j].z||field[i].z===field[j].z&&field[i].id.localeCompare(field[j].id)<0);};if(env.testMode)g.testRenderGeometry=()=>({strips:visibleStrips(),polygons:visibleStrips().map(s=>clippedPolygon([cameraPoint(s.d,-1),cameraPoint(s.d,1),cameraPoint(s.next,1),cameraPoint(s.next,-1)])),sceneryClearance:sceneryLane*roadHalf-sceneryUnit*1.02-roadHalf*1.15,tyre:project(0,car.lane)});if(env.testMode)g.testPlace=({distance=progress,lane=0,speed=0,obstacle=null,keepTraffic=false}={})=>{
   progress=distance;car.z=distance;car.lane=lane;car.speed=speed;car.inv=0;debt=0;racePhase='racing';lights=0;
   if(!keepTraffic){traffic=[];if(obstacle){const r={z:distance+(obstacle.ahead??0),lane:obstacle.lane??lane,type:obstacle.type??'barrier',speed:obstacle.speed??0,hit:false};if(r.type==='car')Object.assign(r,{id:'fixture',name:'FIXTURE',driver:{...drivers[0]},maxSpeed:r.speed,steer:0,health:100,inv:0,status:'racing',finishTime:null,lapTimes:[],lastLapAt:0,overtakes:0,decision:0,targetLane:r.lane,nitro:0,boostTime:0,boostCooldown:100,color:'#f2b56e'});traffic.push(r);}}
