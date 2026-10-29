@@ -117,6 +117,7 @@ jobs:
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs
+          node scripts/test-g06-multiplayer-core-6c.cjs
           node scripts/test-g01-combat.cjs
           node scripts/test-g01-seven-skills.cjs
           node scripts/test-g01-animation.cjs
