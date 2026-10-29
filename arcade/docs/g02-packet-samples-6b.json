@@ -1,0 +1,246 @@
+{
+  "method": "Seeded real 120 Hz G02 physics, two scripted players, 30 FPS rendering, sample every second render, max 120 seconds; JSON length in UTF-16 code units as enforced by peer-link; synthetic envelope, no RTC; not a worst-case bound",
+  "limit": 32768,
+  "rows": [
+    {
+      "chapter": 1,
+      "difficulty": "normal",
+      "seed": 7,
+      "frames": 1012,
+      "samples": 506,
+      "maxCodeUnits": 13291,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 840,
+        "phase": "playing",
+        "enemies": 0,
+        "fx": 56
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 2,
+      "difficulty": "normal",
+      "seed": 7,
+      "frames": 1170,
+      "samples": 585,
+      "maxCodeUnits": 16917,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 812,
+        "phase": "playing",
+        "enemies": 1,
+        "fx": 72
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 3,
+      "difficulty": "normal",
+      "seed": 7,
+      "frames": 1630,
+      "samples": 815,
+      "maxCodeUnits": 22014,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 452,
+        "phase": "playing",
+        "enemies": 0,
+        "fx": 99
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 4,
+      "difficulty": "normal",
+      "seed": 7,
+      "frames": 1825,
+      "samples": 913,
+      "maxCodeUnits": 15525,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 1806,
+        "phase": "playing",
+        "enemies": 2,
+        "fx": 66
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 5,
+      "difficulty": "normal",
+      "seed": 7,
+      "frames": 1560,
+      "samples": 780,
+      "maxCodeUnits": 19690,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 450,
+        "phase": "playing",
+        "enemies": 5,
+        "fx": 86
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 1,
+      "difficulty": "hard",
+      "seed": 7,
+      "frames": 1234,
+      "samples": 617,
+      "maxCodeUnits": 16279,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 664,
+        "phase": "playing",
+        "enemies": 2,
+        "fx": 72
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 2,
+      "difficulty": "hard",
+      "seed": 7,
+      "frames": 1173,
+      "samples": 587,
+      "maxCodeUnits": 15553,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 720,
+        "phase": "playing",
+        "enemies": 2,
+        "fx": 63
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 3,
+      "difficulty": "hard",
+      "seed": 7,
+      "frames": 1347,
+      "samples": 674,
+      "maxCodeUnits": 14672,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 364,
+        "phase": "playing",
+        "enemies": 1,
+        "fx": 55
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 4,
+      "difficulty": "hard",
+      "seed": 7,
+      "frames": 1480,
+      "samples": 740,
+      "maxCodeUnits": 20351,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 810,
+        "phase": "playing",
+        "enemies": 5,
+        "fx": 89
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 5,
+      "difficulty": "hard",
+      "seed": 7,
+      "frames": 1567,
+      "samples": 784,
+      "maxCodeUnits": 16994,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 744,
+        "phase": "playing",
+        "enemies": 4,
+        "fx": 69
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 1,
+      "difficulty": "expert",
+      "seed": 7,
+      "frames": 1262,
+      "samples": 631,
+      "maxCodeUnits": 13526,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 1066,
+        "phase": "playing",
+        "enemies": 3,
+        "fx": 51
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 2,
+      "difficulty": "expert",
+      "seed": 7,
+      "frames": 1113,
+      "samples": 557,
+      "maxCodeUnits": 16976,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 994,
+        "phase": "playing",
+        "enemies": 3,
+        "fx": 54
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 3,
+      "difficulty": "expert",
+      "seed": 7,
+      "frames": 1286,
+      "samples": 643,
+      "maxCodeUnits": 25089,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 1172,
+        "phase": "playing",
+        "enemies": 7,
+        "fx": 95
+      },
+      "phase": "victory"
+    },
+    {
+      "chapter": 4,
+      "difficulty": "expert",
+      "seed": 7,
+      "frames": 1654,
+      "samples": 827,
+      "maxCodeUnits": 14498,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 1530,
+        "phase": "playing",
+        "enemies": 5,
+        "fx": 43
+      },
+      "phase": "defeat"
+    },
+    {
+      "chapter": 5,
+      "difficulty": "expert",
+      "seed": 7,
+      "frames": 1386,
+      "samples": 693,
+      "maxCodeUnits": 19001,
+      "overLimit": 0,
+      "maxAt": {
+        "frame": 720,
+        "phase": "playing",
+        "enemies": 1,
+        "fx": 84
+      },
+      "phase": "victory"
+    }
+  ]
+}
