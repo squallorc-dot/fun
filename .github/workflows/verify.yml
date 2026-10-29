@@ -140,6 +140,8 @@ jobs:
           node scripts/test-g02-coop-6b.cjs
           node scripts/test-g02-coop-fps-6b.cjs
           node scripts/test-g02-bridge-coop-6b.cjs
+          node scripts/test-g02-network-clock-6b.cjs
+          node scripts/test-g02-network-bridge-6b.cjs
           node scripts/test-friends-protocol.cjs
           python3 scripts/test-package-qa.py
           node scripts/test-arcade-sprites.cjs
