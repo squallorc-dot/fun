@@ -20,6 +20,7 @@ for(const lang of ['zh','ja']){
  assert(bridge.includes("type:'ready'"),'G02 readiness handshake missing for '+lang);
  assert(bridge.includes("dispatchEvent(new Event('change'"),'G02 selected difficulty not applied for '+lang);
  const page=read(`arcade/${lang}/index.html`);
+ assert(page.includes(`../qa/friends-v16/index.html?lang=${lang}`),`${lang} public arcade lacks the friends entrance`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices','stage-audio-status','stage-audio-play'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
  assert(page.includes('session-runtime.js')&&page.indexOf('session-runtime.js')<page.indexOf('hub.js'),lang+' shared session runtime order');
@@ -29,6 +30,10 @@ for(const lang of ['zh','ja']){
  assert(read(`${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} primary website lacks Arcade entrance`);
  assert(read(`content/${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} canonical content lacks Arcade entrance`);
 }
+const friends=read('arcade/qa/friends-v16/index.html'),challenge=read('arcade/qa/challenge-v16/index.html');
+for(const file of ['g01-network.js','g02-network-state.js','g02-network.js','g05-network.js','g06-network.js','friend-session.js'])assert(friends.includes(file),'friends lobby missing '+file);
+assert(friends.includes('challenge-v16/index.html')&&challenge.includes('challenge-ui.js'),'friend challenge route missing');
+assert(!friends.includes('googletagmanager.com')&&!challenge.includes('googletagmanager.com'),'manual pairing and challenge pages must not load production analytics');
 const tracks=['bio-city-awakening-theme-v2.mp3','burner-sister-summoning-theme.mp3','mj-robot-kizamu-japanese-v1.mp3','mj-robot-kizamu-japanese-v2.mp3'];
 for(const tr of tracks)assert(fs.existsSync(path.join(root,'music',tr)),`OST missing: ${tr}`);
 const playlist=hub.match(/const srcTrack=\[([^\]]+)\]/)?.[1].match(/'([^']+)'/g)?.map(x=>x.slice(1,-1));

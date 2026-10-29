@@ -41,6 +41,7 @@ jobs:
           node scripts/smoke-arcade.mjs
           node scripts/smoke-challenge-6b.mjs
           node scripts/smoke-g02-core-6b.mjs
+          node scripts/smoke-friends-entry-v16.mjs
       - name: Verify existing direct WebRTC transport lab (two isolated browser contexts)
         run: node scripts/ci-browser-check.mjs scripts/smoke-p2p-v16.mjs
       - name: Test real two-browser G05 games and shared lobby
@@ -50,6 +51,12 @@ jobs:
       - name: Test G02 co-op and G05 switching over real RTC
         timeout-minutes: 10
         run: node scripts/ci-browser-check.mjs scripts/smoke-g02-friends-6b.mjs
+      - name: Test G06 racing over real RTC and lobby switching
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g06-friends-6c.mjs
+      - name: Test all live games on one shared RTC connection
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friends-switch-v16.mjs
       - name: Compare G01 state across real RTC network conditions
         timeout-minutes: 20
         run: node scripts/ci-browser-check.mjs scripts/smoke-g01-matrix-6b.mjs
@@ -127,6 +134,8 @@ jobs:
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs
+          node scripts/test-g06-multiplayer-core-6c.cjs
+          node scripts/test-g06-network-6c.cjs
           node scripts/test-g01-combat.cjs
           node scripts/test-g01-seven-skills.cjs
           node scripts/test-g01-animation.cjs
@@ -146,6 +155,7 @@ jobs:
           node scripts/test-g02-network-clock-6b.cjs
           node scripts/test-g02-network-bridge-6b.cjs
           node scripts/test-g02-guest-state-6b.cjs
+          node scripts/test-g02-coop-isolation-v16.cjs
           node scripts/test-g02-coop-art-cache-6b.cjs
           node scripts/test-friends-protocol.cjs
           python3 scripts/test-package-qa.py

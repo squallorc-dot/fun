@@ -5,7 +5,7 @@ const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,list)=>objec
 const integer=(v,max=1e8)=>Number.isSafeInteger(v)&&v>=0&&v<=max,hero=v=>integer(v,6),name=v=>typeof v==='string'&&v.length<=48&&!/[\u0000-\u001f\u007f]/.test(v);
 const q=(a,p)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*p)-1]:null;
 class Session{
- constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh',adapters={g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{})}}={}){
+ constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh',adapters={g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{})}}={}){
   this.adapters=Object.freeze({...adapters});this.capabilities=Object.entries(this.adapters).flatMap(([id,m])=>m.MODES.map(mode=>id+':'+mode+'@'+m.TAG)).sort();
   this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m)});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.closed=false;
  }
@@ -25,7 +25,7 @@ class Session{
  accept(text){return this.link.accept(text);}
  configure(mode=this.config?.mode||'pong',game=this.config?.game||'g05',options={}){
   if(this.role!=='host'||this.link.state!=='connected'||!this.peerHello||!this.meta(game)?.MODES.includes(mode)||!this.peerHello.games.includes(game+':'+mode+'@'+this.meta(game).TAG)||ACTIVE.includes(this.phase))return false;
-  if(['g01','g02'].includes(game)&&(!Number.isInteger(options.chapter??1)||(options.chapter??1)<1||(options.chapter??1)>5||!['normal','hard','expert'].includes(options.difficulty??'normal')))return false;const previous=this.config;this.clearRound();this.epoch++;this.config={game,mode,engine:this.meta(game).TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch,...(['g01','g02'].includes(game)?{chapter:options.chapter??(previous?.game===game?previous.chapter:1),difficulty:options.difficulty??(previous?.game===game?previous.difficulty:'normal')}:{})};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
+  if(['g01','g02','g06'].includes(game)&&(!Number.isInteger(options.chapter??1)||(options.chapter??1)<1||(options.chapter??1)>5||!['normal','hard','expert'].includes(options.difficulty??'normal')))return false;const previous=this.config;this.clearRound();this.epoch++;this.config={game,mode,engine:this.meta(game).TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch,...(['g01','g02','g06'].includes(game)?{chapter:options.chapter??(previous?.game===game?previous.chapter:1),difficulty:options.difficulty??(previous?.game===game?previous.difficulty:'normal')}:{})};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
  }
  async ready(value=true){
   if(this.phase!=='lobby'||!this.config||!this.configAck)return false;const epoch=this.epoch,task=++this.readyTask;
@@ -64,7 +64,7 @@ class Session{
   }
   if(type==='leave'){if(channel!=='control'||!keys(d,[]))return false;this.link.close('closed');return true;}
   if(type==='config'){
-   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['g01','g02'].includes(d.game)?['game','mode','engine','heroes','room','epoch','chapter','difficulty']:['game','mode','engine','heroes','room','epoch'])||['g01','g02'].includes(d.game)&&(!Number.isInteger(d.chapter)||d.chapter<1||d.chapter>5||!['normal','hard','expert'].includes(d.difficulty))||!this.meta(d.game)?.MODES.includes(d.mode)||d.engine!==this.meta(d.game).TAG||!this.capabilities.includes(d.game+':'+d.mode+'@'+d.engine)||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero||!name(d.room))return false;
+   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['g01','g02','g06'].includes(d.game)?['game','mode','engine','heroes','room','epoch','chapter','difficulty']:['game','mode','engine','heroes','room','epoch'])||['g01','g02','g06'].includes(d.game)&&(!Number.isInteger(d.chapter)||d.chapter<1||d.chapter>5||!['normal','hard','expert'].includes(d.difficulty))||!this.meta(d.game)?.MODES.includes(d.mode)||d.engine!==this.meta(d.game).TAG||!this.capabilities.includes(d.game+':'+d.mode+'@'+d.engine)||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero||!name(d.room))return false;
    this.clearRound();this.epoch=d.epoch;this.config=structuredClone(d);this.room=d.room;this.phase='lobby';this.configAck=true;this.link.send('ack',{epoch:this.epoch});this.changed();return true;
   }
   if(!integer(d.epoch)||d.epoch!==this.epoch||!this.config)return false;
@@ -117,5 +117,5 @@ class Session{
  }
  inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
 }
-root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{})})});
+root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{})})});
 })(typeof window==='undefined'?globalThis:window);
