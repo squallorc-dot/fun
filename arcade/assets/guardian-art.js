@@ -6,15 +6,15 @@ const keys=['burner-sister','mj-robot','moo-moo','ye-bao-ex','jelly-trio','veggi
 const specs={idle:[6,.84,true],walk:[8,.64,true],jump:[4,.48,false],land:[3,.15,false],attack1:[6,.30,false,.10],attack2:[6,.34,false,.12],attack3:[8,.44,false,.17],hurt:[4,.25,false],dodge:[6,.28,false],skill:[8,.64,false],ko:[6,.55,false],celebrate:[6,.84,true]};
 let offset=0;const clips={};for(const [name,[frames,duration,loop,hit]]of Object.entries(specs)){clips[name]=Object.freeze({offset,frames,duration,loop,...(hit===undefined?{}:{hit})});offset+=frames;}
 Object.freeze(clips);Object.freeze(keys);
-const frameSize=160,columns=8,anchor=Object.freeze({x:80,y:140}),cache=new Map();let highKey=null;
+const frameSize=160,columns=8,anchor=Object.freeze({x:80,y:140}),cache=new Map();let highKey=null,cacheCapacity=5;
 const script=typeof document!=='undefined'?document.currentScript:null;
 const base=script?.src?new URL('guardians/',script.src).href:'';
 function keyFor(hero){return typeof hero==='number'?keys[Math.max(0,Math.min(6,hero|0))]:keys.includes(hero)?hero:keys[0];}
 function frameFor(name,time=0){const c=clips[name]||clips.idle;const progress=Math.max(0,Number.isFinite(time)?time:0)/c.duration;return c.offset+Math.min(c.frames-1,Math.floor((c.loop?progress%1:Math.min(progress,1))*c.frames));}
 function get(hero,retry=false){const key=keyFor(hero);if(retry&&cache.get(key)?.error)cache.delete(key);if(cache.has(key)){const item=cache.get(key);cache.delete(key);cache.set(key,item);return item;}
  if(typeof Image==='undefined')return null;
- // Five atlases = one selected hero and four enemy silhouettes, bounded on mobile.
- while(cache.size>=5)cache.delete(cache.keys().next().value);
+ // G02 co-op needs two heroes plus four enemy silhouettes; solo keeps five.
+ while(cache.size>=cacheCapacity)cache.delete(cache.keys().next().value);
  const image=new Image(),item={key,image,resolution:key===highKey?2:1,fallback:false,ready:false,error:false,promise:null};
  image.decoding='async';item.promise=new Promise(resolve=>{
   let settled=false,timer,attempt=0;const finish=ok=>{if(settled)return;settled=true;clearTimeout(timer);image.onload=image.onerror=null;item.ready=ok;item.error=!ok;resolve(ok);};
@@ -39,5 +39,6 @@ function preload(heroes,options){
 function draw(ctx,hero,clip,time,x,y,scale=1,dir=1,alpha=1){const item=get(hero);if(!item?.ready)return false;const frame=frameFor(clip,time),sx=frame%columns*frameSize,sy=Math.floor(frame/columns)*frameSize;
  const density=item.resolution;ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx*density,sy*density,frameSize*density,frameSize*density,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
 }
-window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,inspect:()=>({cached:cache.size,decodedBytes:[...cache.values()].reduce((n,x)=>n+(x.ready?x.image.width*x.image.height*4:0),0),atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error,resolution:x.resolution,fallback:x.fallback}))})});
+function setCacheCapacity(value){if(!Number.isInteger(value)||value<5||value>6)return false;cacheCapacity=value;while(cache.size>cacheCapacity)cache.delete(cache.keys().next().value);return true;}
+window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,setCacheCapacity,inspect:()=>({cached:cache.size,decodedBytes:[...cache.values()].reduce((n,x)=>n+(x.ready?x.image.width*x.image.height*4:0),0),atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error,resolution:x.resolution,fallback:x.fallback}))})});
 })();
