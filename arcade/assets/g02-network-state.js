@@ -15,7 +15,7 @@ function valid(s){
  const color=v=>typeof v==='string'&&/^#[0-9a-f]{3,8}$/i.test(v);
  if(!g.enemies.every(e=>point(e)&&['drone','dash','sniper','brute'].includes(e.type)&&finite(e.hp)&&finite(e.maxHp)&&e.maxHp>0&&finite(e.r)&&e.r>0&&finite(e.fire)&&finite(e.flash)&&color(e.color))||g.boss!==null&&(!point(g.boss)||!finite(g.boss.hp)||!finite(g.boss.maxHp)||g.boss.maxHp<=0||!finite(g.boss.r)||g.boss.r<=0||!finite(g.boss.fire)))return false;
  if(!g.projectiles.every(p=>point(p)&&['vx','vy','r'].every(k=>finite(p[k]))&&p.r>0&&color(p.color))||!g.hostiles.every(p=>point(p)&&['vx','vy','r'].every(k=>finite(p[k]))&&p.r>0)||!g.pickups.every(point))return false;
- if(!g.fx.every(f=>point(f)&&['dot','ring'].includes(f.type)&&finite(f.life)&&finite(f.max)&&f.max>0&&color(f.color)&&(f.type==='ring'?finite(f.radius)&&f.radius>=0:finite(f.r)&&f.r>=0)))return false;
+ if(!g.fx.every(f=>point(f)&&['dot','ring'].includes(f.type)&&finite(f.life)&&finite(f.max)&&f.max>0&&color(f.color)&&(f.type==='ring'?finite(f.radius)&&f.radius>=0:finite(f.r)&&f.r>=0&&finite(f.vx)&&finite(f.vy))))return false;
  return g.hazards.every(z=>point(z)&&finite(z.r)&&z.r>0&&['reactor','skyway','fracture','entropy'].includes(z.kind)&&typeof z.active==='boolean'&&typeof z.warning==='boolean');
 }
 function encode(s){if(!object(s)||!object(s.game))return null;let v;try{v=JSON.parse(JSON.stringify(s));}catch{return null;}delete v.game.p1;return valid(v)?v:null;}

@@ -11,8 +11,8 @@ deliver(init,'https://evil.test');deliver(init,'https://example.test',{});delive
 deliver(init);assert.equal(configured,1);assert.equal(starts,1);deliver(init);assert.equal(configured,1,'duplicate initialisation rejected');
 const step={source:'bio-city-hub',command:'coop-net-step',version:1,epoch:4,seq:0,local:{},remote:{},snapshot:true};
 deliver({...step,epoch:5});deliver({...step,seq:1});deliver(step,'https://evil.test');deliver(step,'https://example.test',{});assert.equal(steps,0);
-deliver(step);assert.equal(steps,1);assert.equal(sent[0].type,'coop-net-frame');assert.equal(sent[0].epoch,4);deliver(step);assert.equal(steps,1,'replay rejected');
-oversized=true;deliver({...step,seq:1});assert.equal(sent[1].type,'coop-net-overflow');assert(!('state' in sent[1]),'oversized state is never transferred');
+deliver(step);assert.equal(steps,1);assert.equal(sent[0].type,'coop-net-ack');assert.equal(sent[1].type,'coop-net-frame');assert.equal(sent[1].epoch,4);deliver(step);assert.equal(steps,1,'replay rejected');
+oversized=true;deliver({...step,seq:1});assert.equal(sent[3].type,'coop-net-overflow');assert(!('state' in sent[3]),'oversized state is never transferred');
 deliver({source:'bio-city-hub',command:'coop-net-pause',version:1,epoch:3,seq:0,paused:true});assert.equal(pauses,0);
 const pause={source:'bio-city-hub',command:'coop-net-pause',version:1,epoch:4,seq:0,paused:true};deliver(pause);deliver(pause);assert.equal(pauses,1);
 deliver({source:'bio-city-hub',command:'coop-net-close',version:1,epoch:4,seq:0});assert.equal(closes,0);deliver({source:'bio-city-hub',command:'coop-net-close',version:1,epoch:4,seq:1});assert.equal(closes,1);

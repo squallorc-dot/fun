@@ -6,6 +6,7 @@
  const send=data=>parent.postMessage({source:'bio-city-shooter',...data},location.origin);
  window.dataLayer.push=function(event){if(event&&event.event)send({event});return originalPush(event);};
  let guideWasPlaying=false,networkEpoch=null,lastNetworkEpoch=0,networkSeq=-1,networkControlSeq=-1;
+ function sendNetworkSnapshot(api){const state=window.BioG02State?.encode(api.coopSnapshot()),reply={type:'coop-net-frame',version:1,epoch:networkEpoch,seq:networkSeq,state};if(state&&JSON.stringify(reply).length<=30000)send(reply);else send({type:'coop-net-overflow',version:1,epoch:networkEpoch,seq:networkSeq});}
  window.addEventListener('message',e=>{
   if(e.origin!==location.origin||e.source!==parent||e.data?.source!=='bio-city-hub')return;
   const api=window.BioArcadeShooter,msg=e.data;if(!api)return;
@@ -18,7 +19,13 @@
   }
   if(msg.command==='coop-net-step'){
    if(!Object.keys(msg).every(k=>['source','command','version','epoch','seq','local','remote','snapshot'].includes(k))||msg.version!==1||msg.epoch!==networkEpoch||!Number.isSafeInteger(msg.seq)||msg.seq>1e8||msg.seq!==networkSeq+1||typeof msg.snapshot!=='boolean'||!api.networkStep(msg.local,msg.remote))return;
-   networkSeq=msg.seq;if(msg.snapshot){api.networkPaint();const state=window.BioG02State?.encode(api.coopSnapshot()),reply={type:'coop-net-frame',version:1,epoch:networkEpoch,seq:networkSeq,state};if(state&&JSON.stringify(reply).length<=30000)send(reply);else send({type:'coop-net-overflow',version:1,epoch:networkEpoch,seq:networkSeq});}return;
+   networkSeq=msg.seq;send({type:'coop-net-ack',version:1,epoch:networkEpoch,seq:networkSeq});if(msg.snapshot){api.networkPaint();sendNetworkSnapshot(api);}return;
+  }
+  if(msg.command==='coop-net-capture'){
+   if(Object.keys(msg).every(k=>['source','command','version','epoch'].includes(k))&&msg.version===1&&msg.epoch===networkEpoch)sendNetworkSnapshot(api);return;
+  }
+  if(msg.command==='coop-net-paint'){
+   if(Object.keys(msg).every(k=>['source','command','version','epoch'].includes(k))&&msg.version===1&&msg.epoch===networkEpoch)api.networkPaint();return;
   }
   if(msg.command==='coop-net-apply'){
    if(Object.keys(msg).every(k=>['source','command','version','epoch','seq','state'].includes(k))&&msg.version===1&&msg.epoch===networkEpoch&&Number.isSafeInteger(msg.seq)&&msg.seq>networkSeq&&msg.seq<=1e8&&api.networkApply(msg.state))networkSeq=msg.seq;return;
@@ -48,7 +55,7 @@
   if(select&&['normal','hard','expert'].includes(msg.difficulty)){select.value=msg.difficulty;select.dispatchEvent(new Event('change',{bubbles:true}));}
   document.querySelector('[data-ar-command="start"]')?.click();
  });
- window.addEventListener('bio-arcade-phase',e=>{send({type:e.detail,at:performance.timeOrigin+performance.now()});if(networkEpoch!==null&&['started','ended','load-error','menu'].includes(e.detail)){send({type:'coop-net-phase',version:1,epoch:networkEpoch,phase:e.detail});if(e.detail==='menu'){networkEpoch=null;networkSeq=-1;}}});
+ window.addEventListener('bio-arcade-phase',e=>{send({type:e.detail,at:performance.timeOrigin+performance.now()});if(networkEpoch!==null&&['started','paused','resumed','ended','load-error','menu'].includes(e.detail)){send({type:'coop-net-phase',version:1,epoch:networkEpoch,phase:e.detail});if(e.detail==='menu'){networkEpoch=null;networkSeq=-1;}}});
  window.addEventListener('bio-arcade-audio',e=>send({type:'sfx',value:e.detail}));
  window.addEventListener('DOMContentLoaded',()=>send({type:'ready'}),{once:true});
 })();
