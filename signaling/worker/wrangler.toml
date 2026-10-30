@@ -1,6 +1,8 @@
 name = "bio-city-v161-signaling"
 main = "worker.mjs"
 compatibility_date = "2025-04-01"
+workers_dev = false
+preview_urls = false
 
 [vars]
 # Set explicitly before any deployment. Do not use wildcard origins.

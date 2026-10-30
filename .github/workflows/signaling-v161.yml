@@ -21,6 +21,9 @@ on:
       - 'scripts/test-signaling-lifecycle-v161.cjs'
       - 'scripts/lib/friends-browser.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
+      - 'scripts/test-signaling-test-gate-v161.mjs'
+      - 'scripts/prepare-controlled-test-v161.mjs'
+      - 'scripts/test-prepare-controlled-test-v161.mjs'
       - 'scripts/test-signaling-live-rate-v161.mjs'
       - 'scripts/test-signaling-live-ws-v161.cjs'
       - '.github/workflows/signaling-v161.yml'
@@ -43,7 +46,7 @@ jobs:
         env:
           WRANGLER_SEND_METRICS: 'false'
         run: |
-          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790 --var RATE_SECRET:LOCAL_ONLY_NOT_A_SECRET_0123456789abcdef --persist-to "$RUNNER_TEMP/v161-worker" > "$RUNNER_TEMP/wrangler.log" 2>&1 &
+          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790 --var RATE_SECRET:LOCAL_ONLY_NOT_A_SECRET_0123456789abcdef --var TEST_ENABLED:true --var TEST_EXPIRES_AT:$(($(date +%s)+3600)) --var TEST_ALLOWED_IPS:192.0.2.1,198.51.100.1,203.0.113.1,203.0.113.2 --persist-to "$RUNNER_TEMP/v161-worker" > "$RUNNER_TEMP/wrangler.log" 2>&1 &
           worker_pid=$!
           trap 'kill "$worker_pid" || true' EXIT
           for i in $(seq 1 60); do
@@ -54,6 +57,8 @@ jobs:
           node scripts/test-signaling-room-v161.mjs
           node scripts/test-signaling-lifecycle-v161.cjs
           node scripts/test-signaling-rate-v161.mjs
+          node scripts/test-signaling-test-gate-v161.mjs
+          node scripts/test-prepare-controlled-test-v161.mjs
           node scripts/test-signaling-live-rate-v161.mjs
           node scripts/test-signaling-live-ws-v161.cjs
           node scripts/test-friend-ui-v161.mjs

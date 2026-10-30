@@ -6,6 +6,20 @@ const randomHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toS
 const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),x=>x.toString(16).padStart(2,'0')).join('');
 function allowed(request,env){const origin=request.headers.get('Origin');return !!origin && String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).includes(origin);}
 function cors(request){return {'access-control-allow-origin':request.headers.get('Origin'),'vary':'Origin'};}
+// Cloudflare ingress must supply CF-Connecting-IP. This is not safe behind an
+// untrusted proxy or in a local server that accepts client-provided headers.
+function address(value){
+ if(typeof value!=='string'||value.length>45)return null;
+ if(value.includes(':')){if(!/^[a-fA-F0-9:]+$/.test(value))return null;try{return new URL('http://['+value+']/').hostname.toLowerCase();}catch{return null;}}
+ const p=value.split('.');if(p.length!==4||p.some(x=>!/^(0|[1-9]\d{0,2})$/.test(x)||Number(x)>255))return null;return p.join('.');
+}
+function testGate(request,env){
+ if(env.TEST_ENABLED!=='true'||typeof env.TEST_EXPIRES_AT!=='string'||!/^\d{10}$/.test(env.TEST_EXPIRES_AT)||Date.now()>=Number(env.TEST_EXPIRES_AT)*1000)return false;
+ if(typeof env.TEST_ALLOWED_IPS!=='string'||env.TEST_ALLOWED_IPS.length>800)return false;
+ const ips=env.TEST_ALLOWED_IPS.split(',').map(x=>address(x.trim()));
+ if(!ips.length||ips.length>16||ips.some(x=>!x))return false;
+ const ip=address(request.headers.get('CF-Connecting-IP'));return !!ip&&ips.includes(ip);
+}
 // The address is supplied by Cloudflare ingress. Only an HMAC-derived identifier
 // is sent to the rate DO; no address is put in storage, paths, or logs.
 async function limit(request,env,kind){
@@ -20,6 +34,7 @@ async function guarded(request,env,kind,headers){const result=await limit(reques
 
 export default {
  async fetch(request,env){
+  if(!testGate(request,env))return json({error:'unavailable'},403);
   if(!allowed(request,env))return json({error:'origin'},403);
   const url=new URL(request.url),headers=cors(request);
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'access-control-allow-methods':'POST, GET, OPTIONS','access-control-allow-headers':'content-type','access-control-max-age':'600'}});

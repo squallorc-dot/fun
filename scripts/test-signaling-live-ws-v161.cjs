@@ -1,7 +1,7 @@
 // Real local Workerd WebSockets with synthetic source IP. No SDP, room codes or tokens are printed.
 const assert=require('node:assert/strict'),WS=require(process.env.WS_TEST_PATH||'ws');
 (async()=>{
- const endpoint='http://127.0.0.1:8787',origin='http://127.0.0.1:8790',ip='203.0.113.'+crypto.getRandomValues(new Uint8Array(1))[0];
+ const endpoint='http://127.0.0.1:8787',origin='http://127.0.0.1:8790',ip='203.0.113.2';
  const r=await fetch(endpoint+'/rooms',{method:'POST',headers:{Origin:origin,'CF-Connecting-IP':ip}});assert.equal(r.status,201);const room=await r.json(),clients=[];
  async function open(){const ws=new WS(endpoint.replace('http','ws')+'/rooms/'+room.room+'/socket',{headers:{Origin:origin,'CF-Connecting-IP':ip}});clients.push(ws);ws.records=[];ws.on('message',data=>ws.records.push(JSON.parse(data.toString())));await new Promise((resolve,reject)=>{ws.once('open',resolve);ws.once('error',reject)});return ws;}
  async function wait(ws,type){const deadline=Date.now()+5000;while(Date.now()<deadline){const item=ws.records.find(m=>m.type===type);if(item)return item;await new Promise(r=>setTimeout(r,10));}throw Error('timeout waiting for '+type);}
