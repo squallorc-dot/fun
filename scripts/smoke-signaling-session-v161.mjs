@@ -30,4 +30,8 @@ try{
  }
  console.log('PASS automatic pairing same RTC: G05 pong and volley, G01, G02, G06 switch and return; other rounds short');
  await pages[0].locator('#leave').click();await pages[1].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected');
+ await pages[0].waitForFunction(()=>!document.querySelector('#auto-home').hidden);await pages[0].locator('#auto-create').click();await pages[0].locator('#auto-name').fill('Invite');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-link').hasAttribute('href'));
+ const invite=await pages[0].locator('#auto-link').getAttribute('href');await pages[1].goto(invite);await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected'),null,{timeout:50000})));assert.equal(await pages[1].evaluate(()=>location.hash),'','invitation capability removed from address');
+ await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));console.log('PASS one-click invite: true RTC from URL fragment and shared lobby');
+ await pages[0].locator('#leave').click();
 }finally{for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}

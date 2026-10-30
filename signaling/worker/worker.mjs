@@ -38,7 +38,7 @@ export class Room {
    if(await this.state.storage.get('room'))return json({error:'exists'},409);
    let data;try{data=await request.json();}catch{return json({error:'format'},400);}
    if(!tokenPattern.test(data.host||'')||!tokenPattern.test(data.guest||'')||data.host===data.guest)return json({error:'format'},400);
-   const expires=Date.now()+ROOM_MS;await this.state.storage.put('room',{host:data.host,guest:data.guest,expires});await this.state.storage.setAlarm(expires);return json({ok:true});
+   const expires=Date.now()+ROOM_MS;await this.state.storage.put('room',{host:data.host,guest:data.guest,guestOnce:true,guestExpires:expires,expires});await this.state.storage.setAlarm(expires);return json({ok:true});
   }
   const room=await this.state.storage.get('room');
   if(!room||room.expires<=Date.now())return json({error:'expired'},410);

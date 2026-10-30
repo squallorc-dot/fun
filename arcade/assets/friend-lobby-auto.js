@@ -29,5 +29,5 @@ $('auto-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('auto
 $('auto-share').onclick=async()=>{try{if(navigator.share)await navigator.share({url:$('auto-link').href});else await navigator.clipboard.writeText($('auto-link').href);}catch{status(L.copyFail);}};
 window.addEventListener('pagehide',()=>connection?.close());
 setInterval(()=>{if(!document.body.classList.contains('auto-connected'))return;if(session.phase==='disconnected'){close();screen('home');status(L.error);return;}const peer=session.peerHello;if(peer&&$('auto-players'))$('auto-players').textContent=role==='host'?'Host: '+heroes[session.hero]+' · Guest: '+heroes[peer.hero]:'Host: '+heroes[peer.hero]+' · Guest: '+heroes[session.hero];},500);
-if(window.bioInviteError)status(L.invalid);else if(invite)form('guest');
+if(window.bioInviteError)status(L.invalid);else if(invite){form('guest');if(endpoint)queueMicrotask(()=>$('auto-start').click());}
 })();
