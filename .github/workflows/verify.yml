@@ -4,6 +4,11 @@ on:
     branches: [main, development/bio-city-arcade-six-games, release/bio-city-arcade-v1, release/guardians-ui-20261025, development/bio-city-arcade-v1-1-upgrade]
   pull_request:
   workflow_dispatch:
+    inputs:
+      acceptance_evidence:
+        description: Keep formal acceptance evidence for 30 days
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -34,6 +39,44 @@ jobs:
           node scripts/smoke-navigation.mjs
           node scripts/smoke-ost-persistent.mjs
           node scripts/smoke-arcade.mjs
+          node scripts/smoke-challenge-6b.mjs
+          node scripts/smoke-g02-core-6b.mjs
+          node scripts/smoke-friends-entry-v16.mjs
+      - name: Verify existing direct WebRTC transport lab (two isolated browser contexts)
+        run: node scripts/ci-browser-check.mjs scripts/smoke-p2p-v16.mjs
+      - name: Test real two-browser G05 games and shared lobby
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friends-v16.mjs
+      - name: Test G01 co-op and G05 switching over real RTC
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g01-friends-6b.mjs
+      - name: Test G02 co-op and G05 switching over real RTC
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g02-friends-6b.mjs
+      - name: Test G06 racing over real RTC and lobby switching
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g06-friends-6c.mjs
+      - name: Test all live games on one shared RTC connection
+        timeout-minutes: 10
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friends-switch-v16.mjs
+      - name: Compare G01 state across real RTC network conditions
+        timeout-minutes: 20
+        run: node scripts/ci-browser-check.mjs scripts/smoke-g01-matrix-6b.mjs
+      - name: Measure real multiplayer network conditions and prolonged play
+        timeout-minutes: 45
+        run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-v16.mjs
+      - name: Validate high latency matches and CDP resource lifecycle
+        timeout-minutes: 40
+        run: node scripts/ci-browser-check.mjs scripts/acceptance-friends-final-v16.mjs
+      - name: Package byte-exact friends evidence with recoverable aliases
+        if: always()
+        run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/friends 'arcade/qa/friends-v16/results/'
+      - name: Upload private multiplayer validation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bio-city-friends-v16
+          path: arcade/qa/artifact-v16/friends/
+          compression-level: 9
+          retention-days: 30
 
   arcade-session-browser:
     runs-on: ubuntu-24.04
@@ -59,23 +102,17 @@ jobs:
           node scripts/capture-arcade-rc.mjs
           node scripts/capture-arcade-visual.mjs
           node scripts/ci-browser-check.mjs scripts/capture-g06-sequences.mjs
+      - name: Package byte-exact rc evidence with recoverable aliases
+        if: always()
+        run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/rc 'arcade/qa/rc-v1/*.png' 'arcade/qa/visual-v12/*.webp' 'arcade/qa/site-ui-v7/*.png' 'arcade/qa/art-v15/' 'arcade/qa/gameplay-v15/*.png' 'arcade/qa/gameplay-v15/*.json' 'arcade/qa/gameplay-v15/*.webm' 'arcade/qa/racing-v15/after/*.webm' 'arcade/qa/racing-v15/after/sequences.json' 'arcade/qa/racing-v15/after/c5-desktop/0020.png'
       - name: Upload release candidate visual proof
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-rc-screenshots
-          path: |
-            arcade/qa/rc-v1/*.png
-            arcade/qa/visual-v12/*.webp
-            arcade/qa/site-ui-v7/*.png
-            arcade/qa/art-v15/
-            arcade/qa/gameplay-v15/*.png
-            arcade/qa/gameplay-v15/*.json
-            arcade/qa/gameplay-v15/*.webm
-            arcade/qa/racing-v15/after/*.webm
-            arcade/qa/racing-v15/after/sequences.json
-            arcade/qa/racing-v15/after/c5-desktop/0020.png
-          retention-days: 30
+          path: arcade/qa/artifact-v16/rc/
+          compression-level: 9
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-engines:
     runs-on: ubuntu-latest
@@ -97,6 +134,8 @@ jobs:
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs
+          node scripts/test-g06-multiplayer-core-6c.cjs
+          node scripts/test-g06-network-6c.cjs
           node scripts/test-g01-combat.cjs
           node scripts/test-g01-seven-skills.cjs
           node scripts/test-g01-animation.cjs
@@ -105,6 +144,21 @@ jobs:
           node scripts/test-arcade-chapters.cjs
           node scripts/test-g05-table.cjs
           node scripts/test-g05-volley.cjs
+          node scripts/test-g05-multiplayer.cjs
+          node scripts/test-challenge-6b.cjs
+          node scripts/test-g01-coop-6b.cjs
+          node scripts/test-g01-network-6b.cjs
+          node scripts/test-g01-coop-fps-6b.cjs
+          node scripts/test-g02-coop-6b.cjs
+          node scripts/test-g02-coop-fps-6b.cjs
+          node scripts/test-g02-bridge-coop-6b.cjs
+          node scripts/test-g02-network-clock-6b.cjs
+          node scripts/test-g02-network-bridge-6b.cjs
+          node scripts/test-g02-guest-state-6b.cjs
+          node scripts/test-g02-coop-isolation-v16.cjs
+          node scripts/test-g02-coop-art-cache-6b.cjs
+          node scripts/test-friends-protocol.cjs
+          python3 scripts/test-package-qa.py
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
           node scripts/test-g02-device-parity.cjs
@@ -120,13 +174,17 @@ jobs:
           node scripts/test-g06-models-hud.cjs
           node scripts/test-g06-balance.cjs
 
+      - name: Package byte-exact balance evidence with recoverable aliases
+        if: always()
+        run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/balance 'arcade/qa/racing-v15/balance/'
       - name: Upload seeded racing balance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-g06-balance-v15
-          path: arcade/qa/racing-v15/balance/
-          retention-days: 30
+          path: arcade/qa/artifact-v16/balance/
+          compression-level: 9
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-controls-browser:
     runs-on: ubuntu-24.04
@@ -143,15 +201,18 @@ jobs:
         run: |
           node scripts/smoke-g02-mobile.mjs
           node scripts/smoke-arcade-controls.mjs
+          node scripts/smoke-g02-network-clock-6b.mjs
+      - name: Package byte-exact controls evidence with recoverable aliases
+        if: always()
+        run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/controls 'arcade/qa/controls-v14/' 'arcade/qa/g02-mobile-v14/'
       - name: Upload controls evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-controls-v14
-          path: |
-            arcade/qa/controls-v14/
-            arcade/qa/g02-mobile-v14/
-          retention-days: 30
+          path: arcade/qa/artifact-v16/controls/
+          compression-level: 9
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}
 
   arcade-performance-browser:
     runs-on: ubuntu-24.04
@@ -168,12 +229,14 @@ jobs:
         run: |
           node scripts/smoke-arcade-performance.mjs
           node scripts/smoke-g06-racing.mjs
+      - name: Package byte-exact performance evidence with recoverable aliases
+        if: always()
+        run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/performance 'arcade/qa/performance-v14/' 'arcade/qa/g06-racing-v15/'
       - name: Upload performance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bio-city-arcade-performance-v14
-          path: |
-            arcade/qa/performance-v14/
-            arcade/qa/g06-racing-v15/
-          retention-days: 30
+          path: arcade/qa/artifact-v16/performance/
+          compression-level: 9
+          retention-days: ${{ (job.status == 'failure' || github.ref == 'refs/heads/main' || inputs.acceptance_evidence == true) && 30 || 7 }}

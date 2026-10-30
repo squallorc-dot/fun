@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Bio-City Arcade｜WebRTC 雙人連線實驗 v1.6</title>
+<style>
+:root{font:16px/1.6 system-ui,-apple-system,"Noto Sans TC",sans-serif;color-scheme:dark;background:#0e1925;color:#ecf8fc}
+*{box-sizing:border-box}body{max-width:920px;margin:0 auto;padding:24px 16px 52px}h1{font-size:1.55rem;margin:.3rem 0}.muted{color:#bdc9d7}
+.panel{border:1px solid #465365;border-radius:16px;padding:16px;margin:14px 0;background:#162838}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+button{border:1px solid #477e91;border-radius:10px;background:#1f6577;color:white;padding:10px 14px;font-size:1rem;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}button.secondary{background:#25394a}
+textarea{display:block;width:100%;min-height:116px;resize:vertical;border-radius:10px;background:#0b1926;color:#e7f8ff;border:1px solid #53687b;padding:12px;word-break:break-all;font:12px/1.5 ui-monospace,monospace}
+code{color:#b1f8e1}#status{font-weight:700}#metrics{font-variant-numeric:tabular-nums}.pad button{min-width:70px;touch-action:none;user-select:none}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kv div{padding:10px;background:#0d2230;border-radius:10px}
+.warn{color:#ffe1a3}small{display:block}.foot{font-size:.82rem;color:#b7cbd5}
+</style></head>
+<body>
+<h1>Bio-City Arcade｜第 6A-0 批 WebRTC 連線實驗</h1>
+<p class="muted">僅供開發驗證：此頁測試兩台裝置是否真的建立資料通道，不包含 G05 桌球引擎，也沒有自動配對伺服器。</p>
+<div class="panel">
+<strong>連線方式</strong>
+<p>建議兩台裝置先連到<strong>同一個 Wi-Fi</strong>、使用 HTTPS。A 建立邀請，複製完整內容給 B；B 貼上邀請並產生回覆，複製給 A；A 貼上回覆完成連線。</p>
+<p class="warn">連線描述可能包含網路位置資訊，請只傳給可信任的朋友。此頁不會把內容上傳、寫入 localStorage 或傳給分析工具。沒有 STUN／TURN，跨不同網路可能無法連線。</p>
+<div class="row"><button id="host">A｜建立邀請</button><button id="guest" class="secondary">B｜讀取邀請並產生回覆</button><button id="accept" class="secondary">A｜讀取 B 的回覆</button><button id="reset" class="secondary">重設連線</button></div>
+<label for="local"><strong>本機產生的連線資訊（分享給另一位玩家）</strong></label>
+<textarea id="local" readonly aria-label="本機連線資訊"></textarea>
+<div class="row"><button id="copy" class="secondary">複製本機資訊</button><span id="copyStatus" aria-live="polite"></span></div>
+<label for="remote"><strong>從另一位玩家取得的連線資訊（貼在這裡）</strong></label>
+<textarea id="remote" maxlength="120000" spellcheck="false" aria-label="貼上遠端連線資訊"></textarea>
+</div>
+<div class="panel">
+<div class="row"><strong>連線狀態：</strong><span id="status" role="status" aria-live="polite">尚未建立</span></div>
+<div class="kv">
+<div>角色：<strong id="role">—</strong></div>
+<div>資料通道：<strong id="channels">尚未開啟</strong></div>
+<div>RTT 中位數：<strong id="rtt50">—</strong></div>
+<div>RTT p95：<strong id="rtt95">—</strong></div>
+<div>發送／接收輸入：<strong id="counts">0／0</strong></div>
+<div>對方最新按鍵：<strong id="remoteKeys">—</strong></div>
+</div>
+<p class="foot">這裡的 RTT 是資料通道 ping 回應的往返時間，不是操作到螢幕畫面出現的總延遲。此頁尚未實作真正遊戲同步、掉包修復或可信比分。</p>
+</div>
+<div class="panel">
+<strong>雙人按鍵傳輸測試</strong>
+<p>兩端都可以用鍵盤 W／S／空白鍵，或按住下方按鈕傳送自己的輸入；對方可以看到最新按鍵。這不是桌球比賽。</p>
+<div class="row pad"><button data-key="up" disabled>↑ 上</button><button data-key="down" disabled>↓ 下</button><button data-key="fire" disabled>擊球</button></div>
+<p class="muted">在對方畫面的「最新按鍵」中看到動作，才代表真的透過 WebRTC 收到資料。</p>
+</div>
+<p class="foot">試驗版本 v1.6-P2P-LAB；不寫入單人存檔、不使用外部連線服務、不載入遊戲素材、不計入正式通關記錄。</p>
+<!-- Shared transport keeps iceServers:[]; this isolated lab retains its original controls. -->
+<script src="../../assets/peer-link.js"></script><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),held={up:false,down:false,fire:false};let sent=0,received=0;
+const labels={idle:'尚未建立',pairing:'配對中',connected:'已連線，可傳送輸入',disconnected:'資料通道中斷，請重設並重新配對',closed:'資料通道中斷，請重設並重新配對',failed:'失敗，請重設',timeout:'連線逾時',incompatible:'版本不相容'};
+const link=new BioPeer.Link({onState:s=>{$('status').textContent=labels[s]||'連線已中斷';if(s!=='connected')Object.keys(held).forEach(k=>held[k]=false);},onMessage:(type,d)=>{if(type==='lab-input'&&Object.keys(d).length===3&&['up','down','fire'].every(k=>typeof d[k]==='boolean')){received++;$('remoteKeys').textContent=[d.up?'上':null,d.down?'下':null,d.fire?'擊球':null].filter(Boolean).join('＋')||'無';}}});
+async function act(task){try{await task();}catch{$('status').textContent='失敗：請檢查連線資訊或重設後重試';}}
+$('host').onclick=()=>act(async()=>{$('local').value=await link.offer();$('role').textContent='A／房主';});
+$('guest').onclick=()=>act(async()=>{$('local').value=await link.answer($('remote').value);$('role').textContent='B／受邀';$('remote').value='';});
+$('accept').onclick=()=>act(async()=>{await link.accept($('remote').value);$('remote').value='';$('local').value='';});
+$('reset').onclick=()=>{link.close();$('local').value=$('remote').value='';sent=received=0;};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('local').value);$('copyStatus').textContent='已複製';}catch{$('local').select();$('copyStatus').textContent='請手動複製';}};
+document.querySelectorAll('[data-key]').forEach(b=>{b.onpointerdown=e=>{e.preventDefault();held[b.dataset.key]=true;b.setPointerCapture(e.pointerId);};for(const t of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(t,()=>held[b.dataset.key]=false);});
+window.BioP2PLab={inspect:()=>({...link.measure(),connection:link.pc?.connectionState,ice:link.pc?.iceConnectionState,signaling:link.pc?.signalingState,localType:link.pc?.localDescription?.type,remoteType:link.pc?.remoteDescription?.type,application:link.pc?.localDescription?.sdp.includes('m=application'),candidates:(link.pc?.localDescription?.sdp.match(/^a=candidate/gm)||[]).length,remoteCandidates:(link.pc?.remoteDescription?.sdp.match(/^a=candidate/gm)||[]).length,channels:Object.entries(link.channels).map(([name,c])=>({name,state:c.readyState}))})};
+const mapping={KeyW:'up',ArrowUp:'up',KeyS:'down',ArrowDown:'down',Space:'fire'};window.addEventListener('keydown',e=>{if(!['TEXTAREA','INPUT'].includes(document.activeElement?.tagName)&&mapping[e.code]){e.preventDefault();held[mapping[e.code]]=true;}});window.addEventListener('keyup',e=>{if(mapping[e.code])held[mapping[e.code]]=false;});
+const timer=setInterval(()=>{if(link.send('lab-input',{...held},true))sent++;const m=link.measure();$('rtt50').textContent=m.rtt50===null?'—':m.rtt50.toFixed(1)+' ms';$('rtt95').textContent=m.rtt95===null?'—':m.rtt95.toFixed(1)+' ms';$('counts').textContent=sent+'／'+received;$('channels').textContent=link.state==='connected'?'control + input 已連通':'尚未全部連通';document.querySelectorAll('[data-key]').forEach(b=>b.disabled=link.state!=='connected');},50);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)Object.keys(held).forEach(k=>held[k]=false);});window.addEventListener('pagehide',()=>{clearInterval(timer);link.close();});
+})();
+</script></body></html>
