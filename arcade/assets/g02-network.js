@@ -9,7 +9,7 @@ class Adapter{
  constructor({mode,hero=0,remoteHero=3,host,locale='zh',chapter=1,difficulty='normal',epoch,finish=()=>{},onFailure=()=>{},onSnapshot=()=>{}}){
   if(mode!=='defense'||!Number.isSafeInteger(epoch)||epoch<1)throw Error('g02-config');
   this.host=host;this.epoch=epoch;this.finish=finish;this.onFailure=onFailure;this.onSnapshot=onSnapshot;this.lastTick=-1;this.seq=-1;this.ack=-1;this.controlSeq=-1;this.applySeq=-1;this.started=false;this.lastState=null;this.pending=null;this.closed=false;this.corrections=0;
-  const frame=document.createElement('iframe');this.frame=frame;frame.title=locale==='ja'?'都市防衛戦':'城市防衛戰';frame.src=new URL('../../'+(locale==='ja'?'ja':'zh')+'/shooter.html',location.href).href;frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;z-index:1';
+  const frame=document.createElement('iframe');this.frame=frame;frame.title=locale==='ja'?'都市防衛戦':'城市防衛戰';frame.src=new URL((document.body.dataset.autoLobby?'../':'../../')+(locale==='ja'?'ja':'zh')+'/shooter.html',location.href).href;frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;z-index:1';
   const viewport=document.getElementById('viewport');if(!viewport)throw Error('g02-viewport');this.canvas=document.getElementById('game-canvas');this.canvas.style.visibility='hidden';viewport.appendChild(frame);
   this.game={w:600,h:600,_finished:false,draw:()=>{if(this.started)this.post('coop-net-paint');},inspectCombat:()=>({score:this.lastState?.state.game.score||0}),inspectCoop:()=>this.lastState?.state.game||null};
   this.listener=e=>{if(this.closed||e.origin!==location.origin||e.source!==frame.contentWindow||e.data?.source!=='bio-city-shooter')return;const m=e.data;

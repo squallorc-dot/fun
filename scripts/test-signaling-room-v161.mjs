@@ -17,5 +17,13 @@ try{
  const idle=socket();await room.schedule(db.get('room'));assert.equal(alarm,now+10000);now+=10001;await room.alarm();assert.equal(idle.readyState,3);assert.equal(winner.readyState,1);assert.equal(g.readyState,1);assert.equal(alarm,db.get('room').expires);
  await room.webSocketClose(g);assert(db.has('room'),'guest leave preserves room');
  await room.webSocketClose(winner);assert.equal(db.has('room'),false);assert.equal(g.readyState,3);
- console.log('PASS room: concurrent role claims, active deadline, unauthenticated timeout, guest and host cleanup');
+ sockets.length=0;await db.set('room',{host:await digest(host),guest:await digest(guest),expires:now+900000});
+ const owner=socket(),requester=socket(),competitor=socket();await room.webSocketMessage(owner,JSON.stringify({v:1,type:'auth',role:'host',token:host}));
+ await room.webSocketMessage(requester,JSON.stringify({v:1,type:'join-request'}));const request=owner.messages.find(m=>m.type==='join-request');assert(request&&requester.messages.some(m=>m.type==='waiting-approval'));
+ await room.webSocketMessage(competitor,JSON.stringify({v:1,type:'join-request'}));assert.equal(competitor.readyState,3,'only one outstanding request');
+ assert(!requester.messages.some(m=>m.type==='join-approved'),'room code alone grants no access');
+ await room.webSocketMessage(owner,JSON.stringify({v:1,type:'join-decision',id:request.id,accept:true}));const approval=requester.messages.find(m=>m.type==='join-approved');assert.match(approval.token,/^[a-f0-9]{64}$/);assert.notEqual(approval.token,guest);
+ await room.webSocketMessage(requester,JSON.stringify({v:1,type:'auth',role:'guest',token:approval.token}));assert.equal(requester.attachment.role,'guest');
+ const replay=socket();await room.webSocketMessage(replay,JSON.stringify({v:1,type:'auth',role:'guest',token:guest}));assert.equal(replay.readyState,3,'old invitation invalidated');requester.readyState=3;const reuse=socket();await room.webSocketMessage(reuse,JSON.stringify({v:1,type:'auth',role:'guest',token:approval.token}));assert.equal(reuse.readyState,3,'approved credential cannot be replayed');
+ console.log('PASS room: concurrent roles, deadlines, timeout, cleanup, host-approved code request and stale token rejection');
 }finally{Date.now=originalNow;}

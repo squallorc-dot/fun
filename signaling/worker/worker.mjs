@@ -1,5 +1,5 @@
 // Signaling only. Game data stays on the existing WebRTC DataChannels.
-const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, MAX_TEXT=125000, MAX_SOCKETS=4;
+const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, REQUEST_MS=60000, MAX_TEXT=125000, MAX_SOCKETS=4;
 const roomPattern=/^[A-Z2-9]{8}$/, tokenPattern=/^[a-f0-9]{64}$/;
 const json=(value,status=200,headers={})=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store',...headers}});
 const randomHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toString(16).padStart(2,'0')).join('');
@@ -29,7 +29,7 @@ export class Room {
  constructor(state){this.state=state;}
  async schedule(room){
   if(!room)return;
-  const deadlines=this.state.getWebSockets().filter(ws=>ws.readyState===1).map(ws=>ws.deserializeAttachment()).filter(x=>x&&!x.role).map(x=>x.at+AUTH_MS);
+  const deadlines=this.state.getWebSockets().filter(ws=>ws.readyState===1).map(ws=>ws.deserializeAttachment()).filter(x=>x&&!x.role).map(x=>x.deadline??x.at+AUTH_MS);
   await this.state.storage.setAlarm(Math.min(room.expires,...deadlines));
  }
  async fetch(request){
@@ -52,12 +52,24 @@ export class Room {
   const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>8){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
   if(!info.role){
-   if(now-info.at>=AUTH_MS||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||Object.keys(msg).some(k=>!['v','type','role','token'].includes(k))||await digest(msg.token)!==room[msg.role]){ws.close(1008,'auth');return;}
+   if(msg?.v===VERSION&&msg.type==='join-request'&&Object.keys(msg).length===2&&now<info.at+AUTH_MS){
+    await this.state.blockConcurrencyWhile(async()=>{
+     const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
+     const host=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');
+     if(!host||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
+     const bucket=current.requests||{at:now,count:0};if(now-bucket.at>=60000){bucket.at=now;bucket.count=0;}if(++bucket.count>10){ws.close(1008,'rate');return;}
+     current.requests=bucket;await this.state.storage.put('room',current);info.requestId=randomHex(16);info.deadline=now+REQUEST_MS;ws.serializeAttachment(info);await this.schedule(current);
+     host.send(JSON.stringify({v:VERSION,type:'join-request',id:info.requestId}));ws.send(JSON.stringify({v:VERSION,type:'waiting-approval'}));
+    });return;
+   }
+   if(now>=(info.deadline??info.at+AUTH_MS)||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||Object.keys(msg).some(k=>!['v','type','role','token'].includes(k))||await digest(msg.token)!==room[msg.role]){ws.close(1008,'auth');return;}
    // Serialize role assignment across competing tabs, including the digest await.
    await this.state.blockConcurrencyWhile(async()=>{
     const current=await this.state.storage.get('room');
     if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
+    if(await digest(msg.token)!==current[msg.role]||msg.role==='guest'&&current.guestOnce&&current.guestExpires<=Date.now()){ws.close(1008,'auth');return;}
     if(this.state.getWebSockets().some(other=>other!==ws&&other.deserializeAttachment()?.role===msg.role)){ws.close(1008,'occupied');return;}
+    if(msg.role==='guest'&&current.guestOnce){current.guest=null;delete current.guestOnce;delete current.guestExpires;await this.state.storage.put('room',current);}
     info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role}));
     const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role);
     if(peer){
@@ -68,6 +80,17 @@ export class Room {
    });return;
   }
   ws.serializeAttachment(info);
+  if(info.role==='host'&&msg?.v===VERSION&&msg.type==='join-decision'&&typeof msg.accept==='boolean'&&/^[a-f0-9]{32}$/.test(msg.id||'')&&Object.keys(msg).length===4){
+   await this.state.blockConcurrencyWhile(async()=>{
+    const pending=this.state.getWebSockets().find(other=>{const v=other.deserializeAttachment();return !v?.role&&v?.requestId===msg.id&&v.deadline>Date.now();});
+    if(!pending)return;
+    if(!msg.accept){pending.send(JSON.stringify({v:VERSION,type:'join-denied'}));pending.close(1000,'denied');return;}
+    const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
+    const token=randomHex(32);current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
+    const p=pending.deserializeAttachment();delete p.requestId;p.deadline=Date.now()+AUTH_MS;pending.serializeAttachment(p);await this.schedule(current);
+    pending.send(JSON.stringify({v:VERSION,type:'join-approved',token}));
+   });return;
+  }
   // SDP is already ICE-complete in BioPeer. No separate trickle ICE is currently sent.
   if(!msg||msg.v!==VERSION||!['offer','answer'].includes(msg.type)||msg.type!==(info.role==='host'?'offer':'answer')||typeof msg.description!=='string'||msg.description.length>120000||Object.keys(msg).some(k=>!['v','type','description'].includes(k))){ws.close(1008,'invalid');return;}
   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));
@@ -78,7 +101,7 @@ export class Room {
  async alarm(){
   const room=await this.state.storage.get('room'),now=Date.now();
   if(!room||room.expires<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.state.storage.deleteAll();return;}
-  for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&info.at+AUTH_MS<=now)ws.close(1008,'auth-timeout');}
+  for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&(info.deadline??info.at+AUTH_MS)<=now)ws.close(1008,'auth-timeout');}
   await this.schedule(room);
  }
 }

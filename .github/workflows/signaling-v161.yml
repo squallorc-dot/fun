@@ -4,6 +4,15 @@ on:
     paths:
       - 'signaling/worker/**'
       - 'arcade/assets/friend-signaling.js'
+      - 'arcade/assets/friend-invite.js'
+      - 'arcade/assets/friend-lobby-auto.*'
+      - 'arcade/assets/friend-lobby.js'
+      - 'arcade/assets/g02-network.js'
+      - 'arcade/assets/vendor/qrcode-generator*'
+      - 'arcade/friends/**'
+      - 'scripts/test-friend-ui-v161.mjs'
+      - 'scripts/lib/signaling-test-server.mjs'
+      - 'scripts/test-friend-invite-v161.cjs'
       - 'scripts/test-signaling-v161.mjs'
       - 'scripts/smoke-signaling-session-v161.mjs'
       - 'arcade/assets/friend-session.js'
@@ -23,7 +32,7 @@ jobs:
           node-version: '22'
       - name: Install local test tools
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.57.0
+          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.57.0 jsqr@1.4.0
           npx playwright install --with-deps chromium
       - name: Test local Durable Object and real two-browser RTC
         env:
@@ -36,6 +45,8 @@ jobs:
             if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
             sleep 1
           done
+          node scripts/test-friend-invite-v161.cjs
           node scripts/test-signaling-room-v161.mjs
+          node scripts/test-friend-ui-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
           node scripts/smoke-signaling-session-v161.mjs
