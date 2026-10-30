@@ -11,15 +11,15 @@ async function createRoom(endpoint){
 function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{},onJoinCancelled=()=>{},onSignalingLost=()=>{},onSignalingRestored=()=>{},onSignalingUnavailable=()=>{}}){
  if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||typeof onJoinCancelled!=='function'||typeof onSignalingLost!=='function'||typeof onSignalingRestored!=='function'||typeof onSignalingUnavailable!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
  const url=endpointURL(endpoint,'/rooms/'+room+'/socket');url.protocol=url.protocol==='https:'?'wss:':'ws:';
- let socket,resumeToken=null,resumeAttempts=0,reconnectTimer=null,retryAttempts=0,retryPending=null,requestRetry;const send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,signalingLost=false,poll,timer,cancel;
+ let socket,resumeToken=null,resumeAttempts=0,reconnectTimer=null,retryAttempts=0,retryRequests=0,retryPending=null,requestRetry;const send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,signalingLost=false,poll,timer,cancel;
  const lost=()=>{if(!stopped&&!signalingLost){signalingLost=true;onSignalingLost();}};
  const result=new Promise((resolve,reject)=>{
-  const finish=(err)=>{if(settled){if(retryPending){const pending=retryPending;retryPending=null;clearTimeout(timer);clearInterval(poll);if(err){link.close('failed');pending.reject(err);}else pending.resolve();return;}if(err)lost();return;}settled=true;clearTimeout(timer);clearInterval(poll);if(err){stopped=true;link.close('failed');socket.close();reject(err);}else resolve();};
+  const finish=(err)=>{if(settled){if(retryPending){const pending=retryPending;retryPending=null;clearTimeout(timer);clearInterval(poll);if(err){if(socket?.readyState===WebSocket.OPEN)try{send('retry-cancel',{attempt:pending.attempt});}catch{}link.close('failed');pending.reject(err);}else pending.resolve();return;}if(err)lost();return;}settled=true;clearTimeout(timer);clearInterval(poll);if(err){stopped=true;link.close('failed');socket.close();reject(err);}else resolve();};
   const arm=ms=>{clearTimeout(timer);timer=setTimeout(()=>finish(Error('pairing-timeout')),ms);};
   const startLink=(method,...args)=>{const previous=link.pairingTimeout;link.pairingTimeout=timeout;try{return link[method](...args);}finally{link.pairingTimeout=previous;}};
   cancel=()=>finish(Error('cancelled'));
-  requestRetry=()=>{if(stopped||!settled||retryPending||retryAttempts>=2||socket?.readyState!==WebSocket.OPEN||link.state==='connected')return Promise.reject(Error('retry-unavailable'));
-   retryAttempts++;started=false;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt:retryAttempts};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt:retryAttempts});});};arm(WAIT_MS);
+  requestRetry=()=>{if(stopped||!settled||retryPending||retryRequests>=2||retryAttempts>=2||socket?.readyState!==WebSocket.OPEN||link.state==='connected')return Promise.reject(Error('retry-unavailable'));
+   retryRequests++;started=false;const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   const reconnect=()=>{if(stopped||!settled||reconnectTimer)return;if(!resumeToken||resumeAttempts>=2){onSignalingUnavailable();return;}reconnectTimer=setTimeout(()=>{reconnectTimer=null;if(!stopped){resumeAttempts++;open(true);}},resumeAttempts?2000:1000);};
   const open=(resuming=false)=>{socket=new WebSocket(url);const active=socket;
@@ -32,7 +32,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    if(message.v!==VERSION||typeof message.type!=='string')return finish(Error('message-format'));
    try{
     if(message.type==='retry-denied'&&retryPending)finish(Error('retry-denied'));
-    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&role==='host'&&!started){started=true;send('offer',{description:await startLink('offer')});}
+    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&!started){retryAttempts=message.attempt;if(role==='host'){started=true;send('offer',{description:await startLink('offer')});}}
     else if(message.type==='authenticated'&&message.role===role&&/^[a-f0-9]{64}$/.test(message.resumeToken||'')){resumeToken=message.resumeToken;if(resuming){signalingLost=false;onSignalingRestored();}}
     else if(message.type==='join-request'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinRequest(message.id);
     else if(message.type==='join-cancelled'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinCancelled(message.id);
