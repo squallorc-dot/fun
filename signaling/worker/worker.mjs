@@ -6,12 +6,25 @@ const randomHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toS
 const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),x=>x.toString(16).padStart(2,'0')).join('');
 function allowed(request,env){const origin=request.headers.get('Origin');return !!origin && String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).includes(origin);}
 function cors(request){return {'access-control-allow-origin':request.headers.get('Origin'),'vary':'Origin'};}
+// The address is supplied by Cloudflare ingress. Only an HMAC-derived identifier
+// is sent to the rate DO; no address is put in storage, paths, or logs.
+async function limit(request,env,kind){
+ const secret=env.RATE_SECRET,ip=request.headers.get('CF-Connecting-IP');
+ if(typeof secret!=='string'||secret.length<32||!ip||ip.length>45||!/^[a-fA-F0-9:.]+$/.test(ip)||!env.RATE_GATES)return 'unavailable';
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const bytes=new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('v1:'+ip.toLowerCase())));
+ const id=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');
+ try{const gate=env.RATE_GATES.get(env.RATE_GATES.idFromName(id));const response=await gate.fetch('https://rate.internal/'+kind,{method:'POST'});return response.status===204?'ok':response.status===429?'limited':'unavailable';}catch{return 'unavailable';}
+}
+async function guarded(request,env,kind,headers){const result=await limit(request,env,kind);return result==='ok'?null:json({error:result==='limited'?'rate-limited':'rate-unavailable'},result==='limited'?429:503,headers);}
+
 export default {
  async fetch(request,env){
   if(!allowed(request,env))return json({error:'origin'},403);
   const url=new URL(request.url),headers=cors(request);
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'access-control-allow-methods':'POST, GET, OPTIONS','access-control-allow-headers':'content-type','access-control-max-age':'600'}});
   if(request.method==='POST'&&url.pathname==='/rooms'){
+   const denied=await guarded(request,env,'create',headers);if(denied)return denied;
    // The room code identifies a DO; two independent 256-bit capabilities authorize access.
    const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',bytes=crypto.getRandomValues(new Uint8Array(8));
    const room=Array.from(bytes,b=>alphabet[b%32]).join(''),host=randomHex(32),guest=randomHex(32);
@@ -21,7 +34,7 @@ export default {
    return json({v:VERSION,room,host,guest,expiresIn:ROOM_MS/1000},201,headers);
   }
   const match=/^\/rooms\/([A-Z2-9]{8})\/socket$/.exec(url.pathname);
-  if(request.method==='GET'&&match&&request.headers.get('Upgrade')?.toLowerCase()==='websocket')return env.ROOMS.get(env.ROOMS.idFromName(match[1])).fetch(request);
+  if(request.method==='GET'&&match&&request.headers.get('Upgrade')?.toLowerCase()==='websocket'){const denied=await guarded(request,env,'socket',headers);if(denied)return denied;return env.ROOMS.get(env.ROOMS.idFromName(match[1])).fetch(request);}
   return json({error:'not-found'},404,headers);
  }
 };
@@ -48,7 +61,7 @@ export class Room {
  }
  async webSocketMessage(ws,text){
   const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
-  if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT){ws.close(1008,'invalid');return;}
+  if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
   const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>8){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
   if(!info.role){
@@ -96,7 +109,7 @@ export class Room {
   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));
   if(!peer){ws.send(JSON.stringify({v:VERSION,type:'peer-missing'}));return;}peer.send(text);
  }
- async webSocketClose(ws){const role=ws.deserializeAttachment()?.role;if(!role){await this.schedule(await this.state.storage.get('room'));return;}for(const other of this.state.getWebSockets()){if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));}if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else await this.schedule(await this.state.storage.get('room'));}
+ async webSocketClose(ws){const info=ws.deserializeAttachment(),role=info?.role;if(!role){if(info?.requestId){const host=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role==='host');host?.send(JSON.stringify({v:VERSION,type:'join-cancelled',id:info.requestId}));}await this.schedule(await this.state.storage.get('room'));return;}for(const other of this.state.getWebSockets()){if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));}if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else await this.schedule(await this.state.storage.get('room'));}
  async webSocketError(ws){ws.close(1011,'socket-error');}
  async alarm(){
   const room=await this.state.storage.get('room'),now=Date.now();
@@ -104,4 +117,19 @@ export class Room {
   for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&(info.deadline??info.at+AUTH_MS)<=now)ws.close(1008,'auth-timeout');}
   await this.schedule(room);
  }
+}
+
+// SQLite-backed fixed windows, serialized across room IDs for one HMAC'd source.
+export class RateGate {
+ constructor(state){this.state=state;}
+ async fetch(request){
+  const kind=new URL(request.url).pathname.slice(1),limit=kind==='create'?12:kind==='socket'?60:0;
+  if(request.method!=='POST'||!limit)return new Response(null,{status:400});
+  return this.state.blockConcurrencyWhile(async()=>{
+   const now=Date.now(),previous=await this.state.storage.get(kind),bucket=!previous||now>=previous.until?{count:0,until:now+60000}:previous;
+   if(bucket.count>=limit)return new Response(null,{status:429});bucket.count++;await this.state.storage.put(kind,bucket);const other=await this.state.storage.get(kind==='create'?'socket':'create');await this.state.storage.setAlarm(Math.max(bucket.until,other?.until||0));
+   return new Response(null,{status:bucket.count<=limit?204:429});
+  });
+ }
+ async alarm(){const now=Date.now();for(const kind of ['create','socket']){const bucket=await this.state.storage.get(kind);if(bucket&&bucket.until<=now)await this.state.storage.delete(kind);}const buckets=await Promise.all(['create','socket'].map(k=>this.state.storage.get(k)));const until=Math.max(...buckets.map(b=>b?.until||0));if(until>now)await this.state.storage.setAlarm(until);}
 }

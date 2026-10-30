@@ -1,12 +1,10 @@
 // Run against `wrangler dev --local` with origin http://127.0.0.1:8790.
 // No SDP, ICE candidates, room tokens or addresses are printed or persisted.
 import assert from 'node:assert/strict';
-import http from 'node:http';
-import fs from 'node:fs';
 import {chromium} from 'playwright';
-const origin='http://127.0.0.1:8790',endpoint='http://127.0.0.1:8787';
-const server=http.createServer((req,res)=>{const names={'/peer-link.js':'arcade/assets/peer-link.js','/friend-signaling.js':'arcade/assets/friend-signaling.js'};res.setHeader('content-type',req.url in names?'text/javascript':'text/html');res.end(req.url in names?fs.readFileSync(names[req.url]):'<!doctype html><script src="/peer-link.js"></script><script src="/friend-signaling.js"></script>');});
-await new Promise(r=>server.listen(8790,'127.0.0.1',r));
+import {signalingTestServer} from './lib/signaling-test-server.mjs';
+const origin='http://127.0.0.1:8790',endpoint=origin;
+const server=await signalingTestServer({harness:true});
 const browsers=[];
 try{
  const bad=await fetch(endpoint+'/rooms',{method:'POST',headers:{Origin:'https://invalid.example'}});assert.equal(bad.status,403);

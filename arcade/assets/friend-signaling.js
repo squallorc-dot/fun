@@ -8,8 +8,8 @@ async function createRoom(endpoint){
  if(!response.ok)throw Error('room-create');const room=await response.json();
  if(room.v!==VERSION||!/^[A-Z2-9]{8}$/.test(room.room)||!/^[a-f0-9]{64}$/.test(room.host)||!/^[a-f0-9]{64}$/.test(room.guest))throw Error('room-format');return room;
 }
-function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{}}){
- if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
+function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{},onJoinCancelled=()=>{}}){
+ if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||typeof onJoinCancelled!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
  const url=endpointURL(endpoint,'/rooms/'+room+'/socket');url.protocol=url.protocol==='https:'?'wss:':'ws:';
  const socket=new WebSocket(url),send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,poll,timer,cancel;
  const result=new Promise((resolve,reject)=>{
@@ -27,6 +27,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    if(message.v!==VERSION||typeof message.type!=='string')return finish(Error('message-format'));
    try{
     if(message.type==='join-request'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinRequest(message.id);
+    else if(message.type==='join-cancelled'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinCancelled(message.id);
     else if(message.type==='join-approved'&&role==='guest'&&token==null&&/^[a-f0-9]{64}$/.test(message.token||'')){token=message.token;send('auth',{role,token});}
     else if(message.type==='join-denied')finish(Error('join-denied'));
     else if(message.type==='peer-joined'&&!started){arm(timeout);if(role==='host'){started=true;send('offer',{description:await startLink('offer')});}}
