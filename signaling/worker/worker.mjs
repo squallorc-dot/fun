@@ -1,5 +1,5 @@
 // Signaling only. Game data stays on the existing WebRTC DataChannels.
-const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, REQUEST_MS=60000, MAX_TEXT=125000, MAX_SOCKETS=4;
+const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, REQUEST_MS=60000, RESUME_MS=90000, MAX_RESUMES=2, MAX_TEXT=125000, MAX_SOCKETS=4;
 const roomPattern=/^[A-Z2-9]{8}$/, tokenPattern=/^[a-f0-9]{64}$/;
 const json=(value,status=200,headers={})=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store',...headers}});
 const randomHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toString(16).padStart(2,'0')).join('');
@@ -43,6 +43,7 @@ export class Room {
  async schedule(room){
   if(!room)return;
   const deadlines=this.state.getWebSockets().filter(ws=>ws.readyState===1).map(ws=>ws.deserializeAttachment()).filter(x=>x&&!x.role).map(x=>x.deadline??x.at+AUTH_MS);
+  for(const role of ['host','guest'])if(room.recovery?.[role]?.until)deadlines.push(room.recovery[role].until);
   await this.state.storage.setAlarm(Math.min(room.expires,...deadlines));
  }
  async fetch(request){
@@ -75,15 +76,19 @@ export class Room {
      host.send(JSON.stringify({v:VERSION,type:'join-request',id:info.requestId}));ws.send(JSON.stringify({v:VERSION,type:'waiting-approval'}));
     });return;
    }
-   if(now>=(info.deadline??info.at+AUTH_MS)||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||Object.keys(msg).some(k=>!['v','type','role','token'].includes(k))||await digest(msg.token)!==room[msg.role]){ws.close(1008,'auth');return;}
+   if(now>=(info.deadline??info.at+AUTH_MS)||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||Object.keys(msg).some(k=>!['v','type','role','token','resume'].includes(k))||(msg.resume!==undefined&&msg.resume!==true)){ws.close(1008,'auth');return;}
    // Serialize role assignment across competing tabs, including the digest await.
    await this.state.blockConcurrencyWhile(async()=>{
     const current=await this.state.storage.get('room');
     if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
-    if(await digest(msg.token)!==current[msg.role]||msg.role==='guest'&&current.guestOnce&&current.guestExpires<=Date.now()){ws.close(1008,'auth');return;}
+    const recovery=current.recovery?.[msg.role],incoming=await digest(msg.token);
+    if(msg.resume===true){if(!recovery||!recovery.until||recovery.until<=Date.now()||recovery.count>=MAX_RESUMES||incoming!==recovery.hash){ws.close(1008,'auth');return;}}
+    else if(incoming!==current[msg.role]||msg.role==='guest'&&current.guestOnce&&current.guestExpires<=Date.now()){ws.close(1008,'auth');return;}
     if(this.state.getWebSockets().some(other=>other!==ws&&other.deserializeAttachment()?.role===msg.role)){ws.close(1008,'occupied');return;}
-    if(msg.role==='guest'&&current.guestOnce){current.guest=null;delete current.guestOnce;delete current.guestExpires;await this.state.storage.put('room',current);}
-    info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role}));
+    if(msg.role==='guest'&&current.guestOnce){current.guest=null;delete current.guestOnce;delete current.guestExpires;}
+    if(msg.role==='host')current.host=null;
+    const next=randomHex(32);current.recovery??={};current.recovery[msg.role]={hash:await digest(next),count:msg.resume===true?(recovery.count+1):0,until:0};await this.state.storage.put('room',current);
+    info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role,resumeToken:next}));
     const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role);
     if(peer){
      if(!current.active){current.active=true;current.expires=Date.now()+ACTIVE_MS;await this.state.storage.put('room',current);}
@@ -93,6 +98,13 @@ export class Room {
    });return;
   }
   ws.serializeAttachment(info);
+  if(msg?.v===VERSION&&msg.type==='retry-ready'&&Number.isInteger(msg.attempt)&&msg.attempt>=1&&msg.attempt<=2&&Object.keys(msg).length===3){
+   await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||msg.attempt!==(current.retries||0)+1){ws.send(JSON.stringify({v:VERSION,type:'retry-denied'}));return;}
+    info.retryAttempt=msg.attempt;ws.serializeAttachment(info);const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role&&other.deserializeAttachment()?.retryAttempt===msg.attempt);if(!peer)return;
+    const pi=peer.deserializeAttachment();delete pi.retryAttempt;delete info.retryAttempt;peer.serializeAttachment(pi);ws.serializeAttachment(info);current.retries=msg.attempt;await this.state.storage.put('room',current);for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'retry-start',attempt:msg.attempt}));
+   });return;
+  }
+  if(msg?.v===VERSION&&msg.type==='leave'&&Object.keys(msg).length===2){if(info.role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else{const current=await this.state.storage.get('room');if(current?.recovery){delete current.recovery.guest;await this.state.storage.put('room',current);}}ws.close(1000,'leave');return;}
   if(info.role==='host'&&msg?.v===VERSION&&msg.type==='join-decision'&&typeof msg.accept==='boolean'&&/^[a-f0-9]{32}$/.test(msg.id||'')&&Object.keys(msg).length===4){
    await this.state.blockConcurrencyWhile(async()=>{
     const pending=this.state.getWebSockets().find(other=>{const v=other.deserializeAttachment();return !v?.role&&v?.requestId===msg.id&&v.deadline>Date.now();});
@@ -109,11 +121,15 @@ export class Room {
   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));
   if(!peer){ws.send(JSON.stringify({v:VERSION,type:'peer-missing'}));return;}peer.send(text);
  }
- async webSocketClose(ws){const info=ws.deserializeAttachment(),role=info?.role;if(!role){if(info?.requestId){const host=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role==='host');host?.send(JSON.stringify({v:VERSION,type:'join-cancelled',id:info.requestId}));}await this.schedule(await this.state.storage.get('room'));return;}for(const other of this.state.getWebSockets()){if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));}if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else await this.schedule(await this.state.storage.get('room'));}
+ async webSocketClose(ws){const info=ws.deserializeAttachment(),role=info?.role;if(!role){if(info?.requestId){const host=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role==='host');host?.send(JSON.stringify({v:VERSION,type:'join-cancelled',id:info.requestId}));}await this.schedule(await this.state.storage.get('room'));return;}
+  await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current)return;const recovery=current.recovery?.[role];if(recovery){if(recovery.count>=MAX_RESUMES){if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-expired');return;}delete current.recovery.guest;}else recovery.until=Math.min(current.expires,Date.now()+RESUME_MS);await this.state.storage.put('room',current);}for(const other of this.state.getWebSockets())if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));await this.schedule(current);});
+ }
  async webSocketError(ws){ws.close(1011,'socket-error');}
  async alarm(){
   const room=await this.state.storage.get('room'),now=Date.now();
   if(!room||room.expires<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.state.storage.deleteAll();return;}
+  if(room.recovery?.host?.until&&room.recovery.host.until<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'host-expired');await this.state.storage.deleteAll();return;}
+  if(room.recovery?.guest?.until&&room.recovery.guest.until<=now){delete room.recovery.guest;await this.state.storage.put('room',room);}
   for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&(info.deadline??info.at+AUTH_MS)<=now)ws.close(1008,'auth-timeout');}
   await this.schedule(room);
  }
