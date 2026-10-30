@@ -13,5 +13,6 @@ try{
  assert.equal((await worker.fetch(make(null),env)).status,403,'missing trusted address fails closed');assert.equal(ops,0);
  assert.equal((await worker.fetch(make('192.0.2.4'),env)).status,429);assert.match(seen,/^[a-f0-9]{64}$/);assert(!seen.includes('192.0.2.4'));
  const first=seen;await worker.fetch(make('192.0.2.5'),env);assert.notEqual(first,seen,'source keys are isolated');
+ env.TEST_ALLOWED_IPS='2001:db8::1';await worker.fetch(make('2001:db8::1'),env);const ipv6=seen;await worker.fetch(make('2001:0db8:0:0:0:0:0:1'),env);assert.equal(ipv6,seen,'equivalent IPv6 addresses share the same limit');
  console.log('PASS rate gate: concurrent fixed windows, separate operations, reset, fail-closed and HMAC source isolation');
 }finally{Date.now=original;}

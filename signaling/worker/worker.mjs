@@ -23,8 +23,8 @@ function testGate(request,env){
 // The address is supplied by Cloudflare ingress. Only an HMAC-derived identifier
 // is sent to the rate DO; no address is put in storage, paths, or logs.
 async function limit(request,env,kind){
- const secret=env.RATE_SECRET,ip=request.headers.get('CF-Connecting-IP');
- if(typeof secret!=='string'||secret.length<32||!ip||ip.length>45||!/^[a-fA-F0-9:.]+$/.test(ip)||!env.RATE_GATES)return 'unavailable';
+ const secret=env.RATE_SECRET,ip=address(request.headers.get('CF-Connecting-IP'));
+ if(typeof secret!=='string'||secret.length<32||!ip||!env.RATE_GATES)return 'unavailable';
  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
  const bytes=new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode('v1:'+ip.toLowerCase())));
  const id=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');
