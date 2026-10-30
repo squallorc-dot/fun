@@ -8,15 +8,17 @@ const origin='http://127.0.0.1:8790',endpoint=origin;
 const server=await signalingTestServer();const browsers=[];
 try{
  for(let i=0;i<2;i++)browsers.push(await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})}));
- const pages=await Promise.all(browsers.map(b=>b.newPage()));
+ const pages=await Promise.all(browsers.map(b=>b.newPage()));await Promise.all(pages.map(p=>p.addInitScript(()=>{const Original=window.WebSocket;window.__testSockets=[];window.WebSocket=class extends Original{constructor(...args){super(...args);window.__testSockets.push(this);}};})));
  await Promise.all(pages.map(async(p,i)=>{await p.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});await p.goto(origin+'/arcade/friends/index.html?lang='+(i?'ja':'zh'));await p.waitForFunction(()=>!!window.BioFriendsApp);}));
  await pages[0].locator('#auto-create').click();await pages[0].locator('#auto-name').fill('V161');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-room-code').textContent.length===8);
  const code=await pages[0].locator('#auto-room-code').textContent();await pages[1].locator('#auto-join').click();await pages[1].locator('#auto-code').fill(code);await pages[1].locator('#auto-start').click();
  await pages[0].waitForFunction(()=>!document.querySelector('#auto-approval').hidden);await pages[0].locator('#auto-yes').click();
  await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected'),null,{timeout:50000})));
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
- await start(pages[0],pages[1],'pong');const match=await complete(pages[0],pages[1],'pong');assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball');
- console.log('PASS automatic local signaling + true RTC + existing G05 full game: two players move, return balls and agree on result');
+ await pages[0].locator('#auto-lobby-hero').selectOption('2');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.heroes[0]===2&&BioFriendsApp.inspect().session.configAck)));
+ await pages[1].locator('#auto-lobby-hero').selectOption('5');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.heroes[1]===5&&BioFriendsApp.inspect().session.configAck)));
+ await start(pages[0],pages[1],'pong');await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing');await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));const match=await complete(pages[0],pages[1],'pong');assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball');
+ console.log('PASS genuine RTC game survives signaling WebSocket closure: two players move, return balls and agree on result');
  await Promise.all(pages.map(p=>p.evaluate(()=>window.originalPeer=BioFriendsApp.session.link.pc)));
  await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  for(const mode of ['volley','coop','defense','race']){

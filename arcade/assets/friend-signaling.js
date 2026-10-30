@@ -5,22 +5,23 @@ function endpointURL(endpoint,path){const base=new URL(endpoint);if(base.usernam
 async function createRoom(endpoint){
  const url=endpointURL(endpoint,'/rooms');
  const response=await fetch(url,{method:'POST',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
- if(!response.ok)throw Error('room-create');const room=await response.json();
+ if(!response.ok)throw Error(response.status===429?'rate-limited':response.status===503?'service-unavailable':'room-create');const room=await response.json();
  if(room.v!==VERSION||!/^[A-Z2-9]{8}$/.test(room.room)||!/^[a-f0-9]{64}$/.test(room.host)||!/^[a-f0-9]{64}$/.test(room.guest))throw Error('room-format');return room;
 }
-function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{},onJoinCancelled=()=>{}}){
- if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||typeof onJoinCancelled!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
+function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{},onJoinCancelled=()=>{},onSignalingLost=()=>{}}){
+ if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||typeof onJoinCancelled!=='function'||typeof onSignalingLost!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
  const url=endpointURL(endpoint,'/rooms/'+room+'/socket');url.protocol=url.protocol==='https:'?'wss:':'ws:';
- const socket=new WebSocket(url),send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,poll,timer,cancel;
+ const socket=new WebSocket(url),send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,signalingLost=false,poll,timer,cancel;
+ const lost=()=>{if(!stopped&&!signalingLost){signalingLost=true;onSignalingLost();}};
  const result=new Promise((resolve,reject)=>{
-  const finish=(err)=>{if(settled){if(err&&!stopped){stopped=true;link.close('disconnected');socket.close();}return;}settled=true;clearTimeout(timer);clearInterval(poll);if(err){stopped=true;link.close('failed');socket.close();reject(err);}else resolve();};
+  const finish=(err)=>{if(settled){if(err)lost();return;}settled=true;clearTimeout(timer);clearInterval(poll);if(err){stopped=true;link.close('failed');socket.close();reject(err);}else resolve();};
   const arm=ms=>{clearTimeout(timer);timer=setTimeout(()=>finish(Error('pairing-timeout')),ms);};
   const startLink=(method,...args)=>{const previous=link.pairingTimeout;link.pairingTimeout=timeout;try{return link[method](...args);}finally{link.pairingTimeout=previous;}};
   cancel=()=>finish(Error('cancelled'));arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   socket.onopen=()=>role==='guest'&&token==null?send('join-request'):send('auth',{role,token});
   socket.onerror=()=>finish(Error('signaling-error'));
-  socket.onclose=()=>{if(!stopped){if(!settled)finish(Error('signaling-closed'));else link.close('disconnected');}};
+  socket.onclose=()=>{if(!stopped){if(!settled)finish(Error('signaling-closed'));else lost();}};
   socket.onmessage=async event=>{
    if(stopped||typeof event.data!=='string'||event.data.length>MAX_MESSAGE)return finish(Error('message-size'));
    let message;try{message=JSON.parse(event.data);}catch{return finish(Error('message-format'));}

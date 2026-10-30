@@ -18,6 +18,8 @@ on:
       - 'arcade/assets/friend-session.js'
       - 'arcade/assets/peer-link.js'
       - 'scripts/test-signaling-room-v161.mjs'
+      - 'scripts/test-signaling-lifecycle-v161.cjs'
+      - 'scripts/lib/friends-browser.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
       - 'scripts/test-signaling-live-rate-v161.mjs'
       - 'scripts/test-signaling-live-ws-v161.cjs'
@@ -27,7 +29,7 @@ permissions:
 jobs:
   signaling-local-rtc:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,9 +52,13 @@ jobs:
           done
           node scripts/test-friend-invite-v161.cjs
           node scripts/test-signaling-room-v161.mjs
+          node scripts/test-signaling-lifecycle-v161.cjs
           node scripts/test-signaling-rate-v161.mjs
           node scripts/test-signaling-live-rate-v161.mjs
           node scripts/test-signaling-live-ws-v161.cjs
           node scripts/test-friend-ui-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
           node scripts/smoke-signaling-session-v161.mjs
+          BIO_AUTO_SIGNALING=1 node scripts/smoke-g01-friends-6b.mjs
+          BIO_AUTO_SIGNALING=1 node scripts/smoke-g02-friends-6b.mjs
+          BIO_AUTO_SIGNALING=1 node scripts/smoke-g06-friends-6c.mjs

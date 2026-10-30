@@ -1,8 +1,8 @@
 // Genuine independent browser processes. Never logs/persists SDP or ICE.
-import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import assert from 'node:assert/strict';import {chromium}from'playwright';
+import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import assert from 'node:assert/strict';import {chromium}from'playwright';import {signalingTestServer} from './signaling-test-server.mjs';
 export const root=path.resolve(import.meta.dirname,'../..');
 export async function setup({viewport={width:1440,height:1000},locales=['zh','ja'],profile='two'}={}){
- const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!p.startsWith(root+path.sep)||!fs.existsSync(p)||!fs.statSync(p).isFile()){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg'})[path.extname(p)]||'application/octet-stream');fs.createReadStream(p).pipe(res);});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const auto=process.env.BIO_AUTO_SIGNALING==='1';const server=auto?await signalingTestServer():http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!p.startsWith(root+path.sep)||!fs.existsSync(p)||!fs.statSync(p).isFile()){res.writeHead(404);res.end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg'})[path.extname(p)]||'application/octet-stream');fs.createReadStream(p).pipe(res);});if(!auto)await new Promise(r=>server.listen(0,'127.0.0.1',r));
  const origin='http://127.0.0.1:'+server.address().port,browsers=[],pages=[],errors=[];
  try{for(const [index,locale]of locales.entries()){
   const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});browsers.push(browser);const context=await browser.newContext({viewport,hasTouch:viewport.width<1000,deviceScaleFactor:1});
@@ -12,6 +12,13 @@ export async function setup({viewport={width:1440,height:1000},locales=['zh','ja
  return {pages,errors,async close(){for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}};
 }
 export async function pair(a,b){
+ if(process.env.BIO_AUTO_SIGNALING==='1'){
+  await Promise.all([a,b].map(p=>p.addScriptTag({url:new URL('/arcade/assets/friend-signaling.js',p.url()).href})));
+  const room=await a.evaluate(()=>BioFriendSignaling.createRoom(location.origin));
+  await Promise.all([a,b].map((p,i)=>p.evaluate(({room,i})=>{const s=BioFriendsApp.session,role=i?'guest':'host';s.prepareAuto(role,'RTC',i?3:0);window.__automatic=BioFriendSignaling.connect({endpoint:location.origin,room:room.room,role,token:i?room.guest:room.host,link:s.link});window.__automaticStatus='pending';__automatic.result.then(()=>window.__automaticStatus='connected',e=>window.__automaticStatus=e.message);},{room,i})));
+  await Promise.all([a,b].map(p=>p.waitForFunction(()=>window.__automaticStatus==='connected',null,{timeout:50000})));
+  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.configAck&&BioFriendsApp.inspect().session.phase==='lobby')));return;
+ }
  await a.locator('#room').fill('6A · 同一好友大廳');await a.locator('#host').click();await a.waitForFunction(()=>document.querySelector('#local').value.length>100);
  const offer=await a.locator('#local').inputValue();await b.locator('#hero').selectOption('3');await b.locator('#remote').fill(offer);await b.locator('#guest').click();await b.waitForFunction(()=>document.querySelector('#local').value.length>100);
  const answer=await b.locator('#local').inputValue();await a.locator('#remote').fill(answer);await a.locator('#accept').click();
