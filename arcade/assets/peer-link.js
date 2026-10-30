@@ -10,7 +10,7 @@ function description(text,kind){
 }
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
- constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.resetStats();}
+ constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.resetStats();}
  resetStats(){this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.pendingPings=new Map();this.deadlines={control:0,input:0};}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
@@ -25,7 +25,7 @@ class Link{
   pc.ondatachannel=e=>{if(generation===this.generation)this.attach(e.channel);else e.channel.close();};
   pc.onconnectionstatechange=()=>{if(generation!==this.generation)return;if(['failed','disconnected','closed'].includes(pc.connectionState))this.close('disconnected');};
   if(role==='host'){this.attach(pc.createDataChannel('control',{ordered:true}));this.attach(pc.createDataChannel('input',{ordered:false,maxRetransmits:0}));}
-  this.later(()=>{if(this.state==='pairing')this.close('timeout');},30000);
+  this.later(()=>{if(this.state==='pairing')this.close('timeout');},this.pairingTimeout);
   return {pc,generation};
  }
  async gather(pc,generation){

@@ -1,5 +1,5 @@
 // Signaling only. Game data stays on the existing WebRTC DataChannels.
-const VERSION=1, ROOM_MS=15*60*1000, MAX_TEXT=125000, MAX_SOCKETS=4;
+const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, MAX_TEXT=125000, MAX_SOCKETS=4;
 const roomPattern=/^[A-Z2-9]{8}$/, tokenPattern=/^[a-f0-9]{64}$/;
 const json=(value,status=200,headers={})=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store',...headers}});
 const randomHex=n=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>x.toString(16).padStart(2,'0')).join('');
@@ -27,6 +27,11 @@ export default {
 };
 export class Room {
  constructor(state){this.state=state;}
+ async schedule(room){
+  if(!room)return;
+  const deadlines=this.state.getWebSockets().filter(ws=>ws.readyState===1).map(ws=>ws.deserializeAttachment()).filter(x=>x&&!x.role).map(x=>x.at+AUTH_MS);
+  await this.state.storage.setAlarm(Math.min(room.expires,...deadlines));
+ }
  async fetch(request){
   const url=new URL(request.url);
   if(url.pathname==='/create'&&request.method==='POST'){
@@ -38,7 +43,7 @@ export class Room {
   const room=await this.state.storage.get('room');
   if(!room||room.expires<=Date.now())return json({error:'expired'},410);
   if(this.state.getWebSockets().length>=MAX_SOCKETS)return json({error:'full'},429);
-  const pair=new WebSocketPair();this.state.acceptWebSocket(pair[1]);pair[1].serializeAttachment({role:null,at:Date.now(),count:0,window:Date.now()});
+  const pair=new WebSocketPair();this.state.acceptWebSocket(pair[1]);pair[1].serializeAttachment({role:null,at:Date.now(),count:0,window:Date.now()});await this.schedule(room);
   return new Response(null,{status:101,webSocket:pair[0]});
  }
  async webSocketMessage(ws,text){
@@ -47,11 +52,20 @@ export class Room {
   const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>8){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
   if(!info.role){
-   if(now-info.at>10000||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||await digest(msg.token)!==room[msg.role]){ws.close(1008,'auth');return;}
-   if(this.state.getWebSockets().some(other=>other!==ws&&other.deserializeAttachment()?.role===msg.role)){ws.close(1008,'occupied');return;}
-   info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role}));
-   for(const other of this.state.getWebSockets()){const role=other.deserializeAttachment()?.role;if(other!==ws&&role){other.send(JSON.stringify({v:VERSION,type:'peer-joined'}));ws.send(JSON.stringify({v:VERSION,type:'peer-joined'}));}}
-   return;
+   if(now-info.at>=AUTH_MS||!msg||msg.v!==VERSION||msg.type!=='auth'||!['host','guest'].includes(msg.role)||!tokenPattern.test(msg.token||'')||Object.keys(msg).some(k=>!['v','type','role','token'].includes(k))||await digest(msg.token)!==room[msg.role]){ws.close(1008,'auth');return;}
+   // Serialize role assignment across competing tabs, including the digest await.
+   await this.state.blockConcurrencyWhile(async()=>{
+    const current=await this.state.storage.get('room');
+    if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
+    if(this.state.getWebSockets().some(other=>other!==ws&&other.deserializeAttachment()?.role===msg.role)){ws.close(1008,'occupied');return;}
+    info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role}));
+    const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role);
+    if(peer){
+     if(!current.active){current.active=true;current.expires=Date.now()+ACTIVE_MS;await this.state.storage.put('room',current);}
+     peer.send(JSON.stringify({v:VERSION,type:'peer-joined'}));ws.send(JSON.stringify({v:VERSION,type:'peer-joined'}));
+    }
+    await this.schedule(current);
+   });return;
   }
   ws.serializeAttachment(info);
   // SDP is already ICE-complete in BioPeer. No separate trickle ICE is currently sent.
@@ -59,7 +73,12 @@ export class Room {
   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));
   if(!peer){ws.send(JSON.stringify({v:VERSION,type:'peer-missing'}));return;}peer.send(text);
  }
- async webSocketClose(ws){const role=ws.deserializeAttachment()?.role;if(!role)return;for(const other of this.state.getWebSockets()){if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));}if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}}
+ async webSocketClose(ws){const role=ws.deserializeAttachment()?.role;if(!role){await this.schedule(await this.state.storage.get('room'));return;}for(const other of this.state.getWebSockets()){if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));}if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else await this.schedule(await this.state.storage.get('room'));}
  async webSocketError(ws){ws.close(1011,'socket-error');}
- async alarm(){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.state.storage.deleteAll();}
+ async alarm(){
+  const room=await this.state.storage.get('room'),now=Date.now();
+  if(!room||room.expires<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.state.storage.deleteAll();return;}
+  for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&info.at+AUTH_MS<=now)ws.close(1008,'auth-timeout');}
+  await this.schedule(room);
+ }
 }

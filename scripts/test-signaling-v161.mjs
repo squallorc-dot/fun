@@ -15,6 +15,7 @@ try{
  const pages=await Promise.all(browsers.map(b=>b.newPage()));await Promise.all(pages.map(p=>p.goto(origin)));
  const open=async(p,role,token)=>p.evaluate(async({endpoint,room,role,token})=>{const ws=new WebSocket(endpoint.replace('http','ws')+'/rooms/'+room+'/socket');window.testSocket=ws;window.messages=[];ws.onmessage=e=>window.messages.push(JSON.parse(e.data).type);await new Promise((resolve,reject)=>{ws.onopen=()=>{ws.send(JSON.stringify({v:1,type:'auth',role,token}));resolve();};ws.onerror=reject;});},{endpoint,room:room.room,role,token});
  await open(pages[0],'host',room.host);await pages[0].waitForFunction(()=>messages.includes('authenticated'));
+ const idle=await browsers[1].newPage();await idle.goto(origin);await idle.evaluate(({endpoint,room})=>{window.idleSocket=new WebSocket(endpoint.replace('http','ws')+'/rooms/'+room+'/socket');},{endpoint,room:room.room});await idle.waitForFunction(()=>idleSocket.readyState===WebSocket.CLOSED,null,{timeout:15000});await idle.close();assert.equal(await pages[0].evaluate(()=>testSocket.readyState),1,'authenticated host survives unauthenticated timeout');
  await open(pages[1],'guest','0'.repeat(64));await pages[1].waitForFunction(()=>testSocket.readyState===WebSocket.CLOSED);
  await open(pages[1],'guest',room.guest);await Promise.all(pages.map(p=>p.waitForFunction(()=>messages.includes('peer-joined'))));
  const third=await browsers[1].newPage();await third.goto(origin);await open(third,'host',room.host);await third.waitForFunction(()=>testSocket.readyState===WebSocket.CLOSED);await third.close();

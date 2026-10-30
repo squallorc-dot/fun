@@ -5,6 +5,10 @@ on:
       - 'signaling/worker/**'
       - 'arcade/assets/friend-signaling.js'
       - 'scripts/test-signaling-v161.mjs'
+      - 'scripts/smoke-signaling-session-v161.mjs'
+      - 'arcade/assets/friend-session.js'
+      - 'arcade/assets/peer-link.js'
+      - 'scripts/test-signaling-room-v161.mjs'
       - '.github/workflows/signaling-v161.yml'
 permissions:
   contents: read
@@ -32,4 +36,6 @@ jobs:
             if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
             sleep 1
           done
+          node scripts/test-signaling-room-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
+          node scripts/smoke-signaling-session-v161.mjs
