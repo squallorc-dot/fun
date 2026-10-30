@@ -70,7 +70,7 @@ export class Room {
     await this.state.blockConcurrencyWhile(async()=>{
      const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
      const host=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');
-     if(!host||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
+     if(!host||current.recovery?.guest?.until>Date.now()||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
      const bucket=current.requests||{at:now,count:0};if(now-bucket.at>=60000){bucket.at=now;bucket.count=0;}if(++bucket.count>10){ws.close(1008,'rate');return;}
      current.requests=bucket;await this.state.storage.put('room',current);info.requestId=randomHex(16);info.deadline=now+REQUEST_MS;ws.serializeAttachment(info);await this.schedule(current);
      host.send(JSON.stringify({v:VERSION,type:'join-request',id:info.requestId}));ws.send(JSON.stringify({v:VERSION,type:'waiting-approval'}));
@@ -110,7 +110,7 @@ export class Room {
     const pending=this.state.getWebSockets().find(other=>{const v=other.deserializeAttachment();return !v?.role&&v?.requestId===msg.id&&v.deadline>Date.now();});
     if(!pending)return;
     if(!msg.accept){pending.send(JSON.stringify({v:VERSION,type:'join-denied'}));pending.close(1000,'denied');return;}
-    const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
+    const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||current.recovery?.guest?.until>Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
     const token=randomHex(32);current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
     const p=pending.deserializeAttachment();delete p.requestId;p.deadline=Date.now()+AUTH_MS;pending.serializeAttachment(p);await this.schedule(current);
     pending.send(JSON.stringify({v:VERSION,type:'join-approved',token}));
