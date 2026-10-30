@@ -18,6 +18,8 @@ for(const mode of ['pong','volley']){
  check(!s.receive('frame',{epoch:1,tick:1000,state:{points:[7,0]}},'control'),'guest cannot author state');const y=s.adapter.game.inspectMatch().ai.y;now+=400;s.update(1/60);check(s.adapter.game.inspectMatch().ai.y===y,'stale input becomes neutral');now+=400;s.update(1/60);check(s.phase==='paused'&&Object.keys(s.remote).length===0,'input silence pauses safely');
  s.result={points:[7,0]};s.readyFlags=[true,true];s.clearRound();check(s.adapter===null&&s.result===null&&s.readyFlags.every(v=>!v)&&Object.keys(s.remote).length===0,'next game removes prior physics/input/result/readiness');s.leave();
 }
+// A new pairing must not inherit the previous game's adapter configuration.
+{const s=new w.BioFriends.Session();s.config={game:'g06',mode:'race'};s.prepareAuto('host','test',0);check(s.config===null&&s.epoch===0,'automatic re-pair clears old game configuration');s.config={game:'g02',mode:'defense'};s.link.offer=async()=>'';s.host('test',0);check(s.config===null,'manual re-pair clears old game configuration');}
 // Host adapter physics runs at the original shared 120Hz, independent of render FPS.
 for(const mode of ['pong','volley']){let expected;
  for(const fps of [10,15,30,60,120,240]){

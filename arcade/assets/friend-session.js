@@ -20,9 +20,9 @@ class Session{
   this.changed();
  }
  clearRound(){this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges=this.emptyEdges();this.pulses={};this.held={};this.edges=this.emptyEdges();this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.readyTask=(this.readyTask||0)+1;}
- prepareAuto(role,room='',selectedHero=0){if(!['host','guest'].includes(role)||!name(room)||!hero(selectedHero)||['pairing','connected'].includes(this.link.state))throw Error('room-settings');this.peerHello=null;this.role=role;this.room=role==='host'?room:'';this.hero=selectedHero;this.epoch=0;}
- async host(room='',selectedHero=0){if(!name(room)||!hero(selectedHero))throw Error('room-settings');this.peerHello=null;this.role='host';this.room=room;this.hero=selectedHero;this.epoch=0;return this.link.offer();}
- async join(text,selectedHero=3){if(!hero(selectedHero))throw Error('hero');this.peerHello=null;this.role='guest';this.hero=selectedHero;this.epoch=0;return this.link.answer(text);}
+ prepareAuto(role,room='',selectedHero=0){if(!['host','guest'].includes(role)||!name(room)||!hero(selectedHero)||['pairing','connected'].includes(this.link.state))throw Error('room-settings');this.peerHello=null;this.config=null;this.role=role;this.room=role==='host'?room:'';this.hero=selectedHero;this.epoch=0;}
+ async host(room='',selectedHero=0){if(!name(room)||!hero(selectedHero))throw Error('room-settings');this.peerHello=null;this.config=null;this.role='host';this.room=room;this.hero=selectedHero;this.epoch=0;return this.link.offer();}
+ async join(text,selectedHero=3){if(!hero(selectedHero))throw Error('hero');this.peerHello=null;this.config=null;this.role='guest';this.hero=selectedHero;this.epoch=0;return this.link.answer(text);}
  accept(text){return this.link.accept(text);}
  configure(mode=this.config?.mode||'pong',game=this.config?.game||'g05',options={}){
   if(this.role!=='host'||this.link.state!=='connected'||!this.peerHello||!this.meta(game)?.MODES.includes(mode)||!this.peerHello.games.includes(game+':'+mode+'@'+this.meta(game).TAG)||ACTIVE.includes(this.phase))return false;
