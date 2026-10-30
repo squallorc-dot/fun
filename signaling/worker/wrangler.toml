@@ -1,0 +1,15 @@
+name = "bio-city-v161-signaling"
+main = "worker.mjs"
+compatibility_date = "2025-04-01"
+
+[vars]
+# Set explicitly before any deployment. Do not use wildcard origins.
+ALLOWED_ORIGINS = "https://squallorc-dot.github.io"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]

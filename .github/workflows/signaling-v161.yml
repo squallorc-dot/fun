@@ -1,0 +1,35 @@
+name: v1.6.1 signaling prototype
+on:
+  pull_request:
+    paths:
+      - 'signaling/worker/**'
+      - 'arcade/assets/friend-signaling.js'
+      - 'scripts/test-signaling-v161.mjs'
+      - '.github/workflows/signaling-v161.yml'
+permissions:
+  contents: read
+jobs:
+  signaling-local-rtc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local test tools
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.57.0
+          npx playwright install --with-deps chromium
+      - name: Test local Durable Object and real two-browser RTC
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790 --persist-to "$RUNNER_TEMP/v161-worker" > "$RUNNER_TEMP/wrangler.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" || true' EXIT
+          for i in $(seq 1 60); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          node scripts/test-signaling-v161.mjs --rtc
