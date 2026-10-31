@@ -31,8 +31,11 @@ class Link{
    const state=pc.connectionState;
    if(state==='failed'||state==='closed'){this.close('disconnected');return;}
    if(state==='disconnected'){
-    // Mobile Wi-Fi roaming and short screen suspension may briefly break ICE.
-    // Keep the same round only while the native transport can recover.
+    // Initial mobile pairing can transiently report disconnected while ICE
+    // is still checking host candidates. Let the existing bounded pairing
+    // timeout decide failure, instead of terminating the attempt at 8 seconds.
+    if(this.state==='pairing')return;
+    // A previously connected match gets a bounded recovery interval.
     if(!this.disconnectTicket){
      const ticket={};this.disconnectTicket=ticket;
      this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&pc.connectionState==='disconnected')this.close('disconnected');},DISCONNECT_GRACE_MS);
