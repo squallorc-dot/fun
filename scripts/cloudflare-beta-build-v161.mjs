@@ -36,7 +36,7 @@ try{
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,1,'exactly one release preparation commit expected');
+ assert.equal(compare.ahead_by,2,'exactly two release-only commits expected');
  assert((compare.files||[]).length>0,'missing release files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
