@@ -83,6 +83,7 @@ class Link{
   if(performance.now()-this.lastReceived>5000){this.close('timeout');return;}
   this.later(()=>this.heartbeat(),500);
  }
+ diagnose(){const pc=this.pc;return {state:this.state,connection:pc?.connectionState||'none',ice:pc?.iceConnectionState||'none',gathering:pc?.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none'};}
  measure(){const a=this.stats.rtts;return {state:this.state,sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
  // Controlled application-layer impairment for diagnostics, not a fake RTC link.

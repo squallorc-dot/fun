@@ -47,11 +47,13 @@ class Session{
  }
  pause(reason='user'){
   if(!ACTIVE.includes(this.phase))return false;
+  // A duplicate pause must never erase an already collected two-party resume vote.
+  if(this.phase==='paused')return true;
   if(this.role==='guest'){this.link.send('pause',{epoch:this.epoch});this.remote={};return true;}
   this.phase='paused';this.pauseReason=reason;this.remote={};this.pulses={};this.clock.clear();this.resumeFlags=[false,false];this.adapter?.pause?.(true);this.publish(true);this.changed();return true;
  }
- resume(){if(this.phase!=='paused')return false;this.resumeFlags[this.role==='host'?0:1]=true;this.link.send('resume',{epoch:this.epoch});this.tryResume();this.changed();return true;}
- tryResume(){if(this.role==='host'&&this.phase==='paused'&&this.resumeFlags.every(Boolean)){this.phase=this.countdown>0?'countdown':'playing';this.remote={};this.pulses={};this.held={};this.remoteAt=performance.now();this.clock.clear();this.adapter?.pause?.(false);this.publish(true);this.changed();}}
+ resume(){if(this.phase!=='paused')return false;const side=this.role==='host'?0:1;if(this.resumeFlags[side])return true;this.resumeFlags[side]=true;this.link.send('resume',{epoch:this.epoch});this.tryResume();this.changed();return true;}
+ tryResume(){if(this.role==='host'&&this.phase==='paused'&&this.resumeFlags.every(Boolean)){this.phase=this.countdown>0?'countdown':'playing';this.pauseReason=null;this.resumeFlags=[false,false];this.remote={};this.pulses={};this.held={};this.remoteAt=performance.now();this.clock.clear();this.adapter?.pause?.(false);this.publish(true);this.changed();}}
  lobby(){
   if(this.link.state!=='connected')return false;
   if(this.role==='guest'){this.link.send('lobby',{epoch:this.epoch});return true;}
@@ -109,7 +111,9 @@ class Session{
   if(!this.adapter||!ACTIVE.includes(this.phase)||this.adapter.isReady&&!this.adapter.isReady())return;
   if(this.role==='host'){
    if(this.phase==='paused')return;
-   if(performance.now()-this.remoteAt>750&&this.tick>120){this.pause('input-timeout');return;}
+   // Browser background tabs can deliver neutral inputs at roughly 1 Hz. Keep 350 ms neutral-input fallback,
+   // then fail safely closed after 2.5 s of true silence; never keep replaying stale controls.
+   if(performance.now()-this.remoteAt>2500&&this.tick>120){this.pause('input-timeout');return;}
    this.clock.advance(dt,step=>{
     if(this.countdown<=0&&this.adapter.canStep&&!this.adapter.canStep()){this.pause('engine-backpressure');return false;}this.tick++;if(this.countdown>0){this.countdown=Math.max(0,this.countdown-step);if(this.countdown<1e-8){this.countdown=0;this.phase='playing';this.remote={};this.pulses={};this.publish(true);this.changed();}}
     else{const remote=performance.now()-this.remoteAt>350?{}:{...this.remote,...this.pulses};this.pulses={};this.adapter.step(step,this.readInput(step),remote);}
@@ -122,7 +126,7 @@ class Session{
    this.adapter.render();
   }
  }
- inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
+ inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,pauseReason:this.phase==='paused'?(this.pauseReason||'peer'):null,resume:[...this.resumeFlags],rtc:this.link.diagnose?.()||null,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
 }
 root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{})})});
 })(typeof window==='undefined'?globalThis:window);

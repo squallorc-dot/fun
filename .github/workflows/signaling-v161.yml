@@ -14,6 +14,7 @@ on:
       - 'scripts/lib/signaling-test-server.mjs'
       - 'scripts/test-friend-invite-v161.cjs'
       - 'scripts/test-signaling-v161.mjs'
+      - 'scripts/test-friends-pause-v161.cjs'
       - 'scripts/smoke-signaling-session-v161.mjs'
       - 'arcade/assets/friend-session.js'
       - 'arcade/assets/peer-link.js'
@@ -58,6 +59,7 @@ jobs:
             sleep 1
           done
           node scripts/test-friend-invite-v161.cjs
+          node scripts/test-friends-pause-v161.cjs
           node scripts/test-signaling-room-v161.mjs
           node scripts/test-signaling-lifecycle-v161.cjs
           node scripts/test-signaling-rate-v161.mjs
