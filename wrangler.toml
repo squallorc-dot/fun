@@ -1,0 +1,38 @@
+# Dedicated Cloudflare Git Builds deployment branch only.
+# Source code comes from an individually CI-passed PR commit.
+# No test IP allowlist, 15-minute window, public preview or extra routes.
+name = "bio-city-v161-signaling"
+main = "signaling/worker/worker.mjs"
+compatibility_date = "2025-04-01"
+workers_dev = true
+preview_urls = false
+
+[assets]
+directory = "./signaling/worker/candidate-assets"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+not_found_handling = "none"
+
+[vars]
+TEST_ENABLED = "false"
+TEST_OPEN_WINDOW = "false"
+BETA_PUBLIC_ENABLED = "true"
+BETA_PUBLIC_ORIGIN = "https://bio-city-v161-signaling.squall-orc.workers.dev"
+ALLOWED_ORIGINS = "https://bio-city-v161-signaling.squall-orc.workers.dev"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[durable_objects.bindings]]
+name = "RATE_GATES"
+class_name = "RateGate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["RateGate"]

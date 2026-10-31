@@ -1,0 +1,12 @@
+{
+  "name": "bio-city-v161-stun-beta-build",
+  "private": true,
+  "version": "1.6.1",
+  "description": "Cloudflare Git Builds: beta-only gated deployment; never use on main",
+  "scripts": {
+    "build": "node scripts/cloudflare-beta-build-v161.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}
