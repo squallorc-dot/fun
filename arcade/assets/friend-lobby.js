@@ -15,8 +15,18 @@ function readInput(dt=1/120){
  const v={moveX:Math.max(-1,Math.min(1,(right?1:0)-(left?1:0)+c.x)),moveY:Math.max(-1,Math.min(1,(down||mode==='pong'&&right?1:0)-(up||mode==='pong'&&left?1:0)+c.y)),left,right,up,down,fire:held('j')||mode==='pong'&&held(' ')||act('fire'),jump:held('k')||mode==='volley'&&held(' ')||act('jump'),actionAssist:!!c.assist};if(['g01','g02'].includes(session.config?.game)){v.dodge=held('l')||act('dodge');v.skill=held('e')||act('skill');}pulses.clear();return v;
 }
 function size(){
- if(!session?.adapter)return;const w=$('viewport').clientWidth,compact=innerWidth>innerHeight&&innerHeight<=540,ratio=session.adapter.game.h/session.adapter.game.w,available=Math.max(100,w-(plan.reservedLeft||0)-(plan.reservedRight||0)),h=compact?Math.max(100,innerHeight-98):Math.min(640,available*ratio),cw=Math.min(available,h/ratio),ch=cw*ratio,dpr=devicePixelRatio||1;
- canvas.style.width=cw+'px';canvas.style.height=ch+'px';canvas.style.marginLeft=(plan.reservedLeft||0)+'px';canvas.style.marginRight=(plan.reservedRight||0)+'px';const bw=Math.ceil(cw*dpr),bh=Math.ceil(ch*dpr);if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;}ctx.setTransform(bw/session.adapter.game.w,0,0,bh/session.adapter.game.h,0,0);
+ if(!session?.adapter)return;
+ const w=$('viewport').clientWidth,compact=innerWidth>innerHeight&&innerHeight<=540,ratio=session.adapter.game.h/session.adapter.game.w;
+ const available=Math.max(100,w-(plan.reservedLeft||0)-(plan.reservedRight||0));
+ // Preserve room for HUD and mobile touch controls, especially the square G02 board.
+ const touchVisible=getComputedStyle($('touch-controls')).display!=='none';
+ const budget=Math.max(160,innerHeight-(touchVisible?245:120));
+ const h=compact?Math.max(100,innerHeight-98):Math.min(640,available*ratio,budget);
+ const cw=Math.min(available,h/ratio),ch=cw*ratio,dpr=Math.min(3,devicePixelRatio||1);
+ const style={width:cw+'px',height:ch+'px',marginLeft:(plan.reservedLeft||0)+'px',marginRight:(plan.reservedRight||0)+'px'};
+ for(const [k,v] of Object.entries(style))if(canvas.style[k]!==v)canvas.style[k]=v;
+ const bw=Math.ceil(cw*dpr),bh=Math.ceil(ch*dpr);
+ if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;ctx.setTransform(bw/session.adapter.game.w,0,0,bh/session.adapter.game.h,0,0);}
 }
 function render(){
  if(!session)return;const s=session.inspect(),connected=session.link.state==='connected',active=!!session.adapter;
@@ -28,8 +38,17 @@ function render(){
  $('ready').disabled=s.phase!=='lobby'||!s.configAck||s.preparing;$('ready').textContent=s.preparing?L.preparing:s.ready[s.role==='host'?0:1]?L.cancelReady:L.ready;$('readiness').textContent=s.ready.filter(Boolean).length+'/2';
  $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('side').textContent=s.role==='guest'?L.right:L.left;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';$('rematch').textContent=ja?'もう一度（ロビーへ）':'再玩一局（回大廳）';
  const race=s.config?.game==='g06',time=v=>Number.isFinite(v)?v.toFixed(2)+'s':'—';$('result').textContent=s.result?(race?s.result.standings.map(r=>`${r.position}. ${r.name} ${r.status} ${time(r.time)}`).join(' · ')+' | '+s.result.players.map(p=>`${p.id} #${p.rank} ${ja?'ベスト':'最佳圈'} ${time(p.bestLap)} ${ja?'追越':'超車'} ${p.overtakes} ${ja?'衝突':'碰撞'} ${p.collisions}`).join(' · '):['g01','g02'].includes(s.config?.game)?`${s.result.win?'WIN':'LOSE'} · ${s.result.score} · ${s.result.kills} KO`:`${L.winner}：${s.result.winner===0?'Host':'Guest'} · ${s.result.points.join(' : ')}`):'';if(session.adapter&&race)$('score').innerHTML=s.role==='guest'?session.adapter.game.guestHud():session.adapter.game.hud();else $('score').textContent=session.adapter?(['g01','g02'].includes(s.config?.game)?String(session.adapter.game.inspectCombat().score):session.adapter.game.inspectMatch().points.join(' : ')):'';
- const roundMessage=s.phase==='finished'&&s.result?L.finished+' · '+$('result').textContent:s.phase==='paused'?L.paused+' · '+s.resume.filter(Boolean).length+'/2':'';
- $('round-message').textContent=roundMessage;$('round-message').hidden=!roundMessage;
+ let roundMessage='';
+ if(s.phase==='finished'&&s.result){
+  if(race){
+   const players=(s.result.players||[]).map(p=>(p.id==='player'?'Host':p.id==='guest'?'Guest':p.id)+' #'+p.rank).join(' · ');
+   roundMessage=L.finished+' · '+players;
+  }else roundMessage=L.finished+' · '+$('result').textContent;
+ }else if(s.phase==='paused')roundMessage=L.paused+' · '+s.resume.filter(Boolean).length+'/2';
+ const banner=$('round-message');if(banner.textContent!==roundMessage)banner.textContent=roundMessage;
+ banner.hidden=!roundMessage;
+ const details=$('round-details');details.hidden=!(s.phase==='finished'&&race);
+ if(!details.hidden){$('round-detail-text').textContent=$('result').textContent;$('round-detail-label').textContent=ja?'全順位と記録を見る':'展開完整六車排名與紀錄';}else details.open=false;
  const m=s.metrics;$('metrics').textContent=`RTT p50/p95 ${m.rtt50?.toFixed(1)||'—'} / ${m.rtt95?.toFixed(1)||'—'} ms · jitter ${m.jitter.toFixed(1)} ms · FPS ${m.fps?.toFixed(1)||'—'} · input ACK p50/p95 ${m.inputAck50?.toFixed(1)||'—'} / ${m.inputAck95?.toFixed(1)||'—'} ms · corrections ${m.corrections} · rejected ${s.rejected+m.rejected}`;
  $('countdown').textContent=s.phase==='countdown'?Math.ceil(session.countdown):s.phase==='paused'?'Ⅱ':'';
  if(s.phase==='paused'){
@@ -53,6 +72,6 @@ window.addEventListener('blur',()=>{resetInputs();});document.addEventListener('
 for(const [id,key]of [['audio-mode','playMode'],['track','track'],['volume','volume'],['sfx','sfx'],['loop','loop'],['auto','auto']]){const e=$(id);if(e.type==='checkbox')e.checked=audio.prefs[key];else e.value=audio.prefs[key];e.addEventListener('change',()=>audio.set({[key]:e.type==='checkbox'?e.checked:key==='playMode'?e.value:Number(e.value)}));}
 $('music-toggle').onclick=()=>audio.media.paused?audio.play():audio.pause();$('export').onclick=()=>{$('report').textContent=JSON.stringify({version:BioG05Network.TAG,browser:navigator.userAgent.includes('Firefox')?'Firefox':navigator.userAgent.includes('Safari')&&!navigator.userAgent.includes('Chrome')?'Safari':'Chromium',metrics:session.inspect().metrics,results:session.totalResults,physicalLAN:'pending'},null,2);};
 new ResizeObserver(()=>{controls.schedule();size();}).observe($('viewport'));
-function frame(now){const dt=Math.max(0,(now-last)/1000);last=now;session.update(dt);if(session.adapter){size();if(session.config?.game==='g06'&&session.role==='guest')session.adapter.game.drawGuest(ctx);else session.adapter.game.draw(ctx);}if(now-lastUI>200){lastUI=now;render();}requestAnimationFrame(frame);}render();requestAnimationFrame(frame);
+function frame(now){const dt=Math.max(0,(now-last)/1000);last=now;session.update(dt);if(session.adapter){if(session.config?.game==='g06'&&session.role==='guest')session.adapter.game.drawGuest(ctx);else session.adapter.game.draw(ctx);}if(now-lastUI>200){lastUI=now;render();}requestAnimationFrame(frame);}render();requestAnimationFrame(frame);
 rootExpose();function rootExpose(){window.BioFriendsApp={session,inspect:()=>({session:session.inspect(),match:session.adapter?(['g01','g02'].includes(session.config?.game)?session.adapter.game.inspectCoop():session.config?.game==='g06'?(session.role==='guest'?session.adapter.game.inspectGuestRace():session.adapter.game.inspectRace()):session.adapter.game.inspectMatch()):null,combat:session.config?.game==='g01'?session.adapter?.game.inspectCombat()||null:null,controls:controls.debug,canvas:{width:canvas.width,height:canvas.height,css:canvas.getBoundingClientRect().toJSON()}})};}
 })();

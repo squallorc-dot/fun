@@ -28,7 +28,9 @@ try{
       replay:document.querySelector('#rematch').textContent,
       pause:getComputedStyle(document.querySelector('#pause')).display,
       dock:getComputedStyle(document.querySelector('#touch-controls')).display,
-      overflow:document.documentElement.scrollWidth>innerWidth};
+      overflow:document.documentElement.scrollWidth>innerWidth,
+      canvasHeight:document.querySelector('#game-canvas').getBoundingClientRect().height,
+      viewportHeight:innerHeight};
    });
    assert.equal(view.lobby,'none','finished round collapses setup lobby');
    assert.equal(view.arena,false,'finished arena stays visible for result');
@@ -38,6 +40,7 @@ try{
    assert.equal(view.pause,'none','do not show disabled pause after a finished match');
    assert.equal(view.dock,'none','finished screen removes touch-control dock');
    assert.equal(view.overflow,false,'finished screen has no horizontal overflow');
+   assert(view.canvasHeight<view.viewportHeight-100,'arena respects available viewport height');
   }
   await page.close();
  }
