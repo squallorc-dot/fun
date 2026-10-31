@@ -16,10 +16,14 @@ function address(value){
 }
 function testGate(request,env){
  if(env.TEST_ENABLED!=='true'||typeof env.TEST_EXPIRES_AT!=='string'||!/^\d{10}$/.test(env.TEST_EXPIRES_AT)||Date.now()>=Number(env.TEST_EXPIRES_AT)*1000)return false;
+ const ip=address(request.headers.get('CF-Connecting-IP'));
+ if(!ip)return false;
+ // Explicit opt-in only for one short, rate-limited cloud device test.
+ // Never enable as the permanent production access policy.
+ if(env.TEST_OPEN_WINDOW==='true')return Number(env.TEST_EXPIRES_AT)*1000-Date.now()<=15*60*1000;
  if(typeof env.TEST_ALLOWED_IPS!=='string'||env.TEST_ALLOWED_IPS.length>800)return false;
  const ips=env.TEST_ALLOWED_IPS.split(',').map(x=>address(x.trim()));
- if(!ips.length||ips.length>16||ips.some(x=>!x))return false;
- const ip=address(request.headers.get('CF-Connecting-IP'));return !!ip&&ips.includes(ip);
+ return ips.length>0&&ips.length<=16&&ips.every(Boolean)&&ips.includes(ip);
 }
 // The address is supplied by Cloudflare ingress. Only an HMAC-derived identifier
 // is sent to the rate DO; no address is put in storage, paths, or logs.

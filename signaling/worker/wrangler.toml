@@ -13,6 +13,8 @@ not_found_handling = "none"
 
 [vars]
 TEST_ENABLED = "false"
+# A 15-minute opt-in public device check only. Keep disabled by default and after testing.
+TEST_OPEN_WINDOW = "false"
 # Set explicitly before any deployment. Do not use wildcard origins.
 ALLOWED_ORIGINS = "https://squallorc-dot.github.io"
 
