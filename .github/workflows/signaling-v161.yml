@@ -24,6 +24,9 @@ on:
       - 'scripts/test-signaling-lifecycle-v161.cjs'
       - 'scripts/lib/friends-browser.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
+      - 'scripts/test-public-beta-config-v161.mjs'
+      - 'arcade/zh/index.html'
+      - 'arcade/ja/index.html'
       - 'scripts/test-signaling-test-gate-v161.mjs'
       - 'signaling/worker/wrangler.beta.toml'
       - 'scripts/prepare-controlled-test-v161.mjs'
@@ -68,6 +71,7 @@ jobs:
           node scripts/test-signaling-lifecycle-v161.cjs
           node scripts/test-signaling-rate-v161.mjs
           node scripts/test-signaling-test-gate-v161.mjs
+          node scripts/test-public-beta-config-v161.mjs
           node scripts/test-prepare-controlled-test-v161.mjs
           node scripts/test-controlled-assets-v161.mjs
           node scripts/test-controlled-assets-live-v161.mjs
