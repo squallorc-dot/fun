@@ -1,0 +1,35 @@
+name = "bio-city-v161-signaling"
+main = "worker.mjs"
+compatibility_date = "2025-04-01"
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "./candidate-assets"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+not_found_handling = "none"
+
+[vars]
+TEST_ENABLED = "false"
+# A 15-minute opt-in public device check only. Keep disabled by default and after testing.
+TEST_OPEN_WINDOW = "false"
+# Set explicitly before any deployment. Do not use wildcard origins.
+ALLOWED_ORIGINS = "https://squallorc-dot.github.io"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[durable_objects.bindings]]
+name = "RATE_GATES"
+class_name = "RateGate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["RateGate"]

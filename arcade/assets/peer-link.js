@@ -1,6 +1,6 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
-const V=1,MAX_SDP=120000,MAX_PACKET=32768;
+const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,HEARTBEAT_SILENCE_MS=12000;
 const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,names)=>object(v)&&Object.keys(v).every(k=>names.includes(k));
 function description(text,kind){
  if(typeof text!=='string'||text.length<30||text.length>MAX_SDP)throw Error('description-size');
@@ -10,22 +10,37 @@ function description(text,kind){
 }
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
- constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.resetStats();}
- resetStats(){this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.pendingPings=new Map();this.deadlines={control:0,input:0};}
+ constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
-  this.generation++;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  // Capture safe, address-free RTC states before closing an unsuccessful pairing.
+  if(this.pc)this.lastDiagnostic=this.diagnose();
+  this.generation++;this.disconnectTicket=null;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
  }
  make(role,sid){
-  this.close('idle');this.resetStats();this.role=role;this.sid=sid;this.status('pairing');
+  this.close('idle');this.resetStats();this.lastDiagnostic=null;this.role=role;this.sid=sid;this.status('pairing');
   const generation=this.generation,pc=new RTCPeerConnection({iceServers:[]});this.pc=pc;
   pc.ondatachannel=e=>{if(generation===this.generation)this.attach(e.channel);else e.channel.close();};
-  pc.onconnectionstatechange=()=>{if(generation!==this.generation)return;if(['failed','disconnected','closed'].includes(pc.connectionState))this.close('disconnected');};
+  pc.onconnectionstatechange=()=>{
+   if(generation!==this.generation||pc!==this.pc)return;
+   const state=pc.connectionState;
+   if(state==='failed'||state==='closed'){this.close('disconnected');return;}
+   if(state==='disconnected'){
+    // Mobile Wi-Fi roaming and short screen suspension may briefly break ICE.
+    // Keep the same round only while the native transport can recover.
+    if(!this.disconnectTicket){
+     const ticket={};this.disconnectTicket=ticket;
+     this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&pc.connectionState==='disconnected')this.close('disconnected');},DISCONNECT_GRACE_MS);
+    }
+   }else this.disconnectTicket=null;
+  };
   if(role==='host'){this.attach(pc.createDataChannel('control',{ordered:true}));this.attach(pc.createDataChannel('input',{ordered:false,maxRetransmits:0}));}
-  this.later(()=>{if(this.state==='pairing')this.close('timeout');},30000);
+  this.later(()=>{if(this.state==='pairing')this.close('timeout');},this.pairingTimeout);
   return {pc,generation};
  }
  async gather(pc,generation){
@@ -54,8 +69,8 @@ class Link{
  attach(dc){
   const channel=dc.label;if(!['control','input'].includes(channel)||this.channels[channel]){dc.close();return;}this.channels[channel]=dc;dc.binaryType='arraybuffer';
   const generation=this.generation;
-  dc.onopen=()=>{if(generation!==this.generation)return;if(Object.values(this.channels).filter(c=>c.readyState==='open').length===2){this.local='';this.status('connected');this.heartbeat();}};
-  dc.onclose=dc.onerror=()=>{if(generation===this.generation)this.close('disconnected');};dc.onmessage=e=>{if(generation===this.generation)this.receive(channel,e.data);};
+  dc.onopen=()=>{if(generation!==this.generation)return;if(this.state==='pairing'&&Object.values(this.channels).filter(c=>c.readyState==='open').length===2){this.local='';this.status('connected');const pending=this.earlyMessages;this.earlyMessages=[];for(const [label,data]of pending){if(generation!==this.generation)break;this.receive(label,data);}if(generation===this.generation)this.heartbeat();}};
+  dc.onclose=dc.onerror=()=>{if(generation===this.generation)this.close('disconnected');};dc.onmessage=e=>{if(generation!==this.generation)return;if(this.state==='pairing'){if(typeof e.data!=='string'||e.data.length>MAX_PACKET||this.earlyMessages.length>=16){this.close('invalid');return;}this.earlyMessages.push([channel,e.data]);}else this.receive(channel,e.data);};
  }
  rate(channel){const now=performance.now(),b=this.buckets[channel]||(this.buckets[channel]={at:now,n:0});if(now-b.at>=1000){b.at=now;b.n=0;}return ++b.n<=(channel==='input'?150:100);}
  receive(channel,text){
@@ -77,10 +92,31 @@ class Link{
   const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));if(delay){const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);this.deadlines[channel]=due;this.later(transmit,Math.max(0,due-performance.now()));}else transmit();return true;
  }
  heartbeat(){
-  const id=++this.pingId||1;this.pingId=id;this.pendingPings.set(id,performance.now());this.send('ping',{id});
-  for(const [key,at]of this.pendingPings)if(performance.now()-at>10000)this.pendingPings.delete(key);
-  if(performance.now()-this.lastReceived>5000){this.close('timeout');return;}
+  if(this.state!=='connected')return;
+  const now=performance.now();
+  // A mobile tab's timers may stop for many seconds while the network is
+  // still connected. A throttled/hidden timer is not evidence of peer loss.
+  const throttled=now-this.lastHeartbeatAt>3000;
+  this.lastHeartbeatAt=now;
+  if(throttled||(typeof document!=='undefined'&&document.visibilityState==='hidden'))this.lastReceived=now;
+  const id=++this.pingId||1;this.pingId=id;this.pendingPings.set(id,now);this.send('ping',{id});
+  for(const [key,at]of this.pendingPings)if(now-at>10000)this.pendingPings.delete(key);
+  if(now-this.lastReceived>HEARTBEAT_SILENCE_MS){this.close('timeout');return;}
   this.later(()=>this.heartbeat(),500);
+ }
+ diagnose(){
+  const pc=this.pc;
+  if(!pc)return this.lastDiagnostic?{...this.lastDiagnostic,state:this.state}:{state:this.state,connection:'none',ice:'none',gathering:'none',control:'none',input:'none',candidates:{host:0,srflx:0,relay:0},remoteCandidates:{host:0,srflx:0,relay:0}};
+  // Only ICE candidate type COUNTS are retained. Never expose SDP, addresses or credentials.
+  const count=sdp=>{
+   const summary={host:0,srflx:0,relay:0};
+   for(const line of (sdp||'').split(/\r?\n/)){
+    const match=/^a=candidate:[^\r\n]*\btyp (host|srflx|relay)\b/.exec(line);
+    if(match)summary[match[1]]++;
+   }
+   return summary;
+  };
+  return {state:this.state,connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
  }
  measure(){const a=this.stats.rtts;return {state:this.state,sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
