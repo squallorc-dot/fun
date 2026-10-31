@@ -1,6 +1,6 @@
 // Run only in an extracted disposable ZIP. This configures files locally; it does not publish.
 import {readFile,writeFile} from 'node:fs/promises';
-const [candidateInput,signalInput]=process.argv.slice(2);
+const [candidateInput,signalInput=candidateInput]=process.argv.slice(2);
 function httpsOrigin(input){
  const url=new URL(input);
  if(url.protocol!=='https:'||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('Provide a complete HTTPS origin only (no path, credentials, query or fragment).');

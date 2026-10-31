@@ -11,11 +11,12 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.resetStats();}
- resetStats(){this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.pendingPings=new Map();this.deadlines={control:0,input:0};}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.pendingPings=new Map();this.deadlines={control:0,input:0};}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   this.generation++;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
  }
@@ -54,8 +55,8 @@ class Link{
  attach(dc){
   const channel=dc.label;if(!['control','input'].includes(channel)||this.channels[channel]){dc.close();return;}this.channels[channel]=dc;dc.binaryType='arraybuffer';
   const generation=this.generation;
-  dc.onopen=()=>{if(generation!==this.generation)return;if(Object.values(this.channels).filter(c=>c.readyState==='open').length===2){this.local='';this.status('connected');this.heartbeat();}};
-  dc.onclose=dc.onerror=()=>{if(generation===this.generation)this.close('disconnected');};dc.onmessage=e=>{if(generation===this.generation)this.receive(channel,e.data);};
+  dc.onopen=()=>{if(generation!==this.generation)return;if(this.state==='pairing'&&Object.values(this.channels).filter(c=>c.readyState==='open').length===2){this.local='';this.status('connected');const pending=this.earlyMessages;this.earlyMessages=[];for(const [label,data]of pending){if(generation!==this.generation)break;this.receive(label,data);}if(generation===this.generation)this.heartbeat();}};
+  dc.onclose=dc.onerror=()=>{if(generation===this.generation)this.close('disconnected');};dc.onmessage=e=>{if(generation!==this.generation)return;if(this.state==='pairing'){if(typeof e.data!=='string'||e.data.length>MAX_PACKET||this.earlyMessages.length>=16){this.close('invalid');return;}this.earlyMessages.push([channel,e.data]);}else this.receive(channel,e.data);};
  }
  rate(channel){const now=performance.now(),b=this.buckets[channel]||(this.buckets[channel]={at:now,n:0});if(now-b.at>=1000){b.at=now;b.n=0;}return ++b.n<=(channel==='input'?150:100);}
  receive(channel,text){

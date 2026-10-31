@@ -24,6 +24,9 @@ on:
       - 'scripts/test-signaling-test-gate-v161.mjs'
       - 'scripts/prepare-controlled-test-v161.mjs'
       - 'scripts/test-prepare-controlled-test-v161.mjs'
+      - 'scripts/build-controlled-assets-v161.mjs'
+      - 'scripts/test-controlled-assets-v161.mjs'
+      - 'scripts/test-controlled-assets-live-v161.mjs'
       - 'scripts/test-signaling-live-rate-v161.mjs'
       - 'scripts/test-signaling-live-ws-v161.cjs'
       - '.github/workflows/signaling-v161.yml'
@@ -40,13 +43,14 @@ jobs:
           node-version: '22'
       - name: Install local test tools
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.57.0 jsqr@1.4.0 ws@8.18.0
+          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.156.0 jsqr@1.4.0 ws@8.18.0
           npx playwright install --with-deps chromium
       - name: Test local Durable Object and real two-browser RTC
         env:
           WRANGLER_SEND_METRICS: 'false'
         run: |
-          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790 --var RATE_SECRET:LOCAL_ONLY_NOT_A_SECRET_0123456789abcdef --var TEST_ENABLED:true --var TEST_EXPIRES_AT:$(($(date +%s)+3600)) --var TEST_ALLOWED_IPS:192.0.2.1,198.51.100.1,203.0.113.1,203.0.113.2 --persist-to "$RUNNER_TEMP/v161-worker" > "$RUNNER_TEMP/wrangler.log" 2>&1 &
+          node scripts/build-controlled-assets-v161.mjs
+          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790,http://127.0.0.1:8787 --var RATE_SECRET:LOCAL_ONLY_NOT_A_SECRET_0123456789abcdef --var TEST_ENABLED:true --var TEST_EXPIRES_AT:$(($(date +%s)+3600)) --var TEST_ALLOWED_IPS:192.0.2.1,198.51.100.1,203.0.113.1,203.0.113.2 --persist-to "$RUNNER_TEMP/v161-worker" > "$RUNNER_TEMP/wrangler.log" 2>&1 &
           worker_pid=$!
           trap 'kill "$worker_pid" || true' EXIT
           for i in $(seq 1 60); do
@@ -59,11 +63,13 @@ jobs:
           node scripts/test-signaling-rate-v161.mjs
           node scripts/test-signaling-test-gate-v161.mjs
           node scripts/test-prepare-controlled-test-v161.mjs
+          node scripts/test-controlled-assets-v161.mjs
+          node scripts/test-controlled-assets-live-v161.mjs
           node scripts/test-signaling-live-rate-v161.mjs
           node scripts/test-signaling-live-ws-v161.cjs
-          node scripts/test-friend-ui-v161.mjs
+          BIO_WORKER_ASSETS=1 node scripts/test-friend-ui-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
-          node scripts/smoke-signaling-session-v161.mjs
+          BIO_WORKER_ASSETS=1 node scripts/smoke-signaling-session-v161.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g01-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g02-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g06-friends-6c.mjs

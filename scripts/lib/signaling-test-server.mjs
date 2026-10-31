@@ -1,9 +1,10 @@
 // Local same-origin test proxy to Workerd; never records URLs containing credentials or message payloads.
 import http from 'node:http';import net from 'node:net';import fs from 'node:fs';import path from 'node:path';
-export async function signalingTestServer({harness=false}={}){
+export async function signalingTestServer({harness=false,workerAssets=process.env.BIO_WORKER_ASSETS==='1'}={}){
  const root=path.resolve('.'),origin='http://127.0.0.1:8790';
  const server=http.createServer((req,res)=>{
-  if(req.url.startsWith('/rooms')){const upstream=http.request({host:'127.0.0.1',port:8787,path:req.url,method:req.method,headers:{...req.headers,'cf-connecting-ip':'192.0.2.1'}},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});upstream.on('error',()=>{res.writeHead(502);res.end();});req.pipe(upstream);return;}
+  if(workerAssets&&req.url==='/'&&harness){res.setHeader('content-type','text/html');res.end('<!doctype html><script src="/arcade/assets/peer-link.js"></script><script src="/arcade/assets/friend-signaling.js"></script>');return;}
+  if(workerAssets||req.url.startsWith('/rooms')){const upstream=http.request({host:'127.0.0.1',port:8787,path:req.url,method:req.method,headers:{...req.headers,'cf-connecting-ip':'192.0.2.1'}},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});upstream.on('error',()=>{res.writeHead(502);res.end();});req.pipe(upstream);return;}
   if(harness&&req.url==='/'){res.setHeader('content-type','text/html');res.end('<!doctype html><script src="/arcade/assets/peer-link.js"></script><script src="/arcade/assets/friend-signaling.js"></script>');return;}
   const file=path.resolve(root,'.'+new URL(req.url,origin).pathname);if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
   res.setHeader('content-type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);

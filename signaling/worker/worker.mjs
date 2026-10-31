@@ -1,4 +1,5 @@
-// Signaling only. Game data stays on the existing WebRTC DataChannels.
+import {staticPath} from './static-policy.mjs';
+// Controlled static pages and signaling. Game data stays on WebRTC DataChannels.
 const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, REQUEST_MS=60000, RESUME_MS=90000, MAX_RESUMES=2, MAX_TEXT=125000, MAX_SOCKETS=4;
 const roomPattern=/^[A-Z2-9]{8}$/, tokenPattern=/^[a-f0-9]{64}$/;
 const json=(value,status=200,headers={})=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store',...headers}});
@@ -35,8 +36,27 @@ async function guarded(request,env,kind,headers){const result=await limit(reques
 export default {
  async fetch(request,env){
   if(!testGate(request,env))return json({error:'unavailable'},403);
+  const url=new URL(request.url);
+  if(['GET','HEAD'].includes(request.method)&&request.headers.get('Upgrade')?.toLowerCase()!=='websocket'){
+   if(!String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).includes(url.origin))return json({error:'unavailable'},403);
+   if(url.pathname==='/')return new Response(null,{status:302,headers:{location:'/arcade/friends/','cache-control':'no-store'}});
+   if(staticPath(url.pathname)){
+    if(!env.ASSETS)return json({error:'unavailable'},503);
+    const assetURL=new URL(request.url);if(assetURL.pathname.endsWith('/'))assetURL.pathname+='index.html';
+    const asset=await env.ASSETS.fetch(new Request(assetURL,request)),headers=new Headers(asset.headers);
+    headers.set('cache-control','no-store');headers.delete('etag');headers.delete('last-modified');
+    headers.set('referrer-policy','no-referrer');headers.set('x-content-type-options','nosniff');headers.set('cross-origin-resource-policy','same-origin');
+    headers.set('content-security-policy',`default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' wss://${url.host}; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; worker-src 'none'; object-src 'none'`);
+    let body=asset.body;
+    if(request.method==='GET'&&asset.ok&&/^\/arcade\/friends\/(index.html)?$/.test(url.pathname)&&headers.get('content-type')?.includes('text/html')){
+     body=(await asset.text()).replace(/<meta name="bio-signaling-endpoint" content="[^"]*">/,`<meta name="bio-signaling-endpoint" content="${url.origin}">`);headers.delete('content-length');
+    }
+    return new Response(body,{status:asset.status,headers});
+   }
+   return json({error:'not-found'},404);
+  }
   if(!allowed(request,env))return json({error:'origin'},403);
-  const url=new URL(request.url),headers=cors(request);
+  const headers=cors(request);
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'access-control-allow-methods':'POST, GET, OPTIONS','access-control-allow-headers':'content-type','access-control-max-age':'600'}});
   if(request.method==='POST'&&url.pathname==='/rooms'){
    const denied=await guarded(request,env,'create',headers);if(denied)return denied;

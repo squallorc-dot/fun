@@ -21,6 +21,18 @@ for(const mode of ['pong','volley']){
 // A new pairing must not inherit the previous game's adapter configuration.
 {const s=new w.BioFriends.Session();s.config={game:'g06',mode:'race'};s.prepareAuto('host','test',0);check(s.config===null&&s.epoch===0,'automatic re-pair clears old game configuration');s.config={game:'g02',mode:'defense'};s.link.offer=async()=>'';s.host('test',0);check(s.config===null,'manual re-pair clears old game configuration');}
 // Optional negotiated hero selection stays host-authoritative and clears old readiness.
+// RTC can deliver control messages before the second channel's onopen callback.
+// The guest must defer the hello/config until it can send its acknowledgement.
+{const h=new w.BioFriends.Session(),g=new w.BioFriends.Session(),wire=[];h.role='host';g.role='guest';h.hero=0;g.hero=3;h.room=g.room='';
+ for(const s of [h,g]){s.link.state='pairing';s.link.sid='a'.repeat(32);}
+ const channels=[];for(const [s,other]of [[h,g],[g,h]]){const pair={};for(const label of ['control','input']){const dc={label,readyState:'connecting',bufferedAmount:0,send(text){wire.push(()=>other.link.channels[label].onmessage({data:text}));},close(){this.readyState='closed';}};s.link.attach(dc);pair[label]=dc;}channels.push(pair);}
+ channels[0].control.readyState=channels[0].input.readyState='open';channels[0].input.onopen();
+ channels[1].control.readyState='open';while(wire.length)wire.shift()();
+ check(g.peerHello==null&&g.link.earlyMessages.length>0,'early hello waits for both native channels');
+ channels[1].input.readyState='open';channels[1].input.onopen();while(wire.length)wire.shift()();
+ check(h.configAck&&g.configAck&&h.phase==='lobby'&&g.phase==='lobby','staggered channel opening completes real protocol acknowledgement');
+ check(g.link.stats.rejected===0&&g.link.earlyMessages.length===0,'buffer drained without protocol rejection');h.leave();g.leave();
+}
 {const h=new w.BioFriends.Session(),g=new w.BioFriends.Session(),tag=w.BioG05Network.TAG;h.role='host';g.role='guest';h.hero=0;g.hero=3;h.room=g.room='';h.phase=g.phase='lobby';h.epoch=g.epoch=1;h.link.state=g.link.state='connected';h.peerHello={hero:3,games:g.capabilities};g.peerHello={hero:0,games:h.capabilities};const config={game:'g05',mode:'pong',engine:tag,heroes:[0,3],room:'',epoch:1};h.config=structuredClone(config);g.config=structuredClone(config);h.configAck=g.configAck=true;h.link.send=(t,d)=>g.receive(t,d,'control');g.link.send=(t,d)=>h.receive(t,d,'control');
  check(g.setHero(5),'guest requests hero selection');check(h.config.heroes[1]===5&&g.config.heroes[1]===5&&g.hero===5,'host confirms guest hero');check(h.setHero(2),'host changes hero');check(h.config.heroes[0]===2&&g.config.heroes[0]===2&&g.peerHello.hero===2,'both accept host hero');g.readyFlags[1]=true;check(!g.setHero(1),'cannot change hero when ready');g.readyFlags[1]=false;check(!g.setHero(7),'reject invalid hero');}
 // Simultaneous selections can cross while configurations remain ordered.
