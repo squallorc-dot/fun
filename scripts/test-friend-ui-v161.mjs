@@ -42,7 +42,45 @@ try{
    assert.equal(view.overflow,false,'finished screen has no horizontal overflow');
    assert(view.canvasHeight<view.viewportHeight-100,'arena respects available viewport height');
   }
+
+  if(locale==='zh'&&viewport.width!==390){
+   // Exercise every game mode's finished UX with no fake network success.
+   // The real physics, network, and results are tested in separate RTC jobs.
+   for(const mode of [
+    {game:'g01',id:'coop',w:640,h:480,result:{win:true,score:1200,kills:11}},
+    {game:'g02',id:'defense',w:600,h:600,result:{win:true,score:2200,kills:19}},
+    {game:'g05',id:'volley',w:640,h:480,result:{winner:1,points:[3,5]}},
+    {game:'g06',id:'race',w:640,h:480,result:{standings:[
+      {position:1,name:'Host',status:'finished',time:81},{position:2,name:'Guest',status:'finished',time:83}],
+      players:[{id:'player',rank:1,bestLap:22,overtakes:2,collisions:0},{id:'guest',rank:2,bestLap:24,overtakes:1,collisions:1}]}}
+   ]){
+    const ui=await page.evaluate(mode=>{
+     const s=BioFriendsApp.session;s.adapter?.dispose?.();
+     s.role='host';s.hero=0;s.epoch=1;s.phase='finished';s.resultCount=1;s.result=mode.result;
+     s.config={game:mode.game,mode:mode.id,heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+     s.adapter={game:{w:mode.w,h:mode.h,hud:()=>'',guestHud:()=>'',inspectCombat:()=>({score:300}),inspectMatch:()=>({points:[7,3]}),draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+     document.body.classList.add('auto-connected');s.changed();
+     const banner=document.querySelector('#round-message'),details=document.querySelector('#round-details');
+     const c=document.querySelector('#game-canvas').getBoundingClientRect();
+     return {banner:banner.textContent,bannerVisible:getComputedStyle(banner).display!=='none',
+       details:!details.hidden,detailsLabel:details.querySelector('summary').textContent,
+       arena:document.querySelector('#arena').hidden,fieldHeight:c.height,
+       controls:getComputedStyle(document.querySelector('#touch-controls')).display,
+       lobby:getComputedStyle(document.querySelector('#lobby')).display,
+       overflow:document.documentElement.scrollWidth>innerWidth};
+    },mode);
+    assert.equal(ui.arena,false,mode.game+' finished arena remains visible');
+    assert.equal(ui.lobby,'none',mode.game+' active UI hides tall lobby');
+    assert.equal(ui.controls,'none',mode.game+' finished touch dock hidden');
+    assert.equal(ui.bannerVisible,true,mode.game+' result stays visible');
+    assert(ui.banner.includes('比賽結束')&&ui.banner.length<160,mode.game+' concise result');
+    assert(ui.fieldHeight<=viewport.height-90,mode.game+' field fits short viewport');
+    assert.equal(ui.overflow,false,mode.game+' has no horizontal overflow');
+    if(mode.game==='g06'){assert.equal(ui.details,true);assert.match(ui.banner,/Host #1/);assert.match(ui.banner,/Guest #2/);}
+    else assert.equal(ui.details,false,mode.game+' needs no verbose score panel');
+   }
+  }
   await page.close();
  }
- console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR plus compact finished round');
+ console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
