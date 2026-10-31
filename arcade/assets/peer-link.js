@@ -1,6 +1,9 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
 const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,HEARTBEAT_SILENCE_MS=12000;
+// Opt-in for v1.6.1 auto-lobby Beta only. Manual QA pairs remain host-only.
+// STUN helps discover public NAT endpoints, but cannot relay traffic.
+const BETA_STUN_URL='stun:stun.l.google.com:19302';
 const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,names)=>object(v)&&Object.keys(v).every(k=>names.includes(k));
 function description(text,kind){
  if(typeof text!=='string'||text.length<30||text.length>MAX_SDP)throw Error('description-size');
@@ -10,7 +13,7 @@ function description(text,kind){
 }
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
- constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
+ constructor({onState=()=>{},onMessage=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
  resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
@@ -24,7 +27,8 @@ class Link{
  }
  make(role,sid){
   this.close('idle');this.resetStats();this.lastDiagnostic=null;this.role=role;this.sid=sid;this.status('pairing');
-  const generation=this.generation,pc=new RTCPeerConnection({iceServers:[]});this.pc=pc;
+  const iceServers=this.betaStun?[{urls:BETA_STUN_URL}]:[];
+  const generation=this.generation,pc=new RTCPeerConnection({iceServers});this.pc=pc;
   pc.ondatachannel=e=>{if(generation===this.generation)this.attach(e.channel);else e.channel.close();};
   pc.onconnectionstatechange=()=>{
    if(generation!==this.generation||pc!==this.pc)return;
@@ -51,7 +55,14 @@ class Link{
    const cancel=()=>{end();reject(Error('cancelled'));};
    const end=()=>{pc.removeEventListener('icegatheringstatechange',check);clearTimeout(timer);this.gatherCancel.delete(cancel);};
    const check=()=>{if(generation!==this.generation){end();reject(Error('cancelled'));}else if(pc.iceGatheringState==='complete'){end();resolve();}};
-   const timer=setTimeout(()=>{end();reject(Error('gather-timeout'));},15000);this.gatherCancel.add(cancel);pc.addEventListener('icegatheringstatechange',check);check();
+   // If STUN is blocked but a host candidate was gathered, retain the
+   // original direct/LAN fallback rather than failing the entire invite.
+   const timer=setTimeout(()=>{
+    const partial=pc.localDescription?.sdp||'';
+    end();
+    if(this.betaStun&&/^a=candidate:[^\r\n]*\btyp host\b/m.test(partial))resolve();
+    else reject(Error('gather-timeout'));
+   },15000);this.gatherCancel.add(cancel);pc.addEventListener('icegatheringstatechange',check);check();
   });
   if(generation!==this.generation||this.pc!==pc)throw Error('cancelled');
   if(!/^a=candidate:/m.test(pc.localDescription.sdp))throw Error('no-host-candidates');
