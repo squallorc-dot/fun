@@ -91,7 +91,13 @@
    if(plan?.stick){anchor={x:plan.stick.w/2,y:plan.stick.h/2};origin={...anchor};paint();}
   }
   function position(){
-   if(disposed)return;const c=context(),visible=win.matchMedia('(pointer:coarse)').matches||win.innerWidth<=1100||prefs.profile!=='two';
+   if(disposed)return;const c=context(),autoLobby=doc.body?.dataset.autoLobby==='true';
+   // On the automatic lobby, don't add a 150px touch dock to a mouse/keyboard
+   // desktop window just because it is narrower than 1100px. Touch laptops
+   // and real phones keep their controls regardless of window dimensions.
+   const touch=win.matchMedia('(any-pointer:coarse)').matches;
+   const mouse=win.matchMedia('(hover:hover) and (pointer:fine)').matches;
+   const visible=touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two';
    element.style.setProperty('display',visible?'block':'none','important');
    element.dataset.profile=prefs.profile;element.dataset.joystick=prefs.joystick;
    if(!visible){reset();plan={reservedLeft:0,reservedRight:0,height:0,compact:false,visible:false};onLayout(plan);return;}
