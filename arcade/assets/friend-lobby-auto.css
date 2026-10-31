@@ -33,3 +33,5 @@ body[data-auto-lobby].round-finished #pause{display:none}
 body[data-auto-lobby] #round-details:not([hidden]){margin:0 0 8px;border:1px solid #3f7284;border-radius:9px;padding:8px 12px;background:#102f41}
 body[data-auto-lobby] #round-details summary{cursor:pointer;min-height:24px;color:#9ee5da;font-size:.9rem}
 body[data-auto-lobby] #round-detail-text{margin:8px 0 0;font-size:.84rem;color:#e1f4f8;overflow-wrap:anywhere}
+
+#auto-entry .auto-beta-notice{margin:0 0 14px;padding:8px 11px;background:#113749;border-left:3px solid #80c3d1;border-radius:5px;font-size:.85rem;color:#c5e1e8}

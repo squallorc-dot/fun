@@ -34,5 +34,25 @@ try {
  ])assert.equal((await worker.fetch(request(ip),{...brief,...override})).status,403,'open window: '+label);
  assert.equal((await worker.fetch(request('192.0.2.99','OPTIONS','https://evil.example'),brief)).status,403,'open window origin');
 
+ // Public Beta must be an entirely separate, explicit, same-origin mode.
+ const betaOrigin='https://bio-city-v161-signaling.squall-orc.workers.dev';
+ const betaEnv={...env,TEST_ENABLED:'false',TEST_OPEN_WINDOW:'false',BETA_PUBLIC_ENABLED:'true',
+  BETA_PUBLIC_ORIGIN:betaOrigin,ALLOWED_ORIGINS:betaOrigin};
+ const br=(ip='192.0.2.5',method='OPTIONS',origin=betaOrigin,url=betaOrigin+'/rooms')=>
+  new Request(url,{method,headers:{...(ip?{'CF-Connecting-IP':ip}:{}),Origin:origin,...(method==='GET'?{Upgrade:'websocket'}:{})}});
+ assert.equal((await worker.fetch(br(),betaEnv)).status,204,'public Beta explicitly enabled');
+ assert.equal((await worker.fetch(br('2001:db8::5'),betaEnv)).status,204,'public IPv6 allowed without unstable whitelist');
+ assert.equal((await worker.fetch(br('192.0.2.5','POST'),betaEnv)).status,503,'public Beta still requires rate secret');
+ for(const [label,override,ip,url,origin] of [
+  ['off',{BETA_PUBLIC_ENABLED:'false'},'192.0.2.5',betaOrigin+'/rooms',betaOrigin],
+  ['mixed test/Beta',{TEST_ENABLED:'true'},'192.0.2.5',betaOrigin+'/rooms',betaOrigin],
+  ['open test flag',{TEST_OPEN_WINDOW:'true'},'192.0.2.5',betaOrigin+'/rooms',betaOrigin],
+  ['bad configured origin',{BETA_PUBLIC_ORIGIN:'https://evil.example'},'192.0.2.5',betaOrigin+'/rooms',betaOrigin],
+  ['wildcard',{ALLOWED_ORIGINS:'*'},'192.0.2.5',betaOrigin+'/rooms',betaOrigin],
+  ['missing client IP',{},null,betaOrigin+'/rooms',betaOrigin],
+  ['another host',{},'192.0.2.5','https://other.example/rooms',betaOrigin],
+  ['cross-site Origin',{},'192.0.2.5',betaOrigin+'/rooms','https://evil.example']
+ ])assert.equal((await worker.fetch(br(ip,'OPTIONS',origin,url),{...betaEnv,...override})).status,403,'public Beta '+label);
+ console.log('PASS isolated public Beta: exact origin, IPv4/IPv6, closed by default, no test bypass');
  console.log('PASS test gate: fail-closed IPv4/IPv6, expiry, switch, origins and every request type');
 } finally { Date.now=original; }

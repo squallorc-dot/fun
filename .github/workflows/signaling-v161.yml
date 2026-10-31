@@ -25,6 +25,7 @@ on:
       - 'scripts/lib/friends-browser.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
       - 'scripts/test-signaling-test-gate-v161.mjs'
+      - 'signaling/worker/wrangler.beta.toml'
       - 'scripts/prepare-controlled-test-v161.mjs'
       - 'scripts/test-prepare-controlled-test-v161.mjs'
       - 'scripts/build-controlled-assets-v161.mjs'

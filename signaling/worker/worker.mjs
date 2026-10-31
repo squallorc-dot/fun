@@ -25,6 +25,16 @@ function testGate(request,env){
  const ips=env.TEST_ALLOWED_IPS.split(',').map(x=>address(x.trim()));
  return ips.length>0&&ips.length<=16&&ips.every(Boolean)&&ips.includes(ip);
 }
+// Separate, opt-in public Beta mode: never expose a 15-minute test gate as a
+// permanent access policy. The beta is served on one exact Worker origin,
+// with no wildcard CORS and no cross-site room API.
+function publicBetaGate(request,env){
+ if(env.BETA_PUBLIC_ENABLED!=='true'||env.TEST_ENABLED==='true'||env.TEST_OPEN_WINDOW==='true')return false;
+ const origin=new URL(request.url).origin;
+ return origin==='https://bio-city-v161-signaling.squall-orc.workers.dev'&&
+  env.BETA_PUBLIC_ORIGIN===origin&&env.ALLOWED_ORIGINS===origin&&
+  !!address(request.headers.get('CF-Connecting-IP'));
+}
 // The address is supplied by Cloudflare ingress. Only an HMAC-derived identifier
 // is sent to the rate DO; no address is put in storage, paths, or logs.
 async function limit(request,env,kind){
@@ -35,11 +45,28 @@ async function limit(request,env,kind){
  const id=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');
  try{const gate=env.RATE_GATES.get(env.RATE_GATES.idFromName(id));const response=await gate.fetch('https://rate.internal/'+kind,{method:'POST'});return response.status===204?'ok':response.status===429?'limited':'unavailable';}catch{return 'unavailable';}
 }
-async function guarded(request,env,kind,headers){const result=await limit(request,env,kind);return result==='ok'?null:json({error:result==='limited'?'rate-limited':'rate-unavailable'},result==='limited'?429:503,headers);}
+async function betaGlobalLimit(env,kind){
+ if(!env.RATE_GATES)return 'unavailable';
+ try{const gate=env.RATE_GATES.get(env.RATE_GATES.idFromName('bio-city-public-beta-global-v1'));
+  const response=await gate.fetch('https://rate.internal/beta-'+kind,{method:'POST'});
+  return response.status===204?'ok':response.status===429?'limited':'unavailable';
+ }catch{return 'unavailable';}
+}
+async function guarded(request,env,kind,headers){
+ const result=await limit(request,env,kind);
+ if(result!=='ok')return json({error:result==='limited'?'rate-limited':'rate-unavailable'},result==='limited'?429:503,headers);
+ if(env.BETA_PUBLIC_ENABLED==='true'){
+  const global=await betaGlobalLimit(env,kind);
+  if(global!=='ok')return json({error:global==='limited'?'rate-limited':'rate-unavailable'},global==='limited'?429:503,headers);
+ }
+ return null;
+}
 
 export default {
  async fetch(request,env){
-  if(!testGate(request,env))return json({error:'unavailable'},403);
+  // Both modes are mutually exclusive and closed by default.
+  if(env.BETA_PUBLIC_ENABLED==='true'&&env.TEST_ENABLED==='true')return json({error:'unavailable'},403);
+  if(!testGate(request,env)&&!publicBetaGate(request,env))return json({error:'unavailable'},403);
   const url=new URL(request.url);
   if(['GET','HEAD'].includes(request.method)&&request.headers.get('Upgrade')?.toLowerCase()!=='websocket'){
    if(!String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).includes(url.origin))return json({error:'unavailable'},403);
@@ -179,13 +206,17 @@ export class Room {
 export class RateGate {
  constructor(state){this.state=state;}
  async fetch(request){
-  const kind=new URL(request.url).pathname.slice(1),limit=kind==='create'?12:kind==='socket'?60:0;
+  const kind=new URL(request.url).pathname.slice(1);
+  const limits={create:12,socket:60,'beta-create':24,'beta-socket':96};
+  const limit=limits[kind]||0;
   if(request.method!=='POST'||!limit)return new Response(null,{status:400});
   return this.state.blockConcurrencyWhile(async()=>{
    const now=Date.now(),previous=await this.state.storage.get(kind),bucket=!previous||now>=previous.until?{count:0,until:now+60000}:previous;
-   if(bucket.count>=limit)return new Response(null,{status:429});bucket.count++;await this.state.storage.put(kind,bucket);const other=await this.state.storage.get(kind==='create'?'socket':'create');await this.state.storage.setAlarm(Math.max(bucket.until,other?.until||0));
+   if(bucket.count>=limit)return new Response(null,{status:429});bucket.count++;await this.state.storage.put(kind,bucket);const keys=Object.keys(limits);
+   const records=await Promise.all(keys.filter(k=>k!==kind).map(k=>this.state.storage.get(k)));
+   await this.state.storage.setAlarm(Math.max(bucket.until,...records.map(v=>v?.until||0)));
    return new Response(null,{status:bucket.count<=limit?204:429});
   });
  }
- async alarm(){const now=Date.now();for(const kind of ['create','socket']){const bucket=await this.state.storage.get(kind);if(bucket&&bucket.until<=now)await this.state.storage.delete(kind);}const buckets=await Promise.all(['create','socket'].map(k=>this.state.storage.get(k)));const until=Math.max(...buckets.map(b=>b?.until||0));if(until>now)await this.state.storage.setAlarm(until);}
+ async alarm(){const kinds=['create','socket','beta-create','beta-socket'],now=Date.now();for(const kind of kinds){const bucket=await this.state.storage.get(kind);if(bucket&&bucket.until<=now)await this.state.storage.delete(kind);}const buckets=await Promise.all(kinds.map(k=>this.state.storage.get(k)));const until=Math.max(...buckets.map(b=>b?.until||0));if(until>now)await this.state.storage.setAlarm(until);}
 }
