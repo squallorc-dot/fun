@@ -35,3 +35,23 @@ body[data-auto-lobby] #round-details summary{cursor:pointer;min-height:24px;colo
 body[data-auto-lobby] #round-detail-text{margin:8px 0 0;font-size:.84rem;color:#e1f4f8;overflow-wrap:anywhere}
 
 #auto-entry .auto-beta-notice{margin:0 0 14px;padding:8px 11px;background:#113749;border-left:3px solid #80c3d1;border-radius:5px;font-size:.85rem;color:#c5e1e8}
+
+/* Beta consumer-facing refinements; existing IDs remain intact for RTC & QA. */
+#auto-entry{max-width:580px;border-color:#417d89;border-radius:22px;background:radial-gradient(ellipse at 90% 0%,#24566b 0%,transparent 52%),linear-gradient(145deg,#15374b,#0c2335 80%);box-shadow:0 20px 58px #0006}
+#auto-entry h1{font-size:clamp(1.55rem,3vw,2rem);letter-spacing:.035em;line-height:1.25;margin:0 0 8px}
+#auto-entry .auto-beta-notice{color:#d0ece8;border-left-color:#8bdec9;line-height:1.55;margin:14px 0 20px}
+#auto-entry label{font-weight:600;line-height:1.45}
+#auto-entry .auto-actions button{font-weight:700;border-radius:12px;padding:12px 16px;transition:background-color .15s,border-color .15s}
+#auto-entry #auto-create,#auto-entry #auto-start,#auto-entry #auto-yes{background:#15676e;border-color:#61bfb2;color:#f5ffff}
+#auto-entry #auto-create:hover,#auto-entry #auto-start:hover,#auto-entry #auto-yes:hover{background:#207b81}
+#auto-entry #auto-room-code{font-size:1.55rem;letter-spacing:.2em;text-align:center;font-variant-numeric:tabular-nums;color:#e1fff7}
+#auto-entry #auto-qr{width:min(100%,255px);padding:8px;border:6px solid #f1faf7;border-radius:12px;box-shadow:0 8px 24px #0005}
+#auto-entry #auto-link{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#auto-entry #auto-status{font-size:.94rem;line-height:1.6;color:#ffe0bd}
+body[data-auto-lobby].auto-connected #lobby{border-radius:15px;border-color:#527c8b;background:linear-gradient(160deg,#15384b,#102838)}
+body[data-auto-lobby].auto-connected #arena{border-radius:15px;border-color:#527c8b}
+body[data-auto-lobby].auto-connected #room-name{font-size:1.14rem}
+body[data-auto-lobby].auto-connected #challenge-link{font-size:.86rem}
+@media(max-width:640px){#auto-entry{border-radius:16px;padding:18px}#auto-entry .auto-actions{gap:8px}#auto-entry #auto-qr{width:min(100%,230px)}}
+
+#auto-diagnostic:not([hidden]){border:1px solid #527c8b;border-radius:10px;padding:10px 12px;background:#0b2434;color:#cfebe8;font:600 .88rem/1.5 ui-monospace,monospace;overflow-wrap:anywhere}

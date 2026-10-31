@@ -6,7 +6,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='8f01c110b88ccde5fbff964381607f3b10cf95e2';
+const SOURCE_SHA='4816a55a06c96f0e4bca9bb24857c9b36de1fbe4';
 const REPO='squallorc-dot/fun';
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;
@@ -36,7 +36,7 @@ try{
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,2,'exactly two release-only commits expected');
+ assert.equal(compare.ahead_by,3,'exactly three release-only commits expected');
  assert((compare.files||[]).length>0,'missing release files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');

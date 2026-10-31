@@ -13,6 +13,23 @@ try{
    const guest=await browser.newPage({viewport});await guest.goto(invite);assert.equal(await guest.evaluate(()=>location.hash),'');if(process.env.BIO_WORKER_ASSETS==='1'){assert(await guest.locator('#auto-wait').isVisible(),'configured candidate starts joining automatically');assert(await guest.locator('#auto-share-actions').isHidden(),'guest does not share host invitation');}else assert(await guest.locator('#auto-form').isVisible());assert(!(await guest.locator('#auto-code-label').isVisible()));assert(!(await guest.locator('#connection').isVisible()));await guest.close();
   }
   if(locale==='zh'&&viewport.width===1280){
+   // Real-device regression: victory and returning to lobby must not mute music.
+   // Count media pauses directly, without autoplay or streaming any copyrighted track.
+   const musicTransitions=await page.evaluate(()=>{
+    const old=HTMLMediaElement.prototype.pause;let calls=0;
+    HTMLMediaElement.prototype.pause=function(){calls++;};
+    try{
+     const s=BioFriendsApp.session;
+     s.phase='playing';s.changed();calls=0;
+     s.phase='finished';s.changed();const finishedCalls=calls;
+     s.phase='lobby';s.changed();const lobbyCalls=calls;
+     s.phase='paused';s.changed();const pausedCalls=calls;
+     return {finishedCalls,lobbyCalls,pausedCalls};
+    }finally{HTMLMediaElement.prototype.pause=old;}
+   });
+   assert.equal(musicTransitions.finishedCalls,0,'finishing a game leaves OST uninterrupted');
+   assert.equal(musicTransitions.lobbyCalls,0,'returning to lobby leaves OST uninterrupted');
+   assert(musicTransitions.pausedCalls>0,'actual pause still suspends OST');
    // Synthetic finished round tests display only; real RTC game tests remain separate.
    const view=await page.evaluate(()=>{
     const s=BioFriendsApp.session;
