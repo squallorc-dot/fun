@@ -2,7 +2,7 @@
 // Offline deterministic fake peers, no actual IP, credential, SDP or external network.
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const root={BioG05Network:{MODES:['pong'],TAG:'test-v1'},BioArcadeSession:{simulation:()=>({})}};
+const root={BioG05Network:{MODES:['pong'],TAG:'test-v1'},BioArcadeSession:{simulation:()=>({clear(){}})}};
 const peers=[];let serial=0;const pending=new Map();
 class FakePeer {
  constructor(config){this.configuration=structuredClone(config);this.connectionState='new';this.iceConnectionState='new';this.iceGatheringState='gathering';this.localDescription={sdp:'v=0\r\na=candidate:1 1 udp 1 host.local 1234 typ host\r\n'};peers.push(this);}
