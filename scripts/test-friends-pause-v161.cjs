@@ -24,4 +24,11 @@ now+=600;s.update(1/60);assert.equal(s.phase,'paused','true input silence still 
 assert.equal(s.pauseReason,'input-timeout');
 const diag=s.link.diagnose();assert.equal(diag.ice,'none');assert.equal(diag.control,'none');
 assert(!('sdp' in diag)&&!('ip' in diag)&&!('token' in diag),'diagnostics have no secrets');
+s.link.pc={connectionState:'failed',iceConnectionState:'failed',iceGatheringState:'complete',localDescription:{sdp:'v=0\\r\\na=candidate:1 1 udp 100 192.0.2.1 55000 typ host\\r\\na=candidate:2 1 udp 100 198.51.100.1 55001 typ srflx\\r\\n'},close(){}};
+s.link.close('disconnected');
+const failure=s.link.diagnose();
+assert.equal(failure.connection,'failed');assert.equal(failure.ice,'failed');
+assert.equal(failure.candidates.host,1);assert.equal(failure.candidates.srflx,1);assert.equal(failure.candidates.relay,0);
+assert(!JSON.stringify(failure).includes('192.0.2.1')&&!JSON.stringify(failure).includes('198.51.100.1'),'never expose ICE addresses after failure');
+
 console.log('PASS pause/resume idempotence, both vote orders, 2.5s safe input timeout and private diagnostics');
