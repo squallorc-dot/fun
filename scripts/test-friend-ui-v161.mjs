@@ -24,6 +24,7 @@ try{
     return {lobby:getComputedStyle(document.querySelector('#lobby')).display,
       arena:document.querySelector('#arena').hidden,
       banner:message.hidden?null:message.textContent,
+      bannerVisible:getComputedStyle(message).display!=='none',
       replay:document.querySelector('#rematch').textContent,
       pause:getComputedStyle(document.querySelector('#pause')).display,
       dock:getComputedStyle(document.querySelector('#touch-controls')).display,
@@ -32,6 +33,7 @@ try{
    assert.equal(view.lobby,'none','finished round collapses setup lobby');
    assert.equal(view.arena,false,'finished arena stays visible for result');
    assert.match(view.banner,/7 : 3/,'result shown alongside playfield');
+   assert.equal(view.bannerVisible,true,'result is actually visible after round');
    assert.match(view.replay,/回大廳/,'replay clearly requires new readiness');
    assert.equal(view.pause,'none','do not show disabled pause after a finished match');
    assert.equal(view.dock,'none','finished screen removes touch-control dock');

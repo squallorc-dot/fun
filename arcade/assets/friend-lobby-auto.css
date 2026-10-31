@@ -17,7 +17,7 @@ body[data-auto-lobby].auto-connected #arena>p{font-size:.85rem;color:#b2d4d8;mar
 body[data-auto-lobby].auto-connected.playing #lobby{display:none!important}
 body[data-auto-lobby].auto-connected #round-message:not([hidden]){padding:12px 14px;margin:0 0 8px;border:1px solid #77b7c8;border-radius:10px;background:#16465a;color:#e6fcff;font-size:1rem;font-weight:650;overflow-wrap:anywhere}
 body[data-auto-lobby].round-finished #touch-controls{display:none!important}
-body[data-auto-lobby].round-finished #arena>p{display:none}
+body[data-auto-lobby].round-finished #game-instructions{display:none}
 body[data-auto-lobby].round-finished #pause{display:none}
 #auto-entry{margin:clamp(12px,4vh,48px) auto 0}
 @media (max-width:640px){
