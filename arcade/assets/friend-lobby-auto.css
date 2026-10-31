@@ -53,3 +53,5 @@ body[data-auto-lobby].auto-connected #arena{border-radius:15px;border-color:#527
 body[data-auto-lobby].auto-connected #room-name{font-size:1.14rem}
 body[data-auto-lobby].auto-connected #challenge-link{font-size:.86rem}
 @media(max-width:640px){#auto-entry{border-radius:16px;padding:18px}#auto-entry .auto-actions{gap:8px}#auto-entry #auto-qr{width:min(100%,230px)}}
+
+#auto-diagnostic:not([hidden]){border:1px solid #527c8b;border-radius:10px;padding:10px 12px;background:#0b2434;color:#cfebe8;font:600 .88rem/1.5 ui-monospace,monospace;overflow-wrap:anywhere}
