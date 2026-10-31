@@ -10,4 +10,5 @@ for(const path of ['/arcade/friends/index.html','/arcade/assets/peer-link.js','/
 for(const path of ['/signaling/worker/worker.mjs','/arcade/qa/friends-v16/index.html','/.git/config','/assets/private.js']){
  const response=await fetch(origin+path,{headers:{'CF-Connecting-IP':'192.0.2.1'}});assert.equal(response.status,404,path);await response.body?.cancel();
 }
+const challengeScript=await fetch(origin+'/arcade/assets/challenge-ui.js',{headers:{'CF-Connecting-IP':'192.0.2.1'}});const script=await challengeScript.text();assert(script.includes('../friends/index.html'));assert(!script.includes('../friends-v16/index.html'),'challenge returns to candidate lobby');
 console.log('PASS local Workerd run_worker_first: protected static asset types, same-origin endpoint and private paths');

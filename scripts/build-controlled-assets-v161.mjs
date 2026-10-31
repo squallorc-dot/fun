@@ -8,11 +8,12 @@ export async function build(){
  async function copy(source,target=source){
   if(!staticPath('/'+target))return;
   let data=await readFile(join(root,source));
+  if(target==='arcade/assets/challenge-ui.js')data=Buffer.from(data.toString().replaceAll('../friends-v16/index.html','../friends/index.html'));
   if(target.endsWith('.html')){
    let html=data.toString();
    // Candidate pages never load production tracking. CSP also blocks external requests.
    html=html.replace(/<script\b[^>]*>[\s\S]*?googletagmanager[\s\S]*?<\/script>/gi,'').replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi,'');
-   if(source.includes('/qa/challenge-'))html=html.replaceAll('../../assets/','../assets/');
+   if(source.includes('/qa/challenge-'))html=html.replaceAll('../../assets/','../assets/').replaceAll('../friends-v16/index.html','../friends/index.html');
    if(target==='arcade/friends/index.html')html=html.replace('href="../../zh/index.html"','href="../zh/index.html"');
    html=html.replaceAll('../qa/friends-v16/index.html','../friends/index.html');
    data=Buffer.from(html);
