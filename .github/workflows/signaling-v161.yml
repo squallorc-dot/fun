@@ -16,6 +16,7 @@ on:
       - 'scripts/test-signaling-v161.mjs'
       - 'scripts/test-friends-pause-v161.cjs'
       - 'scripts/smoke-signaling-session-v161.mjs'
+      - 'scripts/smoke-focus-resume-v161.mjs'
       - 'arcade/assets/friend-session.js'
       - 'arcade/assets/peer-link.js'
       - 'scripts/test-signaling-room-v161.mjs'
@@ -72,6 +73,7 @@ jobs:
           BIO_WORKER_ASSETS=1 node scripts/test-friend-ui-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
           BIO_WORKER_ASSETS=1 node scripts/smoke-signaling-session-v161.mjs
+          BIO_WORKER_ASSETS=1 node scripts/smoke-focus-resume-v161.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g01-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g02-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g06-friends-6c.mjs
