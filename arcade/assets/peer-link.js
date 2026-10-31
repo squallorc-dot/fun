@@ -1,6 +1,6 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
-const V=1,MAX_SDP=120000,MAX_PACKET=32768;
+const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,HEARTBEAT_SILENCE_MS=12000;
 const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,names)=>object(v)&&Object.keys(v).every(k=>names.includes(k));
 function description(text,kind){
  if(typeof text!=='string'||text.length<30||text.length>MAX_SDP)throw Error('description-size');
@@ -11,13 +11,13 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{}}={}){this.onState=onState;this.onMessage=onMessage;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.pendingPings=new Map();this.deadlines={control:0,input:0};}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   // Capture safe, address-free RTC states before closing an unsuccessful pairing.
   if(this.pc)this.lastDiagnostic=this.diagnose();
-  this.generation++;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.generation++;this.disconnectTicket=null;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
   this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
@@ -26,7 +26,19 @@ class Link{
   this.close('idle');this.resetStats();this.lastDiagnostic=null;this.role=role;this.sid=sid;this.status('pairing');
   const generation=this.generation,pc=new RTCPeerConnection({iceServers:[]});this.pc=pc;
   pc.ondatachannel=e=>{if(generation===this.generation)this.attach(e.channel);else e.channel.close();};
-  pc.onconnectionstatechange=()=>{if(generation!==this.generation)return;if(['failed','disconnected','closed'].includes(pc.connectionState))this.close('disconnected');};
+  pc.onconnectionstatechange=()=>{
+   if(generation!==this.generation||pc!==this.pc)return;
+   const state=pc.connectionState;
+   if(state==='failed'||state==='closed'){this.close('disconnected');return;}
+   if(state==='disconnected'){
+    // Mobile Wi-Fi roaming and short screen suspension may briefly break ICE.
+    // Keep the same round only while the native transport can recover.
+    if(!this.disconnectTicket){
+     const ticket={};this.disconnectTicket=ticket;
+     this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&pc.connectionState==='disconnected')this.close('disconnected');},DISCONNECT_GRACE_MS);
+    }
+   }else this.disconnectTicket=null;
+  };
   if(role==='host'){this.attach(pc.createDataChannel('control',{ordered:true}));this.attach(pc.createDataChannel('input',{ordered:false,maxRetransmits:0}));}
   this.later(()=>{if(this.state==='pairing')this.close('timeout');},this.pairingTimeout);
   return {pc,generation};
@@ -80,9 +92,16 @@ class Link{
   const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));if(delay){const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);this.deadlines[channel]=due;this.later(transmit,Math.max(0,due-performance.now()));}else transmit();return true;
  }
  heartbeat(){
-  const id=++this.pingId||1;this.pingId=id;this.pendingPings.set(id,performance.now());this.send('ping',{id});
-  for(const [key,at]of this.pendingPings)if(performance.now()-at>10000)this.pendingPings.delete(key);
-  if(performance.now()-this.lastReceived>5000){this.close('timeout');return;}
+  if(this.state!=='connected')return;
+  const now=performance.now();
+  // A mobile tab's timers may stop for many seconds while the network is
+  // still connected. A throttled/hidden timer is not evidence of peer loss.
+  const throttled=now-this.lastHeartbeatAt>3000;
+  this.lastHeartbeatAt=now;
+  if(throttled||(typeof document!=='undefined'&&document.visibilityState==='hidden'))this.lastReceived=now;
+  const id=++this.pingId||1;this.pingId=id;this.pendingPings.set(id,now);this.send('ping',{id});
+  for(const [key,at]of this.pendingPings)if(now-at>10000)this.pendingPings.delete(key);
+  if(now-this.lastReceived>HEARTBEAT_SILENCE_MS){this.close('timeout');return;}
   this.later(()=>this.heartbeat(),500);
  }
  diagnose(){
