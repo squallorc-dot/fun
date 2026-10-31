@@ -87,14 +87,17 @@ class Link{
  }
  diagnose(){
   const pc=this.pc;
-  if(!pc)return this.lastDiagnostic?{...this.lastDiagnostic,state:this.state}:{state:this.state,connection:'none',ice:'none',gathering:'none',control:'none',input:'none',candidates:{host:0,srflx:0,relay:0}};
+  if(!pc)return this.lastDiagnostic?{...this.lastDiagnostic,state:this.state}:{state:this.state,connection:'none',ice:'none',gathering:'none',control:'none',input:'none',candidates:{host:0,srflx:0,relay:0},remoteCandidates:{host:0,srflx:0,relay:0}};
   // Only ICE candidate type COUNTS are retained. Never expose SDP, addresses or credentials.
-  const candidates={host:0,srflx:0,relay:0};
-  for(const line of (pc.localDescription?.sdp||'').split(/\r?\n/)){
-   const match=/^a=candidate:[^\r\n]*\btyp (host|srflx|relay)\b/.exec(line);
-   if(match)candidates[match[1]]++;
-  }
-  return {state:this.state,connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates};
+  const count=sdp=>{
+   const summary={host:0,srflx:0,relay:0};
+   for(const line of (sdp||'').split(/\r?\n/)){
+    const match=/^a=candidate:[^\r\n]*\btyp (host|srflx|relay)\b/.exec(line);
+    if(match)summary[match[1]]++;
+   }
+   return summary;
+  };
+  return {state:this.state,connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
  }
  measure(){const a=this.stats.rtts;return {state:this.state,sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
