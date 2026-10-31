@@ -20,7 +20,7 @@ for(const lang of ['zh','ja']){
  assert(bridge.includes("type:'ready'"),'G02 readiness handshake missing for '+lang);
  assert(bridge.includes("dispatchEvent(new Event('change'"),'G02 selected difficulty not applied for '+lang);
  const page=read(`arcade/${lang}/index.html`);
- assert(page.includes(`../qa/friends-v16/index.html?lang=${lang}`),`${lang} public arcade lacks the friends entrance`);
+ assert(page.includes(`https://bio-city-v161-signaling.squall-orc.workers.dev/arcade/friends/?lang=${lang}`),`${lang} public arcade lacks the exact public Beta friends entrance`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices','stage-audio-status','stage-audio-play'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
  assert(page.includes('session-runtime.js')&&page.indexOf('session-runtime.js')<page.indexOf('hub.js'),lang+' shared session runtime order');
