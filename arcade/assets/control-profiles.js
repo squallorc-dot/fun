@@ -97,7 +97,7 @@
    // and real phones keep their controls regardless of window dimensions.
    const touch=win.matchMedia('(any-pointer:coarse)').matches;
    const mouse=win.matchMedia('(hover:hover) and (pointer:fine)').matches;
-   const visible=touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two';
+   const visible=!doc.body?.classList.contains('round-finished')&&(touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two');
    element.style.setProperty('display',visible?'block':'none','important');
    element.dataset.profile=prefs.profile;element.dataset.joystick=prefs.joystick;
    if(!visible){reset();plan={reservedLeft:0,reservedRight:0,height:0,compact:false,visible:false};onLayout(plan);return;}
