@@ -312,6 +312,28 @@ try{
    }
   await page.close();
  }
+ // Short-height iPhone-style portrait: opponent is above the board, keys stay accessible.
+ const shortPhone=await browser.newPage({viewport:{width:390,height:664},isMobile:true,hasTouch:true});
+ try{
+  await shortPhone.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const shortLayout=await shortPhone.evaluate(()=>{
+   const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+   s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
+     drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   const r=id=>document.getElementById(id).getBoundingClientRect();
+   return {peerAbove:r('opponent-dock').bottom<=r('viewport').top+2,
+     ownAboveControls:r('game-canvas').bottom<=r('touch-controls').top+3,
+     keysVisible:r('touch-controls').top<innerHeight-80,
+     peerShown:!document.getElementById('opponent-preview').hidden,
+     overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(shortLayout.peerShown&&shortLayout.peerAbove&&shortLayout.ownAboveControls,
+    'short phone portrait has non-overlapping opponent / main stage / controls');
+  assert(shortLayout.keysVisible&&!shortLayout.overflow,
+    'short phone portrait controls remain in view without sideways overflow');
+ }finally{await shortPhone.close();}
  // Real touch-capable landscape viewport: orientation and screen-space regression.
  const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
  try{
