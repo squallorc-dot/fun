@@ -24,7 +24,7 @@ try{
    const diagnostic=await page.evaluate(()=>{
     const disclosure=document.querySelector('#auto-tech-details'),line=document.querySelector('#auto-tech-note');
     disclosure.hidden=false;line.textContent='ICE: checking · local 1/1/0';disclosure.open=false;
-    const hidden=getComputedStyle(line).display==='none'||line.getClientRects().length===0;
+    const hidden=getComputedStyle(line).display==='none';
     disclosure.hidden=true;line.textContent='';return hidden;
    });
    assert(diagnostic,'technical candidate numbers are collapsed behind disclosure');
