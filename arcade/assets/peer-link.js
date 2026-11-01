@@ -33,7 +33,7 @@ class Link{
   pc.onconnectionstatechange=()=>{
    if(generation!==this.generation||pc!==this.pc)return;
    const state=pc.connectionState;
-   if(state==='closed')return;
+   if(state==='closed'){if(this.transport!=='relay'&&this.state==='connected')this.close('disconnected');return;}
    if(state==='disconnected'||state==='failed'){
     // Transient ICE state is not a reason to revoke a live Beta room.
     // Signaling attempts renegotiation, then the authenticated WS relay.
@@ -110,7 +110,19 @@ class Link{
  useRelay(sid,transmit){
   if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function')throw Error('relay-invalid');
   if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;if(this.state!=='connected')this.status('connected');return;}
-  this.close('idle');this.resetStats();this.sid=sid;this.transport='relay';this.relaySend=transmit;this.status('connected');this.heartbeat();
+  const preserve=this.state==='connected';
+  if(preserve){
+   // Transport handoff must not reset an active game round through idle.
+   this.generation++;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();
+   for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+   const pc=this.pc;this.pc=null;
+   for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}
+   this.channels={};try{pc?.close();}catch{}
+   this.resetStats();
+  }else{this.close('idle');this.resetStats();}
+  this.sid=sid;this.transport='relay';this.relaySend=transmit;
+  if(!preserve)this.status('connected');
+  this.heartbeat();
  }
  receiveRelay(channel,payload){if(this.transport!=='relay'||this.state!=='connected'||!['control','input'].includes(channel))return;this.receive(channel,payload);}
  async restartOffer(){
