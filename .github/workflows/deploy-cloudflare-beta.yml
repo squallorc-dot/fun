@@ -1,0 +1,73 @@
+name: Deploy isolated Bio-City Cloudflare Beta
+on:
+  push:
+    branches: [beta/bio-city-v161-relay-verified-20261101]
+    paths:
+      - '.github/workflows/deploy-cloudflare-beta.yml'
+      - 'signaling/worker/wrangler.beta.public.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: bio-city-cloudflare-beta
+  cancel-in-progress: false
+
+jobs:
+  deploy-beta:
+    runs-on: ubuntu-24.04
+    environment: cloudflare-beta
+    timeout-minutes: 25
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+      BETA_ORIGIN: https://bio-city-v161-signaling.squall-orc.workers.dev
+      SOURCE_SHA: aab46e2c1dcc76ee9ce28ba18838f20057c68f65
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce verified snapshot, separate branch and Cloudflare credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'beta/bio-city-v161-relay-verified-20261101'
+          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Cloudflare API token not connected; no deploy'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Cloudflare account ID not connected; no deploy'; exit 1; }
+          for RUN in 41306222769 41306222756; do
+            curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/$RUN" |
+              jq -e --arg sha "$SOURCE_SHA" '.conclusion=="success" and .head_sha==$sha' >/dev/null ||
+              { echo "Verification $RUN not successful for pinned SHA; no deploy"; exit 1; }
+          done
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare private candidate assets and Wrangler
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock wrangler@4.156.0
+          node scripts/build-controlled-assets-v161.mjs
+          node scripts/test-public-beta-config-v161.mjs
+          grep -q 'BETA_PUBLIC_ENABLED = "true"' signaling/worker/wrangler.beta.public.toml
+          grep -q 'workers_dev = true' signaling/worker/wrangler.beta.public.toml
+      - name: Verify existing Worker secret and dry-run bundle before touching Beta
+        run: |
+          set -euo pipefail
+          npx wrangler secret list --config signaling/worker/wrangler.beta.public.toml |
+            jq -e 'any(.[]; .name=="RATE_SECRET")' >/dev/null ||
+            { echo 'Cloudflare RATE_SECRET missing; no deploy'; exit 1; }
+          npx wrangler deploy --config signaling/worker/wrangler.beta.public.toml --dry-run
+      - name: Deploy existing Cloudflare Beta Worker only
+        run: npx wrangler deploy --config signaling/worker/wrangler.beta.public.toml
+      - name: Confirm controlled Beta HTTPS endpoint responds
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 4 --retry-delay 2 \
+            "$BETA_ORIGIN/arcade/friends/index.html" -o /tmp/beta-check.html
+          grep -q 'bio-signaling-endpoint' /tmp/beta-check.html
+          echo 'Cloudflare Beta candidate deployed; real-device multiplayer validation remains required.'
