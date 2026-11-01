@@ -140,3 +140,40 @@ body[data-auto-lobby].auto-connected.playing:not(.round-finished) > details.pane
 #help-panel p{margin:6px 0 0}
 body[data-auto-lobby].auto-connected.playing:not(.round-finished) #help-panel{position:fixed;top:64px;right:10px}
 body[data-auto-lobby].round-finished #rematch{background:#12686d;border:1px solid #8ae5dc;color:#f4ffff;font-weight:750}
+
+/* v1.6.1 player-first character gallery: approved brand portraits, not tiny sprites. */
+@media(min-width:720px){#auto-entry{max-width:1040px;width:calc(100% - 24px);margin:clamp(12px,3vh,36px) auto;padding:clamp(20px,2.5vw,32px)}#auto-entry #auto-home{width:min(100%,720px);margin-inline:auto}}
+#auto-entry #auto-form{width:100%;min-width:0}
+#auto-entry #auto-form>label:has(#auto-hero){font-size:.82rem;color:#bddcde;gap:8px;margin-bottom:0}
+#auto-entry #auto-form>label:has(#auto-hero) select{min-height:37px;font-size:.82rem;opacity:.85}
+#auto-entry .auto-hero-choices{grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(9px,1.5vw,16px);margin:8px 0 12px}
+#auto-entry .auto-hero-choice{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-width:0;min-height:clamp(160px,18vw,205px);padding:10px 8px 8px;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#1e697264,#0b283b 65%);border:1px solid #4b7a8b;border-radius:15px;transition:transform .16s,border-color .16s,box-shadow .16s}
+#auto-entry .auto-hero-choice img{display:block;width:100%;height:clamp(118px,14.5vw,160px);object-fit:contain;object-position:center bottom;filter:drop-shadow(0 5px 8px #0007);pointer-events:none}
+#auto-entry .auto-hero-choice span{display:block;font-size:clamp(.75rem,1.15vw,.95rem);font-weight:700;line-height:1.35;text-align:center;overflow-wrap:anywhere;min-height:2em;margin-top:6px}
+#auto-entry .auto-hero-choice:hover,#auto-entry .auto-hero-choice:focus-visible{transform:translateY(-3px);border-color:#c7faff;box-shadow:0 6px 25px #35d5e33d;outline:2px solid transparent}
+#auto-entry .auto-hero-choice[aria-pressed=true]{border:2px solid #8df9dd;background:radial-gradient(ellipse at 50% 100%,#276f75,#133b4b 80%);box-shadow:0 0 0 2px #a3f9e820,0 0 24px #46e9d055}
+#auto-entry .auto-hero-choice canvas:not([hidden]){width:96px;height:120px;object-fit:contain}
+#auto-entry .auto-hero-card{display:grid;grid-template-columns:minmax(190px,35%) minmax(0,1fr);align-items:center;min-height:275px;padding:14px 22px;gap:clamp(20px,3vw,36px);margin:8px 0 18px;background:radial-gradient(ellipse at 15% 90%,#306a7660,transparent 50%),linear-gradient(115deg,#174258,#0c283d);overflow:hidden}
+#auto-entry .auto-portrait-wrap{height:265px;min-width:0;display:flex;align-items:center;justify-content:center}
+#auto-entry .auto-portrait-wrap img{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 18px #0009)}
+#auto-entry .auto-portrait-wrap canvas:not([hidden]){width:100%;height:100%;object-fit:contain}
+#auto-entry .auto-hero-card .auto-hero-copy{display:flex;flex-direction:column;gap:9px;min-width:0}
+#auto-entry .auto-hero-card .auto-hero-copy strong{font-size:clamp(1.45rem,3vw,2.1rem)}
+#auto-entry .auto-hero-card .auto-hero-copy #auto-hero-description{font-size:clamp(.89rem,1.3vw,1rem);line-height:1.65;color:#e7f5f8}
+#auto-entry .auto-hero-card .auto-player-tag{color:#8df1db;font-size:.82rem;border-top:1px solid #5a8996;padding-top:9px;margin-top:6px}
+body[data-auto-lobby] .auto-avatar img{height:110px;width:110px;flex:0 0 110px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 5px 10px #0008)}
+body[data-auto-lobby] .auto-avatar canvas:not([hidden]){height:110px;width:110px;flex:0 0 110px}
+@media(min-width:700px) and (max-width:1050px){#auto-entry .auto-hero-choices{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:460px) and (max-width:699px){#auto-entry .auto-hero-choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:459px){#auto-entry .auto-hero-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#auto-entry .auto-hero-choice{min-height:156px}#auto-entry .auto-hero-choice img{height:125px}}
+@media(max-width:640px){#auto-entry .auto-hero-card{grid-template-columns:minmax(115px,38%) minmax(0,1fr);min-height:195px;gap:10px;padding:10px 12px}#auto-entry .auto-portrait-wrap{height:190px}#auto-entry .auto-hero-card .auto-hero-copy strong{font-size:1.2rem}body[data-auto-lobby] .auto-avatar img,body[data-auto-lobby] .auto-avatar canvas:not([hidden]){width:72px;height:82px;flex-basis:72px}}
+/* Game-first desktop: retain correct canvas ratio while using side margins as
+   game-world framing, rather than distorting G06 race physics or camera. */
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport[data-game=g06]{background:radial-gradient(ellipse at 50% 30%,#1f5665 0%,#0a293c 46%,#04121e 90%)}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport[data-game=g06]:before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 48px,#5ab6cd0d 49px,transparent 50px),linear-gradient(90deg,#3b899621,transparent 35%,transparent 65%,#3b899621);z-index:0}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport[data-game=g06] canvas{z-index:1;position:relative;filter:drop-shadow(0 0 20px #6de9ed2a)}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{display:flex;align-items:center;gap:8px;max-width:100%;padding:4px 8px;background:#092537c8;border-bottom:1px solid #2f6d80}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #side{flex:0 1 auto;font-size:.85rem;white-space:nowrap}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score{flex:1 1 250px;font-size:clamp(.77rem,1.25vw,1rem);min-width:120px}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #help{background:#16556a;border:1px solid #71c7ce;color:#e4fffa}
+@media(max-width:720px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,auto);gap:4px}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #side{grid-column:1/-1}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score{grid-column:1/-1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions button{padding:4px 6px;font-size:.74rem;min-height:34px}}

@@ -18,10 +18,15 @@ try{
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
   if(locale==='zh'&&viewport.width===390){
    await page.locator('#auto-create').click();
-   assert(await page.locator('#auto-hero-art').isVisible(),'selected guardian artwork has a visible canvas');
+   assert(await page.locator('#auto-hero-portrait').isVisible(),'selected guardian official PNG is shown prominently');
+    assert.match(await page.locator('#auto-hero-portrait').getAttribute('src'),/images\/funai-care-burner-sister\.png$/,'portrait loads the approved original character artwork');
+    assert(await page.locator('#auto-hero-description').isVisible(),'character description appears in the large portrait card');
    assert.equal(await page.locator('.auto-hero-choice').count(),7,'seven character cards are available');
+    assert.equal(await page.locator('.auto-hero-choice img').count(),7,'all guardians have original portrait art');
+    assert.equal(await page.locator('.auto-hero-choices').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),2,'phone cards use two readable columns');
    await page.locator('.auto-hero-choice[data-hero="3"]').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'3','hero card updates native accessible selector');
+    assert.match(await page.locator('#auto-hero-portrait').getAttribute('src'),/images\/funai-care-ye-bao-ex\.png$/,'large portrait follows chosen guardian');
    assert.equal(await page.locator('.auto-hero-choice[data-hero="3"]').getAttribute('aria-pressed'),'true','selected card is highlighted');
    assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
    assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
