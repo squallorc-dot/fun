@@ -17,7 +17,20 @@ try{
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  assert.equal(await pages[0].locator('#auto-lobby-hero-label').isVisible(),false,'hidden duplicate hero select');
   for(const expectedHero of [1,2]){await pages[0].locator('#auto-lobby-next').click();await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[0]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));}
- for(const expectedHero of [4,5]){await pages[1].locator('#auto-lobby-next').click();await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[1]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));}
+ for(const expectedHero of [4,5]){
+  await pages[1].locator('#auto-lobby-next').click();
+  try{
+   await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[1]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));
+  }catch(error){
+   // Diagnostic contains only game state and numeric hero selections, no tokens, ICE or SDP.
+   const states=await Promise.all(pages.map(p=>p.evaluate(()=>{
+    const s=BioFriendsApp.inspect().session;
+    return {phase:s.phase,role:s.role,heroes:s.config?.heroes,ack:s.configAck,link:s.link?.state,peerHello:!!s.peerHello};
+   })));
+   console.error('HERO SYNC DIAGNOSTIC '+JSON.stringify({expectedHero,states}));
+   throw error;
+  }
+ }
  await start(pages[0],pages[1],'pong');const matchPromise=complete(pages[0],pages[1],'pong');await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing');await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));const match=await matchPromise;assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
  console.log('PASS genuine RTC game survives signaling WebSocket closure: two players move, return balls and agree on result');
  await Promise.all(pages.map(p=>p.evaluate(()=>window.originalPeer=BioFriendsApp.session.link.pc)));
