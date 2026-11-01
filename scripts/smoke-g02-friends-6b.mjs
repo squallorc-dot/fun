@@ -24,6 +24,16 @@ try{
  await host.waitForFunction(()=>{const g=BioFriendsApp.inspect().match;return g&&g.p.hp<g.p.maxHp;},null,{timeout:30000});await guest.waitForFunction(()=>{const g=BioFriendsApp.inspect().match;return g&&g.p.hp<g.p.maxHp;},null,{timeout:10000});await host.evaluate(()=>window.__stopHurt());evidence.rescue='natural guest knockout and host rescue, both peers agree';evidence.damage='both players received natural enemy damage';
  fs.mkdirSync('arcade/qa/friends-v16/results',{recursive:true});fs.writeFileSync('arcade/qa/friends-v16/results/g02-rtc.json',JSON.stringify(evidence,null,2));
  await host.locator('#return').click();await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));await host.locator('#mode').selectOption('pong');await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.mode==='pong'&&BioFriendsApp.inspect().session.configAck)));
- await start(host,guest,'defense');await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:45000})));await guest.evaluate(()=>BioFriendsApp.session.link.pc.close());await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected',null,{timeout:30000})));assert(await host.evaluate(()=>!BioFriendsApp.session.adapter&&!document.querySelector('#viewport iframe')),'disconnect releases the authoritative iframe');evidence.disconnect='actual peer connection closed; both sessions disconnected and host iframe released';fs.writeFileSync('arcade/qa/friends-v16/results/g02-rtc.json',JSON.stringify(evidence,null,2));
+ await start(host,guest,'defense');await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:45000})));const disconnection=await guest.evaluate(()=>{
+   const link=BioFriendsApp.session.link,transport=link.transport;
+   if(transport==='relay'){
+    if(!window.__automatic?.close)throw Error('authenticated-relay-session-missing');
+    // Relay uses an authenticated WebSocket for data. A closed RTCPeerConnection
+    // is expected; leaving the room exercises real Worker peer-left cleanup.
+    window.__automatic.close();
+   }else if(transport==='p2p'&&link.pc){link.pc.close();}
+   else throw Error('unsupported-disconnect-transport');
+   return transport;
+  });await Promise.all([host,guest].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected',null,{timeout:30000})));assert(await host.evaluate(()=>!BioFriendsApp.session.adapter&&!document.querySelector('#viewport iframe')),'disconnect releases the authoritative iframe');evidence.disconnect=disconnection==='relay'?'actual authenticated Relay guest departure; both sessions disconnected and host iframe released':'actual P2P connection closed; both sessions disconnected and host iframe released';fs.writeFileSync('arcade/qa/friends-v16/results/g02-rtc.json',JSON.stringify(evidence,null,2));
  console.log('G02 TRUE RTC COOP PASS '+JSON.stringify(evidence));console.log('::notice::G02_RTC_EVIDENCE '+JSON.stringify(evidence));
 }catch(error){await safeFailure(app.pages,'arcade/qa/friends-v16/results/g02-failure');throw error;}finally{await app.close();}
