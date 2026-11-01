@@ -327,13 +327,14 @@ try{
    const r=id=>document.getElementById(id).getBoundingClientRect();
    return {peerAbove:r('opponent-dock').bottom<=r('viewport').top+2,
      ownAboveControls:r('game-canvas').bottom<=r('touch-controls').top+3,
+     touchVisible:getComputedStyle(document.getElementById('touch-controls')).display!=='none',
      keysVisible:r('touch-controls').top<innerHeight-80,
      peerShown:!document.getElementById('opponent-preview').hidden,
      overflow:document.documentElement.scrollWidth>innerWidth};
   });
   assert(shortLayout.peerShown&&shortLayout.peerAbove&&shortLayout.ownAboveControls,
     'short phone portrait has non-overlapping opponent / main stage / controls');
-  assert(shortLayout.keysVisible&&!shortLayout.overflow,
+  assert(shortLayout.touchVisible&&shortLayout.keysVisible&&!shortLayout.overflow,
     'short phone portrait controls remain in view without sideways overflow');
  }finally{await shortPhone.close();}
  // Real touch-capable landscape viewport: orientation and screen-space regression.
