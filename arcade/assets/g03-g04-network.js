@@ -42,11 +42,11 @@ function valid(v,game,chapter){
 function adapter(game){
  const tag=TAGS[game],mode=MODES[game][0];
  class Adapter{
-  constructor({mode:chosen,hero=0,remoteHero=3,host,locale='zh',chapter=1,difficulty='normal',finish=()=>{},sfx=()=>{}}){
+  constructor({mode:chosen,hero=0,remoteHero=3,host,locale='zh',chapter=1,difficulty='normal',finish=()=>{},sfx=()=>{},testMode=false}){
    if(chosen!==mode||!int(chapter,5)||chapter<1||!['normal','hard','expert'].includes(difficulty))throw Error('dual-config');
    this.host=!!host;this.chapter=chapter;this.mode=mode;this.finishedBy=null;this.lastTick=-1;this.tick=0;this.corrections=0;
    this.players=[null,null];this.games=[hero,remoteHero].map((selected,i)=>{
-    const env={hero:selected,chapter,difficulty,testMode:false,challengeSeed:game==='g03'?713+chapter*137:undefined,
+    const env={hero:selected,chapter,difficulty,testMode:!!testMode,challengeSeed:game==='g03'?713+chapter*137:undefined,
      I:{hero:['Burner','MJ','Moo','Ye Bao','Jelly','Veggie','Oracle']},
      sfx:(...v)=>{if(this.host&&i===0)sfx(...v);},
      finish:(won,points,note)=>{
