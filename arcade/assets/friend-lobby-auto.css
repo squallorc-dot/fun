@@ -450,28 +450,83 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
 .dual-result-winner{border-color:#8bedcf;background:#144241}
 @media(max-width:520px){.dual-result-board{padding:12px}.dual-result-card{padding:10px}.dual-result-cards{gap:7px}}
 
-/* Phone dual boards: own playfield first; peer stays outside the main canvas sizing. */
-#viewport #opponent-preview,#viewport #opponent-show{display:none!important}
+/* G03/G04 phone portrait: peer ribbon BEFORE the own playfield.
+   Always reserve the same ribbon height when collapsed, keeping touch keys still. */
+#opponent-dock[hidden],#opponent-preview[hidden],#opponent-show[hidden]{display:none!important}
+#opponent-dock{display:none}
+@media (max-width:700px) and (orientation:portrait){
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g03"] #opponent-dock:not([hidden]),
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g04"] #opponent-dock:not([hidden]){
+  position:relative;z-index:2;display:flex;flex:0 0 clamp(85px,11.5dvh,105px);
+  box-sizing:border-box;width:100%;height:clamp(85px,11.5dvh,105px);
+  padding:3px 5px;margin:0 0 3px;min-height:0;overflow:hidden;
+ }
+ #opponent-dock #opponent-preview:not([hidden]){
+  display:flex;align-items:center;gap:10px;box-sizing:border-box;
+  width:100%;height:100%;padding:4px 8px;
+  border:1px solid #5b9da9;border-radius:10px;background:linear-gradient(110deg,#153d4f,#082337);
+  box-shadow:0 2px 8px #0005;overflow:hidden;
+ }
+ #opponent-dock #opponent-canvas{
+  display:block;flex:0 0 auto;width:auto;height:calc(100% - 4px);max-width:37%;
+  aspect-ratio:4/3;object-fit:contain;border-radius:5px;
+  background:#061927;pointer-events:none;
+ }
+ #opponent-dock .opponent-caption{
+  display:flex;flex:1 1 auto;min-width:0;flex-direction:column;
+  align-items:flex-start;justify-content:center;gap:7px;
+  font-size:clamp(11px,3.2vw,14px);font-weight:700;color:#e3f9fb;
+ }
+ #opponent-dock .opponent-actions{display:flex;gap:5px}
+ #opponent-dock .opponent-actions button{
+  min-height:32px!important;min-width:55px;padding:4px 9px!important;
+  border:1px solid #79adbc;border-radius:7px;background:#21485d;color:#f0ffff;
+  font-size:12px!important;font-weight:700;
+ }
+ #opponent-dock #opponent-show:not([hidden]){
+  display:flex;align-items:center;justify-content:flex-start;
+  box-sizing:border-box;width:100%;height:100%;min-height:44px;
+  padding:10px 16px;border:1px dashed #579cae;border-radius:10px;
+  background:#102f42;color:#d9f8fb;font-size:13px;font-weight:700;
+ }
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g03"] #viewport,
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g04"] #viewport{
+  max-height:max(110px,calc(100dvh - 397px)); /* Reserve header, peer ribbon and key zone */
+  overflow:hidden;
+ }
+ #opponent-dock button:focus-visible{outline:2px solid #a5ffed;outline-offset:2px}
+}
+@media (max-width:700px) and (orientation:portrait) and (max-height:660px){
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g03"] #opponent-dock:not([hidden]),
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g04"] #opponent-dock:not([hidden]){
+  flex-basis:78px;height:78px;
+ }
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g03"] #touch-controls,
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g04"] #touch-controls{
+  min-height:150px!important;
+ }
+}
+/* Touch landscape remains compact: no additional ribbon height is consumed.
+   Preserve the existing floating preview in this limited-height orientation. */
+@media (max-width:700px) and (orientation:landscape), (pointer:coarse) and (orientation:landscape) and (max-height:700px){
+ body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g03"] #opponent-dock:not([hidden]),
+ body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g04"] #opponent-dock:not([hidden]){
+  position:absolute;right:7px;top:5px;z-index:8;
+  display:block;width:clamp(102px,18vw,146px);height:auto;
+  pointer-events:auto;
+ }
+ #opponent-dock #opponent-preview:not([hidden]){
+  display:block;padding:3px;border:1px solid #9bd8ea;border-radius:9px;
+  background:#061927ee;box-shadow:0 5px 17px #000b;overflow:hidden;
+ }
+ #opponent-dock .opponent-caption{display:flex;align-items:center;justify-content:space-between;gap:2px;height:25px;color:#d7f7fc;font-size:11px;font-weight:700}
+ #opponent-dock .opponent-actions{display:flex;gap:2px}
+ #opponent-dock .opponent-actions button{border:1px solid #638fa2;border-radius:5px;min-height:23px!important;min-width:28px;padding:1px 3px!important;font-size:10px!important;background:#183d50;color:#fff}
+ #opponent-dock #opponent-canvas{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;pointer-events:none}
+ #opponent-dock #opponent-show:not([hidden]){display:block;padding:5px 9px;border:1px solid #82ccd7;border-radius:9px;background:#0d3449ed;color:#edffff;font-size:12px;min-height:34px}
+}
+/* G03/G04 compact mobile toolbar, shared across orientations. */
 @media(max-width:700px), (pointer:coarse) and (max-height:700px){
- body[data-auto-lobby].auto-connected.playing #viewport #opponent-preview:not([hidden]){
-  position:absolute;z-index:8;right:8px;bottom:8px;display:block!important;
-  width:clamp(105px,30vw,158px);padding:3px;border:1px solid #9bd8ea;
-  border-radius:9px;background:#061927ee;box-shadow:0 5px 17px #000b;
-  pointer-events:auto;overflow:hidden;
- }
- body[data-auto-lobby].auto-connected.playing #viewport #opponent-preview.at-top{top:8px;bottom:auto}
- #viewport #opponent-preview .opponent-caption{display:flex;align-items:center;justify-content:space-between;gap:2px;height:25px;padding:0 2px;color:#d7f7fc;font-size:11px;font-weight:700}
- #viewport #opponent-preview .opponent-actions{display:flex;gap:2px}
- #viewport #opponent-preview .opponent-actions button{border:1px solid #638fa2;border-radius:5px;min-height:23px!important;min-width:28px;padding:1px 3px!important;font-size:10px!important;background:#183d50;color:#fff}
- #viewport #opponent-canvas{position:relative;display:block;width:100%;height:auto;aspect-ratio:4/3;max-width:none;max-height:none;object-fit:contain;pointer-events:none}
- body[data-auto-lobby].auto-connected.playing #viewport #opponent-show:not([hidden]){
-  position:absolute;right:8px;bottom:8px;z-index:8;display:block!important;
-  min-height:35px;padding:4px 9px;border-radius:9px;border:1px solid #82ccd7;
-  font-size:12px;background:#0d3449ed;color:#edffff;
- }
- body[data-auto-lobby].auto-connected.playing #viewport[data-game="g03"],
- body[data-auto-lobby].auto-connected.playing #viewport[data-game="g04"]{isolation:isolate}
- /* One compact toolbar row plus shared progress, instead of a tall three-row header. */
  body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g03"]) .game-actions,
  body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g04"]) .game-actions{
   display:grid;grid-template-columns:minmax(0,1fr) repeat(3,auto);gap:3px;padding:3px 5px;
@@ -485,5 +540,7 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
  body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g03"]) .game-actions #return,
  body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g04"]) .game-actions #return{grid-column:4;grid-row:1}
  body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g03"]) .game-actions #score,
- body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g04"]) .game-actions #score{grid-column:1/-1;grid-row:2;white-space:nowrap;min-width:0;font-size:.8rem}
+ body[data-auto-lobby].auto-connected.playing #arena:has(#viewport[data-game="g04"]) .game-actions #score{
+  grid-column:1/-1;grid-row:2;white-space:nowrap;min-width:0;font-size:.8rem;
+ }
 }
