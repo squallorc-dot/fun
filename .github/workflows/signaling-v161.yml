@@ -15,6 +15,9 @@ on:
       - 'scripts/test-friend-invite-v161.cjs'
       - 'scripts/test-signaling-v161.mjs'
       - 'scripts/test-friends-pause-v161.cjs'
+      - 'scripts/test-g03-g04-multiplayer.cjs'
+      - 'arcade/assets/g03-g04-network.js'
+      - 'arcade/assets/games-core.js'
       - 'scripts/test-peer-mobile-lifecycle-v161.cjs'
       - 'scripts/test-peer-stun-v161.cjs'
       - 'scripts/smoke-signaling-session-v161.mjs'
@@ -76,6 +79,7 @@ jobs:
           done
           node scripts/test-friend-invite-v161.cjs
           node scripts/test-friends-pause-v161.cjs
+          node scripts/test-g03-g04-multiplayer.cjs
           node scripts/test-peer-mobile-lifecycle-v161.cjs
           node scripts/test-peer-stun-v161.cjs
           node scripts/test-signaling-room-v161.mjs
