@@ -435,3 +435,17 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
 #auto-entry #auto-form .auto-picker-pane{width:100%;min-width:0;align-self:stretch}
 #auto-entry #auto-form .auto-hero-stage{width:100%;min-width:240px;max-width:100%}
 @media(max-width:350px){#auto-entry #auto-form .auto-hero-stage{min-width:0}}
+
+/* G03/G04 shared finish: two readable players on desktop and mobile. */
+.dual-result-board{margin:12px auto 16px;padding:16px;border:1px solid #4d97a0;border-radius:15px;
+ background:linear-gradient(135deg,#0e3545,#071d2f);max-width:1020px;color:#e8faff}
+.dual-result-board h3{font-size:clamp(1.05rem,2.5vw,1.35rem);margin:0 0 7px}
+.dual-result-board>p{margin:0 0 12px;color:#a7f5e6;font-weight:800}
+.dual-result-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dual-result-card{display:flex;flex-direction:column;gap:4px;min-width:0;background:#0c293b;
+ border:1px solid #406980;border-radius:11px;padding:12px 14px}
+.dual-result-card strong{font-size:.84rem;color:#b5e6ef}
+.dual-result-card b{font-size:clamp(1.5rem,4.5vw,2.1rem);font-variant-numeric:tabular-nums}
+.dual-result-card span,.dual-result-card small{color:#c0deea;font-size:.8rem}
+.dual-result-winner{border-color:#8bedcf;background:#144241}
+@media(max-width:520px){.dual-result-board{padding:12px}.dual-result-card{padding:10px}.dual-result-cards{gap:7px}}
