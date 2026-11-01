@@ -16,7 +16,7 @@ async function safe(page){
   return {loaded:true,role:s.role,phase:s.phase,epoch:s.epoch,
    game:s.config?.game,chapter:s.config?.chapter,difficulty:s.config?.difficulty,
    heroes:s.config?.heroes,ready:s.ready,configAck:s.configAck,
-   startPending:s.startPending,adapter:!!app.session.adapter,
+   startPending:s.startPending,engineFailure:s.engineFailure,adapter:!!app.session.adapter,
    playing:document.body.classList.contains('playing'),transport:app.session.link.transport,
    link:app.session.link.state,appRejected:app.session.rejected};
  });}catch{return {unavailable:true};}
