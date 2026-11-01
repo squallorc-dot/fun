@@ -79,7 +79,7 @@ try{
    assert.equal(view.arena,false,'finished arena stays visible for result');
    assert.match(view.banner,/7 : 3/,'result shown alongside playfield');
    assert.equal(view.bannerVisible,true,'result is actually visible after round');
-   assert.match(view.replay,/回大廳/,'replay clearly requires new readiness');
+   assert.match(view.replay,/再玩下一局/,'finished round offers a direct next match instead of returning to lobby');
    assert.equal(view.pause,'none','do not show disabled pause after a finished match');
    assert.equal(view.dock,'none','finished screen removes touch-control dock');
    assert.equal(view.overflow,false,'finished screen has no horizontal overflow');

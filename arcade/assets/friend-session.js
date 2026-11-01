@@ -38,7 +38,7 @@ class Session{
   if(this.role!=='host')return false;
   const previous=this.config,hasChapters=['g01','g02','g06'].includes(previous.game);
   const completed=previous.game==='g06'?Array.isArray(this.result.players)&&this.result.players.length===2&&this.result.players.every(p=>p.status==='finished'):!!this.result.win;
-  const chapter=hasChapters?Math.min(5,(previous.chapter||1)+(completed&&(previous.chapter||1)<5?1:0)):undefined;
+  const chapter=hasChapters?(completed?(previous.chapter>=5?1:(previous.chapter||1)+1):(previous.chapter||1)):undefined;
   return this.configure(previous.mode,previous.game,{...(hasChapters?{chapter,difficulty:previous.difficulty}:{ }),continuation:true});
  }
  async ready(value=true){
