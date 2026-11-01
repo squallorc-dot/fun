@@ -132,8 +132,8 @@ try{
      const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
    });
    assert(await page.locator('#opponent-preview').isVisible(),'G04 also uses live peer preview');
-   assert(await page.locator('#touch-controls [data-action="fire"]').isVisible(),'G04 shot control visible');
-   assert(await page.locator('#touch-controls [data-action="skill"]').isVisible(),'G04 recall control visible');
+   assert(await page.locator('#touch-controls [data-action="fire"]').evaluate(el=>!el.hidden&&el.textContent.trim()==='發射'),'G04 shot control matches single-player');
+   assert(await page.locator('#touch-controls [data-action="skill"]').evaluate(el=>!el.hidden&&el.textContent.trim()==='收球'),'G04 recall control matches single-player');
    await page.evaluate(()=>{const s=BioFriendsApp.session;s.adapter?.dispose?.();s.adapter=null;s.phase='lobby';document.body.classList.remove('auto-connected');s.changed();});
   }
   if(locale==='zh'&&viewport.width===1280){
