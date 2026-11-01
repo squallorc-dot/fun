@@ -56,6 +56,7 @@ try{
   await p.goto(origin+'/arcade/friends/index.html?lang=zh');
   await p.waitForFunction(()=>!!window.BioFriendsApp);
  }));
+ await Promise.all(pages.map(p=>p.waitForFunction(()=>!!window.BioG03Network&&!!window.BioG04Network,null,{timeout:12000})));
  const [host,guest]=pages;
  await host.locator('#auto-create').click();
  await host.locator('#auto-start').click();
