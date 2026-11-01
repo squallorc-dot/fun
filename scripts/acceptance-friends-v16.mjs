@@ -55,7 +55,22 @@ try{
   if(n===1){await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));await b.evaluate(()=>window.dispatchEvent(new Event('blur')));await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));report.focusTransition={noAutomaticPause:true,peers:await Promise.all([a,b].map(health))};await a.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='paused')));report.focusTransition.manualPause=true;await a.locator('#pause').click();await b.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));report.focusTransition.resumedByBoth=true;}
   const game=await complete(a,b,mode),contacts=await collect(a,mode),peers=await Promise.all([a,b].map(health));
   report.stress.push({elapsedMs:Date.now()-began,mode,game,contacts,peers});save();
-  await lobby(a,b,n%2===0);assert.deepEqual(await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation))),generations,'same peer connection throughout repeated game switches');
+  // A rematch auto-starts the SAME mode; it is not a lobby return.
+  // Exercise that genuine continuation once, including a real completed result.
+  if(n===2){
+   const previousEpoch=await a.evaluate(()=>BioFriendsApp.inspect().session.epoch);
+   await b.locator('#rematch').click();
+   await Promise.all([a,b].map(p=>p.waitForFunction(previous=>{
+    const s=BioFriendsApp.inspect().session;
+    return s.epoch===previous+1&&s.config?.continuation===true&&s.configAck&&['countdown','playing'].includes(s.phase);
+   },previousEpoch,{timeout:30000})));
+   await observe(a,mode);
+   const replay=await complete(a,b,mode),replayContacts=await collect(a,mode),replayPeers=await Promise.all([a,b].map(health));
+   report.stress.push({elapsedMs:Date.now()-began,mode,game:replay,contacts:replayContacts,peers:replayPeers,automaticRematch:true});save();
+   console.log(`STRESS REMATCH ${Math.round((Date.now()-began)/1000)}s ${mode} score=${replay.result.points.join(':')}`);
+  }
+  // Switching pong/volley requires RETURN to lobby, not the auto-rematch button.
+  await lobby(a,b,false);assert.deepEqual(await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation))),generations,'same peer connection throughout repeated game switches');
   console.log(`STRESS ${Math.round((Date.now()-began)/1000)}s ${mode} score=${game.result.points.join(':')}`);
  }
  report.stressDurationMs=Date.now()-began;
