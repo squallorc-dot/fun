@@ -4,7 +4,7 @@ import worker from '../signaling/worker/worker.mjs';
 const origin='https://candidate.workers.dev';let calls=0;
 const env={TEST_ENABLED:'true',TEST_EXPIRES_AT:String(Math.floor(Date.now()/1000)+600),TEST_ALLOWED_IPS:'192.0.2.1',ALLOWED_ORIGINS:origin,ASSETS:{async fetch(){calls++;return new Response('<meta name="bio-signaling-endpoint" content="">',{headers:{'content-type':'text/html','cache-control':'public, max-age=31536000',etag:'old'}});}}};
 const req=(path,ip='192.0.2.1',headers={})=>new Request(origin+path,{headers:{'CF-Connecting-IP':ip,...headers}});
-for(const path of ['/','/arcade/friends/','/arcade/assets/peer-link.js','/arcade/assets/worlds/g02-city.webp','/music/bio-city-awakening-theme-v2.mp3','/arcade/zh/shooter.html']){
+for(const path of ['/','/arcade/friends/','/arcade/zh/index.html','/arcade/ja/','/arcade/assets/peer-link.js','/arcade/assets/worlds/g02-city.webp','/music/bio-city-awakening-theme-v2.mp3','/arcade/zh/shooter.html']){
  const before=calls;
  for(const variant of [{...env,TEST_ENABLED:'false'},{...env,TEST_EXPIRES_AT:'1000000000'},{...env,TEST_ALLOWED_IPS:''}])assert.equal((await worker.fetch(req(path),variant)).status,403);
  assert.equal((await worker.fetch(req(path,'192.0.2.2',{'X-Forwarded-For':'192.0.2.1',Cookie:'TEST_ENABLED=true'}),env)).status,403);
