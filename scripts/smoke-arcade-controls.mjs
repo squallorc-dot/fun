@@ -58,9 +58,18 @@ try{
   check(await page.evaluate(x=>localStorage.getItem('bio_arcade_pref_v1')===x.audio&&localStorage.getItem('bio_arcade_campaign_v11_g06_normal')===x.save,stored),'control edits and reset preserve existing audio and saves exactly');
   check(errors.length===0,errors.join(';'));await context.close();
  }
- // Both old entry pages use the shared controller outside the hub too.
+ // Retired classic entries are preserved in Git history, not the public hub.
+ // Verify that the actual embedded G02 retains shared control preferences across reloads.
  for(const locale of ['zh','ja']){
-  const {context,page,errors}=await create(locale,{width:390,height:844});await page.goto(origin+'/arcade/'+locale+'/index.html');await page.locator('.legacy-game-panel > summary').click();await page.locator('[data-ar-command="start"]').click();starts++;await page.locator('#arcade-canvas').waitFor();await page.locator('[data-ar-command="controls"]').click();await page.locator('#control-profile-classic').selectOption('left');await page.locator('#controls-close-classic').click();await page.waitForFunction(()=>BioArcadeShooter.state.phase==='playing');check((await page.evaluate(()=>BioArcadeShooter.state)).controlPrefs.profile==='left','legacy '+locale+' direct entry uses shared preferences');check(errors.length===0,errors.join(';'));await context.close();
+  const {context,page,errors}=await create(locale,{width:390,height:844});
+  await choose(page,'left');
+  await page.reload();
+  check(await page.evaluate(()=>BioControlProfiles.prefs.profile==='left'),'embedded '+locale+' shared profile survives reload');
+  const frame=await begin(page,'g02');
+  check((await read(frame,'g02')).controlPrefs.profile==='left','embedded '+locale+' G02 inherits saved shared profile');
+  await page.locator('#stage-back').click();
+  check(await page.evaluate(()=>BioControlProfiles.prefs.profile==='left'),'embedded '+locale+' exit keeps shared profile');
+  check(errors.length===0,errors.join(';'));await context.close();
  }
  for(const locale of ['zh','ja'])for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:568,height:320},{width:844,height:390},{width:768,height:1024},{width:1440,height:900}]){
   const {context,page,errors}=await create(locale,viewport);
