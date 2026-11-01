@@ -33,7 +33,8 @@ try{
   assert(await page.locator('#help').count()===1,'in-game help button is available');
    assert(await page.locator('#help-close').count()===1,'inline instructions have their own close button');
    assert.equal(await page.locator('#help-panel').isVisible(),false,'help is hidden outside active gameplay');
-  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
+  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','return points to current production Arcade in selected language');
+  assert.equal(await page.locator('#single').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','secondary back link never points at outdated Worker hub');
   assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
   assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
