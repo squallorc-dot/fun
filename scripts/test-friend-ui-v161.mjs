@@ -144,7 +144,7 @@ try{
    await page.locator('#opponent-show').click();
    assert(await page.locator('#opponent-preview').isVisible(),'peer ribbon reopens without restarting the game');
    assert.equal(await page.evaluate(()=>localStorage.getItem('bio-city-peer-preview-collapsed-v2')),'0','expanded preference persists locally');
-   assert.equal(await page.locator('#opponent-dock').evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-document.getElementById('viewport').getBoundingClientRect().top)<3),true,'reopened ribbon stays above game stage');
+   assert.equal(await page.locator('#opponent-dock').evaluate(el=>{const gap=document.getElementById('viewport').getBoundingClientRect().top-el.getBoundingClientRect().bottom;return gap>=-1&&gap<=8;}),true,'reopened ribbon stays above game stage with small intentional gap');
    await page.evaluate(()=>{
      const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
    });
