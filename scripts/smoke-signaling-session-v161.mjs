@@ -54,7 +54,7 @@ try{
  }
  const match=await matchPromise;
  assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
- console.log('PASS genuine RTC game survives signaling WebSocket closure: two players move, return balls and agree on result');
+ console.log('PASS genuine '+transports[0].toUpperCase()+' G05 game: two players move, return balls and agree on result'+(transports[0]==='p2p'?' despite signaling closure':' over active authenticated Worker Relay'));
  await Promise.all(pages.map(p=>p.evaluate(()=>window.originalPeer=BioFriendsApp.session.link.pc)));
  await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  for(const mode of ['volley','coop','defense','race']){
