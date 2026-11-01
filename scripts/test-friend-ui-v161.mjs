@@ -25,15 +25,30 @@ try{
     assert(await page.locator('#auto-hero-description').isVisible(),'character description appears in the large portrait card');
    assert.equal(await page.locator('.auto-hero-choice').count(),7,'seven character cards are available');
     assert.equal(await page.locator('.auto-hero-choice img').count(),7,'all guardians have original portrait art');
-    const carousel=await page.locator('.auto-hero-choices').evaluate(el=>({display:getComputedStyle(el).display,overflow:getComputedStyle(el).overflowX,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth}));
-    assert.equal(carousel.display,'flex','guardian chooser uses a horizontal carousel');
-    assert(carousel.scrollWidth>carousel.clientWidth,'phone carousel has room to swipe');
+    const carousel=await page.evaluate(()=>{
+      const strip=document.querySelector('.auto-hero-choices'),card=document.querySelector('.auto-hero-choice[data-position="center"]');
+      const field=document.querySelector('#auto-name').getBoundingClientRect(),root=document.querySelector('#auto-entry').getBoundingClientRect();
+      const box=strip.getBoundingClientRect(),center=card.getBoundingClientRect();
+      return {display:getComputedStyle(strip).display,scrollWidth:document.documentElement.scrollWidth,
+        windowWidth:innerWidth,fieldRight:field.right,rootRight:root.right,
+        cardX:(center.left+center.right)/2,stageX:(box.left+box.right)/2,visible:card.offsetWidth>0,
+        nextVisible:!!document.querySelector('.auto-hero-choice[data-position="next"]')};
+    });
+    assert.equal(carousel.display,'block','fixed-stage phone carousel never expands to all seven card widths');
+    assert(carousel.visible&&Math.abs(carousel.cardX-carousel.stageX)<5,'selected portrait is centered on screen');
+    assert(carousel.nextVisible,'next guardian is partially visible');
+    assert(carousel.scrollWidth<=carousel.windowWidth+1&&carousel.fieldRight<=carousel.windowWidth+1&&carousel.rootRight<=carousel.windowWidth+1,
+      'phone room field, portrait and form must not overflow horizontally');
     assert.equal(await page.locator('.auto-hero-choice').count(),7,'all seven guardians remain reachable');
    await page.locator('#auto-hero-next').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'1','next arrow selects second guardian');
    assert.equal((await page.locator('#auto-hero-progress').textContent()).trim(),'2 / 7','carousel displays selected index');
    await page.locator('#auto-hero-prev').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'0','previous arrow restores initial guardian');
+   await page.locator('#auto-hero-next').click();
+   await page.locator('#auto-hero-next').click();
+   await page.locator('#auto-hero-next').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','switched to fourth guardian with visible arrow');
    await page.locator('.auto-hero-choice[data-hero="3"]').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'3','hero card updates native accessible selector');
     assert.match(await page.locator('#auto-hero-portrait').getAttribute('src'),/images\/funai-care-ye-bao-ex\.png$/,'large portrait follows chosen guardian');
@@ -44,6 +59,11 @@ try{
    assert.equal(await page.locator('#auto-hero').inputValue(),'4','keyboard arrows update central selection');
    await page.locator('#auto-hero').evaluate(el=>{el.value='3';el.dispatchEvent(new Event('change',{bubbles:true}));});
    assert.equal(await page.locator('#auto-hero').inputValue(),'3','accessible native dropdown remains a fallback');
+   await page.locator('#auto-hero-choices').dispatchEvent('pointerdown',{pointerType:'touch',isPrimary:true,clientX:280,clientY:360});
+   await page.locator('#auto-hero-choices').dispatchEvent('pointerup',{pointerType:'touch',isPrimary:true,clientX:180,clientY:362});
+   assert.equal(await page.locator('#auto-hero').inputValue(),'4','touch swipe selects next guardian');
+   await page.locator('#auto-hero-prev').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','arrow and swipe stay synchronized');
    assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
    assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
    await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
@@ -196,6 +216,27 @@ try{
    assert.equal(await page.locator('#help-panel').isVisible(),false,'toolbar button can toggle off');
    assert(!play.overflow,'no horizontal overflow during play');
   }
+  if(locale==='zh'&&viewport.width===1280){
+    // UI-only in-room carousel; live RTC game completion runs separately.
+    await page.goto(origin+'/arcade/friends/index.html?lang=zh');
+    await page.evaluate(()=>{
+      const s=BioFriendsApp.session;
+      BioFriendSignaling.createRoom=async()=>({room:'ABCD2345',host:'a'.repeat(64),guest:'b'.repeat(64)});
+      BioFriendSignaling.connect=()=>({result:Promise.resolve(),close(){},retry(){}});
+      s.prepareAuto=(role,room,hero)=>{s.role=role;s.room=room;s.hero=hero;s.peerHello={hero:3,games:['feature:hero-v1']};s.phase='lobby';s.configAck=true;s.readyFlags=[false,false];};
+      s.link.state='connected';s.link.send=()=>true;
+      s.setHero=id=>{s.hero=id;s.changed();return true;};
+    });
+    await page.locator('#auto-create').click();
+    await page.locator('#auto-name').fill('測試大廳');
+    await page.locator('#auto-start').click();
+    await page.waitForSelector('#auto-lobby-carousel',{timeout:5000});
+    assert.equal(await page.locator('.auto-connected-card').count(),7,'joined-room picker shows seven official cards');
+    assert.equal(await page.locator('.auto-connected-card[data-position="center"]').count(),1,'joined room has one centered portrait');
+    await page.locator('#auto-lobby-next').click();
+    assert.equal(await page.locator('#auto-lobby-hero').inputValue(),'1','in-room carousel uses session.setHero and native selector');
+    assert.equal(await page.locator('.auto-connected-card[data-hero="1"]').getAttribute('aria-pressed'),'true','joined room reflects selection');
+   }
   await page.close();
  }
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
