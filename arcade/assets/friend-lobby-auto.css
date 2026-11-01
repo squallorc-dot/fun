@@ -116,3 +116,19 @@ body[data-auto-lobby]{background:radial-gradient(ellipse at 75% 0%,#1b5d6866,tra
 #auto-entry .auto-hero-choice canvas{width:72px;height:72px;display:block;margin:auto}
 #auto-entry #auto-tech-details,#auto-entry #auto-diagnostic-details{order:11}
 @media(max-width:640px){#auto-entry .auto-hero-choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* v1.6.1: multiplayer matches use the same immersive play-first sizing as solo arcade.
+   Only the outer lobby provides inputs; no second buttons or scroll-sized HUD. */
+body[data-auto-lobby].auto-connected.playing:not(.round-finished){overflow:hidden;max-width:none;width:100%;height:100dvh;padding:0;margin:0}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena{position:fixed;inset:0;z-index:900;display:flex!important;flex-direction:column;box-sizing:border-box;width:100%;height:100dvh;max-width:none;margin:0;padding:max(4px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));border-radius:0;overflow:hidden;background:#061522}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{flex:0 0 auto;gap:clamp(4px,1.3vw,12px);margin:0 0 4px;min-height:38px;justify-content:space-between;flex-wrap:wrap}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions button{min-height:36px;padding:5px 10px}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #score{font-size:clamp(.8rem,2.5vw,1.1rem);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;overflow:hidden}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport{display:flex;flex:1 1 auto;min-width:0;min-height:0;align-items:center;justify-content:center;overflow:hidden}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport canvas{flex:0 0 auto;max-width:100%;max-height:100%;object-fit:contain}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls{flex:0 0 auto;min-height:0!important;max-height:42dvh;box-sizing:border-box}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-instructions{display:none}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) > details.panel{display:none!important}
+@media(max-width:640px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{gap:3px;font-size:.78rem}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions button{min-height:34px;padding:3px 7px;font-size:.78rem}}
+@media (orientation:landscape) and (max-height:540px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{min-height:32px}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls{position:absolute!important;inset:36px 0 0!important;width:100%;height:calc(100% - 36px);max-height:none;pointer-events:none;border:0;background:none!important}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls .bio-stick-zone,body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls button{pointer-events:auto}}

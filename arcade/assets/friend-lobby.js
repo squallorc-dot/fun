@@ -16,12 +16,14 @@ function readInput(dt=1/120){
 }
 function size(){
  if(!session?.adapter)return;
- const w=$('viewport').clientWidth,compact=innerWidth>innerHeight&&innerHeight<=540,ratio=session.adapter.game.h/session.adapter.game.w;
+ const viewport=$('viewport'),w=viewport.clientWidth,ratio=session.adapter.game.h/session.adapter.game.w;
  const available=Math.max(100,w-(plan.reservedLeft||0)-(plan.reservedRight||0));
- // Preserve room for HUD and mobile touch controls, especially the square G02 board.
- const touchVisible=getComputedStyle($('touch-controls')).display!=='none';
- const budget=Math.max(160,innerHeight-(touchVisible?245:120));
- const h=compact?Math.max(100,innerHeight-98):Math.min(640,available*ratio,budget);
+ // Treat the playfield like the single-player stage: fill the real available
+ // viewport after the shared HUD and one touch dock have been laid out.
+ // Do not impose the old 640px limit or subtract an estimated 245px twice.
+ const box=viewport.getBoundingClientRect();
+ const budget=Math.max(120,box.height||innerHeight-100);
+ const h=Math.min(available*ratio,budget);
  const cw=Math.min(available,h/ratio),ch=cw*ratio,dpr=Math.min(3,devicePixelRatio||1);
  const style={width:cw+'px',height:ch+'px',marginLeft:(plan.reservedLeft||0)+'px',marginRight:(plan.reservedRight||0)+'px'};
  for(const [k,v] of Object.entries(style))if(canvas.style[k]!==v)canvas.style[k]=v;
@@ -55,11 +57,11 @@ function render(){
   const why=s.pauseReason==='input-timeout'?(ja?'相手の入力が途切れました':'對方輸入中斷'):s.pauseReason==='engine-backpressure'?(ja?'ゲーム処理を待機中':'遊戲處理暫停'):s.pauseReason==='user'?(ja?'手動で一時停止':'手動暫停'):(ja?'相手が一時停止':'雙方暫停');
   $('metrics').textContent+=' · '+why+' · '+(ja?'再開の同意':'繼續確認')+' '+s.resume.filter(Boolean).length+'/2';
  }
- const isCoop=['g01','g02'].includes(s.config?.game),defense=s.config?.game==='g02';for(const id of ['coop-chapter','coop-difficulty']){$(id+'-label').hidden=!isCoop;$(id).disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;}if(isCoop){$('coop-chapter').value=String(s.config.chapter);$('coop-difficulty').value=s.config.difficulty;}for(const id of ['race-chapter','race-difficulty']){$(id+'-label').hidden=!race;$(id).disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;}if(race){$('race-chapter').value=String(s.config.chapter);$('race-difficulty').value=s.config.difficulty;}$('rules').textContent=race?(ja?'W／アクセルで加速、Sで減速、Jでブースト。':'W／油門加速，S 煞車，J 氮氣。'):isCoop?L.coopRules:L.rules;document.querySelector('#game-instructions').textContent=defense?(ja?'WASDで移動、Jで射撃、Lで回避、Eでスキル／救助。':'WASD 移動、J 射擊、L 閃避、E 技能／救援。'):isCoop?L.coopKeys:L.keys;$('touch-controls').querySelector('[data-action="fire"]').textContent=race?(ja?'ブースト':'氮氣'):defense?(ja?'射撃':'射擊'):L.hit;$('touch-controls').querySelector('[data-action="jump"]').textContent=race?(ja?'アクセル':'油門'):L.jump;for(const name of ['dodge','skill'])$('touch-controls').querySelector(`[data-action="${name}"]`).hidden=!isCoop;$('touch-controls').querySelector('[data-action="jump"]').hidden=defense||!isCoop&&!race&&s.config?.mode!=='volley';if(controlGame!==s.config?.game){controlGame=s.config?.game;rebuildControls();}size();
+ const isCoop=['g01','g02'].includes(s.config?.game),defense=s.config?.game==='g02';for(const id of ['coop-chapter','coop-difficulty']){$(id+'-label').hidden=!isCoop;$(id).disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;}if(isCoop){$('coop-chapter').value=String(s.config.chapter);$('coop-difficulty').value=s.config.difficulty;}for(const id of ['race-chapter','race-difficulty']){$(id+'-label').hidden=!race;$(id).disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;}if(race){$('race-chapter').value=String(s.config.chapter);$('race-difficulty').value=s.config.difficulty;}$('rules').textContent=race?(ja?'自動加速・左右でステアリング・下でブレーキ・Jでブースト。':'自動加速、左右轉向、下壓煞車、J 使用氮氣。'):isCoop?L.coopRules:L.rules;document.querySelector('#game-instructions').textContent=defense?(ja?'WASDで移動、Jで射撃、Lで回避、Eでスキル／救助。':'WASD 移動、J 射擊、L 閃避、E 技能／救援。'):isCoop?L.coopKeys:L.keys;$('touch-controls').querySelector('[data-action="fire"]').textContent=race?(ja?'ブースト':'氮氣'):defense?(ja?'射撃':'射擊'):L.hit;$('touch-controls').querySelector('[data-action="jump"]').textContent=L.jump;for(const name of ['dodge','skill'])$('touch-controls').querySelector(`[data-action="${name}"]`).hidden=!isCoop;$('touch-controls').querySelector('[data-action="jump"]').hidden=race||defense||!isCoop&&s.config?.mode!=='volley';if(controlGame!==s.config?.game){controlGame=s.config?.game;rebuildControls();}size();
 }
 session=new BioFriends.Session({readInput,onChange:render,locale:ja?'ja':'zh',betaStun:document.body.dataset.autoLobby==='true',sfx:(f,l)=>audio.effect(f,l)});
 const settings=BioControlProfiles.createSettings({onOpen:()=>{session.pause('settings');resetInputs();},onClose:()=>{resetInputs();controls.schedule();}});
-let controlGame;function rebuildControls(){controls?.dispose();const game=session.config?.game||'g05',buttons=[...document.querySelectorAll('[data-action]')].filter(el=>game==='g01'||game==='g02'&&el.dataset.action!=='jump'||['fire','jump'].includes(el.dataset.action));controls=BioControlProfiles.createInput({root:$('touch-controls'),stick:$('stick-pad'),knob:$('stick-knob'),buttons:buttons.map(el=>({el,key:el.dataset.action})),context:()=>({game,mode:session.config?.mode||'pong',axis:['g01','g02','g06'].includes(game)?'xy':session.config?.mode==='volley'?'x':'y'}),enabled:()=>['countdown','playing'].includes(session.phase),space:()=>$('viewport'),onLayout:p=>{plan=p;size();}});}rebuildControls();
+let controlGame;function rebuildControls(){controls?.dispose();const game=session.config?.game||'g05',buttons=[...document.querySelectorAll('[data-action]')].filter(el=>game==='g01'||game==='g02'&&el.dataset.action!=='jump'||game==='g06'&&el.dataset.action==='fire'||game==='g05'&&['fire','jump'].includes(el.dataset.action));controls=BioControlProfiles.createInput({root:$('touch-controls'),stick:$('stick-pad'),knob:$('stick-knob'),buttons:buttons.map(el=>({el,key:el.dataset.action})),context:()=>({game,mode:session.config?.mode||'pong',axis:['g01','g02','g06'].includes(game)?'xy':session.config?.mode==='volley'?'x':'y'}),enabled:()=>['countdown','playing'].includes(session.phase),space:()=>$('viewport'),onLayout:p=>{plan=p;size();}});}rebuildControls();
 async function act(task){$('error').textContent='';audio.unlock();try{await task();}catch{$('error').textContent=L.error;}render();}
 $('host').onclick=()=>act(async()=>{$('local').value=await session.host($('room').value,Number($('hero').value));});
 $('guest').onclick=()=>act(async()=>{$('local').value=await session.join($('remote').value,Number($('hero').value));$('remote').value='';});
