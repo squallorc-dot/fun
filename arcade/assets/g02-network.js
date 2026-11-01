@@ -6,9 +6,9 @@ function input(v){return object(v)&&Object.keys(v).every(k=>['moveX','moveY','up
 function snapshot(v){return object(v)&&Object.keys(v).length===2&&Object.keys(v).every(k=>['state','finished'].includes(k))&&typeof v.finished==='boolean'&&root.BioG02State.valid(v.state)&&v.finished===['victory','defeat'].includes(v.state.phase);}
 const movement=v=>({moveX:Number(v.moveX)||0,moveY:Number(v.moveY)||0,fire:!!v.fire,dodge:!!v.dodge,skill:!!v.skill});
 class Adapter{
- constructor({mode,hero=0,remoteHero=3,host,locale='zh',chapter=1,difficulty='normal',epoch,finish=()=>{},onFailure=()=>{},onSnapshot=()=>{}}){
+ constructor({mode,hero=0,remoteHero=3,host,locale='zh',chapter=1,difficulty='normal',epoch,finish=()=>{},onFailure=()=>{},onSnapshot=()=>{},onReady=()=>{}}){
   if(mode!=='defense'||!Number.isSafeInteger(epoch)||epoch<1)throw Error('g02-config');
-  this.host=host;this.epoch=epoch;this.finish=finish;this.onFailure=onFailure;this.onSnapshot=onSnapshot;this.lastTick=-1;this.seq=-1;this.ack=-1;this.controlSeq=-1;this.applySeq=-1;this.started=false;this.lastState=null;this.pending=null;this.closed=false;this.corrections=0;
+  this.host=host;this.epoch=epoch;this.finish=finish;this.onFailure=onFailure;this.onSnapshot=onSnapshot;this.onReady=onReady;this.lastTick=-1;this.seq=-1;this.ack=-1;this.controlSeq=-1;this.applySeq=-1;this.started=false;this.lastState=null;this.pending=null;this.closed=false;this.corrections=0;
   const frame=document.createElement('iframe');this.frame=frame;frame.title=locale==='ja'?'都市防衛戦':'城市防衛戰';frame.src=new URL((document.body.dataset.autoLobby?'../':'../../')+(locale==='ja'?'ja':'zh')+'/shooter.html',location.href).href;frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;z-index:1';
   const viewport=document.getElementById('viewport');if(!viewport)throw Error('g02-viewport');this.canvas=document.getElementById('game-canvas');this.canvas.style.visibility='hidden';viewport.appendChild(frame);
   this.game={w:600,h:600,_finished:false,draw:()=>{if(this.started)this.post('coop-net-paint');},inspectCombat:()=>({score:this.lastState?.state.game.score||0}),inspectCoop:()=>this.lastState?.state.game||null};
@@ -19,7 +19,7 @@ class Adapter{
    if(m.type==='coop-net-overflow'){this.fail('snapshot-overflow');return;}
    if(m.type==='coop-net-phase'){
     if(m.phase==='load-error'){this.fail('asset-unavailable');return;}
-    if(m.phase==='started'){this.started=true;if(host)this.post('coop-net-capture');else this.applyPending();}
+    if(m.phase==='started'&&!this.started){this.started=true;if(host)this.post('coop-net-capture');else this.applyPending();this.onReady();}
     if(host&&(m.phase==='ended'||m.phase==='paused'))this.post('coop-net-capture');return;
    }
    if(m.type==='coop-net-frame'&&host&&Number.isSafeInteger(m.seq)&&m.seq>=-1&&m.seq<=this.seq&&root.BioG02State.valid(m.state)){
