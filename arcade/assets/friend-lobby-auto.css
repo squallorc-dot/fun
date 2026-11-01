@@ -51,7 +51,8 @@ body[data-auto-lobby] #round-detail-text{margin:8px 0 0;font-size:.84rem;color:#
 body[data-auto-lobby].auto-connected #lobby{border-radius:15px;border-color:#527c8b;background:linear-gradient(160deg,#15384b,#102838)}
 body[data-auto-lobby].auto-connected #arena{border-radius:15px;border-color:#527c8b}
 body[data-auto-lobby].auto-connected #room-name{font-size:1.14rem}
-body[data-auto-lobby].auto-connected #challenge-link{font-size:.86rem}
+body[data-auto-lobby] #auto-lobby-hero-label[hidden]{display:none!important}
+body[data-auto-lobby].auto-connected #room-name{display:none!important}
 @media(max-width:640px){#auto-entry{border-radius:16px;padding:18px}#auto-entry .auto-actions{gap:8px}#auto-entry #auto-qr{width:min(100%,230px)}}
 
 #auto-diagnostic:not([hidden]){border:1px solid #527c8b;border-radius:10px;padding:10px 12px;background:#0b2434;color:#cfebe8;font:600 .88rem/1.5 ui-monospace,monospace;overflow-wrap:anywhere}
