@@ -44,7 +44,24 @@ export async function driver(page,side,{missAfter=12}={}){
  },{side,missAfter});
 }
 export async function complete(a,b,mode){
- await Promise.all([driver(a,0),driver(b,1)]);await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000})));
+ await Promise.all([driver(a,0),driver(b,1)]);
+ try{
+  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000})));
+ }catch(error){
+  // Safe, bounded diagnostic only. No SDP, candidate IP, room identifier,
+  // tokens, invites, or page screenshots in CI logs.
+  const details=await Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
+   const s=BioFriendsApp.session,x=s.inspect(),pc=s.link.pc,d=window.__friendDriver||{};
+   return {side,phase:x.phase,pauseReason:x.pauseReason,game:x.config?.game,mode:x.config?.mode,tick:x.tick,
+    ready:x.ready,configAck:x.configAck,resultCount:x.resultCount,score:Array.isArray(x.result?.points)?x.result.points:null,
+    link:s.link.state,transport:s.link.transport||'p2p',ice:pc?.iceConnectionState||'none',
+    connection:pc?.connectionState||'none',channels:Object.fromEntries(Object.entries(s.link.channels||{}).map(([k,v])=>[k,v.readyState])),
+    metrics:{sent:x.metrics.sent,received:x.metrics.received,rejected:x.metrics.rejected},
+    driver:{samples:d.samples||0,contacts:d.contacts||0,moved:d.moved||0}};
+  },side);}catch{return {side,unavailable:true};}}));
+  console.error('SAFE TWO-BROWSER FINISH TIMEOUT '+JSON.stringify(details));
+  throw error;
+ }
  const views=await Promise.all([a,b].map(p=>p.evaluate(()=>({view:BioFriendsApp.inspect(),driver:window.__friendDriver}))));await Promise.all([a,b].map(p=>p.evaluate(()=>window.__stopFriendDriver?.())));
  assert.deepEqual(views[0].view.session.result,views[1].view.session.result,'same authoritative winner and score');assert(views.every(v=>v.view.session.resultCount===1),'settles exactly once');assert(views.every(v=>v.driver.axes>0&&v.driver.actions>0&&v.driver.moved>0&&v.driver.swung>0),'both browsers actually move and swing/jump via keyboard');
  const points=views[0].view.session.result.points;assert(Math.max(...points)===(mode==='pong'?7:5));return {mode,result:views[0].view.session.result,peers:views.map(v=>({metrics:v.view.session.metrics,driver:v.driver}))};

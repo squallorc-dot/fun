@@ -49,7 +49,13 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
     else if(message.type==='answer'&&role==='host'&&started&&!relayActive){onProgress('answer');await link.accept(message.description);}
      else if(message.type==='ice-offer'&&role==='guest'&&!relayActive){const description=await link.restartAnswer?.(message.description);if(description)send('ice-answer',{description});}
      else if(message.type==='ice-answer'&&role==='host'&&!relayActive){await link.restartAccept?.(message.description);}
-     else if(message.type==='relay-propose'&&!relayActive){requestRelay();}
+     else if(message.type==='relay-propose'&&!relayActive){
+      // The other side may still be checking while this side has already
+      // established a healthy DataChannel. Never downgrade healthy P2P just
+      // because a peer was late to connect; retry relay on actual failure.
+      const pc=link.pc,live=link.state==='connected'&&pc?.connectionState==='connected'&&Object.values(link.channels||{}).every(c=>c.readyState==='open');
+      if(!live)requestRelay();
+     }
      else if(message.type==='relay-start'&&/^[a-f0-9]{32}$/.test(message.sid||'')){clearRecovery();relayActive=true;link.useRelay(message.sid,(channel,payload)=>{if(socket?.readyState!==WebSocket.OPEN)return false;send('relay-data',{channel,payload});return true;});for(const packet of earlyRelayPackets)link.receiveRelay(packet.channel,packet.payload);earlyRelayPackets=[];finish();onProgress('relay-connected');}
      else if(message.type==='relay-data'&&['input','control'].includes(message.channel)&&typeof message.payload==='string'&&message.payload.length<=32768){if(relayActive)link.receiveRelay(message.channel,message.payload);else if(earlyRelayPackets.length<32)earlyRelayPackets.push({channel:message.channel,payload:message.payload});}
     else if(message.type==='peer-left'||message.type==='peer-missing'){if(!settled){onProgress('recovering');arm(90000);}else lost();}
