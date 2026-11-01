@@ -103,6 +103,33 @@ try{
    assert(diagnostic,'technical candidate numbers are collapsed behind disclosure');
    const guest=await browser.newPage({viewport});await guest.goto(invite);assert.equal(await guest.evaluate(()=>location.hash),'');if(process.env.BIO_WORKER_ASSETS==='1'){assert(await guest.locator('#auto-wait').isVisible(),'configured candidate starts joining automatically');assert(await guest.locator('#auto-share-actions').isHidden(),'guest does not share host invitation');}else assert(await guest.locator('#auto-form').isVisible());assert(!(await guest.locator('#auto-code-label').isVisible()));assert(!(await guest.locator('#connection').isVisible()));await guest.close();
   }
+  if(locale==='zh'&&viewport.width===390){
+   // UI-only: the real two-board host/guest state is exercised by engine and RTC tests.
+   const state=await page.evaluate(()=>{
+    const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
+    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+    s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
+      drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
+    s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
+    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height};};
+    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),shown:!document.getElementById('opponent-preview').hidden,
+      helpHidden:document.getElementById('help-panel').hidden,
+      score:document.getElementById('score').textContent,overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert(state.shown&&state.helpHidden,'G03 phone PiP shown and play instructions initially collapsed');
+   assert(state.main.w>state.peer.w*2,'own game is at least twice the PiP width');
+   assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
+   assert(!state.overflow,'PiP does not cause horizontal overflow');
+   await page.locator('#opponent-hide').click();
+   assert(await page.locator('#opponent-preview').isHidden(),'peer PiP can be collapsed');
+   assert(await page.locator('#opponent-show').isVisible(),'peer PiP can be reopened');
+   await page.locator('#opponent-show').click();
+   assert(await page.locator('#opponent-preview').isVisible(),'peer PiP reopens without restarting the game');
+   await page.locator('#opponent-move').click();
+   assert(await page.locator('#opponent-preview').evaluate(el=>el.classList.contains('at-top')),'peer PiP can move above game obstacles');
+   await page.evaluate(()=>{const s=BioFriendsApp.session;s.adapter?.dispose?.();s.adapter=null;s.phase='lobby';document.body.classList.remove('auto-connected');s.changed();});
+  }
   if(locale==='zh'&&viewport.width===1280){
    await page.locator('#auto-create').click();
    const desktop=await page.evaluate(()=>{
