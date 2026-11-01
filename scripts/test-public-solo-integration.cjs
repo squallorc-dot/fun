@@ -5,6 +5,8 @@ const zh=read('arcade/zh/index.html'),ja=read('arcade/ja/index.html');
 for(const [html,lang]of [[zh,'zh'],[ja,'ja']]){
  assert(!html.includes('../challenge/index.html?lang='+lang),'retired offline challenge has no public entry '+lang);
  assert(!html.includes('hub-more-async'),'no offline challenge card on public hub '+lang);
+ for(const id of ['arcade-root','protocol-quiz-root','protocol-quiz'])assert(html.includes('id="'+id+'"'),'unique editorial experience preserved on public hub '+id+' '+lang);
+ assert(html.includes('../../assets/protocol-engine.js')&&html.includes('../../assets/arcade-engine.js'),'legacy shooter and decision engine loaded '+lang);
  assert(html.includes('bio-city-v161-signaling.squall-orc.workers.dev')&&/Beta/.test(html),'real-time remains explicitly separate Beta');
  assert(!html.includes('../qa/friends-v16/index.html?lang='+lang),'do not link private manual SDP lab from public hub');
  assert(html.includes('../assets/games-core.js?v=20261101.1'),'central build asset version stays synchronized '+lang);

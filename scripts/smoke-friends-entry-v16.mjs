@@ -12,6 +12,9 @@ try{
   assert.equal(await page.locator('a[href*="challenge/index.html"]').count(),0,'offline friend code links are retired');
   assert.equal(await page.locator('[data-launch]').count(),6,'all six solo games remain available');
   assert.equal(await page.locator('#hero-choices').count(),1,'solo hero selector remains mounted');
+  assert.equal(await page.locator('#arcade-root').count(),1,'legacy defense game retained in unified hub');
+  await page.waitForFunction(()=>!!document.querySelector('#protocol-quiz-root button[data-qaction="start"]'));
+  assert.equal(await page.locator('#protocol-quiz-root button[data-qaction="start"]').count(),1,'8-question decision lab mounts on unified hub');
  }
  assert.deepEqual(app.errors,[]);console.log('FRIENDS ENTRY PASS: bilingual solo hub, six games, separate Beta, no offline code exchange');
 }finally{await app.close();}

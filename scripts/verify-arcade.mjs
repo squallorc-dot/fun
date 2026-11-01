@@ -22,6 +22,7 @@ for(const lang of ['zh','ja']){
  const page=read(`arcade/${lang}/index.html`);
  assert(!page.includes(`../challenge/index.html?lang=${lang}`),`${lang} public arcade must not link to retired offline challenge`);
  assert(page.includes(`bio-city-v161-signaling.squall-orc.workers.dev/arcade/friends/?lang=${lang}`),`${lang} public arcade must keep the live Beta separately labeled`);
+ assert(page.includes('id="arcade-root"')&&page.includes('id="protocol-quiz-root"'),`${lang} unified hub must preserve legacy game and decision lab`);
  assert(!page.includes(`../qa/friends-v16/index.html?lang=${lang}`),`${lang} arcade must not expose obsolete manual WebRTC lab as the main entry`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices','stage-audio-status','stage-audio-play'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
