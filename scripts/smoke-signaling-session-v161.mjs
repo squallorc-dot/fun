@@ -23,7 +23,7 @@ try{
  await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  for(const mode of ['volley','coop','defense','race']){
   await start(pages[0],pages[1],mode);await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:60000})));
-  await Promise.all(pages.map((p,i)=>p.evaluate(i=>{for(const key of ['j',i?'d':'a',...(BioFriendsApp.inspect().session.config.game==='g06'?['w']:[])])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));},i)));
+  await Promise.all(pages.map((p,i)=>p.evaluate(i=>{for(const key of ['j',i?'d':'a'])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));},i)));
   if(mode==='race'){
    // Two browser views lose focus while playing. Neither blur nor duplicate pause may deadlock resume.
    for(let n=0;n<10;n++)await Promise.all(pages.map(p=>p.evaluate(()=>window.dispatchEvent(new Event('blur')))));

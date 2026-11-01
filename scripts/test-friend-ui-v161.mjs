@@ -123,6 +123,29 @@ try{
     else assert.equal(ui.details,false,mode.game+' needs no verbose score panel');
    }
   }
+  if(locale==='zh'&&(viewport.width===390||viewport.width===1280)){
+   // UI-only live playing state: no mocked RTC connection or fake result.
+   // Controls must match the single-player race: auto accelerate, brake, nitro.
+   await page.evaluate(()=>{
+    const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=1;
+    s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+    s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+    s.result=null;s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   });
+   await page.waitForFunction(()=>document.querySelector('#arena').getBoundingClientRect().height>=innerHeight*.93,null,{timeout:5000});
+   const play=await page.evaluate(()=>{
+    const rect=q=>{const v=document.querySelector(q).getBoundingClientRect();return {w:v.width,h:v.height,top:v.top,left:v.left}};
+    const jump=document.querySelector('#touch-controls [data-action="jump"]'),fire=document.querySelector('#touch-controls [data-action="fire"]');
+    return {arena:rect('#arena'),stage:rect('#viewport'),canvas:rect('#game-canvas'),gas:jump.hidden,
+     nitro:!fire.hidden&&fire.textContent.includes('氮氣'),instructions:document.querySelector('#rules').textContent,
+     overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert(play.arena.h>=viewport.height*.93,'full-height arcade play surface');
+   assert(play.stage.h>=viewport.height*(viewport.width===390?.40:.70),'playfield occupies available stage');
+   assert(play.canvas.h>0&&play.canvas.w>0,'canvas stays visible');
+   assert(play.gas&&play.nitro&&play.instructions.includes('自動加速'),'no gas key and nitro preserved');
+   assert(!play.overflow,'no horizontal overflow during play');
+  }
   await page.close();
  }
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
