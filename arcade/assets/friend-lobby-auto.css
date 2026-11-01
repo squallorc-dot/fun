@@ -56,6 +56,9 @@ body[data-auto-lobby].auto-connected #challenge-link{font-size:.86rem}
 
 #auto-diagnostic:not([hidden]){border:1px solid #527c8b;border-radius:10px;padding:10px 12px;background:#0b2434;color:#cfebe8;font:600 .88rem/1.5 ui-monospace,monospace;overflow-wrap:anywhere}
 
+/* Native details content can preserve layout boxes while closed in Chromium.
+ * Force all diagnostic payloads to disappear until the player expands summary. */
+#auto-entry details:not([open]) > :not(summary){display:none!important}
 /* Player-first Bio-City co-op portal. No network debug text is visible by default. */
 #auto-entry{position:relative;max-width:640px;overflow:hidden;padding:clamp(18px,3.5vw,32px);border:1px solid #538c98;border-radius:24px;background:radial-gradient(circle at 90% 3%,#2e658077,transparent 44%),linear-gradient(158deg,#183b54 0%,#0a1d31 86%);box-shadow:0 26px 74px #0009,inset 0 1px 0 #b2f8fb25}
 #auto-entry:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 96%,#74d6da0b 97%),linear-gradient(0deg,transparent 96%,#74d6da0b 97%);background-size:32px 32px;opacity:.42}
