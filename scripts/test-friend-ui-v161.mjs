@@ -117,6 +117,7 @@ try{
     return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),peerCanvas:bounds('opponent-canvas'),
       dock:bounds('opponent-dock'),controls:bounds('touch-controls'),stage:bounds('viewport'),
       shown:!document.getElementById('opponent-preview').hidden,
+      touchVisible:getComputedStyle(document.getElementById('touch-controls')).display!=='none',
       dockBeforeStage:document.getElementById('game-shell').firstElementChild.id==='opponent-dock',
       moveRemoved:!document.getElementById('opponent-move'),
       helpHidden:document.getElementById('help-panel').hidden,
@@ -127,8 +128,8 @@ try{
    assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
    assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
    assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
-   assert(state.main.bottom<=state.controls.top+3,'own playfield does not overlap G03 touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
-   assert(state.controls.h>=145,'touch controls retain a usable height');
+   assert(!state.touchVisible||state.main.bottom<=state.controls.top+3,'own playfield does not overlap enabled touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
+   assert(!state.touchVisible||state.controls.h>=145,'visible touch controls retain a usable height');
    assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
    assert(!state.overflow,'peer ribbon does not cause horizontal overflow');
    await page.locator('#opponent-hide').click();
