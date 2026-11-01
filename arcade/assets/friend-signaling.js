@@ -27,7 +27,11 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
   const startLink=(method,...args)=>{const previous=link.pairingTimeout;link.pairingTimeout=timeout;try{return link[method](...args);}finally{link.pairingTimeout=previous;}};
   cancel=()=>finish(Error('cancelled'));
   requestRetry=()=>{if(stopped||!settled||retryPending||retryRequests>=2||retryAttempts>=2||socket?.readyState!==WebSocket.OPEN||link.state==='connected')return Promise.reject(Error('retry-unavailable'));
-   retryRequests++;started=false;const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
+   retryRequests++;started=false;
+    // A retry is a fresh RTC/Relay negotiation on the same authenticated room.
+    // The previous round's relay state must not suppress a new offer/answer.
+    relayActive=false;earlyRelayPackets=[];lastRelayAttempt=0;clearRecovery();
+    const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(!link.useRelay&&['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   healthTimer=setInterval(()=>{
     if(stopped||!settled||relayActive||!link.useRelay||link.state!=='connected')return;
