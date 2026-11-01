@@ -13,8 +13,8 @@ for(const text of ['x','{}','null','<script>',' '.repeat(120001),JSON.stringify(
 for(const mode of ['pong','volley']){
  const s=new w.BioFriends.Session();s.role='host';s.hero=0;s.epoch=1;s.config={game:'g05',mode,heroes:[0,3]};s.createRound();s.phase='playing';s.countdown=0;s.tick=1000;
  const d={epoch:1,seq:0,tick:1000,input:{moveY:1,fire:true},edges:{fire:1,jump:0}};
- check(s.receive('input',d,'input'),'ordinary input accepted');check(!s.receive('input',d,'input'),'duplicate app sequence');
- for(const bad of [{...d,seq:1,epoch:0},{...d,seq:1,tick:1400},{...d,seq:1,tick:500},{...d,seq:1,input:{moveY:2}},{...d,seq:1,input:{points:[7,0]}},{...d,seq:1,edges:{fire:999,jump:0}}])check(!s.receive('input',bad,'input'),'stale/future/invalid/over-fast action rejected');
+ check(s.receive('input',d,'input'),'ordinary input accepted');check(!s.receive('input',d,'input'),'duplicate app sequence');check(s.receive('input',{...d,seq:1,tick:1400},'input'),'legitimate guest may advance while host rendering is throttled');
+ for(const bad of [{...d,seq:2,epoch:0},{...d,seq:2,tick:2401},{...d,seq:2,tick:500},{...d,seq:2,input:{moveY:2}},{...d,seq:2,input:{points:[7,0]}},{...d,seq:2,edges:{fire:999,jump:0}}])check(!s.receive('input',bad,'input'),'stale/future/invalid/over-fast action rejected');
  check(!s.receive('frame',{epoch:1,tick:1000,state:{points:[7,0]}},'control'),'guest cannot author state');const y=s.adapter.game.inspectMatch().ai.y;now+=400;s.update(1/60);check(s.adapter.game.inspectMatch().ai.y===y,'stale input becomes neutral');now+=2200;s.update(1/60);check(s.phase==='paused'&&Object.keys(s.remote).length===0,'prolonged input silence still pauses safely');
  s.result={points:[7,0]};s.readyFlags=[true,true];s.clearRound();check(s.adapter===null&&s.result===null&&s.readyFlags.every(v=>!v)&&Object.keys(s.remote).length===0,'next game removes prior physics/input/result/readiness');s.leave();
 }
