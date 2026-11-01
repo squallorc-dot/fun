@@ -27,7 +27,24 @@ export async function pair(a,b){
  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.configAck&&BioFriendsApp.inspect().session.phase==='lobby')));
  assert(await a.locator('#local').inputValue()===''&&await b.locator('#remote').inputValue()==='','pairing fields cleared after establishment');
 }
-export async function start(a,b,mode){await a.locator('#mode').selectOption(mode);await Promise.all([a,b].map(p=>p.waitForFunction(mode=>BioFriendsApp.inspect().session.config?.mode===mode&&BioFriendsApp.inspect().session.configAck,mode)));await a.locator('#ready').click();await b.locator('#ready').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>['countdown','playing'].includes(BioFriendsApp.inspect().session.phase))));}
+export async function start(a,b,mode){
+ await a.locator('#mode').selectOption(mode);
+ await Promise.all([a,b].map(p=>p.waitForFunction(mode=>BioFriendsApp.inspect().session.config?.mode===mode&&BioFriendsApp.inspect().session.configAck,mode)));
+ await a.locator('#ready').click();await b.locator('#ready').click();
+ await Promise.all([a,b].map(p=>p.waitForFunction(()=>{
+  const s=BioFriendsApp.inspect().session;
+  return ['countdown','playing'].includes(s.phase)&&!s.startPending&&!!BioFriendsApp.session.adapter&&document.body.classList.contains('playing');
+ },null,{timeout:45000})));
+ const [host,guest]=await Promise.all([a,b].map(p=>p.evaluate(()=>{
+  const s=BioFriendsApp.inspect().session;
+  return {epoch:s.epoch,game:s.config?.game,mode:s.config?.mode,chapter:s.config?.chapter,difficulty:s.config?.difficulty,heroes:s.config?.heroes,ready:s.ready,startPending:s.startPending};
+ })));
+ assert.deepEqual({game:host.game,mode:host.mode,chapter:host.chapter,difficulty:host.difficulty,heroes:host.heroes},
+                  {game:guest.game,mode:guest.mode,chapter:guest.chapter,difficulty:guest.difficulty,heroes:guest.heroes},
+                  'both players must enter identical game, guardians and chapter');
+ assert.equal(host.epoch,guest.epoch,'start barrier uses one shared game epoch');
+ assert(host.ready.every(Boolean)&&guest.ready.every(Boolean),'both sides agree on readiness before game is visible');
+}
 // Ordinary keyboard events drive both human input paths. No entity/result setter.
 export async function driver(page,side,{missAfter=12}={}){
  await page.evaluate(({side,missAfter})=>{
