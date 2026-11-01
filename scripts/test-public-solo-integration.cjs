@@ -1,0 +1,31 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const zh=read('arcade/zh/index.html'),ja=read('arcade/ja/index.html');
+for(const [html,lang]of [[zh,'zh'],[ja,'ja']]){
+ assert(html.includes('../challenge/index.html?lang='+lang),'official async challenge entry for '+lang);
+ assert(html.includes('bio-city-v161-signaling.squall-orc.workers.dev')&&/Beta/.test(html),'real-time remains explicitly separate Beta');
+ assert(!html.includes('../qa/friends-v16/index.html?lang='+lang),'do not link private manual SDP lab from public hub');
+ assert(html.includes('../assets/games-core.js?v=20261101.1'),'central build asset version stays synchronized '+lang);
+}
+const entry=read('arcade/challenge/index.html');
+assert(entry.includes('id="create"')&&entry.includes('id="check"')&&entry.includes('id="compare"'),'async code exchange UI intact');
+assert(entry.includes('../assets/challenge-public.css')&&!entry.includes('noindex,nofollow'),'public challenge route styled and indexable');
+for(const src of ['../assets/challenge-ui.js','../assets/challenge-code.js','../assets/games-core.js','../assets/challenge-public.css']){
+ const file=path.resolve(root,'arcade/challenge',src);
+ assert(fs.existsSync(file),'missing public async asset '+src);
+}
+const core=read('arcade/assets/games-core.js');
+for(const term of ['發球先彈兩次','安全平台／陷阱','檢查點','桌球','氮氣','深度']){
+ assert(core.includes(term),'solo HUD/onscreen translation missing '+term);
+}
+const help=read('arcade/assets/game-guide.js');
+assert(help.includes("title:'遊戲說明與按鍵'")&&help.includes('g06:')&&help.includes('pong:')&&help.includes('g02:'),'single player controls registry remains complete');
+const game=read('assets/arcade-engine.js');
+assert(game.includes("wave:'波次',score:'得分'"),'G02 SOLO translated HUD');
+const asyncUI=read('arcade/assets/challenge-ui.js');
+assert(asyncUI.includes("location.pathname.includes('/arcade/challenge/')"),'public challenge back link uses official game center');
+for(const p of ['arcade/assets/hub.js','arcade/assets/games-core.js','arcade/assets/challenge-ui.js','assets/arcade-engine.js']){
+ new Function(read(p));
+}
+console.log('SOLO PUBLIC INTEGRATION PASS: zh/ja independent entry, official async path, 6 localized game screens, asset paths and JS syntax');
