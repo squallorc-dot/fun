@@ -6,7 +6,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='5993b4e0eb2647388cbd926e7ff23f0380fe2344';
+const SOURCE_SHA='537993e682627edf2f24c55ff06be8da36a6f1fc';
 const REPO='squallorc-dot/fun', PR_NUMBER=38;
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;
@@ -33,7 +33,7 @@ try{
  // Owner-approved isolated public Beta for live cross-device diagnosis.
  // This exact SHA is NOT production-accepted. CI status is still recorded and
  // must be green before any promotion to the official main site.
- const diagnosticSha='5993b4e0eb2647388cbd926e7ff23f0380fe2344';
+ const diagnosticSha='537993e682627edf2f24c55ff06be8da36a6f1fc';
  assert.equal(SOURCE_SHA,diagnosticSha,'diagnostic authorization applies to one source SHA');
  for(const name of required){
   const items=(runs.workflow_runs||[]).filter(x=>x.name===name&&x.head_sha===SOURCE_SHA);
@@ -43,7 +43,7 @@ try{
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,8,'three release config commits and two reviewed Beta integrations expected');
+ assert.equal(compare.ahead_by,9,'three release config commits and two reviewed Beta integrations expected');
  assert((compare.files||[]).length>0,'missing release files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');

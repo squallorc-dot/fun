@@ -25,11 +25,25 @@ try{
     assert(await page.locator('#auto-hero-description').isVisible(),'character description appears in the large portrait card');
    assert.equal(await page.locator('.auto-hero-choice').count(),7,'seven character cards are available');
     assert.equal(await page.locator('.auto-hero-choice img').count(),7,'all guardians have original portrait art');
-    assert.equal(await page.locator('.auto-hero-choices').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),2,'phone cards use two readable columns');
+    const carousel=await page.locator('.auto-hero-choices').evaluate(el=>({display:getComputedStyle(el).display,overflow:getComputedStyle(el).overflowX,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth}));
+    assert.equal(carousel.display,'flex','guardian chooser uses a horizontal carousel');
+    assert(carousel.scrollWidth>carousel.clientWidth,'phone carousel has room to swipe');
+    assert.equal(await page.locator('.auto-hero-choice').count(),7,'all seven guardians remain reachable');
+   await page.locator('#auto-hero-next').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'1','next arrow selects second guardian');
+   assert.equal((await page.locator('#auto-hero-progress').textContent()).trim(),'2 / 7','carousel displays selected index');
+   await page.locator('#auto-hero-prev').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'0','previous arrow restores initial guardian');
    await page.locator('.auto-hero-choice[data-hero="3"]').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'3','hero card updates native accessible selector');
     assert.match(await page.locator('#auto-hero-portrait').getAttribute('src'),/images\/funai-care-ye-bao-ex\.png$/,'large portrait follows chosen guardian');
    assert.equal(await page.locator('.auto-hero-choice[data-hero="3"]').getAttribute('aria-pressed'),'true','selected card is highlighted');
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','carousel and dropdown stay in sync');
+   await page.locator('#auto-hero-choices').focus();
+   await page.keyboard.press('ArrowRight');
+   assert.equal(await page.locator('#auto-hero').inputValue(),'4','keyboard arrows update central selection');
+   await page.locator('#auto-hero').evaluate(el=>{el.value='3';el.dispatchEvent(new Event('change',{bubbles:true}));});
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','accessible native dropdown remains a fallback');
    assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
    assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
    await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
@@ -47,6 +61,22 @@ try{
    const guest=await browser.newPage({viewport});await guest.goto(invite);assert.equal(await guest.evaluate(()=>location.hash),'');if(process.env.BIO_WORKER_ASSETS==='1'){assert(await guest.locator('#auto-wait').isVisible(),'configured candidate starts joining automatically');assert(await guest.locator('#auto-share-actions').isHidden(),'guest does not share host invitation');}else assert(await guest.locator('#auto-form').isVisible());assert(!(await guest.locator('#auto-code-label').isVisible()));assert(!(await guest.locator('#connection').isVisible()));await guest.close();
   }
   if(locale==='zh'&&viewport.width===1280){
+   await page.locator('#auto-create').click();
+   const desktop=await page.evaluate(()=>{
+    const root=document.querySelector('#auto-entry'),form=document.querySelector('#auto-form'),pane=document.querySelector('.auto-picker-pane'),preview=document.querySelector('.auto-hero-card');
+    return {root:root.getBoundingClientRect().width,formDisplay:getComputedStyle(form).display,
+      formColumns:getComputedStyle(form).gridTemplateColumns.split(' ').filter(Boolean).length,
+      paneWidth:pane.getBoundingClientRect().width,previewWidth:preview.getBoundingClientRect().width,
+      overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert(desktop.root>=1080,'desktop lobby expands horizontally, not a narrow centered form');
+   assert.equal(desktop.formDisplay,'grid','desktop form uses side-by-side chooser and preview');
+   assert.equal(desktop.formColumns,2,'desktop lobby has two content columns');
+   assert(desktop.paneWidth>330&&desktop.previewWidth>390,'both desktop columns use available space');
+   assert.equal(desktop.overflow,false,'desktop layout does not create a scrollbar horizontally');
+   await page.locator('#auto-hero-next').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'1','desktop arrow navigates carousel');
+   await page.locator('#auto-back').click();
    // Real-device regression: victory and returning to lobby must not mute music.
    // Count media pauses directly, without autoplay or streaming any copyrighted track.
    const musicTransitions=await page.evaluate(()=>{
