@@ -509,6 +509,8 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
 /* Touch landscape remains compact: no additional ribbon height is consumed.
    Preserve the existing floating preview in this limited-height orientation. */
 @media (max-width:700px) and (orientation:landscape), (pointer:coarse) and (orientation:landscape) and (max-height:700px){
+ body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g03"],
+ body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g04"]{position:relative}
  body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g03"] #opponent-dock:not([hidden]),
  body[data-auto-lobby].auto-connected.playing #game-shell[data-game="g04"] #opponent-dock:not([hidden]){
   position:absolute;right:7px;top:5px;z-index:8;
