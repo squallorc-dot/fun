@@ -20,7 +20,7 @@ for(const lang of ['zh','ja']){
  assert(bridge.includes("type:'ready'"),'G02 readiness handshake missing for '+lang);
  assert(bridge.includes("dispatchEvent(new Event('change'"),'G02 selected difficulty not applied for '+lang);
  const page=read(`arcade/${lang}/index.html`);
- assert(page.includes(`../challenge/index.html?lang=${lang}`),`${lang} public arcade must link to official offline challenge`);
+ assert(!page.includes(`../challenge/index.html?lang=${lang}`),`${lang} public arcade must not link to retired offline challenge`);
  assert(page.includes(`bio-city-v161-signaling.squall-orc.workers.dev/arcade/friends/?lang=${lang}`),`${lang} public arcade must keep the live Beta separately labeled`);
  assert(!page.includes(`../qa/friends-v16/index.html?lang=${lang}`),`${lang} arcade must not expose obsolete manual WebRTC lab as the main entry`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices','stage-audio-status','stage-audio-play'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
