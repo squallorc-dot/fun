@@ -121,6 +121,10 @@ function ensureConnectedPicker(){
 function updateLobbyCarousel(index,canChange){
  const track=$('auto-lobby-track');if(!track)return;
  const selected=Math.max(0,Math.min(heroes.length-1,index));
+ // The hidden select is the authoritative value for arrow navigation.
+ // Initialize it now, not only in the 500ms room refresh, otherwise the
+ // first arrow click can move a guest from 0 instead of their chosen hero.
+ const select=$('auto-lobby-hero');if(select)select.value=String(selected);
  for(const card of track.children){
   const i=Number(card.dataset.hero);
   card.dataset.position=i===selected?'center':i===selected-1?'previous':i===selected+1?'next':'hidden';
