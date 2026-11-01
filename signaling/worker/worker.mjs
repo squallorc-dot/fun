@@ -129,8 +129,19 @@ export class Room {
  async webSocketMessage(ws,text){
   const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
   if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
-  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>(text.includes('"type":"relay-data"')?180:8)){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
+  const now=Date.now();
+  // Gameplay Relay packets can arrive dozens of times per second. Keep a
+  // separate budget for authenticated RTC data and room control commands:
+  // the first retry-ready after a busy game must not inherit relay traffic.
+  // Classify parsed messages, never user-controlled JSON substrings.
+  if(now-info.window>=1000){info.window=now;info.count=0;info.relayCount=0;}
+  const relayPacket=!!info.role&&msg?.v===VERSION&&msg.type==='relay-data';
+  if(relayPacket){
+   info.relayCount=(info.relayCount||0)+1;
+   if(info.relayCount>180){ws.close(1008,'rate');return;}
+  }else if(++info.count>8){ws.close(1008,'rate');return;}
+  ws.serializeAttachment(info);
   if(!info.role){
    if(msg?.v===VERSION&&msg.type==='join-request'&&Object.keys(msg).length===2&&now<info.at+AUTH_MS){
     await this.state.blockConcurrencyWhile(async()=>{
