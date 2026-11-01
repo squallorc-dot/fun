@@ -72,7 +72,7 @@ try{
  for(const locale of ['zh','ja']){
   const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,deviceScaleFactor:2});const page=await context.newPage();
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+'/'+locale+'/play.html');await page.locator('.legacy-game-panel>summary').click();await page.locator('[data-ar-command="start"]').click();starts++;
+  await page.goto(origin+'/arcade/'+locale+'/index.html');await page.locator('.legacy-game-panel>summary').click();await page.locator('[data-ar-command="start"]').click();starts++;
   await page.locator('canvas').waitFor();await geometry(page,locale+' standalone',388);
   check(await page.locator('[data-ar-command="leave"]').isVisible(),locale+' standalone retains exit control');
   await page.locator('[data-ar-command="sound"]').click();check(await page.locator('#ar-sound-label').textContent()==='OFF',locale+' consolidated sound control works');
