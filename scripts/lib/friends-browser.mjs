@@ -56,7 +56,11 @@ export async function complete(a,b,mode){
    rally:m?.rally??null,ball:!!m?.ball,ack:s.configAck,
    link:BioFriendsApp.session.link.state,transport:BioFriendsApp.session.link.transport||'p2p',
    input:BioFriendsApp.session.lastInputSeq,send:s.metrics.sent,recv:s.metrics.received,
-   rejected:s.metrics.rejected,contacts:window.__friendDriver?.contacts||0};
+   rejected:s.metrics.rejected,appRejected:BioFriendsApp.session.rejected,
+   buffered:s.metrics.buffered,relayReady:!!BioFriendsApp.session.link.relaySend,
+   sockets:(window.__testSockets||[]).map(s=>s.readyState),
+   closed:(window.__testSocketClosures||[]).slice(-3),
+   contacts:window.__friendDriver?.contacts||0};
  },side);}catch{return {side,unavailable:true};}}));
  const monitor=setInterval(()=>{if(timeline.length>=24)return;sample().then(states=>timeline.push({at:Math.round((Date.now()-started)/1000),states})).catch(()=>{});},2500);
  try{
