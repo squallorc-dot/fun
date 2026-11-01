@@ -43,10 +43,9 @@ const heroForm=$('auto-form'),heroStrip=$('auto-hero-choices');
 const pickerPane=document.createElement('section');pickerPane.className='auto-picker-pane';
 pickerPane.setAttribute('aria-label',ja?'ガーディアンを選ぶ':'選擇守護者');
 const selectLabel=$('auto-hero').closest('label');
-const nativePicker=document.createElement('details');nativePicker.className='auto-native-picker';
-const nativeSummary=document.createElement('summary');
-nativeSummary.textContent=ja?'一覧から選ぶ':'使用清單選擇';
-nativePicker.append(nativeSummary,selectLabel);
+// Keep the original select as the authoritative hero value for signaling,
+// but do not show a second visual picker beside the accessible carousel.
+selectLabel.hidden=true;
 const stage=document.createElement('div');stage.className='auto-hero-stage';
 const previous=document.createElement('button'),next=document.createElement('button');
 for(const [btn,id,txt,aria] of [
@@ -58,7 +57,7 @@ heroStrip.tabIndex=0;
 stage.append(previous,heroStrip,next);
 const progress=document.createElement('output');progress.id='auto-hero-progress';progress.className='auto-hero-progress';progress.setAttribute('aria-live','polite');
 heroForm.insertBefore(pickerPane,heroForm.firstChild);
-pickerPane.append($('auto-name-label'),$('auto-code-label'),stage,progress,nativePicker);
+pickerPane.append($('auto-name-label'),$('auto-code-label'),stage,progress,selectLabel);
 // A fixed-width stage avoids nested flex scroll-width expansion on phones.
 // Side cards are transformed into view; horizontal swipes move the selection.
 function centerGuardian(){refreshHeroChoices();}
