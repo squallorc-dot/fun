@@ -48,7 +48,13 @@ class Session{
  }
  createRound(){
   this.engineFailure=null;this.adapter?.dispose();this.clock.clear();this.tick=0;this.resultCount=0;this.result=null;this.inputSeq=0;this.lastInputSeq=-1;this.edges=this.emptyEdges();this.held={};this.remote={};this.pulses={};this.remoteEdges=this.emptyEdges();this.remoteAt=performance.now();this.sentInputs.clear();this.countdown=3;this.phase='countdown';
-  this.adapter=new (this.meta().Adapter)({mode:this.config.mode,hero:this.config.heroes[0],remoteHero:this.config.heroes[1],host:this.role==='host',locale:this.locale,chapter:this.config.chapter,difficulty:this.config.difficulty,epoch:this.epoch,onFailure:reason=>{this.engineFailure=['startup-timeout','asset-unavailable','snapshot-overflow'].includes(reason)?reason:'engine-error';this.link.close('engine-error');},onSnapshot:()=>{if(this.phase==='paused')this.publish(true);},sfx:(freq,len)=>{this.sfx(freq,len);if(this.role==='host')this.link.send('sound',{epoch:this.epoch,freq,len});},finish:()=>this.finish()});
+  this.adapter=new (this.meta().Adapter)({mode:this.config.mode,hero:this.config.heroes[0],remoteHero:this.config.heroes[1],host:this.role==='host',locale:this.locale,chapter:this.config.chapter,difficulty:this.config.difficulty,epoch:this.epoch,onFailure:reason=>{this.engineFailure=['startup-timeout','asset-unavailable','snapshot-overflow'].includes(reason)?reason:'engine-error';this.link.close('engine-error');},onSnapshot:()=>{if(this.phase==='paused')this.publish(true);},onReady:()=>{if(this.role==='guest'&&this.phase==='countdown'&&this.startPending&&this.config?.game==='g02')this.acknowledgeStart();},sfx:(freq,len)=>{this.sfx(freq,len);if(this.role==='host')this.link.send('sound',{epoch:this.epoch,freq,len});},finish:()=>this.finish()});
+ }
+ acknowledgeStart(){
+  if(this.role!=='guest'||!this.startPending||this.phase!=='countdown')return false;
+  if(this.config?.game==='g02'&&!this.adapter?.started)return false;
+  if(!this.link.send('start-ack',{epoch:this.epoch})){this.link.close('start-ack-failed');return false;}
+  this.startPending=false;this.changed();return true;
  }
  tryStart(){
   if(this.role!=='host'||this.phase!=='lobby'||!this.configAck||!this.readyFlags.every(Boolean))return;
@@ -56,7 +62,7 @@ class Session{
   // The host must not advance its simulation until the guest has created its
   // actual game adapter. This avoids a one-sided G02 launch on slow iOS Safari.
   this.startPending=true;const epoch=this.epoch;
-  this.startWaitTimer=setTimeout(()=>{if(this.startPending&&this.epoch===epoch&&this.link.state==='connected')this.link.close('start-timeout');},12000);
+  this.startWaitTimer=setTimeout(()=>{if(this.startPending&&this.epoch===epoch&&this.link.state==='connected')this.link.close('start-timeout');},this.config?.game==='g02'?25000:12000);
   if(!this.link.send('start',{epoch,engine:this.config.engine,mode:this.config.mode})){this.link.close('start-failed');return;}
   this.changed();
  }
@@ -105,11 +111,11 @@ class Session{
   }
   if(type==='start'){
    if(this.role!=='guest'||channel!=='control'||!keys(d,['epoch','engine','mode'])||d.mode!==this.config.mode||d.engine!==this.config.engine)return false;
-   if(this.phase==='countdown'||this.phase==='playing')return this.link.send('start-ack',{epoch:this.epoch});
+   if(this.phase==='countdown'||this.phase==='playing')return this.startPending?true:this.link.send('start-ack',{epoch:this.epoch});
    if(this.phase!=='lobby'||!this.readyFlags.every(Boolean))return false;
-   this.createRound();
-   if(!this.link.send('start-ack',{epoch:this.epoch})){this.link.close('start-ack-failed');return false;}
-   this.changed();return true;
+   this.startPending=true;this.createRound();
+   if(this.config.game==='g02'){this.changed();return true;}
+   return this.acknowledgeStart();
   }
   if(type==='start-ack'){
    if(this.role!=='host'||channel!=='control'||!keys(d,['epoch'])||!this.startPending||this.phase!=='countdown')return false;
