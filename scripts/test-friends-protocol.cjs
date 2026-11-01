@@ -46,3 +46,26 @@ for(const mode of ['pong','volley']){let expected;
  }
 }
 console.log('FRIENDS PROTOCOL PASS '+checks+' wire/schema/lifecycle/neutral-input/authority and identical-input FPS checks');
+
+// Continue from a finished score directly, without returning to the lobby and
+// requiring two more manual ready clicks. This unit probe never opens RTC.
+(async()=>{
+ const h=new w.BioFriends.Session(),g=new w.BioFriends.Session(),tag=w.BioG05Network.TAG,wire=[];
+ for(const [s,role,hero] of [[h,'host',0],[g,'guest',3]]){
+  s.role=role;s.hero=hero;s.room='';s.epoch=4;s.phase='finished';s.resultCount=1;
+  s.result={points:[7,6],winner:0};s.link.state='connected';s.peerHello={hero:role==='host'?3:0,games:s.capabilities};
+  s.config={game:'g05',mode:'pong',engine:tag,heroes:[0,3],room:'',epoch:4};s.configAck=true;
+ }
+ h.link.send=(type,data,fast)=>{wire.push([g,type,structuredClone(data),fast]);return true;};
+ g.link.send=(type,data,fast)=>{wire.push([h,type,structuredClone(data),fast]);return true;};
+ const drain=()=>{let count=0;while(wire.length&&count++<30){const [target,type,data,fast]=wire.shift();check(target.receive(type,data,fast?'input':'control'),'direct continuation packet '+type);}check(count<30,'finite continuation traffic');};
+ check(g.next(),'guest can request the next round');check(g.nextRequested,'guest waits for host');
+ drain();check(h.config.epoch===5&&g.config.epoch===5&&h.config.continuation&&g.config.continuation,'epoch and continuation synchronize without manual lobby');
+ // Each side prepares existing assets automatically and votes once.
+ for(let i=0;i<8;i++){await new Promise(resolve=>setImmediate(resolve));drain();if(h.phase==='countdown'&&g.phase==='countdown')break;}
+ check(h.phase==='countdown'&&g.phase==='countdown','automatic ready produces three-second countdown on both peers');
+ check(h.readyFlags.every(Boolean)&&g.readyFlags.every(Boolean),'both parties agree to the continued round automatically');
+ check(!h.next()&&!g.next(),'duplicate next-round actions rejected');
+ h.leave();g.leave();
+ console.log('PASS FRIENDS DIRECT NEXT: guest request, host epoch, automatic bilateral preparation and countdown');
+})().catch(error=>{console.error(error);process.exitCode=1;});
