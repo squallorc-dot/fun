@@ -31,7 +31,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
     // A retry is a fresh RTC/Relay negotiation on the same authenticated room.
     // The previous round's relay state must not suppress a new offer/answer.
     relayActive=false;earlyRelayPackets=[];lastRelayAttempt=0;clearRecovery();
-    const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
+    const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state)&&!link.betaStun)finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(!link.useRelay&&['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   healthTimer=setInterval(()=>{
     if(stopped||!settled||relayActive||!link.useRelay||link.state!=='connected')return;
@@ -53,7 +53,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    if(message.v!==VERSION||typeof message.type!=='string')return finish(Error('message-format'));
    try{
     if(message.type==='retry-denied'&&retryPending)finish(Error('retry-denied'));
-    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&!started){retryAttempts=message.attempt;if(role==='host'){started=true;send('offer',{description:await startLink('offer')});}}
+    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&!started){retryAttempts=message.attempt;if(role==='host'){started=true;scheduleFallback();send('offer',{description:await startLink('offer')});}}
     else if(message.type==='authenticated'&&message.role===role&&/^[a-f0-9]{64}$/.test(message.resumeToken||'')){resumeToken=message.resumeToken;socketReady=true;onProgress('authenticated');if(resuming){signalingLost=false;onSignalingRestored();}}
     else if(message.type==='join-request'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinRequest(message.id);
     else if(message.type==='join-cancelled'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinCancelled(message.id);
