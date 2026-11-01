@@ -34,7 +34,9 @@ function size(){
  if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;ctx.setTransform(bw/session.adapter.game.w,0,0,bh/session.adapter.game.h,0,0);}
 }
 function render(){
- if(!session)return;const s=session.inspect(),connected=session.link.state==='connected',active=!!session.adapter&&!s.startPending;
+ if(!session)return;// The guest iframe must be laid out while starting: hiding its parent stalls
+ // WebKit canvas/asset initialization. Only the host waits in the lobby.
+ const s=session.inspect(),connected=session.link.state==='connected',active=!!session.adapter&&(s.role==='guest'||!s.startPending);
  if(epoch!==s.epoch){epoch=s.epoch;resetInputs();}
  if(lastPhase!==s.phase){resetInputs();if(['paused','disconnected','idle'].includes(s.phase))audio.pause();if(s.phase==='lobby')audio.resume();if(s.phase==='playing'){if(lastPhase==='countdown')audio.round();else audio.resume();}lastPhase=s.phase;controls?.schedule();}
  $('connection').hidden=connected;$('language').disabled=connected||s.phase==='pairing';$('hero').disabled=s.phase==='pairing';if(connected){$('local').value='';$('remote').value='';}
