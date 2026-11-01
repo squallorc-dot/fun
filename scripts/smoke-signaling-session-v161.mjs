@@ -38,7 +38,22 @@ try{
    throw error;
   }
  }
- await start(pages[0],pages[1],'pong');const matchPromise=complete(pages[0],pages[1],'pong');await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing');await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));const match=await matchPromise;assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
+ await start(pages[0],pages[1],'pong');
+ const matchPromise=complete(pages[0],pages[1],'pong');
+ await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
+ const transports=await Promise.all(pages.map(p=>p.evaluate(()=>BioFriendsApp.session.link.transport)));
+ if(transports.every(type=>type==='p2p')){
+  // Direct data channels continue without the signaling socket.
+  await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));
+ }else{
+  // Authenticated Worker Relay carries actual game packets over this WebSocket.
+  // Closing it here would intentionally disconnect the game, not test signaling independence.
+  assert(transports.every(type=>type==='relay'),'both browsers must agree on their transport before G05 play: '+JSON.stringify(transports));
+  assert((await Promise.all(pages.map(p=>p.evaluate(()=>window.__testSockets.some(s=>s.readyState===WebSocket.OPEN))))).every(Boolean),'both relay transport sockets must remain open during gameplay');
+ }
+ const match=await matchPromise;
+ assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
  console.log('PASS genuine RTC game survives signaling WebSocket closure: two players move, return balls and agree on result');
  await Promise.all(pages.map(p=>p.evaluate(()=>window.originalPeer=BioFriendsApp.session.link.pc)));
  await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
