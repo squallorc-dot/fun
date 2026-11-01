@@ -10,6 +10,17 @@ for(const path of ['/','/arcade/friends/','/arcade/zh/index.html','/arcade/ja/',
  assert.equal((await worker.fetch(req(path,'192.0.2.2',{'X-Forwarded-For':'192.0.2.1',Cookie:'TEST_ENABLED=true'}),env)).status,403);
  assert.equal(calls,before,'gate executes before any static asset/cache binding');
 }
+// No stale Beta hub, including direct URLs or trailing-slash variants.
+for(const locale of ['zh','ja'])for(const suffix of ['/','/index.html']){
+ const path='/arcade/'+locale+suffix,before=calls;
+ for(const method of ['GET','HEAD']){
+  const redirect=await worker.fetch(new Request(origin+path,{method,headers:{'CF-Connecting-IP':'192.0.2.1'}}),env);
+  assert.equal(redirect.status,302,'return to production Arcade: '+path);
+  assert.equal(redirect.headers.get('location'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html');
+  assert.equal(redirect.headers.get('cache-control'),'no-store');
+ }
+ assert.equal(calls,before,'do not load stale HTML from static assets: '+path);
+}
 for(const path of ['/.git/config','/signaling/worker/wrangler.toml','/arcade/qa/friends-v16/index.html','/assets/secret.js','/arcade/assets/guardians/SOURCE.md','/signaling/受控雲端測試.md'])assert.equal((await worker.fetch(req(path),env)).status,404,path);
 const response=await worker.fetch(req('/arcade/friends/index.html',undefined,{'If-None-Match':'old'}),env);
 assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('etag'),null);assert.match(response.headers.get('content-security-policy'),/frame-ancestors 'self'/);assert((await response.text()).includes(`content="${origin}"`));
