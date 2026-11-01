@@ -82,6 +82,28 @@ try{
   const v=BioFriendsApp.inspect();
   return v.session.phase==='playing'&&v.session.tick>240&&v.session.config?.game==='g02';
  },null,{timeout:60000})));
+ // The two browsers must exchange real guest inputs after entering G02,
+ // not merely display matching loading screens. Drive ordinary key events.
+ const hostBefore=await host.evaluate(()=>BioFriendsApp.session.lastInputSeq);
+ await guest.evaluate(()=>{
+  for(const key of ['j','d'])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
+ });
+ await host.waitForFunction(before=>{
+  const s=BioFriendsApp.session;
+  return s.phase==='playing'&&s.lastInputSeq>=before+12&&s.remote?.fire===true;
+ },hostBefore,{timeout:18000});
+ await guest.evaluate(()=>{
+  for(const key of ['j','d'])document.body.dispatchEvent(new KeyboardEvent('keyup',{key,bubbles:true}));
+ });
+ const live=await Promise.all(pages.map(p=>p.evaluate(()=>{
+  const s=BioFriendsApp.session;
+  return {phase:s.phase,sequence:s.role==='host'?s.lastInputSeq:s.inputSeq,
+   game:s.config?.game,ready:!!s.adapter?.started};
+ })));
+ assert(live.every(x=>x.phase==='playing'&&x.game==='g02'&&x.ready),
+  'both WebKit and Chromium remain in the real G02 game after guest input');
+ assert(live[0].sequence>=hostBefore+12&&live[1].sequence>0,
+  'Chromium receives sustained WebKit input sequence');
  const snapshots=await Promise.all(pages.map(safe));
  assert(snapshots.every(s=>s.playing&&s.adapter&&!s.startPending&&s.chapter===2),'both engines show real G02 game');
  assert.equal(snapshots[0].epoch,snapshots[1].epoch,'G02 epoch shared across browser engines');
@@ -90,7 +112,7 @@ try{
  assert(snapshots.every(s=>s.phase==='playing'&&s.configAck),'both engines received same configuration');
  await host.locator('#return').click();
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck,null,{timeout:30000})));
- console.log('PASS WebKit iPhone 13 emulation + Chromium mobile: G02 both start, shared epoch, chapter 2, hero state and return');
+ console.log('PASS WebKit iPhone 13 emulation + Chromium mobile: G02 both start, shared epoch, chapter 2, real guest inputs and return');
 }catch(error){
  console.error('SAFE G02 CROSS-ENGINE STATES '+JSON.stringify(await Promise.all(pages.map(safe))));
  console.error('SAFE G02 ENGINE SAMPLES '+JSON.stringify(engineSamples.slice(-14)));
