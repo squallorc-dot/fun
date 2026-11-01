@@ -7,7 +7,7 @@ const q=(a,p)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*p)-1]:null
 class Session{
  constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh',betaStun=false,adapters={g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{})}}={}){
   this.adapters=Object.freeze({...adapters});this.capabilities=Object.entries(this.adapters).flatMap(([id,m])=>m.MODES.map(mode=>id+':'+mode+'@'+m.TAG)).concat(HERO_CAP).sort();
-  this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m),betaStun});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.closed=false;
+  this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m),betaStun});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.nextRequested=false;this.closed=false;
  }
  meta(game=this.config?.game||'g05'){return this.adapters[game];}
  edgeNames(){return this.meta()?.EDGES||['fire','jump'];}
@@ -19,7 +19,7 @@ class Session{
   else {clearTimeout(this.heroRequestTimer);this.heroRequestTimer=null;this.pendingHero=null;this.clearRound();this.phase=state==='idle'?'idle':'disconnected';}
   this.changed();
  }
- clearRound(){this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges=this.emptyEdges();this.pulses={};this.held={};this.edges=this.emptyEdges();this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.readyTask=(this.readyTask||0)+1;}
+ clearRound(){this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges=this.emptyEdges();this.pulses={};this.held={};this.edges=this.emptyEdges();this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.nextRequested=false;this.readyTask=(this.readyTask||0)+1;}
  setHero(value){if(!hero(value)||this.phase!=='lobby'||!this.configAck||this.preparing||this.readyFlags.some(Boolean)||!this.peerHello?.games.includes(HERO_CAP)||this.pendingHero!=null)return false;if(value===this.hero)return true;if(this.role==='guest'){this.pendingHero=value;if(!this.link.send('hero-request',{epoch:this.epoch,hero:value})){this.pendingHero=null;return false;}if(this.pendingHero!==null)this.heroRequestTimer=setTimeout(()=>{this.pendingHero=null;this.heroRequestTimer=null;this.changed();},5000);this.changed();return true;}if(this.role==='host'){if(!this.link.send('hero-update',{epoch:this.epoch,hero:value}))return false;this.hero=value;return this.configure(this.config.mode,this.config.game);}return false;}
  prepareAuto(role,room='',selectedHero=0){if(!['host','guest'].includes(role)||!name(room)||!hero(selectedHero)||['pairing','connected'].includes(this.link.state))throw Error('room-settings');this.peerHello=null;this.config=null;this.pendingHero=null;this.role=role;this.room=role==='host'?room:'';this.hero=selectedHero;this.epoch=0;}
  async host(room='',selectedHero=0){if(!name(room)||!hero(selectedHero))throw Error('room-settings');this.peerHello=null;this.config=null;this.pendingHero=null;this.role='host';this.room=room;this.hero=selectedHero;this.epoch=0;return this.link.offer();}
@@ -27,7 +27,19 @@ class Session{
  accept(text){return this.link.accept(text);}
  configure(mode=this.config?.mode||'pong',game=this.config?.game||'g05',options={}){
   if(this.role!=='host'||this.link.state!=='connected'||!this.peerHello||!this.meta(game)?.MODES.includes(mode)||!this.peerHello.games.includes(game+':'+mode+'@'+this.meta(game).TAG)||ACTIVE.includes(this.phase))return false;
-  if(['g01','g02','g06'].includes(game)&&(!Number.isInteger(options.chapter??1)||(options.chapter??1)<1||(options.chapter??1)>5||!['normal','hard','expert'].includes(options.difficulty??'normal')))return false;const previous=this.config;this.clearRound();this.epoch++;this.config={game,mode,engine:this.meta(game).TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch,...(['g01','g02','g06'].includes(game)?{chapter:options.chapter??(previous?.game===game?previous.chapter:1),difficulty:options.difficulty??(previous?.game===game?previous.difficulty:'normal')}:{})};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
+  if(options.continuation===true&&(this.phase!=='finished'||this.config?.game!==game||this.config?.mode!==mode||this.resultCount!==1))return false;
+   if(['g01','g02','g06'].includes(game)&&(!Number.isInteger(options.chapter??1)||(options.chapter??1)<1||(options.chapter??1)>5||!['normal','hard','expert'].includes(options.difficulty??'normal')))return false;const previous=this.config;this.clearRound();this.epoch++;this.config={game,mode,engine:this.meta(game).TAG,heroes:[this.hero,this.peerHello.hero],room:this.room,epoch:this.epoch,...(['g01','g02','g06'].includes(game)?{chapter:options.chapter??(previous?.game===game?previous.chapter:1),difficulty:options.difficulty??(previous?.game===game?previous.difficulty:'normal')}:{}),...(options.continuation===true?{continuation:true}:{})};this.phase='lobby';this.link.send('config',this.config);this.changed();return true;
+ }
+ // One-click continuation within the same authenticated two-player room.
+ // A guest may request it; the host alone advances the authoritative epoch.
+ next(){
+  if(this.link.state!=='connected'||this.phase!=='finished'||!this.config||this.resultCount!==1||!this.result||this.nextRequested)return false;
+  if(this.role==='guest'){this.nextRequested=!!this.link.send('next-request',{epoch:this.epoch});this.changed();return this.nextRequested;}
+  if(this.role!=='host')return false;
+  const previous=this.config,hasChapters=['g01','g02','g06'].includes(previous.game);
+  const completed=previous.game==='g06'?Array.isArray(this.result.players)&&this.result.players.length===2&&this.result.players.every(p=>p.status==='finished'):!!this.result.win;
+  const chapter=hasChapters?(completed?(previous.chapter>=5?1:(previous.chapter||1)+1):(previous.chapter||1)):undefined;
+  return this.configure(previous.mode,previous.game,{...(hasChapters?{chapter,difficulty:previous.difficulty}:{ }),continuation:true});
  }
  async ready(value=true){
   if(this.phase!=='lobby'||!this.config||!this.configAck)return false;const epoch=this.epoch,task=++this.readyTask;
@@ -68,8 +80,8 @@ class Session{
   }
   if(type==='leave'){if(channel!=='control'||!keys(d,[]))return false;this.link.close('closed');return true;}
   if(type==='config'){
-   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['g01','g02','g06'].includes(d.game)?['game','mode','engine','heroes','room','epoch','chapter','difficulty']:['game','mode','engine','heroes','room','epoch'])||['g01','g02','g06'].includes(d.game)&&(!Number.isInteger(d.chapter)||d.chapter<1||d.chapter>5||!['normal','hard','expert'].includes(d.difficulty))||!this.meta(d.game)?.MODES.includes(d.mode)||d.engine!==this.meta(d.game).TAG||!this.capabilities.includes(d.game+':'+d.mode+'@'+d.engine)||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero&&d.heroes[1]!==this.pendingHero||!name(d.room))return false;
-   if(d.heroes[1]===this.pendingHero){this.hero=this.pendingHero;this.pendingHero=null;clearTimeout(this.heroRequestTimer);this.heroRequestTimer=null;}this.clearRound();this.epoch=d.epoch;this.config=structuredClone(d);this.room=d.room;this.phase='lobby';this.configAck=true;this.link.send('ack',{epoch:this.epoch});this.changed();return true;
+   if(this.role!=='guest'||channel!=='control'||!this.peerHello||!keys(d,['g01','g02','g06'].includes(d.game)?['game','mode','engine','heroes','room','epoch','chapter','difficulty','continuation']:['game','mode','engine','heroes','room','epoch','continuation'])||d.continuation!==undefined&&(d.continuation!==true||this.phase!=='finished'||this.config?.game!==d.game||this.config?.mode!==d.mode)||['g01','g02','g06'].includes(d.game)&&(!Number.isInteger(d.chapter)||d.chapter<1||d.chapter>5||!['normal','hard','expert'].includes(d.difficulty))||!this.meta(d.game)?.MODES.includes(d.mode)||d.engine!==this.meta(d.game).TAG||!this.capabilities.includes(d.game+':'+d.mode+'@'+d.engine)||!integer(d.epoch)||d.epoch<=this.epoch||!Array.isArray(d.heroes)||d.heroes.length!==2||!d.heroes.every(hero)||d.heroes[0]!==this.peerHello.hero||d.heroes[1]!==this.hero&&d.heroes[1]!==this.pendingHero||!name(d.room))return false;
+   if(d.heroes[1]===this.pendingHero){this.hero=this.pendingHero;this.pendingHero=null;clearTimeout(this.heroRequestTimer);this.heroRequestTimer=null;}this.clearRound();this.epoch=d.epoch;this.config=structuredClone(d);this.room=d.room;this.phase='lobby';this.configAck=true;this.link.send('ack',{epoch:this.epoch});this.changed();if(d.continuation===true)Promise.resolve().then(()=>{if(this.config?.epoch===d.epoch&&this.phase==='lobby')this.ready(true).catch(()=>this.changed());});return true;
   }
   if(type==='hero-request'||type==='hero-update'){
    if(channel!=='control'||!keys(d,['epoch','hero'])||!integer(d.epoch)||d.epoch>this.epoch||d.epoch<this.epoch-4||!hero(d.hero)||this.phase!=='lobby'||this.readyFlags.some(Boolean)||!this.peerHello?.games.includes(HERO_CAP))return false;
@@ -77,7 +89,8 @@ class Session{
    if(type==='hero-update'&&this.role==='guest'){this.peerHello.hero=d.hero;this.changed();return true;}return false;
   }
   if(!integer(d.epoch)||d.epoch!==this.epoch||!this.config)return false;
-  if(type==='ack'){if(this.role!=='host'||channel!=='control'||!keys(d,['epoch']))return false;this.configAck=true;this.changed();return true;}
+  if(type==='ack'){if(this.role!=='host'||channel!=='control'||!keys(d,['epoch']))return false;this.configAck=true;this.changed();if(this.config.continuation===true)Promise.resolve().then(()=>{if(this.config?.epoch===d.epoch&&this.phase==='lobby')this.ready(true).catch(()=>this.changed());});return true;}
+   if(type==='next-request'){if(this.role!=='host'||channel!=='control'||this.phase!=='finished'||!keys(d,['epoch']))return false;return this.next();}
   if(type==='ready'){
    if(channel!=='control'||this.phase!=='lobby'||!keys(d,['epoch','value'])||typeof d.value!=='boolean')return false;this.readyFlags[this.role==='host'?1:0]=d.value;this.tryStart();this.changed();return true;
   }
@@ -126,7 +139,7 @@ class Session{
    this.adapter.render();
   }
  }
- inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,pauseReason:this.phase==='paused'?(this.pauseReason||'peer'):null,resume:[...this.resumeFlags],rtc:this.link.diagnose?.()||null,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
+ inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,pauseReason:this.phase==='paused'?(this.pauseReason||'peer'):null,resume:[...this.resumeFlags],rtc:this.link.diagnose?.()||null,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,nextRequested:this.nextRequested,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
 }
 root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{})})});
 })(typeof window==='undefined'?globalThis:window);
