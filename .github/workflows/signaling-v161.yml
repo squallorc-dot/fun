@@ -26,6 +26,7 @@ on:
       - 'scripts/test-g02-embedded-layout-v161.mjs'
       - 'scripts/test-signaling-lifecycle-v161.cjs'
       - 'scripts/lib/friends-browser.mjs'
+      - 'scripts/acceptance-friends-v16.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
       - 'scripts/test-public-beta-config-v161.mjs'
       - 'arcade/zh/index.html'
@@ -40,6 +41,11 @@ on:
       - 'scripts/test-signaling-live-rate-v161.mjs'
       - 'scripts/test-signaling-live-ws-v161.cjs'
       - '.github/workflows/signaling-v161.yml'
+
+# Cancel older verification attempts for this PR; never cancel main build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:

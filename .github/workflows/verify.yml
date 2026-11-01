@@ -9,6 +9,11 @@ on:
         description: Keep formal acceptance evidence for 30 days
         type: boolean
         default: false
+
+# Cancel older verification attempts for this PR; never cancel main build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
