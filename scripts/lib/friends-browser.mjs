@@ -47,9 +47,26 @@ export async function driver(page,side,{missAfter=12}={}){
 }
 export async function complete(a,b,mode){
  await Promise.all([driver(a,0),driver(b,1)]);
+ // Keep bounded, state-only diagnostics across the match. Never collect
+ // SDP, ICE candidates, room codes, link fragments, or player addresses.
+ const timeline=[],started=Date.now();
+ const sample=async()=>Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
+  const v=BioFriendsApp.inspect(),s=v.session,m=v.match;
+  return {side,phase:s.phase,pause:s.pauseReason,tick:s.tick,score:m?.points||null,
+   rally:m?.rally??null,ball:!!m?.ball,ack:s.configAck,
+   link:BioFriendsApp.session.link.state,transport:BioFriendsApp.session.link.transport||'p2p',
+   input:BioFriendsApp.session.lastInputSeq,send:s.metrics.sent,recv:s.metrics.received,
+   rejected:s.metrics.rejected,contacts:window.__friendDriver?.contacts||0};
+ },side);}catch{return {side,unavailable:true};}}));
+ const monitor=setInterval(()=>{if(timeline.length>=24)return;sample().then(states=>timeline.push({at:Math.round((Date.now()-started)/1000),states})).catch(()=>{});},2500);
  try{
-  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000})));
+  const outcome=await Promise.race([
+   Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000}))).then(()=>'finished'),
+   Promise.race([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected',null,{timeout:150000}))).then(()=>'disconnected')
+  ]);
+  if(outcome!=='finished')throw Error('match-disconnected-before-result');
  }catch(error){
+  console.error('SAFE MATCH TIMELINE '+JSON.stringify(timeline.slice(-24)));
   // Safe, bounded diagnostic only. No SDP, candidate IP, room identifier,
   // tokens, invites, or page screenshots in CI logs.
   const details=await Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
@@ -63,7 +80,7 @@ export async function complete(a,b,mode){
   },side);}catch{return {side,unavailable:true};}}));
   console.error('SAFE TWO-BROWSER FINISH TIMEOUT '+JSON.stringify(details));
   throw error;
- }
+ }finally{clearInterval(monitor);}
  const views=await Promise.all([a,b].map(p=>p.evaluate(()=>({view:BioFriendsApp.inspect(),driver:window.__friendDriver}))));await Promise.all([a,b].map(p=>p.evaluate(()=>window.__stopFriendDriver?.())));
  assert.deepEqual(views[0].view.session.result,views[1].view.session.result,'same authoritative winner and score');assert(views.every(v=>v.view.session.resultCount===1),'settles exactly once');assert(views.every(v=>v.driver.axes>0&&v.driver.actions>0&&v.driver.moved>0&&v.driver.swung>0),'both browsers actually move and swing/jump via keyboard');
  const points=views[0].view.session.result.points;assert(Math.max(...points)===(mode==='pong'?7:5));return {mode,result:views[0].view.session.result,peers:views.map(v=>({metrics:v.view.session.metrics,driver:v.driver}))};
