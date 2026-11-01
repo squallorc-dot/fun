@@ -46,6 +46,28 @@ function render(){
  $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('side').textContent=s.role==='guest'?L.right:L.left;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';const hasChapters=['g01','g02','g03','g04','g06'].includes(s.config?.game),completed=s.config?.game==='g06'?(s.result?.players?.length===2&&s.result.players.every(p=>p.status==='finished')):!!s.result?.win;const nextChapter=hasChapters&&completed&&(s.config?.chapter||1)<5;const nextLabel=nextChapter?(ja?`次のチャプター（${s.config.chapter+1}/5）`:`下一關（${s.config.chapter+1}/5）`):hasChapters?(completed?(ja?'新しい周回を始める':'重新闖關'):(ja?'このチャプターをもう一度':'重試本關')):(ja?'次の試合へ':'再玩下一局');$('rematch').textContent=s.nextRequested?(ja?'ホストの開始を待っています':'等待房主開始下一局'):nextLabel;$('rematch').disabled=!!s.nextRequested;
  if($('help')){const key=s.config?.game+':'+s.config?.mode;if(helpGame!==key){helpGame=key;helpChoice=null;}const visible=active&&document.body.dataset.autoLobby==='true'&&['countdown','playing','paused'].includes(s.phase)&&(helpChoice??true);setHelpOpen(visible);}
   const race=s.config?.game==='g06',dual=['g03','g04'].includes(s.config?.game),time=v=>Number.isFinite(v)?v.toFixed(2)+'s':'—';$('result').textContent=s.result?(dual?`${s.config.game==='g03'?(ja?'階段チャレンジ':'極限下樓梯'):(ja?'ピンボール':'能源彈珠')} · ${(ja?'ホスト':'房主')} ${s.result.players[0].score} : ${(ja?'ゲスト':'好友')} ${s.result.players[1].score} · ${s.result.winner===null?(ja?'引き分け':'平手'):(ja?'勝者':'勝方')+' '+(s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友'))}`:race?s.result.standings.map(r=>`${r.position}. ${r.name} ${r.status==='finished'?(ja?'完走':'完賽'):r.status==='dnf'?(ja?'リタイア':'未完賽'):(ja?'進行中':'比賽中')} ${time(r.time)}`).join(' · ')+' | '+s.result.players.map(p=>`${p.id==='player'?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} 第${p.rank}${ja?'位':'名'} ${ja?'ベスト':'最佳圈'} ${time(p.bestLap)} ${ja?'追越':'超車'} ${p.overtakes} ${ja?'衝突':'碰撞'} ${p.collisions}`).join(' · '):['g01','g02'].includes(s.config?.game)?`${s.result.win?'勝利':(ja?'失敗':'挑戰失敗')} · ${ja?'スコア':'得分'} ${s.result.score} · ${ja?'撃破':'擊倒'} ${s.result.kills}`:`${L.winner}：${s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} · ${s.result.points.join(' : ')}`):'';if(session.adapter&&dual)$('score').innerHTML=session.adapter.game.hud();else if(session.adapter&&race)$('score').innerHTML=s.role==='guest'?session.adapter.game.guestHud():session.adapter.game.hud();else $('score').textContent=session.adapter?(['g01','g02'].includes(s.config?.game)?String(session.adapter.game.inspectCombat().score):session.adapter.game.inspectMatch().points.join(' : ')):'';
+ // The joint result is a readable scoreboard on desktop and both phones.
+ let dualBoard=$('dual-result-board');
+ if(!dualBoard){dualBoard=document.createElement('section');dualBoard.id='dual-result-board';dualBoard.className='dual-result-board';dualBoard.setAttribute('aria-live','polite');dualBoard.hidden=true;$('round-message').insertAdjacentElement('afterend',dualBoard);}
+ dualBoard.hidden=!(dual&&s.phase==='finished'&&s.result?.players?.length===2);
+ if(!dualBoard.hidden){
+  const result=s.result;
+  dualBoard.replaceChildren();
+  const heading=document.createElement('h3');heading.textContent=s.config?.game==='g03'?(ja?'G03 階段チャレンジ · 最終結果':'G03 極限下樓梯 · 共同結算'):(ja?'G04 エナジーピンボール · 最終結果':'G04 能源彈珠 · 共同結算');
+  dualBoard.appendChild(heading);
+  const summary=document.createElement('p');summary.textContent=result.winner===null?(ja?'引き分け':'平手'):(ja?'勝者：':'勝方：')+(result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友'));
+  dualBoard.appendChild(summary);
+  const cards=document.createElement('div');cards.className='dual-result-cards';
+  result.players.forEach((p,i)=>{
+   const card=document.createElement('article');card.className='dual-result-card'+(result.winner===i?' dual-result-winner':'');
+   const title=document.createElement('strong');title.textContent=i===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友');
+   const score=document.createElement('b');score.textContent=String(p.score);
+   const progress=document.createElement('span');progress.textContent=(ja?'進度：':'進度：')+p.progress+(s.config?.game==='g03'?' m':'');
+   const state=document.createElement('small');state.textContent=p.finished?(ja?'終了':'已結束'):(ja?'途中で共同集計':'共同結算時進行中');
+   card.append(title,score,progress,state);cards.appendChild(card);
+  });
+  dualBoard.appendChild(cards);
+ }
  let roundMessage='';
  if(s.phase==='finished'&&s.result){
   if(race){
