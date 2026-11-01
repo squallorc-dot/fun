@@ -128,6 +128,12 @@ try{
    assert(await page.locator('#opponent-preview').isVisible(),'peer PiP reopens without restarting the game');
    await page.locator('#opponent-move').click();
    assert(await page.locator('#opponent-preview').evaluate(el=>el.classList.contains('at-top')),'peer PiP can move above game obstacles');
+   await page.evaluate(()=>{
+     const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
+   });
+   assert(await page.locator('#opponent-preview').isVisible(),'G04 also uses live peer preview');
+   assert(await page.locator('#touch-controls [data-action="fire"]').isVisible(),'G04 shot control visible');
+   assert(await page.locator('#touch-controls [data-action="skill"]').isVisible(),'G04 recall control visible');
    await page.evaluate(()=>{const s=BioFriendsApp.session;s.adapter?.dispose?.();s.adapter=null;s.phase='lobby';document.body.classList.remove('auto-connected');s.changed();});
   }
   if(locale==='zh'&&viewport.width===1280){
@@ -291,5 +297,24 @@ try{
    }
   await page.close();
  }
+ // Real touch-capable landscape viewport: orientation and screen-space regression.
+ const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
+ try{
+  await sideways.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const layout=await sideways.evaluate(()=>{
+   const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+   s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
+     drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   const canvas=document.getElementById('game-canvas').getBoundingClientRect();
+   return {phone:matchMedia('(pointer:coarse) and (max-height:700px)').matches,
+     preview:!document.getElementById('opponent-preview').hidden,
+     canvasWidth:canvas.width,canvasHeight:canvas.height,
+     overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(layout.phone&&layout.preview,'touch landscape phone uses full own board plus PiP');
+  assert(layout.canvasWidth>0&&layout.canvasHeight>0&&!layout.overflow,'touch landscape PiP does not overflow or hide primary canvas');
+ }finally{await sideways.close();}
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
