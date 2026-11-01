@@ -6,8 +6,8 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='4816a55a06c96f0e4bca9bb24857c9b36de1fbe4';
-const REPO='squallorc-dot/fun';
+const SOURCE_SHA='fef81b532b9e5b274537b5207fadbcbf327ce725';
+const REPO='squallorc-dot/fun', PR_NUMBER=38;
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;
 const required=['FUNAI CARE bilingual quality gate','v1.6.1 signaling prototype'];
@@ -25,18 +25,25 @@ async function api(path){
 try{
  const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8',timeout:10000}).trim();
  assert(/^[a-f0-9]{40}$/.test(head),'invalid Git checkout');
- const info=await api('/pulls/37');
+ const info=await api('/pulls/'+PR_NUMBER);
  assert.equal(info.head.sha,SOURCE_SHA,'PR head changed; requires new vetted release');
  assert.equal(info.draft,true,'candidate PR must remain Draft before Beta acceptance');
  assert.equal(info.merged,false,'do not publish merged PR via release branch');
  const runs=await api('/actions/runs?head_sha='+SOURCE_SHA+'&per_page=100');
+ // Owner-approved isolated public Beta for live cross-device diagnosis.
+ // This exact SHA is NOT production-accepted. CI status is still recorded and
+ // must be green before any promotion to the official main site.
+ const diagnosticSha='fef81b532b9e5b274537b5207fadbcbf327ce725';
+ assert.equal(SOURCE_SHA,diagnosticSha,'diagnostic authorization applies to one source SHA');
  for(const name of required){
-  const match=(runs.workflow_runs||[]).find(x=>x.name===name&&x.head_sha===SOURCE_SHA&&x.status==='completed'&&x.conclusion==='success');
-  assert(match,'CI not yet successful: '+name);
+  const items=(runs.workflow_runs||[]).filter(x=>x.name===name&&x.head_sha===SOURCE_SHA);
+  assert(items.length>0,'CI has not been triggered: '+name);
+  const green=items.some(x=>x.status==='completed'&&x.conclusion==='success');
+  if(!green)console.warn('OWNER-APPROVED TEST RELEASE ONLY: '+name+' is '+items[0].status+'/'+(items[0].conclusion||'pending')+'. NOT suitable for main.');
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,3,'exactly three release-only commits expected');
+ assert.equal(compare.ahead_by,4,'exactly three release-only commits and one reviewed merge expected');
  assert((compare.files||[]).length>0,'missing release files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
@@ -50,7 +57,7 @@ try{
  assert(peer.includes('betaStun=false'),'manual QA must remain opt-in');
  const {files,bytes}=await build();
  assert(files>=80&&bytes>10000000,'missing controlled assets');
- console.log('PASS Cloudflare Beta build: approved PR SHA '+SOURCE_SHA.slice(0,8)+', both CI green, restricted release delta, '+files+' assets.');
+ console.log('DIAGNOSTIC Cloudflare Beta build: exact user-approved source '+SOURCE_SHA.slice(0,8)+', CI NOT necessarily green, restricted release delta, '+files+' assets. DO NOT PROMOTE TO MAIN.');
 }catch(error){
  console.error('CLOUDFLARE BETA DEPLOY BLOCKED: '+error.message);
  process.exitCode=1;

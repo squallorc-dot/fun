@@ -85,7 +85,7 @@ class Session{
    if(this.role!=='guest'||channel!=='control'||this.phase!=='lobby'||!this.readyFlags.every(Boolean)||!keys(d,['epoch','engine','mode'])||d.mode!==this.config.mode||d.engine!==this.config.engine)return false;this.createRound();this.changed();return true;
   }
   if(type==='input'){
-   if(this.role!=='host'||channel!=='input'||!ACTIVE.includes(this.phase)||!keys(d,['epoch','seq','tick','input','edges'])||!integer(d.seq)||d.seq<=this.lastInputSeq||!integer(d.tick)||Math.abs(d.tick-this.tick)>240||!this.meta().input(d.input)||!keys(d.edges,this.edgeNames())||Object.keys(d.edges).length!==this.edgeNames().length||!this.edgeNames().every(key=>integer(d.edges[key])))return false;
+   if(this.role!=='host'||channel!=='input'||!ACTIVE.includes(this.phase)||!keys(d,['epoch','seq','tick','input','edges'])||!integer(d.seq)||d.seq<=this.lastInputSeq||!integer(d.tick)||(d.tick<this.tick-240||d.tick>this.tick+1200)||!this.meta().input(d.input)||!keys(d.edges,this.edgeNames())||Object.keys(d.edges).length!==this.edgeNames().length||!this.edgeNames().every(key=>integer(d.edges[key])))return false;
    for(const key of this.edgeNames()){if(d.edges[key]<this.remoteEdges[key]||d.edges[key]-this.remoteEdges[key]>8)return false;}
    for(const key of this.edgeNames()){if(d.edges[key]>this.remoteEdges[key])this.pulses[key]=true;this.remoteEdges[key]=d.edges[key];}
    this.lastInputSeq=d.seq;this.remote={...d.input};this.remoteAt=performance.now();return true;

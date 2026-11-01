@@ -1,5 +1,5 @@
 import {staticPath} from './static-policy.mjs';
-// Controlled static pages and signaling. Game data stays on WebRTC DataChannels.
+// Controlled static pages and signaling. Authenticated rooms may relay bounded game packets when P2P fails.
 const VERSION=1, ROOM_MS=15*60*1000, ACTIVE_MS=4*60*60*1000, AUTH_MS=10000, REQUEST_MS=60000, RESUME_MS=90000, MAX_RESUMES=2, MAX_TEXT=125000, MAX_SOCKETS=4;
 const roomPattern=/^[A-Z2-9]{8}$/, tokenPattern=/^[a-f0-9]{64}$/;
 const json=(value,status=200,headers={})=>new Response(JSON.stringify(value),{status,headers:{'content-type':'application/json','cache-control':'no-store',...headers}});
@@ -129,14 +129,14 @@ export class Room {
  async webSocketMessage(ws,text){
   const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
   if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
-  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>8){ws.close(1008,'rate');return;}
+  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>(text.includes('"type":"relay-data"')?180:8)){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
   if(!info.role){
    if(msg?.v===VERSION&&msg.type==='join-request'&&Object.keys(msg).length===2&&now<info.at+AUTH_MS){
     await this.state.blockConcurrencyWhile(async()=>{
      const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()){ws.close(1008,'expired');return;}
      const host=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');
-     if(!host||current.recovery?.guest?.until>Date.now()||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
+     if(!host||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
      const bucket=current.requests||{at:now,count:0};if(now-bucket.at>=60000){bucket.at=now;bucket.count=0;}if(++bucket.count>10){ws.close(1008,'rate');return;}
      current.requests=bucket;await this.state.storage.put('room',current);info.requestId=randomHex(16);info.deadline=now+REQUEST_MS;ws.serializeAttachment(info);await this.schedule(current);
      host.send(JSON.stringify({v:VERSION,type:'join-request',id:info.requestId}));ws.send(JSON.stringify({v:VERSION,type:'waiting-approval'}));
@@ -164,6 +164,17 @@ export class Room {
    });return;
   }
   ws.serializeAttachment(info);
+  if(msg?.v===VERSION&&msg.type==='relay-ready'&&Object.keys(msg).length===2){
+   info.relayReady=true;ws.serializeAttachment(info);const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));if(!peer)return;
+   if(!peer.deserializeAttachment()?.relayReady){peer.send(JSON.stringify({v:VERSION,type:'relay-propose'}));return;}
+   const current=await this.state.storage.get('room');if(!current)return;current.relaySid??=randomHex(16);current.relayActive=true;await this.state.storage.put('room',current);for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'relay-start',sid:current.relaySid}));return;
+  }
+  if(msg?.v===VERSION&&msg.type==='relay-data'){
+   if(!room.relayActive||!info.relayReady||!['input','control'].includes(msg.channel)||typeof msg.payload!=='string'||msg.payload.length>32768||Object.keys(msg).some(k=>!['v','type','channel','payload'].includes(k))){ws.close(1008,'relay-invalid');return;}
+   let packet;try{packet=JSON.parse(msg.payload);}catch{ws.close(1008,'relay-packet');return;}
+   if(packet?.v!==VERSION||packet.sid!==room.relaySid||!Number.isSafeInteger(packet.seq)||packet.seq<0||packet.seq>1e9||typeof packet.type!=='string'||packet.type.length>32||typeof packet.data!=='object'||!packet.data||Array.isArray(packet.data)){ws.close(1008,'relay-invalid');return;}
+   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));if(peer?.readyState===1)peer.send(JSON.stringify({v:VERSION,type:'relay-data',channel:msg.channel,payload:msg.payload}));return;
+  }
   if(msg?.v===VERSION&&msg.type==='retry-cancel'&&Number.isInteger(msg.attempt)&&Object.keys(msg).length===3){if(info.retryAttempt===msg.attempt){delete info.retryAttempt;delete info.retryDeadline;ws.serializeAttachment(info);}return;}
   if(msg?.v===VERSION&&msg.type==='retry-ready'&&Number.isInteger(msg.attempt)&&msg.attempt>=1&&msg.attempt<=2&&Object.keys(msg).length===3){
    await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||msg.attempt!==(current.retries||0)+1){ws.send(JSON.stringify({v:VERSION,type:'retry-denied'}));return;}
@@ -177,14 +188,16 @@ export class Room {
     const pending=this.state.getWebSockets().find(other=>{const v=other.deserializeAttachment();return !v?.role&&v?.requestId===msg.id&&v.deadline>Date.now();});
     if(!pending)return;
     if(!msg.accept){pending.send(JSON.stringify({v:VERSION,type:'join-denied'}));pending.close(1000,'denied');return;}
-    const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||current.recovery?.guest?.until>Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
-    const token=randomHex(32);current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
+    const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
+    // A host-approved new guest supersedes an absent guest's recovery grace.
+    // Old resume credentials are revoked atomically with the new invitation.
+    const token=randomHex(32);if(current.recovery)delete current.recovery.guest;delete current.relaySid;delete current.relayActive;const existingHost=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');if(existingHost){const hostInfo=existingHost.deserializeAttachment();delete hostInfo.relayReady;existingHost.serializeAttachment(hostInfo);}current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
     const p=pending.deserializeAttachment();delete p.requestId;p.deadline=Date.now()+AUTH_MS;pending.serializeAttachment(p);await this.schedule(current);
     pending.send(JSON.stringify({v:VERSION,type:'join-approved',token}));
    });return;
   }
   // SDP is already ICE-complete in BioPeer. No separate trickle ICE is currently sent.
-  if(!msg||msg.v!==VERSION||!['offer','answer'].includes(msg.type)||msg.type!==(info.role==='host'?'offer':'answer')||typeof msg.description!=='string'||msg.description.length>120000||Object.keys(msg).some(k=>!['v','type','description'].includes(k))){ws.close(1008,'invalid');return;}
+  if(!msg||msg.v!==VERSION||!['offer','answer','ice-offer','ice-answer'].includes(msg.type)||!([info.role==='host'?'offer':'answer',info.role==='host'?'ice-offer':'ice-answer'].includes(msg.type))||typeof msg.description!=='string'||msg.description.length>120000||Object.keys(msg).some(k=>!['v','type','description'].includes(k))){ws.close(1008,'invalid');return;}
   const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));
   if(!peer){ws.send(JSON.stringify({v:VERSION,type:'peer-missing'}));return;}peer.send(text);
  }

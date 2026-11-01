@@ -22,6 +22,8 @@ on:
       - 'arcade/assets/friend-session.js'
       - 'arcade/assets/peer-link.js'
       - 'scripts/test-signaling-room-v161.mjs'
+      - 'scripts/test-relay-v161.mjs'
+      - 'scripts/test-g02-embedded-layout-v161.mjs'
       - 'scripts/test-signaling-lifecycle-v161.cjs'
       - 'scripts/lib/friends-browser.mjs'
       - 'scripts/test-signaling-rate-v161.mjs'
@@ -70,6 +72,7 @@ jobs:
           node scripts/test-peer-mobile-lifecycle-v161.cjs
           node scripts/test-peer-stun-v161.cjs
           node scripts/test-signaling-room-v161.mjs
+          node scripts/test-relay-v161.mjs
           node scripts/test-signaling-lifecycle-v161.cjs
           node scripts/test-signaling-rate-v161.mjs
           node scripts/test-signaling-test-gate-v161.mjs
@@ -80,6 +83,7 @@ jobs:
           node scripts/test-signaling-live-rate-v161.mjs
           node scripts/test-signaling-live-ws-v161.cjs
           BIO_WORKER_ASSETS=1 node scripts/test-friend-ui-v161.mjs
+          node scripts/test-g02-embedded-layout-v161.mjs
           node scripts/test-signaling-v161.mjs --rtc
           BIO_WORKER_ASSETS=1 node scripts/smoke-signaling-session-v161.mjs
           BIO_WORKER_ASSETS=1 node scripts/smoke-focus-resume-v161.mjs

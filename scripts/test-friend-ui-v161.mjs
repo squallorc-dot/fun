@@ -6,10 +6,36 @@ const server=await signalingTestServer();const browser=await chromium.launch({he
 try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
   const page=await browser.newPage({viewport});await page.addInitScript(()=>{window.WebSocket=class{static OPEN=1;constructor(){this.readyState=1;setTimeout(()=>this.onopen?.(),0);}send(){}close(){this.readyState=3;this.onclose?.();}};});await page.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});
-  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
+  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
+  assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City arcade art is visible');
+  assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
+  assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
+  assert(await page.locator('.auto-back-button').isVisible(),'return to arcade is a player-facing button');
+  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
+  assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
+  assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
+  assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
   if(locale==='zh'&&viewport.width===390){
-   await page.locator('#auto-create').click();await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
+   await page.locator('#auto-create').click();
+   assert(await page.locator('#auto-hero-art').isVisible(),'selected guardian artwork has a visible canvas');
+   assert.equal(await page.locator('.auto-hero-choice').count(),7,'seven character cards are available');
+   await page.locator('.auto-hero-choice[data-hero="3"]').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','hero card updates native accessible selector');
+   assert.equal(await page.locator('.auto-hero-choice[data-hero="3"]').getAttribute('aria-pressed'),'true','selected card is highlighted');
+   assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
+   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
+   await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
    const pixels=await page.locator('#auto-qr').evaluate(c=>({width:c.width,height:c.height,data:Array.from(c.getContext('2d').getImageData(0,0,c.width,c.height).data)}));const decoded=jsQR(Uint8ClampedArray.from(pixels.data),pixels.width,pixels.height);const invite=await page.locator('#auto-link').getAttribute('href');assert(decoded&&decoded.data===invite,'local QR encodes exact invitation');assert(new URL(invite).hash.includes('token='));assert(!new URL(invite).search.includes('token='));
+   assert(await page.locator('#auto-room-code').isVisible(),'clear room number for the host');
+   assert(await page.locator('#auto-qr').isVisible(),'visible join QR for the friend');
+   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'engineering details are collapsed');
+   const diagnostic=await page.evaluate(()=>{
+    const disclosure=document.querySelector('#auto-tech-details'),line=document.querySelector('#auto-tech-note');
+    disclosure.hidden=false;line.textContent='ICE: checking · local 1/1/0';disclosure.open=false;
+    const hidden=getComputedStyle(line).display==='none';
+    disclosure.hidden=true;line.textContent='';return hidden;
+   });
+   assert(diagnostic,'technical candidate numbers are collapsed behind disclosure');
    const guest=await browser.newPage({viewport});await guest.goto(invite);assert.equal(await guest.evaluate(()=>location.hash),'');if(process.env.BIO_WORKER_ASSETS==='1'){assert(await guest.locator('#auto-wait').isVisible(),'configured candidate starts joining automatically');assert(await guest.locator('#auto-share-actions').isHidden(),'guest does not share host invitation');}else assert(await guest.locator('#auto-form').isVisible());assert(!(await guest.locator('#auto-code-label').isVisible()));assert(!(await guest.locator('#connection').isVisible()));await guest.close();
   }
   if(locale==='zh'&&viewport.width===1280){
@@ -96,6 +122,29 @@ try{
     if(mode.game==='g06'){assert.equal(ui.details,true);assert.match(ui.banner,/Host #1/);assert.match(ui.banner,/Guest #2/);}
     else assert.equal(ui.details,false,mode.game+' needs no verbose score panel');
    }
+  }
+  if(locale==='zh'&&(viewport.width===390||viewport.width===1280)){
+   // UI-only live playing state: no mocked RTC connection or fake result.
+   // Controls must match the single-player race: auto accelerate, brake, nitro.
+   await page.evaluate(()=>{
+    const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=1;
+    s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+    s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+    s.result=null;s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   });
+   await page.waitForFunction(()=>document.querySelector('#arena').getBoundingClientRect().height>=innerHeight*.93,null,{timeout:5000});
+   const play=await page.evaluate(()=>{
+    const rect=q=>{const v=document.querySelector(q).getBoundingClientRect();return {w:v.width,h:v.height,top:v.top,left:v.left}};
+    const jump=document.querySelector('#touch-controls [data-action="jump"]'),fire=document.querySelector('#touch-controls [data-action="fire"]');
+    return {arena:rect('#arena'),stage:rect('#viewport'),canvas:rect('#game-canvas'),gas:jump.hidden,
+     nitro:!fire.hidden&&fire.textContent.includes('氮氣'),instructions:document.querySelector('#rules').textContent,
+     overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert(play.arena.h>=viewport.height*.93,'full-height arcade play surface');
+   assert(play.stage.h>=viewport.height*(viewport.width===390?.40:.70),'playfield occupies available stage');
+   assert(play.canvas.h>0&&play.canvas.w>0,'canvas stays visible');
+   assert(play.gas&&play.nitro&&play.instructions.includes('自動加速'),'no gas key and nitro preserved');
+   assert(!play.overflow,'no horizontal overflow during play');
   }
   await page.close();
  }

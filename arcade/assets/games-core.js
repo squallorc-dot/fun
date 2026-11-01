@@ -1020,7 +1020,9 @@ R.g06=env=>{
  function raceStep(dt,input){
   if(racePhase!=='countdown')dt=Math.min(dt,Math.max(0,timeLimit-elapsed));
   const previousSpeed=car.speed;t+=dt;feel.impact=Math.max(0,feel.impact-dt*4);
-  car.braking=!!input.down||multiplayer&&!(input.up||input.accelerate);
+  // Single-player and multiplayer share automatic acceleration. Down is brake;
+  // no held accelerator is required, including for the remote friend.
+  car.braking=!!input.down;
   if(racePhase==='countdown'){
    const before=Math.ceil(lights);lights=Math.max(0,lights-dt);
    if(Math.ceil(lights)!==before)env.sfx(lights>1e-8?460:920,.08);
@@ -1039,7 +1041,7 @@ R.g06=env=>{
   }else{car.braking=true;car.speed=Math.max(0,car.speed-38*dt);}
   for(const r of field)if(r.remote&&r.status==='racing'){
    const draft=snapshot.some(o=>o.id!==r.id&&o.status==='racing'&&roadGap(o.z,r.z)>8&&roadGap(o.z,r.z)<38&&Math.abs(o.lane-r.lane)<.22);
-   r.braking=!!remoteInput.down||!(remoteInput.up||remoteInput.accelerate);const boost=boostFor(r,!!(remoteInput.fire||remoteInput.skill),dt),turn=axis(remoteInput,'moveX',remoteInput.right,remoteInput.left);
+   r.braking=!!remoteInput.down;const boost=boostFor(r,!!(remoteInput.fire||remoteInput.skill),dt),turn=axis(remoteInput,'moveX',remoteInput.right,remoteInput.left);
    drive(r,{target:r.braking?0:boost?96:82+(draft?4:0),turn,accel:16},dt);advanceRacer(r,dt);
    r.nitro=boost?Math.max(0,r.nitro-27*(1+Math.min(1,r.slip||0))*dt):Math.min(100,r.nitro+(draft?18:8)*dt);r.slipstream=draft;
   }
