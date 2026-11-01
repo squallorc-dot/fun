@@ -97,10 +97,14 @@
    // and real phones keep their controls regardless of window dimensions.
    const touch=win.matchMedia('(any-pointer:coarse)').matches;
    const mouse=win.matchMedia('(hover:hover) and (pointer:fine)').matches;
-   const visible=!doc.body?.classList.contains('round-finished')&&(touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two');
+   // G02 is an iframe running a host-authoritative match. Its own controls
+   // are intentionally inactive; only the outer lobby should own touch input.
+   // A previously injected inline !important display must not override this.
+   const embeddedNetwork=!!element.closest('#arcade-root.arcade-network');
+   const visible=!embeddedNetwork&&!doc.body?.classList.contains('round-finished')&&(touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two');
    element.style.setProperty('display',visible?'block':'none','important');
    element.dataset.profile=prefs.profile;element.dataset.joystick=prefs.joystick;
-   if(!visible){reset();plan={reservedLeft:0,reservedRight:0,height:0,compact:false,visible:false};onLayout(plan);return;}
+   if(!visible){reset();element.style.setProperty('height','0px','important');plan={reservedLeft:0,reservedRight:0,height:0,compact:false,visible:false};onLayout(plan);return;}
    const compact=win.innerWidth>win.innerHeight&&win.innerHeight<=540,box=space().getBoundingClientRect(),parent=element.parentElement.getBoundingClientRect();
    element.style.setProperty('position',compact?'absolute':'relative','important');
    element.style.setProperty('top',compact?box.top-parent.top+'px':'auto','important');element.style.setProperty('bottom','auto','important');element.style.setProperty('left','0','important');element.style.setProperty('right','0','important');element.style.setProperty('width','100%','important');
