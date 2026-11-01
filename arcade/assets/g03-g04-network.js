@@ -103,7 +103,11 @@ function adapter(game){
    ctx.save();ctx.fillStyle='#071a2a';ctx.fillRect(0,0,w,h);
    if(phone){
     // The own board uses the FULL playfield; the remote board has a separate PiP canvas.
-    this.games[this.host?0:1].draw(ctx);ctx.restore();return;
+    const own=this.games[this.host?0:1];
+    // Native game worlds are 960x540; scale ALL of the local world to the
+    // phone composition, or the right/bottom of the playfield is clipped.
+    ctx.save();ctx.scale(w/own.w,h/own.h);own.draw(ctx);ctx.restore();
+    ctx.restore();return;
    }
    const slots=[{x:12,y:43,w:616,h:461},{x:652,y:43,w:616,h:461}];
    for(let i=0;i<2;i++){
