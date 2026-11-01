@@ -99,6 +99,23 @@ try{
    const s=BioFriendsApp.inspect();
    return s.session.config?.mode===mode&&s.match?.boards?.length===2&&s.match.scores?.length===2;
   },mode,{timeout:30000});
+  try{
+   await pages[0].waitForFunction(mode=>{
+    const app=BioFriendsApp.inspect(),v=app.match;
+    return app.session.phase==='playing'&&v?.boards?.length===2&&
+      (mode==='stairs'?Math.abs(v.boards[0].player.x-v.boards[1].player.x)>5:Math.abs(v.boards[0].angle-v.boards[1].angle)>.025);
+   },mode,{timeout:16000});
+  }catch(error){
+   const diagnostic=await Promise.all(pages.map(p=>p.evaluate(()=>{
+    const v=BioFriendsApp.inspect(),s=v.session;
+    return {phase:s.phase,mode:s.config?.mode,link:BioFriendsApp.session.link.state,
+      angles:v.match?.boards?.map(b=>b.angle),x:v.match?.boards?.map(b=>b.player?.x),
+      lastRemoteSeq:BioFriendsApp.session.lastInputSeq,remote:s.remoteInput,
+      sent:s.metrics.sent,received:s.metrics.received};
+   })));
+   console.error('SAFE G03/G04 INDEPENDENT INPUT '+JSON.stringify(diagnostic));
+   throw error;
+  }
   const dual=await Promise.all(pages.map(p=>p.evaluate(()=>{
    const {session,match}=BioFriendsApp.inspect();
    return {phase:session.phase,mode:session.config?.mode,ended:match?.ended,
