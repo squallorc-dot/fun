@@ -56,8 +56,11 @@ function adapter(game){
      }};
     const g=root.BioSuiteGames[game](env);g.w=640;g.h=480;g.start();return g;
    });
-   const mobile=()=>typeof matchMedia==='function'&&matchMedia('(max-width:700px)').matches;
-   this.game={w:mobile()?640:1280,h:mobile()?790:550,_finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
+   this.locale=locale;
+   const mobile=()=>typeof matchMedia==='function'&&matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
+   this.mobile=mobile;
+   // Only change the composition. The authoritative 640x480 game worlds remain intact.
+   this.game={w:mobile()?640:1280,h:mobile()?480:550,_finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
   }
   score(board,index){
    const v=board||(this.games[index]?.networkSnapshot());
@@ -95,24 +98,38 @@ function adapter(game){
   }
   render(){} // Guest never advances the authoritative game worlds.
   draw(ctx){
-   const mobile=typeof matchMedia==='function'&&matchMedia('(max-width:700px)').matches;
-   const w=mobile?640:1280,h=mobile?790:550;
+   const phone=this.mobile(),w=phone?640:1280,h=phone?480:550;
    if(this.game.w!==w||this.game.h!==h){this.game.w=w;this.game.h=h;}
    ctx.save();ctx.fillStyle='#071a2a';ctx.fillRect(0,0,w,h);
-   const order=mobile?(this.host?[0,1]:[1,0]):[0,1];
-   const slots=mobile?[{x:12,y:44,w:616,h:457},{x:164,y:545,w:312,h:219}]:
-     [{x:12,y:43,w:616,h:461},{x:652,y:43,w:616,h:461}];
-   const names=['HOST','FRIEND'];
-   for(let j=0;j<2;j++){
-    const id=order[j],r=slots[j],g=this.games[id];
-    ctx.save();ctx.translate(r.x,r.y);ctx.beginPath();ctx.rect(0,0,r.w,r.h);ctx.clip();
-    ctx.scale(r.w/g.w,r.h/g.h);g.draw(ctx);ctx.restore();
-    ctx.save();ctx.strokeStyle=id===(this.host?0:1)?'#64e8e1':'#6595c5';ctx.lineWidth=3;ctx.strokeRect(r.x,r.y,r.w,r.h);
-    ctx.fillStyle='#ddfaff';ctx.font='bold '+(mobile?18:20)+'px sans-serif';ctx.fillText(names[id]+'  '+this.score(null,id).score, r.x+8,r.y-12);ctx.restore();
+   if(phone){
+    // The own board uses the FULL playfield; the remote board has a separate PiP canvas.
+    this.games[this.host?0:1].draw(ctx);ctx.restore();return;
+   }
+   const slots=[{x:12,y:43,w:616,h:461},{x:652,y:43,w:616,h:461}];
+   for(let i=0;i<2;i++){
+    const a=slots[i],g=this.games[i];
+    ctx.save();ctx.translate(a.x,a.y);ctx.beginPath();ctx.rect(0,0,a.w,a.h);ctx.clip();
+    ctx.scale(a.w/g.w,a.h/g.h);g.draw(ctx);ctx.restore();
+    ctx.save();ctx.strokeStyle=i===(this.host?0:1)?'#64e8e1':'#6595c5';ctx.lineWidth=3;ctx.strokeRect(a.x,a.y,a.w,a.h);
+    ctx.fillStyle='#ddfaff';ctx.font='bold 20px sans-serif';ctx.fillText((i?'FRIEND':'HOST')+'  '+this.score(null,i).score,a.x+8,a.y-12);ctx.restore();
    }
    ctx.restore();
   }
-  hud(){return this.games.map((g,i)=>{const p=this.score(null,i);return '<span>'+(i?'FRIEND':'HOST')+' <b>'+p.score+'</b> · '+(game==='g03'?p.progress+'m':'STAGE '+this.games[i].networkSnapshot().stage+'/3')+'</span>';}).join('');}
+  drawOpponent(ctx){
+   if(!this.mobile()||!ctx?.canvas)return false;
+   const g=this.games[this.host?1:0];if(!g)return false;
+   const w=ctx.canvas.width,h=ctx.canvas.height;
+   ctx.save();ctx.clearRect(0,0,w,h);ctx.scale(w/g.w,h/g.h);g.draw(ctx);ctx.restore();
+   return true;
+  }
+  hud(){
+   if(this.mobile()){
+    const own=this.host?0:1,peer=1-own;
+    const v=i=>game==='g03'?this.score(null,i).progress+'m':this.score(null,i).score;
+    return '<span>'+(this.locale==='ja'?'自分':'自己')+' <b>'+v(own)+'</b> · '+(this.locale==='ja'?'相手':'對手')+' <b>'+v(peer)+'</b></span>';
+   }
+   return this.games.map((g,i)=>{const p=this.score(null,i);return '<span>'+(i?'FRIEND':'HOST')+' <b>'+p.score+'</b> · '+(game==='g03'?p.progress+'m':'STAGE '+this.games[i].networkSnapshot().stage+'/3')+'</span>';}).join('');
+  }
   dispose(){this.games=[];this.players=[];this.game._finished=true;}
  }
  return Object.freeze({TAG:tag,MODES:MODES[game],EDGES:game==='g03'?['fire','jump','down']:['fire','jump','skill'],input,
