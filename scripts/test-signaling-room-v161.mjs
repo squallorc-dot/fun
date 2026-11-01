@@ -25,7 +25,7 @@ try{
  await room.webSocketMessage(winner,JSON.stringify({v:1,type:'join-decision',id:replacement.attachment.requestId,accept:true}));
  const joinApproved=replacement.messages.find(m=>m.type==='join-approved');assert(joinApproved?.token,'new guest gets a new host-approved capability');assert(!db.get('room').recovery?.guest,'old guest resume grant was revoked');
  await room.webSocketMessage(replacement,JSON.stringify({v:1,type:'auth',role:'guest',token:joinApproved.token}));assert.equal(replacement.attachment.role,'guest','host-approved replacement joins immediately');
- const replay=socket();await room.webSocketMessage(replay,JSON.stringify({v:1,type:'auth',role:'guest',token:recoveredToken,resume:true}));assert.equal(replay.readyState,3,'superseded guest cannot resume via old credentials');
+ const staleResume=socket();await room.webSocketMessage(staleResume,JSON.stringify({v:1,type:'auth',role:'guest',token:recoveredToken,resume:true}));assert.equal(staleResume.readyState,3,'superseded guest cannot resume via old credentials');
  replacement.readyState=3;await room.webSocketClose(replacement);
  const firstToken=winner.messages.find(m=>m.type==='authenticated').resumeToken;winner.readyState=3;await room.webSocketClose(winner);assert(db.has('room'),'unexpected host disconnect preserves room for grace');
  const resumed=socket();await room.webSocketMessage(resumed,JSON.stringify({v:1,type:'auth',role:'host',token:firstToken,resume:true}));assert.equal(resumed.attachment.role,'host');const rotated=resumed.messages.find(m=>m.type==='authenticated').resumeToken;assert.notEqual(rotated,firstToken);
