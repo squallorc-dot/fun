@@ -7,6 +7,15 @@ for(const path of ['/arcade/friends/index.html','/arcade/assets/peer-link.js','/
  if(path==='/arcade/friends/index.html')assert((await response.text()).includes(`name="bio-signaling-endpoint" content="${origin}"`));else await response.body?.cancel();
  const cached=await fetch(origin+path,{headers:{'CF-Connecting-IP':'192.0.2.99'}});assert.equal(cached.status,403,'cached assets still require gate: '+path);await cached.body?.cancel();
 }
+// The actual local Worker must redirect stale hubs, never serve the Beta snapshot.
+for(const locale of ['zh','ja'])for(const path of ['/arcade/'+locale+'/','/arcade/'+locale+'/index.html']){
+ const denied=await fetch(origin+path,{redirect:'manual',headers:{'CF-Connecting-IP':'192.0.2.99'}});
+ assert.equal(denied.status,403,'hub redirect is still gated: '+path);await denied.body?.cancel();
+ const response=await fetch(origin+path,{redirect:'manual',headers:{'CF-Connecting-IP':'192.0.2.1'}});
+ assert.equal(response.status,302,'hub must redirect: '+path);
+ assert.equal(response.headers.get('location'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html');
+ assert.equal(response.headers.get('cache-control'),'no-store');await response.body?.cancel();
+}
 for(const path of ['/signaling/worker/worker.mjs','/arcade/qa/friends-v16/index.html','/.git/config','/assets/private.js']){
  const response=await fetch(origin+path,{headers:{'CF-Connecting-IP':'192.0.2.1'}});assert.equal(response.status,404,path);await response.body?.cancel();
 }

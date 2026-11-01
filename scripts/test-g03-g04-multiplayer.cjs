@@ -14,8 +14,26 @@ for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
   const host=new M.Adapter({...common,host:true,finish:()=>finished++});
   const guest=new M.Adapter({...common,host:false});
   check(M.input({moveX:.5,fire:true,jump:false}),'known input allowed');
+  check(M.EDGES.includes(game==='g03'?'down':'skill'),'solo button action edge must synchronize through host authority');
+  check(M.input(game==='g03'?{moveX:0,down:true,jump:false}:{moveX:0,fire:false,skill:true}),'G03/G04 solo-equivalent mobile action accepted by multiplayer');
   check(!M.input({moveX:99,override:true}),'forged input blocked');
   check(JSON.stringify(host.capture()).length<29000,'two independent boards fit authenticated Relay transport');
+  // Draw tests prove each phone's main canvas contains only its own world.
+  const ctx={save(){},restore(){},fillRect(){},clearRect(){},scale(){},translate(){},beginPath(){},rect(){},clip(){},strokeRect(){},fillText(){},canvas:{width:320,height:240}};
+  const hostDraw=host.games.map(g=>g.draw),guestDraw=guest.games.map(g=>g.draw);let painted=[];
+  host.games.forEach((g,i)=>g.draw=()=>painted.push(i));
+  guest.games.forEach((g,i)=>g.draw=()=>painted.push(i));
+  cx.matchMedia=()=>({matches:true});
+  const scaled=[];ctx.scale=(x,y)=>scaled.push([x,y]);
+  host.draw(ctx);check(host.game.w===640&&host.game.h===480&&painted.join(',')==='0','host phone main is full own 4:3 board');
+  check(scaled.some(([x,y])=>Math.abs(x-640/host.games[0].w)<1e-9&&Math.abs(y-480/host.games[0].h)<1e-9),'phone host scales complete native playfield without cropping');
+  painted=[];host.drawOpponent(ctx);check(painted.join(',')==='1','host PiP contains guest board');
+  painted=[];scaled.length=0;guest.draw(ctx);check(guest.game.w===640&&guest.game.h===480&&painted.join(',')==='1','guest phone main is full own board');
+  check(scaled.some(([x,y])=>Math.abs(x-640/guest.games[1].w)<1e-9&&Math.abs(y-480/guest.games[1].h)<1e-9),'phone guest scales complete native playfield without cropping');
+  painted=[];guest.drawOpponent(ctx);check(painted.join(',')==='0','guest PiP contains host board');
+  painted=[];cx.matchMedia=()=>({matches:false});host.draw(ctx);
+  check(host.game.w===1280&&host.game.h===550&&painted.join(',')==='0,1','desktop retains side-by-side split');
+  host.games.forEach((g,i)=>g.draw=hostDraw[i]);guest.games.forEach((g,i)=>g.draw=guestDraw[i]);delete cx.matchMedia;
   for(let i=0;i<240;i++){
    const local=game==='g03'?{moveX:1,right:true,jump:i===8}:{moveX:1,fire:i===130};
    const remote=game==='g03'?{moveX:-1,left:true,jump:i===10}:{moveX:-1,fire:i===145};

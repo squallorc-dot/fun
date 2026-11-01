@@ -71,6 +71,13 @@ export default {
   if(['GET','HEAD'].includes(request.method)&&request.headers.get('Upgrade')?.toLowerCase()!=='websocket'){
    if(!String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).includes(url.origin))return json({error:'unavailable'},403);
    if(url.pathname==='/')return new Response(null,{status:302,headers:{location:'/arcade/friends/','cache-control':'no-store'}});
+   // Never expose the older Arcade hub snapshot from this Beta branch.
+   // GitHub Pages main is the single source of truth for both language hubs.
+   const hub=/^\/arcade\/(zh|ja)\/(?:index\.html)?$/.exec(url.pathname);
+   if(hub)return new Response(null,{status:302,headers:{
+    location:'https://squallorc-dot.github.io/fun/arcade/'+hub[1]+'/index.html',
+    'cache-control':'no-store','referrer-policy':'no-referrer'
+   }});
    if(staticPath(url.pathname)){
     if(!env.ASSETS)return json({error:'unavailable'},503);
     const assetURL=new URL(request.url);if(assetURL.pathname.endsWith('/'))assetURL.pathname+='index.html';

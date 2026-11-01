@@ -6,7 +6,26 @@ const server=await signalingTestServer();const browser=await chromium.launch({he
 try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
   const page=await browser.newPage({viewport});await page.addInitScript(()=>{window.WebSocket=class{static OPEN=1;constructor(){this.readyState=1;setTimeout(()=>this.onopen?.(),0);}send(){}close(){this.readyState=3;this.onclose?.();}};});await page.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});
-  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
+  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());
+  if(locale==='zh'&&viewport.width===390){
+   // Multiplayer touch buttons must follow the exact standalone game's guide.
+   const parity=await page.evaluate(()=>{
+    const s=window.BioFriendsApp.session,original=s.config,output={};
+    try{
+     for(const [game,mode] of [['g03','stairs'],['g04','pinball'],['g06','race'],['g05','volley'],['g05','pong']]){
+      s.config={game,mode,chapter:1,difficulty:'normal'};s.changed();
+      output[game+':'+mode]=[...document.querySelectorAll('#touch-controls [data-action]')]
+       .filter(el=>!el.hidden).map(el=>[el.dataset.action,el.textContent.trim()]);
+     }
+    }finally{s.config=original;s.changed();}
+    return output;
+   });
+   assert.deepEqual(parity['g03:stairs'],[['jump','跳躍'],['down','向下']],'G03 retains exactly one jump and one drop, as in single-player');
+   assert.deepEqual(parity['g04:pinball'],[['fire','發射'],['skill','收球']],'G04 offers solo shot and recall, not duplicated controls');
+   assert.deepEqual(parity['g06:race'],[['fire','氮氣'],['down','煞車']],'G06 retains solo boost and brake');
+   assert.deepEqual(parity['g05:volley'],[['fire','擊球'],['jump','跳躍']],'G05 volley retains solo attack and jump');
+   assert.deepEqual(parity['g05:pong'],[['fire','揮拍']],'G05 pong removes unnecessary jump');
+  }assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
   assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City arcade art is visible');
   assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
@@ -14,7 +33,8 @@ try{
   assert(await page.locator('#help').count()===1,'in-game help button is available');
    assert(await page.locator('#help-close').count()===1,'inline instructions have their own close button');
    assert.equal(await page.locator('#help-panel').isVisible(),false,'help is hidden outside active gameplay');
-  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
+  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','return points to current production Arcade in selected language');
+  assert.equal(await page.locator('#single').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','secondary back link never points at outdated Worker hub');
   assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
   assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
@@ -83,6 +103,39 @@ try{
    });
    assert(diagnostic,'technical candidate numbers are collapsed behind disclosure');
    const guest=await browser.newPage({viewport});await guest.goto(invite);assert.equal(await guest.evaluate(()=>location.hash),'');if(process.env.BIO_WORKER_ASSETS==='1'){assert(await guest.locator('#auto-wait').isVisible(),'configured candidate starts joining automatically');assert(await guest.locator('#auto-share-actions').isHidden(),'guest does not share host invitation');}else assert(await guest.locator('#auto-form').isVisible());assert(!(await guest.locator('#auto-code-label').isVisible()));assert(!(await guest.locator('#connection').isVisible()));await guest.close();
+  }
+  if(locale==='zh'&&viewport.width===390){
+   // UI-only: the real two-board host/guest state is exercised by engine and RTC tests.
+   const state=await page.evaluate(()=>{
+    const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
+    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+    s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
+      drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
+    s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
+    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height};};
+    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),shown:!document.getElementById('opponent-preview').hidden,
+      helpHidden:document.getElementById('help-panel').hidden,
+      score:document.getElementById('score').textContent,overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert(state.shown&&state.helpHidden,'G03 phone PiP shown and play instructions initially collapsed');
+   assert(state.main.w>state.peer.w*2,'own game is at least twice the PiP width');
+   assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
+   assert(!state.overflow,'PiP does not cause horizontal overflow');
+   await page.locator('#opponent-hide').click();
+   assert(await page.locator('#opponent-preview').isHidden(),'peer PiP can be collapsed');
+   assert(await page.locator('#opponent-show').isVisible(),'peer PiP can be reopened');
+   await page.locator('#opponent-show').click();
+   assert(await page.locator('#opponent-preview').isVisible(),'peer PiP reopens without restarting the game');
+   await page.locator('#opponent-move').click();
+   assert(await page.locator('#opponent-preview').evaluate(el=>el.classList.contains('at-top')),'peer PiP can move above game obstacles');
+   await page.evaluate(()=>{
+     const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
+   });
+   assert(await page.locator('#opponent-preview').isVisible(),'G04 also uses live peer preview');
+   assert(await page.locator('#touch-controls [data-action="fire"]').evaluate(el=>!el.hidden&&el.textContent.trim()==='發射'),'G04 shot control matches single-player');
+   assert(await page.locator('#touch-controls [data-action="skill"]').evaluate(el=>!el.hidden&&el.textContent.trim()==='收球'),'G04 recall control matches single-player');
+   await page.evaluate(()=>{const s=BioFriendsApp.session;s.adapter?.dispose?.();s.adapter=null;s.phase='lobby';document.body.classList.remove('auto-connected');s.changed();});
   }
   if(locale==='zh'&&viewport.width===1280){
    await page.locator('#auto-create').click();
@@ -245,5 +298,24 @@ try{
    }
   await page.close();
  }
+ // Real touch-capable landscape viewport: orientation and screen-space regression.
+ const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
+ try{
+  await sideways.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const layout=await sideways.evaluate(()=>{
+   const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+   s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
+     drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   const canvas=document.getElementById('game-canvas').getBoundingClientRect();
+   return {phone:matchMedia('(pointer:coarse) and (max-height:700px)').matches,
+     preview:!document.getElementById('opponent-preview').hidden,
+     canvasWidth:canvas.width,canvasHeight:canvas.height,
+     overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(layout.phone&&layout.preview,'touch landscape phone uses full own board plus PiP');
+  assert(layout.canvasWidth>0&&layout.canvasHeight>0&&!layout.overflow,'touch landscape PiP does not overflow or hide primary canvas');
+ }finally{await sideways.close();}
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

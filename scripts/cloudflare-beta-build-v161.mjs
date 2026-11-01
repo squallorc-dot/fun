@@ -6,7 +6,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='51c177a83bc4eeb228fe29133f805e1f32bf4329';
+const SOURCE_SHA='d99fca0c06615619f619c8677bd99a1c244c4f48';
 const REPO='squallorc-dot/fun', PR_NUMBER=38;
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;
@@ -47,9 +47,10 @@ try{
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,11,'unexpected release ancestry: source + dedicated release branch');
- assert((compare.files||[]).length>0,'missing release files');
+ assert(compare.ahead_by>=1,'release must retain the tested source as an ancestor');
+ assert.equal(compare.files?.length,allowedChanges.size,'release must differ from tested source by precisely four config files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
+ assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)),'no untested application change is allowed');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
  for(const line of ['name = "bio-city-v161-signaling"','workers_dev = true','preview_urls = false','TEST_ENABLED = "false"','TEST_OPEN_WINDOW = "false"','BETA_PUBLIC_ENABLED = "true"','main = "signaling/worker/worker.mjs"','directory = "./signaling/worker/candidate-assets"','name = "ROOMS"','name = "RATE_GATES"']){
   assert(conf.includes(line),'invalid Cloudflare release config: '+line);
