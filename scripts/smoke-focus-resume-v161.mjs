@@ -22,7 +22,7 @@ try{
   await tab.waitForFunction(()=>!!window.BioFriendsApp);
  }
  const [host,guest]=tabs;
- await host.locator('#auto-create').click();await host.locator('#auto-name').fill('Focus');
+ await host.locator('#auto-create').click();assert.equal(await host.locator('#auto-name').count(),0,'room code replaces retired room-name input');
  await host.locator('#auto-start').click();
  await host.waitForFunction(()=>document.querySelector('#auto-room-code').textContent.length===8);
  const code=await host.locator('#auto-room-code').textContent();
