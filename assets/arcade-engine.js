@@ -269,7 +269,7 @@ window.addEventListener('keydown',e=>{
  if(e.shiftKey&&(document.activeElement===first||!root.contains(document.activeElement))){e.preventDefault();last.focus();}
  else if(!e.shiftKey&&(document.activeElement===last||!root.contains(document.activeElement))){e.preventDefault();first.focus();}
 });
-const controlSettings=Controls.createSettings({onOpen(){controlsEpoch=startEpoch;controlsResume=phase==='playing'||phase==='countdown';if(controlsResume)pause(true);resetInputs();root.inert=true;},onClose(){root.inert=false;if(controlsResume&&controlsEpoch===startEpoch&&phase==='paused')pause();controlsResume=false;}});
+const controlSettings=Controls.createSettings({namespace:'classic',onOpen(){controlsEpoch=startEpoch;controlsResume=phase==='playing'||phase==='countdown';if(controlsResume)pause(true);resetInputs();root.inert=true;},onClose(){root.inert=false;if(controlsResume&&controlsEpoch===startEpoch&&phase==='paused')pause();controlsResume=false;}});
 window.addEventListener('bio-controls-change',resetInputs);
 shell();
 })();

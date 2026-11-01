@@ -143,25 +143,34 @@
  }:{
   title:'操作設定',close:'關閉',profile:'操作配置',profiles:['標準雙手','左手單手','右手單手','桌面置中'],joystick:'搖桿形式',sticks:['固定搖桿','浮動搖桿'],reset:'恢復標準設定',advanced:'尺寸、位置與靈敏度',stickSize:'搖桿大小',buttonScale:'動作鍵大小',gap:'按鍵間距',inset:'向內移動',raise:'離底部高度',sensitivity:'搖桿靈敏度',deadzone:'中心無反應區',smoothing:'方向平滑',mirror:'左右鏡像',gestures:'單手搖桿上下手勢',assist:'單手主要動作輔助',note:'畫質、動畫、音量與關卡內容維持完整標準。',saved:'偏好保存在目前瀏覽器',safe:'小螢幕會限制在安全範圍，避免按鍵重疊或超出畫面。',assistNote:'格鬥在攻擊範圍內出招、射擊自動開火、球類輔助揮擊時機；移動、閃避與技能仍由你操作。',gestureNote:'下樓梯：上推跳躍、下推穿過一層。排球：上推跳躍。賽車：上推氮氣、下推煞車。',descriptions:['方向與動作分列兩側，保留原本雙手操作。','搖桿和動作鍵集中在左側，方便左手拇指操作。','搖桿和動作鍵集中在右側，方便右手拇指操作。','控制組向中央靠攏，適合平放手機；鍵盤、滑鼠也能照常使用。']
  };
- function createSettings({onOpen=()=>{},onClose=()=>{}}={}){
+ function createSettings({onOpen=()=>{},onClose=()=>{},namespace=''}={}){
   const doc=root.document,L=labels(doc.documentElement.lang.startsWith('ja')),layer=doc.createElement('div');layer.className='bio-control-layer';layer.id='control-settings-layer';layer.hidden=true;
   const range=(key,min,max,step,unit)=>'<label class="bio-control-field"><span>'+L[key]+' <output data-output="'+key+'"></output></span><input id="control-'+key+'" data-pref="'+key+'" type="range" min="'+min+'" max="'+max+'" step="'+step+'" data-unit="'+unit+'"></label>';
   layer.innerHTML='<section class="bio-control-dialog" role="dialog" aria-modal="true" aria-labelledby="control-settings-title"><header><h2 id="control-settings-title">'+L.title+'</h2><button type="button" id="controls-close">'+L.close+'</button></header><p>'+L.note+'</p><label class="bio-control-field"><span>'+L.profile+'</span><select id="control-profile" data-pref="profile">'+['two','left','right','desktop'].map((v,i)=>'<option value="'+v+'">'+L.profiles[i]+'</option>').join('')+'</select></label><p id="control-description"></p><div id="control-preview" aria-hidden="true"></div><label class="bio-control-field"><span>'+L.joystick+'</span><select id="control-joystick" data-pref="joystick"><option value="fixed">'+L.sticks[0]+'</option><option value="floating">'+L.sticks[1]+'</option></select></label><label class="bio-control-check"><input id="control-mirror" data-pref="mirror" type="checkbox">'+L.mirror+'</label><label class="bio-control-check"><input id="control-gestures" data-pref="gestures" type="checkbox">'+L.gestures+'</label><p class="bio-control-detail">'+L.gestureNote+'</p><label class="bio-control-check"><input id="control-assist" data-pref="assist" type="checkbox">'+L.assist+'</label><p class="bio-control-detail">'+L.assistNote+'</p><details><summary>'+L.advanced+'</summary>'+range('stickSize',88,136,4,'px')+range('buttonScale',.8,1.2,.05,'%')+range('gap',8,18,1,'px')+range('inset',0,48,2,'px')+range('raise',0,48,2,'px')+range('sensitivity',.6,1.6,.05,'%')+range('deadzone',.1,.3,.01,'%')+range('smoothing',0,100,5,'ms')+'<p class="bio-control-detail">'+L.safe+'</p></details><footer><button id="controls-reset" type="button">'+L.reset+'</button><span role="status">'+L.saved+'</span></footer></section>';
+  // Only the classic defense runs alongside the six-game hub in the same document.
+  // Keep shared preferences while assigning each dialog its own accessible IDs.
+  const suffix=namespace==='classic'?'-classic':'';
+  if(suffix){
+   layer.id+=suffix;
+   for(const el of layer.querySelectorAll('[id]'))el.id+=suffix;
+   for(const el of layer.querySelectorAll('[aria-labelledby]'))el.setAttribute('aria-labelledby',el.getAttribute('aria-labelledby').split(/\\s+/).map(id=>id+suffix).join(' '));
+  }
+  const byId=id=>layer.querySelector('[id="'+id+suffix+'"]');
   doc.body.appendChild(layer);let returned=null;
   function render(){for(const input of layer.querySelectorAll('[data-pref]')){const v=prefs[input.dataset.pref];if(input.type==='checkbox')input.checked=v;else input.value=v;const output=layer.querySelector('[data-output="'+input.dataset.pref+'"]');if(output)output.textContent=(input.dataset.unit==='%'?Math.round(v*100):Math.round(v))+(input.dataset.unit||'');}
-   layer.querySelector('#control-mirror').disabled=oneHand(prefs);layer.querySelector('#control-gestures').disabled=!oneHand(prefs);layer.querySelector('#control-assist').disabled=!oneHand(prefs);
-   layer.querySelector('#control-description').textContent=L.descriptions[['two','left','right','desktop'].indexOf(prefs.profile)];
-   const preview=layer.querySelector('#control-preview'),w=preview.clientWidth||280,p=layout({width:w,keys:['fire','jump','dodge','skill'],prefs:{...prefs,raise:0,inset:Math.min(prefs.inset,8)},safe:{left:12,right:12,bottom:8}});
+   byId('control-mirror').disabled=oneHand(prefs);byId('control-gestures').disabled=!oneHand(prefs);byId('control-assist').disabled=!oneHand(prefs);
+   byId('control-description').textContent=L.descriptions[['two','left','right','desktop'].indexOf(prefs.profile)];
+   const preview=byId('control-preview'),w=preview.clientWidth||280,p=layout({width:w,keys:['fire','jump','dodge','skill'],prefs:{...prefs,raise:0,inset:Math.min(prefs.inset,8)},safe:{left:12,right:12,bottom:8}});
    const scale=Math.min(1,150/p.height);preview.style.height=p.height*scale+'px';preview.replaceChildren();
    for(const [i,r]of [p.stick,...p.buttons].entries()){const el=doc.createElement('span');el.className=i?'bio-preview-button':'bio-preview-stick';el.style.cssText='left:'+((w-w*scale)/2+r.x*scale)+'px;top:'+r.y*scale+'px;width:'+r.w*scale+'px;height:'+r.h*scale+'px';el.textContent=i?['A','B','C','D'][i-1]:'✥';preview.appendChild(el);}
   }
   function close(){if(layer.hidden)return;layer.hidden=true;settingsOpen=false;doc.body.classList.remove('bio-controls-open');onClose();returned?.focus({preventScroll:true});}
-  layer.querySelector('#controls-close').addEventListener('click',close);layer.querySelector('#controls-reset').addEventListener('click',()=>{set(defaults);render();});
+  byId('controls-close').addEventListener('click',close);byId('controls-reset').addEventListener('click',()=>{set(defaults);render();});
   layer.addEventListener('input',e=>{if(e.target.tagName==='SELECT')return;const key=e.target.dataset.pref;if(!key)return;const value=e.target.type==='checkbox'?e.target.checked:e.target.type==='range'?Number(e.target.value):e.target.value;set({...prefs,[key]:value});render();});
   layer.addEventListener('change',e=>{if(e.target.tagName==='SELECT'){set({...prefs,[e.target.dataset.pref]:e.target.value});render();}});
   doc.addEventListener('keydown',e=>{if(layer.hidden)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();return;}if(e.key==='Tab'){const fields=[...layer.querySelectorAll('button,input,select,summary')].filter(el=>!el.disabled&&el.getClientRects().length),first=fields[0],last=fields.at(-1);if(e.shiftKey&&doc.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&doc.activeElement===last){e.preventDefault();first.focus();}}},true);
   root.addEventListener('bio-controls-change',()=>{if(!layer.hidden)render();});
-  return {open(){if(!layer.hidden)return;returned=doc.activeElement;onOpen();settingsOpen=true;layer.hidden=false;doc.body.classList.add('bio-controls-open');render();layer.querySelector('#controls-close').focus({preventScroll:true});},close,get element(){return layer;}};
+  return {open(){if(!layer.hidden)return;returned=doc.activeElement;onOpen();settingsOpen=true;layer.hidden=false;doc.body.classList.add('bio-controls-open');render();byId('controls-close').focus({preventScroll:true});},close,get element(){return layer;}};
  }
  root.addEventListener?.('storage',e=>{if(e.key===KEY){try{set(JSON.parse(e.newValue||'{}'),false);}catch{set(defaults,false);}}});
  root.BioControlProfiles=Object.freeze({KEY,defaults,normalize,vector,smooth,layout,oneHand,get prefs(){return {...prefs};},set,createInput,createSettings,get settingsOpen(){return settingsOpen;}});

@@ -26,6 +26,7 @@ for(const term of ['發球先彈兩次','安全平台／陷阱','檢查點','桌
 }
 const help=read('arcade/assets/game-guide.js');
 assert(help.includes("title:'遊戲說明與按鍵'")&&help.includes('g06:')&&help.includes('pong:')&&help.includes('g02:'),'single player controls registry remains complete');
+assert(read('assets/arcade-engine.js').includes("namespace:'classic'"),'classic controls use their own accessible dialog identifiers');
 const game=read('assets/arcade-engine.js');
 assert(game.includes("wave:'波次',score:'得分'"),'G02 SOLO translated HUD');
 for(const p of ['arcade/assets/hub.js','arcade/assets/games-core.js','assets/arcade-engine.js']){
