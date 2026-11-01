@@ -28,7 +28,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
   const open=(resuming=false)=>{socket=new WebSocket(url);const active=socket;
    active.onopen=()=>{onProgress('signaling');if(resuming)send('auth',{role,token:resumeToken,resume:true});else if(role==='guest'&&token==null)send('join-request');else send('auth',{role,token});};
    active.onerror=()=>{lost();};
-   active.onclose=()=>{if(active!==socket||stopped)return;lost();if(resumeToken)reconnect();else if(!settled)finish(Error('signaling-closed'));};
+   active.onclose=()=>{if(active!==socket||stopped)return;if(resumeToken){lost();reconnect();}else if(!settled)finish(Error('signaling-closed'));else lost();};
    active.onmessage=async event=>{if(active!==socket)return;
    if(stopped||typeof event.data!=='string'||event.data.length>MAX_MESSAGE)return finish(Error('message-size'));
    let message;try{message=JSON.parse(event.data);}catch{return finish(Error('message-format'));}
