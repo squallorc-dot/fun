@@ -1,6 +1,6 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
-const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,HEARTBEAT_SILENCE_MS=12000;
+const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,BETA_RECOVERY_MS=90000,HEARTBEAT_SILENCE_MS=12000;
 // Opt-in for v1.6.1 auto-lobby Beta only. Manual QA pairs remain host-only.
 // STUN helps discover public NAT endpoints, but cannot relay traffic.
 const BETA_STUN_URL='stun:stun.l.google.com:19302';
@@ -14,13 +14,13 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   // Capture safe, address-free RTC states before closing an unsuccessful pairing.
   if(this.pc)this.lastDiagnostic=this.diagnose();
-  this.generation++;this.disconnectTicket=null;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.generation++;this.disconnectTicket=null;this.relaySend=null;this.transport='p2p';for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
   this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
@@ -33,18 +33,19 @@ class Link{
   pc.onconnectionstatechange=()=>{
    if(generation!==this.generation||pc!==this.pc)return;
    const state=pc.connectionState;
-   if(state==='failed'||state==='closed'){this.close('disconnected');return;}
-   if(state==='disconnected'){
-    // Initial mobile pairing can transiently report disconnected while ICE
-    // is still checking host candidates. Let the existing bounded pairing
-    // timeout decide failure, instead of terminating the attempt at 8 seconds.
-    if(this.state==='pairing')return;
-    // A previously connected match gets a bounded recovery interval.
-    if(!this.disconnectTicket){
-     const ticket={};this.disconnectTicket=ticket;
-     this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&pc.connectionState==='disconnected')this.close('disconnected');},DISCONNECT_GRACE_MS);
+   if(state==='closed')return;
+   if(state==='disconnected'||state==='failed'){
+    // Transient ICE state is not a reason to revoke a live Beta room.
+    // Signaling attempts renegotiation, then the authenticated WS relay.
+    if(this.betaStun){
+     this.troubleAt||=performance.now();
+     if(!this.disconnectTicket&&this.state==='connected'){const ticket={};this.disconnectTicket=ticket;this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&this.transport!=='relay')this.close('disconnected');},BETA_RECOVERY_MS);}
+     return;
     }
-   }else this.disconnectTicket=null;
+    if(state==='failed'){this.close('disconnected');return;}
+    if(this.state==='pairing')return;
+    if(!this.disconnectTicket){const ticket={};this.disconnectTicket=ticket;this.later(()=>{if(this.disconnectTicket===ticket&&pc===this.pc&&pc.connectionState==='disconnected')this.close('disconnected');},DISCONNECT_GRACE_MS);}
+   }else{this.troubleAt=0;this.disconnectTicket=null;}
   };
   if(role==='host'){this.attach(pc.createDataChannel('control',{ordered:true}));this.attach(pc.createDataChannel('input',{ordered:false,maxRetransmits:0}));}
   this.later(()=>{if(this.state==='pairing')this.close('timeout');},this.pairingTimeout);
@@ -84,7 +85,7 @@ class Link{
   const channel=dc.label;if(!['control','input'].includes(channel)||this.channels[channel]){dc.close();return;}this.channels[channel]=dc;dc.binaryType='arraybuffer';
   const generation=this.generation;
   dc.onopen=()=>{if(generation!==this.generation)return;if(this.state==='pairing'&&Object.values(this.channels).filter(c=>c.readyState==='open').length===2){this.local='';this.status('connected');const pending=this.earlyMessages;this.earlyMessages=[];for(const [label,data]of pending){if(generation!==this.generation)break;this.receive(label,data);}if(generation===this.generation)this.heartbeat();}};
-  dc.onclose=dc.onerror=()=>{if(generation===this.generation)this.close('disconnected');};dc.onmessage=e=>{if(generation!==this.generation)return;if(this.state==='pairing'){if(typeof e.data!=='string'||e.data.length>MAX_PACKET||this.earlyMessages.length>=16){this.close('invalid');return;}this.earlyMessages.push([channel,e.data]);}else this.receive(channel,e.data);};
+  dc.onclose=dc.onerror=()=>{if(generation!==this.generation)return;if(this.betaStun){this.troubleAt||=performance.now();return;}this.close('disconnected');};dc.onmessage=e=>{if(generation!==this.generation)return;if(this.state==='pairing'){if(typeof e.data!=='string'||e.data.length>MAX_PACKET||this.earlyMessages.length>=16){this.close('invalid');return;}this.earlyMessages.push([channel,e.data]);}else this.receive(channel,e.data);};
  }
  rate(channel){const now=performance.now(),b=this.buckets[channel]||(this.buckets[channel]={at:now,n:0});if(now-b.at>=1000){b.at=now;b.n=0;}return ++b.n<=(channel==='input'?150:100);}
  receive(channel,text){
@@ -98,12 +99,31 @@ class Link{
   this.received[channel]=v.seq;this.lastReceived=performance.now();this.stats.received++;
  }
  send(type,data,fast=false){
-  const channel=fast?'input':'control',dc=this.channels[channel];if(this.state!=='connected'||dc?.readyState!=='open')return false;
+  const channel=fast?'input':'control',dc=this.channels[channel];if(this.state!=='connected'||(!this.relaySend&&dc?.readyState!=='open'))return false;
   const text=JSON.stringify({v:V,sid:this.sid,seq:this.seq[channel]++,type,data});if(text.length>MAX_PACKET)return false;
+  if(this.relaySend){if(!this.relaySend(channel,text)){this.stats.buffered++;return false;}this.stats.sent++;return true;}
   if(dc.bufferedAmount>131072){this.stats.buffered++;if(!fast)this.close('congested');return false;}
   const p=this.impairment;if(fast&&p.loss>0&&this.noise()<p.loss){this.stats.dropped++;return true;}
   const transmit=()=>{if(dc.readyState==='open'&&dc.bufferedAmount<=131072){try{dc.send(text);this.stats.sent++;}catch{this.close('disconnected');}}};
   const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));if(delay){const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);this.deadlines[channel]=due;this.later(transmit,Math.max(0,due-performance.now()));}else transmit();return true;
+ }
+ useRelay(sid,transmit){
+  if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function')throw Error('relay-invalid');
+  if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;if(this.state!=='connected')this.status('connected');return;}
+  this.close('idle');this.resetStats();this.sid=sid;this.transport='relay';this.relaySend=transmit;this.status('connected');this.heartbeat();
+ }
+ receiveRelay(channel,payload){if(this.transport!=='relay'||this.state!=='connected'||!['control','input'].includes(channel))return;this.receive(channel,payload);}
+ async restartOffer(){
+  const pc=this.pc,generation=this.generation;if(!this.betaStun||this.role!=='host'||!pc||pc.signalingState!=='stable'||this.transport==='relay')return null;
+  try{await pc.setLocalDescription(await pc.createOffer({iceRestart:true}));const sdp=await this.gather(pc,generation);return JSON.stringify({v:V,kind:'offer',sid:this.sid,sdp});}catch{return null;}
+ }
+ async restartAnswer(text){
+  const d=description(text,'offer'),pc=this.pc,generation=this.generation;if(!pc||this.role!=='guest'||d.sid!==this.sid||pc.signalingState!=='stable'||this.transport==='relay')return null;
+  try{await pc.setRemoteDescription({type:'offer',sdp:d.sdp});await pc.setLocalDescription(await pc.createAnswer());const sdp=await this.gather(pc,generation);return JSON.stringify({v:V,kind:'answer',sid:this.sid,sdp});}catch{return null;}
+ }
+ async restartAccept(text){
+  const d=description(text,'answer'),pc=this.pc;if(!pc||this.role!=='host'||d.sid!==this.sid||pc.signalingState!=='have-local-offer'||this.transport==='relay')return false;
+  try{await pc.setRemoteDescription({type:'answer',sdp:d.sdp});return true;}catch{return false;}
  }
  heartbeat(){
   if(this.state!=='connected')return;
@@ -120,7 +140,7 @@ class Link{
  }
  diagnose(){
   const pc=this.pc;
-  if(!pc)return this.lastDiagnostic?{...this.lastDiagnostic,state:this.state}:{state:this.state,connection:'none',ice:'none',gathering:'none',control:'none',input:'none',candidates:{host:0,srflx:0,relay:0},remoteCandidates:{host:0,srflx:0,relay:0}};
+  if(!pc)return this.transport==='relay'?{state:this.state,connection:'relay',ice:'relay',transport:'relay',candidates:{host:0,srflx:0,relay:0},remoteCandidates:{host:0,srflx:0,relay:0}}:this.lastDiagnostic?{...this.lastDiagnostic,state:this.state}:{state:this.state,connection:'none',ice:'none',gathering:'none',control:'none',input:'none',candidates:{host:0,srflx:0,relay:0},remoteCandidates:{host:0,srflx:0,relay:0}};
   // Only ICE candidate type COUNTS are retained. Never expose SDP, addresses or credentials.
   const count=sdp=>{
    const summary={host:0,srflx:0,relay:0};
