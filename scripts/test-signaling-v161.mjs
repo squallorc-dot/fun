@@ -34,7 +34,7 @@ try{
   await Promise.all(pages.map(p=>p.waitForFunction(()=>outcome!=='pending',null,{timeout:50000})));
   const outcomes=await Promise.all(pages.map(p=>p.evaluate(()=>({state:outcome,candidates:(link.pc?.localDescription?.sdp.match(/^a=candidate:/gm)||[]).length}))));
   if(outcomes.some(x=>x.state!=='connected')){console.error('RTC NOT ESTABLISHED: '+JSON.stringify(outcomes));process.exitCode=1;}
-  else {await pages[0].evaluate(()=>link.send('test',{value:'host'}));await pages[1].evaluate(()=>link.send('test',{value:'guest'}));await pages[0].waitForFunction(()=>received==='guest');await pages[1].waitForFunction(()=>received==='host');
+  else {await pages[0].evaluate(()=>link.send('test',{value:'host'}));await pages[1].evaluate(()=>link.send('test',{value:'guest'}));await pages[0].waitForFunction(()=>window.received==='guest');await pages[1].waitForFunction(()=>window.received==='host');
    console.log('PASS true independent Chromium WebRTC DataChannels: bidirectional application data');
    // Unlike a mock worker handshake, this forces a real authenticated
    // WebSocket Relay handoff between two independently launched browsers.
@@ -47,8 +47,8 @@ try{
    assert(handoff.every(x=>x.state==='connected'&&x.transport==='relay'&&x.pcAbsent),'relay takeover kept the game link alive');
    await pages[0].evaluate(()=>link.send('test',{value:'host-relay'}));
    await pages[1].evaluate(()=>link.send('test',{value:'guest-relay'}));
-   await pages[0].waitForFunction(()=>received==='guest-relay',null,{timeout:15000});
-   await pages[1].waitForFunction(()=>received==='host-relay',null,{timeout:15000});
+   await pages[0].waitForFunction(()=>window.received==='guest-relay',null,{timeout:15000});
+   await pages[1].waitForFunction(()=>window.received==='host-relay',null,{timeout:15000});
    console.log('PASS real two-browser STUN/P2P to authenticated Worker WS Relay takeover with bidirectional data');}
  }
 }finally{for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}
