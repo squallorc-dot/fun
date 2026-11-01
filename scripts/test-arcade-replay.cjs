@@ -71,11 +71,12 @@ for(const level of ['normal','hard','expert']){
  // G05: every new match starts at 0–0, both volleyball and table tennis.
  for(const mode of ['volley','pong']){
   const c=make('g05',mode,level),v=c.g;
-  for(let i=0;i<3000&&!c.result()&&v.hud().includes('我方 <b>0</b>')&&v.hud().includes('電腦 <b>0</b>');i++)v.update(1/60,input);
-  assert(!v.hud().includes('我方 <b>0</b>')||!v.hud().includes('電腦 <b>0</b>')||c.result(),`G05 ${mode}: test reached scoring condition`);
+  // Use authoritative points rather than localized HUD text, which differs by language.
+  for(let i=0;i<3000&&!c.result()&&v.inspectMatch().points.every(p=>p===0);i++)v.update(1/60,input);
+  assert(v.inspectMatch().points.some(p=>p>0)||c.result(),`G05 ${mode}: test reached scoring condition`);
   v.start();
-  assert(v.hud().includes('我方 <b>0</b>'),`G05 ${mode}: your points reset`);
-  assert(v.hud().includes('電腦 <b>0</b>'),`G05 ${mode}: AI points reset`);
+  assert.equal(v.inspectMatch().points[0],0,`G05 ${mode}: your points reset`);
+  assert.equal(v.inspectMatch().points[1],0,`G05 ${mode}: AI points reset`);
   assert.equal(v._finished,false,`G05 ${mode}: result reset`);
   v.update(1/60,input);
   assert.equal(v._finished,false,`G05 ${mode}: new match remains active`);
