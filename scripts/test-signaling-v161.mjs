@@ -30,10 +30,25 @@ try{
  console.log('PASS local Worker: origin, credentials, host-approved room code, duplicate roles, relay and cleanup');
  if(process.argv.includes('--rtc')){
   const fresh=await (await fetch(endpoint+'/rooms',{method:'POST',headers:{Origin:origin}})).json();
-  await Promise.all(pages.map((p,i)=>p.evaluate(({endpoint,fresh,i})=>{window.link=new BioPeer.Link({onMessage:(type,data)=>{if(type==='test')window.received=data.value;}});window.pairing=BioFriendSignaling.connect({endpoint,room:fresh.room,role:i?'guest':'host',token:i?fresh.guest:fresh.host,link});window.outcome='pending';pairing.result.then(()=>window.outcome='connected',e=>window.outcome=e.message);},{endpoint,fresh,i})));
+  await Promise.all(pages.map((p,i)=>p.evaluate(({endpoint,fresh,i})=>{window.link=new BioPeer.Link({betaStun:true,onMessage:(type,data)=>{if(type==='test')window.received=data.value;}});window.pairing=BioFriendSignaling.connect({endpoint,room:fresh.room,role:i?'guest':'host',token:i?fresh.guest:fresh.host,link});window.outcome='pending';pairing.result.then(()=>window.outcome='connected',e=>window.outcome=e.message);},{endpoint,fresh,i})));
   await Promise.all(pages.map(p=>p.waitForFunction(()=>outcome!=='pending',null,{timeout:50000})));
   const outcomes=await Promise.all(pages.map(p=>p.evaluate(()=>({state:outcome,candidates:(link.pc?.localDescription?.sdp.match(/^a=candidate:/gm)||[]).length}))));
   if(outcomes.some(x=>x.state!=='connected')){console.error('RTC NOT ESTABLISHED: '+JSON.stringify(outcomes));process.exitCode=1;}
-  else {await pages[0].evaluate(()=>link.send('test',{value:'host'}));await pages[1].evaluate(()=>link.send('test',{value:'guest'}));await pages[0].waitForFunction(()=>received==='guest');await pages[1].waitForFunction(()=>received==='host');console.log('PASS true independent Chromium WebRTC DataChannels: bidirectional application data');}
+  else {await pages[0].evaluate(()=>link.send('test',{value:'host'}));await pages[1].evaluate(()=>link.send('test',{value:'guest'}));await pages[0].waitForFunction(()=>received==='guest');await pages[1].waitForFunction(()=>received==='host');
+   console.log('PASS true independent Chromium WebRTC DataChannels: bidirectional application data');
+   // Unlike a mock worker handshake, this forces a real authenticated
+   // WebSocket Relay handoff between two independently launched browsers.
+   // Preserve the established session and prove DATA is sent in both directions.
+   const initial=await Promise.all(pages.map(p=>p.evaluate(()=>({generation:link.generation,connected:link.state==='connected',transport:link.transport}))));
+   assert(initial.every(x=>x.connected&&x.transport==='p2p'),'both peer links connected before relay handoff');
+   await Promise.all(pages.map(p=>p.evaluate(()=>{window.received=null;link.onDegraded();})));
+   await Promise.all(pages.map(p=>p.waitForFunction(()=>link.state==='connected'&&link.transport==='relay',null,{timeout:15000})));
+   const handoff=await Promise.all(pages.map(p=>p.evaluate(()=>({state:link.state,transport:link.transport,pcAbsent:!link.pc}))));
+   assert(handoff.every(x=>x.state==='connected'&&x.transport==='relay'&&x.pcAbsent),'relay takeover kept the game link alive');
+   await pages[0].evaluate(()=>link.send('test',{value:'host-relay'}));
+   await pages[1].evaluate(()=>link.send('test',{value:'guest-relay'}));
+   await pages[0].waitForFunction(()=>received==='guest-relay',null,{timeout:15000});
+   await pages[1].waitForFunction(()=>received==='host-relay',null,{timeout:15000});
+   console.log('PASS real two-browser STUN/P2P to authenticated Worker WS Relay takeover with bidirectional data');}
  }
 }finally{for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}
