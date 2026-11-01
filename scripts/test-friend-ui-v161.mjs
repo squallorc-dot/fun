@@ -106,12 +106,13 @@ try{
   }
   if(locale==='zh'&&viewport.width===390){
    // UI-only: the real two-board host/guest state is exercised by engine and RTC tests.
-   const state=await page.evaluate(()=>{
+   const state=await page.evaluate(async()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
     s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
     s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
       drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
     s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height,top:b.top,bottom:b.bottom,left:b.left,right:b.right};};
     return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),peerCanvas:bounds('opponent-canvas'),
       dock:bounds('opponent-dock'),controls:bounds('touch-controls'),stage:bounds('viewport'),
@@ -126,7 +127,7 @@ try{
    assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
    assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
    assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
-   assert(state.main.bottom<=state.controls.top+3,'own playfield does not overlap G03 touch controls');
+   assert(state.main.bottom<=state.controls.top+3,'own playfield does not overlap G03 touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
    assert(state.controls.h>=145,'touch controls retain a usable height');
    assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
    assert(!state.overflow,'peer ribbon does not cause horizontal overflow');
