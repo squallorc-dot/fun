@@ -285,3 +285,15 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 .hub-more-async .hub-more-cta{background:#0e8e89;border-color:#8df4da;color:#fff}
 .hub-more-cta:focus-visible{outline:3px solid #dcffff;outline-offset:3px}
 @media(max-width:700px){.hub-more-grid{grid-template-columns:minmax(0,1fr)}.hub-more-card{padding:18px}.hub-more-card .hub-more-cta{max-width:none}}
+
+/* Single-player guardian carousel controls */
+.hero-carousel-tools{display:none}
+@media(max-width:690px){
+ .hero-carousel-tools{display:flex;justify-content:center;align-items:center;gap:14px;margin:2px 0 11px}
+ .hero-carousel-tools button{min-width:44px;min-height:44px;border:1px solid #70c9d7;border-radius:12px;background:#123b50;color:#e5fcff;font-size:1.7rem;line-height:1}
+ .hero-carousel-tools button:disabled{opacity:.38}
+ .hero-carousel-tools button:focus-visible{outline:3px solid #b5fff1;outline-offset:2px}
+ .hero-carousel-tools output{min-width:64px;text-align:center;font-weight:800;font-size:.88rem;color:#a7f3e5}
+ .setup-dialog .hero-chip-wrap{scroll-padding-inline:calc((100% - 150px)/2);-webkit-overflow-scrolling:touch}
+ .setup-dialog .hero-chip-wrap .hero-chip{flex:0 0 clamp(140px,39vw,174px)}
+}

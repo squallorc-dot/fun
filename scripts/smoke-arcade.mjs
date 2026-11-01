@@ -51,6 +51,7 @@ try{
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
    const open=async(id)=>{
     await page.locator('[data-launch="'+id+'"]').click();
+    if(viewport.width<=690&&id==='g02'){await page.locator('#hero-next').click();check(await page.locator('#hero-index').textContent()==='2 / 7',label+' carousel next arrow');check(await page.evaluate(()=>BioSuiteHub.hero)===1,label+' selected hero updates');await page.locator('#hero-prev').click();check(await page.evaluate(()=>BioSuiteHub.hero)===0,label+' carousel previous arrow');}
     check(await page.locator('#campaign-brief').count()===1,label+' '+id+' chapter briefing shown');
     check((await page.locator('#campaign-brief').textContent()).includes('1'),label+' '+id+' first chapter description shown');
     await page.locator('#setup-play').click();
