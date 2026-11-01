@@ -153,7 +153,7 @@
   if(suffix){
    layer.id+=suffix;
    for(const el of layer.querySelectorAll('[id]'))el.id+=suffix;
-   for(const el of layer.querySelectorAll('[aria-labelledby]'))el.setAttribute('aria-labelledby',el.getAttribute('aria-labelledby').split(/\\s+/).map(id=>id+suffix).join(' '));
+   for(const el of layer.querySelectorAll('[aria-labelledby]'))el.setAttribute('aria-labelledby',el.getAttribute('aria-labelledby').split(/\s+/).map(id=>id+suffix).join(' '));
   }
   const byId=id=>layer.querySelector('[id="'+id+suffix+'"]');
   doc.body.appendChild(layer);let returned=null;
