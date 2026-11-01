@@ -221,7 +221,7 @@ try{
     await page.goto(origin+'/arcade/friends/index.html?lang=zh');
     await page.evaluate(()=>{
       const s=BioFriendsApp.session;
-      BioFriendSignaling.createRoom=async()=>({room:'ABCD2345',host:'host-test',guest:'guest-test'});
+      BioFriendSignaling.createRoom=async()=>({room:'ABCD2345',host:'a'.repeat(64),guest:'b'.repeat(64)});
       BioFriendSignaling.connect=()=>({result:Promise.resolve(),close(){},retry(){}});
       s.prepareAuto=(role,room,hero)=>{s.role=role;s.room=room;s.hero=hero;s.peerHello={hero:3,games:['feature:hero-v1']};s.phase='lobby';s.configAck=true;s.readyFlags=[false,false];};
       s.link.state='connected';s.link.send=()=>true;
