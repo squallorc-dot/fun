@@ -213,3 +213,100 @@ body[data-auto-lobby] #arena #help-close:focus-visible,body[data-auto-lobby] #ar
  #auto-entry #auto-home .auto-poster{height:auto;aspect-ratio:16/9;min-height:160px}
  #auto-entry #auto-home .auto-poster img{object-fit:contain;object-position:center;opacity:1}
 }
+
+/* 2026-11-01: desktop landscape lobby + single-centered swipe carousel.
+   The hero select remains in accessible fallback details. Network session
+   and character identity are unchanged. */
+#auto-entry [hidden]{display:none!important}
+body[data-auto-lobby]:not(.auto-connected) #auto-entry{
+ width:min(1360px,calc(100% - 28px));max-width:1360px!important;
+ margin:clamp(10px,2.5vh,32px) auto!important;
+ padding:clamp(16px,2.5vw,30px);box-sizing:border-box;
+}
+#auto-entry #auto-form{min-width:0}
+#auto-entry #auto-form:not([hidden]){display:grid;grid-template-columns:minmax(0,46fr) minmax(0,54fr);grid-template-areas:"picker preview" "actions actions";column-gap:clamp(16px,2.3vw,32px);align-items:stretch}
+#auto-entry .auto-picker-pane{grid-area:picker;display:flex;flex-direction:column;gap:8px;min-width:0;align-self:start}
+#auto-entry .auto-picker-pane>label{display:flex;flex-direction:column;gap:5px;margin:2px 0 6px}
+#auto-entry .auto-picker-pane>label input{min-height:44px}
+#auto-entry .auto-picker-pane>label[hidden]{display:none!important}
+#auto-entry .auto-native-picker{align-self:start;max-width:100%;font-size:.8rem;color:#b0d6da;margin:0}
+#auto-entry .auto-native-picker>summary{cursor:pointer;min-height:34px;display:flex;align-items:center;text-decoration:underline;text-underline-offset:3px}
+#auto-entry .auto-native-picker>label{display:block;margin:0 0 4px}
+#auto-entry .auto-native-picker select{min-height:40px}
+#auto-entry #auto-form>.auto-hero-card{grid-area:preview;margin:0;align-self:stretch;width:100%;min-height:390px;grid-template-columns:minmax(0,52%) minmax(0,48%);gap:clamp(12px,1.8vw,25px);padding:14px 20px}
+#auto-entry #auto-form>.auto-hero-card .auto-portrait-wrap{height:min(420px,39vw);min-height:270px}
+#auto-entry #auto-form>.auto-hero-card .auto-hero-copy strong{font-size:clamp(1.4rem,2.5vw,2.5rem)}
+#auto-entry #auto-form>.auto-actions{grid-area:actions;display:flex;gap:12px;justify-content:flex-end;margin:14px 0 0}
+#auto-entry #auto-form>.auto-actions button{flex:0 1 220px}
+#auto-entry .auto-hero-stage{position:relative;min-width:0;width:100%;isolation:isolate}
+#auto-entry .auto-hero-choices{
+ --hero-card-width:clamp(210px,23vw,290px);
+ display:flex!important;grid-template-columns:none!important;gap:12px;
+ width:100%;max-width:none;min-width:0;margin:0!important;
+ padding:7px calc((100% - var(--hero-card-width))/2) 12px!important;
+ box-sizing:border-box;overflow-x:auto;overflow-y:hidden;
+ scroll-snap-type:x mandatory;scroll-padding-inline:calc((100% - var(--hero-card-width))/2);
+ overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x;
+ -webkit-overflow-scrolling:touch;
+}
+#auto-entry .auto-hero-choices::-webkit-scrollbar{display:none}
+#auto-entry .auto-hero-choice{
+ box-sizing:border-box;scroll-snap-align:center;scroll-snap-stop:always;
+ flex:0 0 var(--hero-card-width)!important;width:var(--hero-card-width)!important;
+ min-height:300px!important;max-width:none;overflow:hidden;
+ transform-origin:50% 50%;opacity:.68;filter:saturate(.8);transition:transform .18s ease,opacity .18s ease,filter .18s ease,border-color .18s ease;
+}
+#auto-entry .auto-hero-choice img{width:100%;height:247px!important;object-fit:contain;object-position:center bottom;pointer-events:none}
+#auto-entry .auto-hero-choice[aria-pressed=true]{transform:scale(1.015);opacity:1;filter:saturate(1.1);z-index:1}
+#auto-entry .auto-hero-choice:focus-visible{opacity:1;outline:2px solid #aafbee;outline-offset:-4px}
+#auto-entry .auto-hero-nav{
+ position:absolute;top:47%;z-index:2;transform:translateY(-50%);
+ width:40px;height:54px;display:flex;align-items:center;justify-content:center;
+ padding:0;border:1px solid #74bfc4;border-radius:16px;background:#092738e3;
+ color:#e9ffff;font-size:2.3rem;cursor:pointer;box-shadow:0 2px 15px #001622a8
+}
+#auto-entry #auto-hero-prev{left:2px}
+#auto-entry #auto-hero-next{right:2px}
+#auto-entry .auto-hero-nav:hover,#auto-entry .auto-hero-nav:focus-visible{background:#1b6571;outline:2px solid #8ce7e1;outline-offset:-3px}
+#auto-entry .auto-hero-progress{text-align:center;font-size:.82rem;font-weight:800;letter-spacing:.14em;color:#91e8dd;padding:0 0 2px}
+@media(min-width:960px){
+ #auto-entry #auto-home{display:grid!important;width:100%;max-width:none!important;grid-template-columns:minmax(0,1.45fr) minmax(260px,.65fr);grid-template-rows:auto auto 1fr;gap:12px clamp(18px,3vw,40px);align-items:start}
+ #auto-entry #auto-home[hidden]{display:none!important}
+ #auto-entry #auto-home .auto-poster{grid-area:1/1/4/2;width:100%;height:auto!important;aspect-ratio:16/9;max-height:none}
+ #auto-entry #auto-home .auto-poster img{object-fit:contain!important}
+ #auto-entry #auto-home .auto-actions{grid-area:1/2;display:grid;grid-template-columns:1fr;margin:0}
+ #auto-entry #auto-home .auto-actions button{width:100%}
+ #auto-entry #auto-home .auto-back-button{grid-area:2/2;justify-self:start}
+ #auto-entry #auto-home>label{grid-area:3/2;display:flex;flex-direction:column;gap:6px;margin:0}
+}
+@media(max-width:959px){
+ #auto-entry #auto-form:not([hidden]){display:flex;flex-direction:column;gap:12px}
+ #auto-entry #auto-form>.auto-hero-card{min-height:205px;padding:10px 14px;grid-template-columns:minmax(0,40%) minmax(0,60%);margin:0}
+ #auto-entry #auto-form>.auto-hero-card .auto-portrait-wrap{height:205px;min-height:0}
+ #auto-entry #auto-form>.auto-actions{margin:0;justify-content:stretch}
+ #auto-entry #auto-form>.auto-actions button{flex:1 1 0}
+ #auto-entry .auto-hero-choices{--hero-card-width:clamp(190px,58vw,260px)}
+ #auto-entry .auto-hero-choice{min-height:265px!important}
+ #auto-entry .auto-hero-choice img{height:208px!important}
+}
+@media(max-width:600px){
+ body[data-auto-lobby]:not(.auto-connected) #auto-entry{width:calc(100% - 20px);padding:14px 12px;margin:8px auto!important}
+ #auto-entry .auto-picker-pane{gap:4px}
+ #auto-entry .auto-hero-choices{--hero-card-width:clamp(180px,62vw,245px);gap:9px;padding-top:4px!important;padding-bottom:6px!important}
+ #auto-entry .auto-hero-choice{min-height:244px!important;padding:8px!important;border-radius:14px}
+ #auto-entry .auto-hero-choice img{height:190px!important}
+ #auto-entry .auto-hero-choice span{margin-top:4px}
+ #auto-entry .auto-hero-nav{width:32px;height:42px;font-size:1.8rem;top:45%;border-radius:12px}
+ #auto-entry #auto-form>.auto-hero-card{grid-template-columns:minmax(0,39%) minmax(0,61%);min-height:156px;padding:8px 10px;gap:9px}
+ #auto-entry #auto-form>.auto-hero-card .auto-portrait-wrap{height:150px;min-height:0}
+ #auto-entry #auto-form>.auto-hero-card .auto-hero-copy{gap:4px}
+ #auto-entry #auto-form>.auto-hero-card .auto-hero-copy strong{font-size:1.22rem}
+ #auto-entry #auto-form>.auto-hero-card .auto-hero-copy #auto-hero-description{font-size:.79rem;line-height:1.45}
+ #auto-entry #auto-form>.auto-hero-card .auto-player-tag{font-size:.7rem;padding-top:4px;margin-top:0}
+ #auto-entry #auto-form>.auto-actions button{min-height:46px;padding:7px 10px}
+ #auto-entry #auto-form>.auto-actions{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){#auto-entry .auto-hero-choice{transition:none}}
+
+/* Override the older 1120px page body limit so 1360px lobby is reachable. */
+body[data-auto-lobby]:not(.auto-connected){max-width:none;width:100%;min-width:0}
