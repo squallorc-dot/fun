@@ -177,3 +177,39 @@ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-a
 body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score{flex:1 1 250px;font-size:clamp(.77rem,1.25vw,1rem);min-width:120px}
 body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #help{background:#16556a;border:1px solid #71c7ce;color:#e4fffa}
 @media(max-width:720px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,auto);gap:4px}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #side{grid-column:1/-1}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score{grid-column:1/-1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions button{padding:4px 6px;font-size:.74rem;min-height:34px}}
+
+/* 2026-11-01: open instructions are an INLINE status strip, never a blocking modal.
+   Preserve the canvas and its touch surface; close works by mouse, tap and Escape. */
+body[data-auto-lobby] #arena #help-panel{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;z-index:1!important;width:100%;max-width:none!important;display:flex;align-items:center;justify-content:space-between;gap:clamp(8px,1.5vw,16px);margin:0 0 4px;padding:6px 12px;border:1px solid #2d6679;border-radius:8px;background:#0b3041;color:#ddf6f6;box-shadow:none;line-height:1.4;flex:0 0 auto}
+body[data-auto-lobby] #arena #help-panel[hidden]{display:none!important}
+body[data-auto-lobby] #arena .help-panel-copy{display:flex;align-items:baseline;gap:10px;flex:1 1 auto;min-width:0}
+body[data-auto-lobby] #arena #help-title{font-size:.76rem;font-weight:800;color:#91e0dc;white-space:nowrap}
+body[data-auto-lobby] #arena #help-text{margin:0;font-size:clamp(.7rem,1.15vw,.85rem);font-weight:500;line-height:1.45;overflow-wrap:anywhere}
+body[data-auto-lobby] #arena #help-close{min-width:53px;min-height:30px;padding:3px 8px;font-size:.75rem;font-weight:700;flex:0 0 auto;border:1px solid #75aab5;border-radius:7px;background:#163a4b;color:#dcffff}
+body[data-auto-lobby] #arena #help-close:focus-visible,body[data-auto-lobby] #arena #help:focus-visible{outline:2px solid #a4fcee;outline-offset:2px}
+@media(max-width:720px){
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:4px;padding:4px 5px;margin:0}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #side{grid-column:1/3;min-width:0}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score{grid-column:1/-1;grid-row:2;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #help{grid-column:3/4;grid-row:1}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #pause{grid-column:4/5;grid-row:1}
+ body[data-auto-lobby] #arena #help-panel{padding:5px 8px;gap:6px;margin:0 0 3px}
+ body[data-auto-lobby] #arena .help-panel-copy{display:block}
+ body[data-auto-lobby] #arena #help-title{display:none}
+ body[data-auto-lobby] #arena #help-text{font-size:.74rem;line-height:1.4}
+ body[data-auto-lobby] #arena #help-close{min-width:46px;font-size:.72rem;min-height:32px}
+}
+@media(max-width:720px) and (orientation:portrait){
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell{display:flex;flex-direction:column;min-height:0}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #viewport{flex:0 0 auto!important;aspect-ratio:var(--bio-play-aspect,4/3);width:100%;height:auto!important;max-height:calc(100dvh - 315px);min-height:0;align-items:center;justify-content:center}
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls{flex:1 1 auto!important;max-height:none!important;min-height:175px!important;border-top:1px solid #2b6173;background:linear-gradient(180deg,#0b304166,#071a2c)}
+}
+@media(min-width:721px){
+ #auto-entry #auto-home .auto-poster{height:auto;max-height:none;aspect-ratio:16/9}
+ #auto-entry #auto-home .auto-poster img{object-fit:contain;object-position:center;opacity:1;background:#071e32}
+ #auto-entry #auto-home{max-width:800px;width:100%}
+}
+@media(max-width:720px){
+ #auto-entry #auto-home .auto-poster{height:auto;aspect-ratio:16/9;min-height:160px}
+ #auto-entry #auto-home .auto-poster img{object-fit:contain;object-position:center;opacity:1}
+}

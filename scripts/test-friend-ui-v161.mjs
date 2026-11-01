@@ -12,6 +12,8 @@ try{
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
   assert(await page.locator('.auto-back-button').isVisible(),'return to arcade is a player-facing button');
   assert(await page.locator('#help').count()===1,'in-game help button is available');
+   assert(await page.locator('#help-close').count()===1,'inline instructions have their own close button');
+   assert.equal(await page.locator('#help-panel').isVisible(),false,'help is hidden outside active gameplay');
   assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
   assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
   assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
@@ -151,6 +153,17 @@ try{
    assert(play.stage.h>=viewport.height*(viewport.width===390?.40:.70),'playfield occupies available stage');
    assert(play.canvas.h>0&&play.canvas.w>0,'canvas stays visible');
    assert(play.gas&&play.nitro&&play.instructions.includes('自動加速'),'no gas key and nitro preserved');
+   assert(await page.locator('#help-panel').isVisible(),'short in-game instructions are shown by default');
+   assert.equal(await page.locator('#help').getAttribute('aria-expanded'),'true','guide button reflects open status');
+   const guide=await page.locator('#help-panel').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),canvas:document.querySelector('#game-canvas').getBoundingClientRect().toJSON()}));
+   assert.equal(guide.position,'relative','guide must be in normal flow, not covering game');
+   assert(guide.rect.bottom<=guide.canvas.top+1,'guide sits above canvas without obstructing action');
+   await page.locator('#help-close').click();
+   assert.equal(await page.locator('#help-panel').isVisible(),false,'one tap on Close dismisses guide');
+   await page.locator('#help').click();
+   assert(await page.locator('#help-panel').isVisible(),'guide can be opened again');
+   await page.locator('#help').click();
+   assert.equal(await page.locator('#help-panel').isVisible(),false,'toolbar button can toggle off');
    assert(!play.overflow,'no horizontal overflow during play');
   }
   await page.close();
