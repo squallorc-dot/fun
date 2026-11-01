@@ -8,7 +8,16 @@ import {start} from './lib/friends-browser.mjs';
 import {signalingTestServer} from './lib/signaling-test-server.mjs';
 const origin='http://127.0.0.1:8790';
 const server=await signalingTestServer();
-const browsers=[];let pages=[];
+const browsers=[];let pages=[];const engineErrors=[],engineSamples=[];
+const sampleEngine=async()=>Promise.all(pages.map(async(p,side)=>{try{return await p.evaluate(side=>{
+ const session=window.BioFriendsApp?.session,adapter=session?.adapter;
+ const frame=adapter?.frame,child=frame?.contentWindow,root=child?.document?.getElementById('arcade-root');
+ return {side,phase:session?.phase,game:session?.config?.game,
+  readyFlags:session?.readyFlags,startPending:session?.startPending,
+  adapter:!!adapter,started:!!adapter?.started,failed:adapter?.failed||null,
+  frameReady:child?.document?.readyState||null,engine:!!child?.BioArcadeShooter,
+  innerPhase:root?.dataset?.phase||null,innerNetwork:root?.classList?.contains('arcade-network')||false};
+ },side);}catch{return {side,unavailable:true};}}));
 async function safe(page){
  try{return await page.evaluate(()=>{
   const app=window.BioFriendsApp;if(!app)return {loaded:false};
@@ -29,6 +38,11 @@ try{
   await browsers[1].newContext({...devices['iPhone 13'],locale:'zh-TW'})
  ];
  pages=await Promise.all(contexts.map(c=>c.newPage()));
+ pages.forEach((p,side)=>p.on('pageerror',e=>{
+  // Retain only an exception category; no URL, invitation or network data.
+  const message=String(e?.message||'').replace(/https?:\/\/\S+/g,'[url]').replace(/[0-9a-f]{32,}/gi,'[redacted]');
+  if(engineErrors.length<12)engineErrors.push({side,name:e?.name||'Error',message:message.slice(0,180)});
+ }));
  await Promise.all(pages.map(async(p,i)=>{
   await p.route('**/*',async route=>{
    const url=route.request().url();
@@ -62,7 +76,8 @@ try{
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.chapter===2&&BioFriendsApp.inspect().session.configAck,null,{timeout:25000})));
  // start() ensures the host does not expose gameplay until WebKit confirms
  // its actual G02 adapter, and both engines agree on epoch/hero/chapter.
- await start(host,guest,'defense');
+ const monitor=setInterval(()=>{if(engineSamples.length>=14)return;sampleEngine().then(rows=>engineSamples.push(rows)).catch(()=>{});},1300);
+ try{await start(host,guest,'defense');}finally{clearInterval(monitor);}
  await Promise.all(pages.map(p=>p.waitForFunction(()=>{
   const v=BioFriendsApp.inspect();
   return v.session.phase==='playing'&&v.session.tick>240&&v.session.config?.game==='g02';
@@ -78,6 +93,8 @@ try{
  console.log('PASS WebKit iPhone 13 emulation + Chromium mobile: G02 both start, shared epoch, chapter 2, hero state and return');
 }catch(error){
  console.error('SAFE G02 CROSS-ENGINE STATES '+JSON.stringify(await Promise.all(pages.map(safe))));
+ console.error('SAFE G02 ENGINE SAMPLES '+JSON.stringify(engineSamples.slice(-14)));
+ console.error('SAFE G02 JS ERRORS '+JSON.stringify(engineErrors));
  throw error;
 }finally{
  for(const b of browsers)await b.close();
