@@ -101,7 +101,7 @@
    // are intentionally inactive; only the outer lobby should own touch input.
    // A previously injected inline !important display must not override this.
    const embeddedNetwork=!!element.closest('#arcade-root.arcade-network');
-   const visible=!embeddedNetwork&&!doc.body?.classList.contains('round-finished')&&(touch||(!autoLobby?win.innerWidth<=1100:win.innerWidth<=700||!mouse)||prefs.profile!=='two');
+   const visible=!embeddedNetwork&&!doc.body?.classList.contains('round-finished')&&(autoLobby?(touch||!mouse):touch||win.innerWidth<=1100||prefs.profile!=='two');
    element.style.setProperty('display',visible?'block':'none','important');
    element.dataset.profile=prefs.profile;element.dataset.joystick=prefs.joystick;
    if(!visible){reset();element.style.setProperty('height','0px','important');plan={reservedLeft:0,reservedRight:0,height:0,compact:false,visible:false};onLayout(plan);return;}
