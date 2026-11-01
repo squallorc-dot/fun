@@ -132,3 +132,11 @@ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-instruct
 body[data-auto-lobby].auto-connected.playing:not(.round-finished) > details.panel{display:none!important}
 @media(max-width:640px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{gap:3px;font-size:.78rem}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions button{min-height:34px;padding:3px 7px;font-size:.78rem}}
 @media (orientation:landscape) and (max-height:540px){body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions{min-height:32px}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls{position:absolute!important;inset:36px 0 0!important;width:100%;height:calc(100% - 36px);max-height:none;pointer-events:none;border:0;background:none!important}body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls .bio-stick-zone,body[data-auto-lobby].auto-connected.playing:not(.round-finished) #touch-controls button{pointer-events:auto}}
+
+/* In-match help returns without leaving the synchronized game room. */
+#arena{position:relative}
+#help-panel[hidden]{display:none!important}
+#help-panel{position:absolute;top:60px;right:12px;z-index:1200;max-width:min(380px,calc(100vw - 24px));padding:14px 18px;border:1px solid #7dc9c8;border-radius:13px;background:#0b2837f2;color:#ecfbff;box-shadow:0 12px 30px #0009;line-height:1.6}
+#help-panel p{margin:6px 0 0}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #help-panel{position:fixed;top:64px;right:10px}
+body[data-auto-lobby].round-finished #rematch{background:#12686d;border:1px solid #8ae5dc;color:#f4ffff;font-weight:750}

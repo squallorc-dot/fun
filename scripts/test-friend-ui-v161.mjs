@@ -11,6 +11,7 @@ try{
   assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
   assert(await page.locator('.auto-back-button').isVisible(),'return to arcade is a player-facing button');
+  assert(await page.locator('#help').count()===1,'in-game help button is available');
   assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
   assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
   assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
@@ -79,6 +80,7 @@ try{
    assert.equal(view.arena,false,'finished arena stays visible for result');
    assert.match(view.banner,/7 : 3/,'result shown alongside playfield');
    assert.equal(view.bannerVisible,true,'result is actually visible after round');
+    assert(!/Host|Guest/.test(view.banner),'localized identities in victory banner');
    assert.match(view.replay,/再玩下一局/,'finished round offers a direct next match instead of returning to lobby');
    assert.equal(view.pause,'none','do not show disabled pause after a finished match');
    assert.equal(view.dock,'none','finished screen removes touch-control dock');
@@ -119,7 +121,7 @@ try{
     assert(ui.banner.includes('比賽結束')&&ui.banner.length<160,mode.game+' concise result');
     assert(ui.fieldHeight<=viewport.height-90,mode.game+' field fits short viewport');
     assert.equal(ui.overflow,false,mode.game+' has no horizontal overflow');
-    if(mode.game==='g06'){assert.equal(ui.details,true);assert.match(ui.banner,/Host #1/);assert.match(ui.banner,/Guest #2/);}
+    if(mode.game==='g06'){assert.equal(ui.details,true);assert.match(ui.banner,/房主 第1名/);assert.match(ui.banner,/好友 第2名/);}
     else assert.equal(ui.details,false,mode.game+' needs no verbose score panel');
    }
   }
