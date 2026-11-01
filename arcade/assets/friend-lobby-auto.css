@@ -429,3 +429,9 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
  #auto-entry #auto-form .auto-hero-choice,
  body[data-auto-lobby].auto-connected #lobby .auto-connected-card{transition:none}
 }
+
+/* Without a room-name input, the carousel column must keep a real width.
+   Otherwise its absolutely positioned arrows overlap on 390px devices. */
+#auto-entry #auto-form .auto-picker-pane{width:100%;min-width:0;align-self:stretch}
+#auto-entry #auto-form .auto-hero-stage{width:100%;min-width:240px;max-width:100%}
+@media(max-width:350px){#auto-entry #auto-form .auto-hero-stage{min-width:0}}

@@ -29,12 +29,14 @@ try{
       const strip=document.querySelector('.auto-hero-choices'),card=document.querySelector('.auto-hero-choice[data-position="center"]');
       const field=document.querySelector('.auto-hero-stage').getBoundingClientRect(),root=document.querySelector('#auto-entry').getBoundingClientRect();
       const box=strip.getBoundingClientRect(),center=card.getBoundingClientRect();
-      return {display:getComputedStyle(strip).display,scrollWidth:document.documentElement.scrollWidth,
+      const left=document.querySelector('#auto-hero-prev').getBoundingClientRect(),right=document.querySelector('#auto-hero-next').getBoundingClientRect();
+      return {display:getComputedStyle(strip).display,stageWidth:box.width,arrowGap:right.left-left.right,scrollWidth:document.documentElement.scrollWidth,
         windowWidth:innerWidth,fieldRight:field.right,rootRight:root.right,
         cardX:(center.left+center.right)/2,stageX:(box.left+box.right)/2,visible:card.offsetWidth>0,
         nextVisible:!!document.querySelector('.auto-hero-choice[data-position="next"]')};
     });
     assert.equal(carousel.display,'block','fixed-stage phone carousel never expands to all seven card widths');
+    assert(carousel.stageWidth>=240&&carousel.arrowGap>=16,'phone arrows have separate clickable areas without a room-name field');
     assert(carousel.visible&&Math.abs(carousel.cardX-carousel.stageX)<5,'selected portrait is centered on screen');
     assert(carousel.nextVisible,'next guardian is partially visible');
     assert(carousel.scrollWidth<=carousel.windowWidth+1&&carousel.fieldRight<=carousel.windowWidth+1&&carousel.rootRight<=carousel.windowWidth+1,
