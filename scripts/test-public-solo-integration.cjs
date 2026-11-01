@@ -6,7 +6,7 @@ for(const [html,lang]of [[zh,'zh'],[ja,'ja']]){
  assert(html.includes('../challenge/index.html?lang='+lang),'official async challenge entry for '+lang);
  assert(html.includes('bio-city-v161-signaling.squall-orc.workers.dev')&&/Beta/.test(html),'real-time remains explicitly separate Beta');
  assert(!html.includes('../qa/friends-v16/index.html?lang='+lang),'do not link private manual SDP lab from public hub');
- assert(html.includes('20261101.solo1'),'cache bust for solo UI '+lang);
+ assert(html.includes('../assets/games-core.js?v=20261030.1'),'central build asset version stays synchronized '+lang);
 }
 const entry=read('arcade/challenge/index.html');
 assert(entry.includes('id="create"')&&entry.includes('id="check"')&&entry.includes('id="compare"'),'async code exchange UI intact');
