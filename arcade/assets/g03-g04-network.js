@@ -23,7 +23,7 @@ function input(v){
  Object.entries(v).every(([k,q])=>k==='moveX'||k==='moveY'?finite(q)&&Math.abs(q)<=1:typeof q==='boolean');
 }
 function valid(v,game,chapter){
- if(!obj(v)||v.game!==game||v.chapter!==chapter||!int(v.tick,1e8)||typeof v.ended!=='boolean'||!
+ if(!obj(v)||v.game!==game||v.chapter!==chapter||!int(v.tick,1e8)||typeof v.ended!=='boolean'||v.finished!==v.ended||!
  Array.isArray(v.boards)||v.boards.length!==2||!v.boards.every(obj)||!
  Array.isArray(v.scores)||v.scores.length!==2||!v.scores.every(s=>obj(s)&&finite(s.score)&&s.score>=0&&finite(s.progress)&&s.progress>=0&&typeof s.finished==='boolean'))return false;
  if(v.endedBy!==null&&![0,1].includes(v.endedBy))return false;
@@ -77,7 +77,7 @@ function adapter(game){
   capture(){
    const boards=this.games.map(g=>g.networkSnapshot());
    return {game,chapter:this.chapter,tick:this.tick,boards,scores:boards.map((b,i)=>this.score(b,i)),
-    ended:this.game._finished,endedBy:this.finishedBy};
+    ended:this.game._finished,finished:this.game._finished,endedBy:this.finishedBy};
   }
   reliableKey(v){return v.ended+':'+v.scores.map(x=>Math.floor(x.score/100)+':'+Math.floor(x.progress/100)).join('|');}
   result(v=this.capture()){
