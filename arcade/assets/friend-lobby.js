@@ -22,8 +22,9 @@ function size(){
  // viewport after the shared HUD and one touch dock have been laid out.
  // Do not impose the old 640px limit or subtract an estimated 245px twice.
  const box=viewport.getBoundingClientRect();
- const budget=Math.max(120,box.height||innerHeight-100);
- const h=Math.min(available*ratio,budget);
+ const immersive=document.body.dataset.autoLobby==='true'&&document.body.classList.contains('playing')&&!document.body.classList.contains('round-finished');
+ const budget=immersive?Math.max(120,box.height||innerHeight-100):Math.max(120,innerHeight-120);
+ const h=Math.min(available*ratio,budget,immersive?Infinity:640);
  const cw=Math.min(available,h/ratio),ch=cw*ratio,dpr=Math.min(3,devicePixelRatio||1);
  const style={width:cw+'px',height:ch+'px',marginLeft:(plan.reservedLeft||0)+'px',marginRight:(plan.reservedRight||0)+'px'};
  for(const [k,v] of Object.entries(style))if(canvas.style[k]!==v)canvas.style[k]=v;
