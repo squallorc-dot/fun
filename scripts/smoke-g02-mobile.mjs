@@ -69,16 +69,7 @@ try{
   }
   check(errors.length===0,errors.join(';'));await context.close();
  }
- for(const locale of ['zh','ja']){
-  const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,deviceScaleFactor:2});const page=await context.newPage();
-  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+'/arcade/'+locale+'/index.html');await page.locator('.legacy-game-panel>summary').click();await page.locator('[data-ar-command="start"]').click();starts++;
-  await page.locator('canvas').waitFor();await geometry(page,locale+' standalone',388);
-  check(await page.locator('[data-ar-command="leave"]').isVisible(),locale+' standalone retains exit control');
-  await page.locator('[data-ar-command="sound"]').click();check(await page.locator('#ar-sound-label').textContent()==='OFF',locale+' consolidated sound control works');
-  await page.locator('[data-ar-command="pause"]').click();check(await page.evaluate(()=>BioArcadeShooter.state.phase==='paused'),locale+' consolidated pause works');
-  await context.close();
- }
+ // Archived standalone defense has been removed from the public hub; embedded G02 is tested above.
  fs.writeFileSync(path.join(qa,'results.json'),JSON.stringify({checks,starts,browser:browser.version(),samples,physicalDevices:'pending'},null,2)+'\n');
- console.log(`G02 MOBILE BROWSER PASS ${checks} checks; ${starts} starts, 2 languages, 7 sizes, 4 profiles, rotation and standalone entry.`);
+ console.log(`G02 MOBILE BROWSER PASS ${checks} checks; ${starts} starts, 2 languages, 7 sizes, 4 profiles, rotation; archived standalone panel excluded.`);
 }finally{await browser.close();await new Promise(done=>server.close(done));}
