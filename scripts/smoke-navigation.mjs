@@ -9,7 +9,7 @@ await new Promise(done=>server.listen(0,'127.0.0.1',done));
 const origin='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});let checks=0;const failures=[];
 const check=(ok,msg)=>{checks++;if(!ok)throw Error(msg);};
-const files=['zh','ja'].flatMap(lang=>[...pageKeys.map(key=>route(lang,key)),`arcade/${lang}/index.html`]);
+const files=['zh','ja'].flatMap(lang=>pageKeys.map(key=>route(lang,key)));
 const screenshots=path.join(root,'arcade/qa/site-ui-v7');fs.mkdirSync(screenshots,{recursive:true});
 async function pageFor(width){const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());return page;}
 try{
@@ -53,8 +53,7 @@ try{
    await page.keyboard.press('Escape');check(await page.locator('#audio-drawer').getAttribute('aria-hidden')==='true',lang+' audio Escape');
    check(await page.locator('#settings-label').evaluate(e=>e===document.activeElement),lang+' audio focus return');
    for(const id of ['g01','g02','g03','g04','g05','g06']){
-    await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
-    await page.locator('a.experience-game[href$="game='+id+'"]').click();
+    await page.goto(origin+'/arcade/'+lang+'/index.html?game='+id,{waitUntil:'domcontentloaded'});
     await page.locator('#setup.show').waitFor();
     check(await page.locator('#setup-play').getAttribute('data-game')===id,lang+' overview opens '+id+' ready room');
     await page.locator('#setup-play').click();await page.locator('#stage.active').waitFor();
@@ -68,4 +67,4 @@ try{
   }catch(e){failures.push(lang+' navigation flow: '+e.message);}finally{await page.close();}
  }
 }finally{await browser.close();await new Promise(done=>server.close(done));}
-if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 16 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');
+if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 14 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');

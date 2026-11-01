@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const config=JSON.parse(fs.readFileSync(path.join(root,'content/site.json'),'utf8'));
-const keys=['home','world','heroes','story','music','play','strategy'];
+const keys=['home','world','heroes','story','music','strategy'];
 const route=(lang,key)=>key==='home'?(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'):lang+'/'+key+'.html';
 const errors=[];let checked=0,internalCount=0;
 const fail=(p,msg)=>errors.push(p+': '+msg);

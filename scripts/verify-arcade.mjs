@@ -20,8 +20,9 @@ for(const lang of ['zh','ja']){
  assert(bridge.includes("type:'ready'"),'G02 readiness handshake missing for '+lang);
  assert(bridge.includes("dispatchEvent(new Event('change'"),'G02 selected difficulty not applied for '+lang);
  const page=read(`arcade/${lang}/index.html`);
- assert(page.includes(`../challenge/index.html?lang=${lang}`),`${lang} public arcade must link to official offline challenge`);
+ assert(!page.includes(`../challenge/index.html?lang=${lang}`),`${lang} public arcade must not link to retired offline challenge`);
  assert(page.includes(`bio-city-v161-signaling.squall-orc.workers.dev/arcade/friends/?lang=${lang}`),`${lang} public arcade must keep the live Beta separately labeled`);
+ assert(page.includes('id="arcade-root"')&&page.includes('id="protocol-quiz-root"'),`${lang} unified hub must preserve legacy game and decision lab`);
  assert(!page.includes(`../qa/friends-v16/index.html?lang=${lang}`),`${lang} arcade must not expose obsolete manual WebRTC lab as the main entry`);
  for(const id of ['game-list','stage','track-select','audio-drawer','stage-controls','hero-choices','stage-audio-status','stage-audio-play'])assert(page.includes(`id="${id}"`),`${lang} missing ${id}`);
  assert(page.includes('GTM-5M4KVKNX'),lang+' GTM missing');
@@ -29,8 +30,7 @@ for(const lang of ['zh','ja']){
  assert(page.includes('../assets/hub.js'),lang+' hub script missing');
  assert(page.includes('../assets/guardian-art.js')&&page.indexOf('guardian-art.js')<page.indexOf('games-core.js'),lang+' sprite module must load before combat engine');
  assert(shooter.includes('../arcade/assets/guardian-art.js'),lang+' isolated shooter sprite module missing');
- assert(read(`${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} primary website lacks Arcade entrance`);
- assert(read(`content/${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} canonical content lacks Arcade entrance`);
+ assert(page.includes('id="protocol-quiz-root"')&&page.includes('id="arcade-root"'),`${lang} unified Arcade must preserve original experiences`);
 }
 const friends=read('arcade/qa/friends-v16/index.html'),challenge=read('arcade/qa/challenge-v16/index.html');
 for(const file of ['g01-network.js','g02-network-state.js','g02-network.js','g05-network.js','g06-network.js','friend-session.js'])assert(friends.includes(file),'friends lobby missing '+file);
@@ -45,7 +45,7 @@ for(const key of ['street','defense','shaft','laboratory','arena','race']){
  const bytes=fs.existsSync(file)?fs.readFileSync(file):Buffer.alloc(0);
  assert(bytes.length>1000&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP',key+' must be a complete WebP scene');
 }
-for(const lang of ['zh','ja'])for(const page of [`arcade/${lang}/index.html`,`arcade/${lang}/shooter.html`,`${lang}/play.html`])assert(read(page).includes('world-art.js'),page+' scene renderer missing');
+for(const lang of ['zh','ja'])for(const page of [`arcade/${lang}/index.html`,`arcade/${lang}/shooter.html`])assert(read(page).includes('world-art.js'),page+' scene renderer missing');
 for(const id of ['burner-sister','mj-robot','moo-moo','ye-bao-ex','jelly-trio','veggie-kid','oracle-guardian'])assert(fs.existsSync(path.join(root,`images/funai-care-${id}.png`)),`hero asset missing: ${id}`);
 assert(css.includes('body.stage-active{overflow:hidden}'),'scroll lock CSS missing');
 assert(css.includes('#stage-inner{width:100%'),'viewport-width stage fix missing');

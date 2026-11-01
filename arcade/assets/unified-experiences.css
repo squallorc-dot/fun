@@ -1,0 +1,21 @@
+/* Unique experiences from the former editorial play pages, now housed in Arcade. */
+.arcade-page .arcade-extensions{width:100%;max-width:1160px;margin:clamp(30px,5vw,65px) auto 0;padding-bottom:18px}
+.arcade-page .arcade-extensions-heading{margin:0 0 24px}
+.arcade-page .arcade-extensions-heading h2{font-size:clamp(1.55rem,3vw,2.15rem);margin:9px 0 8px;color:#f3feff}
+.arcade-page .arcade-extensions-heading p{color:#bcd6e2;line-height:1.8;margin:0}
+.arcade-page .arcade-extensions .protocol-module{margin:0 0 30px;scroll-margin-top:95px}
+.arcade-page .arcade-extensions .legacy-game-panel{border:1px solid #365d73;background:#0d273a;border-radius:16px;overflow:hidden}
+.arcade-page .arcade-extensions .legacy-game-panel>summary{cursor:pointer;min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px;list-style:none;color:#e9f8ff}
+.arcade-page .arcade-extensions .legacy-game-panel>summary::-webkit-details-marker{display:none}
+.arcade-page .arcade-extensions .legacy-game-panel>summary:focus-visible{outline:3px solid #85efdf;outline-offset:-4px}
+.arcade-page .arcade-extensions .legacy-game-panel>summary strong{display:block;margin-top:4px;font-size:1.2rem}
+.arcade-page .arcade-extensions .legacy-game-panel>summary small{display:block;font-size:.68rem;letter-spacing:.11em;color:#8bdadf}
+.arcade-page .arcade-extensions .legacy-open{color:#8ad8db;font-weight:700;font-size:.8rem}
+.arcade-page .arcade-extensions .legacy-open b{display:inline-block;margin-left:8px;transition:transform .2s}
+.arcade-page .arcade-extensions .legacy-game-panel[open] .legacy-open b{transform:rotate(45deg)}
+.arcade-page .arcade-extensions .legacy-game-body{padding:clamp(14px,2.7vw,26px);border-top:1px solid #33556b}
+.arcade-page .arcade-extensions .legacy-game-body>p{color:#b6d0df;font-size:.88rem;line-height:1.85;margin:0 0 20px}
+.arcade-page .arcade-extensions #arcade-root{width:100%;max-width:100%}
+/* After removing the offline challenge card, keep the live Beta entry legible and centered. */
+.arcade-page .hub-more-grid{grid-template-columns:minmax(0,1fr);max-width:940px;margin-inline:auto}
+@media(max-width:700px){.arcade-page .arcade-extensions{margin-top:28px}.arcade-page .arcade-extensions .legacy-game-panel>summary{padding:16px;min-height:68px}.arcade-page .arcade-extensions .legacy-game-body{padding:12px}}

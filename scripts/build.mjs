@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {navigation,footer} from './site-shell.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const keys=["home","world","heroes","story","music","play","strategy"];
+const keys=["home","world","heroes","story","music","strategy"];
 function render(lang,key,c,content){
 const l=c.locales[lang], m=c.meta[key][lang], prefix=key==="home"?"":"../";
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
@@ -81,7 +81,7 @@ for(const lang of ['zh','ja']){
   }
  }
 }
-if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 14 pages match their central sources.');}
+if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 12 editorial pages match their central sources.');}
 
 // Keep the Arcade lobby on the same seven-route navigation system.
 for(const lang of ['zh','ja']){

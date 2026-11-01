@@ -1,7 +1,7 @@
-// One navigation system for the fourteen editorial pages and the two Arcade lobbies.
+// One navigation system for twelve editorial pages and two unified Arcade centers.
 export const pageKeys=['home','world','heroes','story','music','play','strategy'];
 const escape=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-export const route=(lang,key)=>key==='home'?(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'):`${lang}/${key}.html`;
+export const route=(lang,key)=>key==='home'?(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'):key==='play'?`arcade/${lang}/index.html`:`${lang}/${key}.html`;
 const paths={home:'M3 10.5 12 3l9 7.5M5 9v12h5v-7h4v7h5V9',heroes:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8a3 3 0 0 1 0 6m3 7v-2a4 4 0 0 0-3-3.87',play:'M7 7h10a4 4 0 0 1 4 3l1 7a3 3 0 0 1-5 2l-2-2H9l-2 2a3 3 0 0 1-5-2l1-7a4 4 0 0 1 4-3Zm-1 5h4m-2-2v4m8-2h.01m3 2h.01',explore:'M3 3h7v7H3Zm11 0h7v7h-7ZM3 14h7v7H3Zm11 0h7v7h-7Z',world:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c4 5 4 13 0 18-4-5-4-13 0-18Z',story:'M4 3h12l4 4v14H4Zm11 0v5h5M8 12h8m-8 4h6',music:'M9 18V5l12-2v13M9 8l12-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm12-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',strategy:'m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3Z',close:'m6 6 12 12M6 18 18 6'};
 export const icon=(key)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key]||paths.explore}"/></svg>`;
 export function navigation(lang,key,c,{prefix='',arcade=false}={}){

@@ -32,7 +32,7 @@ body.bio-controls-open{overflow:hidden}
 .bio-control-dialog details{margin:16px 0;padding:12px;border:1px solid #426b7e;border-radius:10px}
 .bio-control-dialog summary{cursor:pointer;min-height:36px}
 .bio-control-dialog footer{flex-wrap:wrap;margin-top:20px;font-size:12px;color:#a0c6d4}
-#control-preview{position:relative;overflow:hidden;width:100%;border:1px solid #355b6e;border-radius:12px;background:#071d2c}
+#control-preview,#control-preview-classic{position:relative;overflow:hidden;width:100%;border:1px solid #355b6e;border-radius:12px;background:#071d2c}
 .bio-preview-button,.bio-preview-stick{position:absolute;display:flex;align-items:center;justify-content:center;box-sizing:border-box;background:#194f65;border:1px solid #93dbe5;border-radius:20%;color:#e7ffff;font-weight:700;font-size:11px}
 .bio-preview-stick{border-radius:50%;background:#0f374c;font-size:23px}
 @media(max-height:540px) and (orientation:landscape){.bio-control-dialog{max-height:92dvh;padding:14px 20px}}
