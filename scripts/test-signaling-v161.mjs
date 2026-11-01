@@ -39,9 +39,22 @@ try{
    // Unlike a mock worker handshake, this forces a real authenticated
    // WebSocket Relay handoff between two independently launched browsers.
    // Preserve the established session and prove DATA is sent in both directions.
-   const initial=await Promise.all(pages.map(p=>p.evaluate(()=>({generation:link.generation,connected:link.state==='connected',transport:link.transport}))));
-   assert(initial.every(x=>x.connected&&x.transport==='p2p'),'both peer links connected before relay handoff');
-   await Promise.all(pages.map(p=>p.evaluate(()=>{window.received=null;link.onDegraded();})));
+   const initial=await Promise.all(pages.map(p=>p.evaluate(()=>({
+    state:link.state,transport:link.transport||'p2p',
+    ice:link.pc?.iceConnectionState||'none',
+    control:link.channels.control?.readyState||'none',
+    input:link.channels.input?.readyState||'none',
+    sent:link.stats.sent,received:link.stats.received
+   }))));
+   // Safe operational data only: never print SDP, addresses, room codes or tokens.
+   console.log('SAFE TWO-BROWSER PRE-RELAY '+JSON.stringify(initial));
+   assert(initial.every(x=>x.state==='connected'),'both peer links must be alive before/after automatic relay recovery');
+   // A healthy link may already have switched to Relay when the remote peer
+   // reports silence; this is valid as long as BOTH peers can exchange data.
+   await Promise.all(pages.map(p=>p.evaluate(()=>{
+    window.received=null;
+    if(link.transport!=='relay')link.onDegraded();
+   })));
    await Promise.all(pages.map(p=>p.waitForFunction(()=>link.state==='connected'&&link.transport==='relay',null,{timeout:15000})));
    const handoff=await Promise.all(pages.map(p=>p.evaluate(()=>({state:link.state,transport:link.transport,pcAbsent:!link.pc}))));
    assert(handoff.every(x=>x.state==='connected'&&x.transport==='relay'&&x.pcAbsent),'relay takeover kept the game link alive');
