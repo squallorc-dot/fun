@@ -10,10 +10,18 @@ try{
   assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City arcade art is visible');
   assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
+  assert(await page.locator('.auto-back-button').isVisible(),'return to arcade is a player-facing button');
+  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'../'+locale+'/index.html','return navigation stays in selected language');
+  assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
+  assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
   if(locale==='zh'&&viewport.width===390){
    await page.locator('#auto-create').click();
    assert(await page.locator('#auto-hero-art').isVisible(),'selected guardian artwork has a visible canvas');
+   assert.equal(await page.locator('.auto-hero-choice').count(),7,'seven character cards are available');
+   await page.locator('.auto-hero-choice[data-hero="3"]').click();
+   assert.equal(await page.locator('#auto-hero').inputValue(),'3','hero card updates native accessible selector');
+   assert.equal(await page.locator('.auto-hero-choice[data-hero="3"]').getAttribute('aria-pressed'),'true','selected card is highlighted');
    assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
    assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
    await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
