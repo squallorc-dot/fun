@@ -15,6 +15,13 @@ try{
  await pages[0].waitForFunction(()=>!document.querySelector('#auto-approval').hidden);await pages[0].locator('#auto-yes').click();
  await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected'),null,{timeout:50000})));
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
+ // First arrow must start from the actual selected guardian, not the
+ // native select's initial option 0 before the periodic UI refresh.
+ for(const p of pages){
+  const current=await p.evaluate(()=>BioFriendsApp.session.hero);
+  assert.equal(await p.locator('#auto-lobby-hero').inputValue(),String(current),'connected carousel and hidden selection agree immediately');
+ }
+ assert.equal(await pages[1].evaluate(()=>BioFriendsApp.session.hero),3,'guest form selection survives RTC pairing');
  assert.equal(await pages[0].locator('#auto-lobby-hero-label').isVisible(),false,'hidden duplicate hero select');
   for(const expectedHero of [1,2]){await pages[0].locator('#auto-lobby-next').click();await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[0]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));}
  for(const expectedHero of [4,5]){
