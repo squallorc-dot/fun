@@ -7,7 +7,8 @@ try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
   const page=await browser.newPage({viewport});await page.addInitScript(()=>{window.WebSocket=class{static OPEN=1;constructor(){this.readyState=1;setTimeout(()=>this.onopen?.(),0);}send(){}close(){this.readyState=3;this.onclose?.();}};});await page.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});
   await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
-  assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City concept art is visible');
+  assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City arcade art is visible');
+  assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
   if(locale==='zh'&&viewport.width===390){
