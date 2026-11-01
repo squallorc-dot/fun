@@ -26,6 +26,7 @@ function valid(v,game,chapter){
  if(!obj(v)||v.game!==game||v.chapter!==chapter||!int(v.tick,1e8)||typeof v.ended!=='boolean'||v.finished!==v.ended||!
  Array.isArray(v.boards)||v.boards.length!==2||!v.boards.every(obj)||!
  Array.isArray(v.scores)||v.scores.length!==2||!v.scores.every(s=>obj(s)&&finite(s.score)&&s.score>=0&&finite(s.progress)&&s.progress>=0&&typeof s.finished==='boolean'))return false;
+ if(!Array.isArray(v.outcomes)||v.outcomes.length!==2||!v.outcomes.every(q=>q===null||obj(q)&&typeof q.won==='boolean'&&finite(q.points)&&q.points>=0&&typeof q.note==='string'&&q.note.length<=80))return false;
  if(v.endedBy!==null&&![0,1].includes(v.endedBy))return false;
  if(v.ended!==(v.endedBy!==null))return false;
  for(const b of v.boards){
@@ -77,11 +78,11 @@ function adapter(game){
   capture(){
    const boards=this.games.map(g=>g.networkSnapshot());
    return {game,chapter:this.chapter,tick:this.tick,boards,scores:boards.map((b,i)=>this.score(b,i)),
-    ended:this.game._finished,finished:this.game._finished,endedBy:this.finishedBy};
+    ended:this.game._finished,finished:this.game._finished,endedBy:this.finishedBy,outcomes:this.players.map(p=>p?{...p}:null)};
   }
   reliableKey(v){return v.ended+':'+v.scores.map(x=>Math.floor(x.score/100)+':'+Math.floor(x.progress/100)).join('|');}
   result(v=this.capture()){
-   const players=v.scores.map((s,i)=>({id:i===0?'host':'guest',score:s.score,progress:s.progress,finished:s.finished,won:!!this.players[i]?.won}));
+   const players=v.scores.map((s,i)=>({id:i===0?'host':'guest',score:s.score,progress:s.progress,finished:s.finished,won:!!v.outcomes?.[i]?.won}));
    const winner=players[0].score===players[1].score?null:players[0].score>players[1].score?0:1;
    return {game,chapter:this.chapter,winner,endedBy:v.endedBy,players,score:players.map(p=>p.score),win:winner!==null};
   }
@@ -90,7 +91,7 @@ function adapter(game){
      !valid(v,game,this.chapter)||v.tick<this.tick||v.tick>tick)return false;
    this.lastTick=tick;this.tick=v.tick;
    for(let i=0;i<2;i++)if(!this.games[i].applyNetworkState(v.boards[i]))return false;
-   this.game._finished=v.ended;this.finishedBy=v.endedBy;return true;
+   this.game._finished=v.ended;this.finishedBy=v.endedBy;this.players=v.outcomes.map(p=>p?{...p}:null);return true;
   }
   render(){} // Guest never advances the authoritative game worlds.
   draw(ctx){
