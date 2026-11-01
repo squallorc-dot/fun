@@ -112,23 +112,37 @@ try{
     s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
       drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
     s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
-    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height};};
-    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),shown:!document.getElementById('opponent-preview').hidden,
+    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height,top:b.top,bottom:b.bottom,left:b.left,right:b.right};};
+    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),peerCanvas:bounds('opponent-canvas'),
+      dock:bounds('opponent-dock'),controls:bounds('touch-controls'),stage:bounds('viewport'),
+      shown:!document.getElementById('opponent-preview').hidden,
+      dockBeforeStage:document.getElementById('game-shell').firstElementChild.id==='opponent-dock',
+      moveRemoved:!document.getElementById('opponent-move'),
       helpHidden:document.getElementById('help-panel').hidden,
       score:document.getElementById('score').textContent,overflow:document.documentElement.scrollWidth>innerWidth};
    });
-   assert(state.shown&&state.helpHidden,'G03 phone PiP shown and play instructions initially collapsed');
-   assert(state.main.w>state.peer.w*2,'own game is at least twice the PiP width');
+   assert(state.shown&&state.helpHidden,'G03 phone peer ribbon shown and play instructions initially collapsed');
+   assert(state.dockBeforeStage&&state.moveRemoved,'peer ribbon precedes primary stage and no obsolete move control remains');
+   assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
    assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
+   assert(state.main.bottom<=state.controls.top+3,'own playfield does not overlap G03 touch controls');
+   assert(state.controls.h>=145,'touch controls retain a usable height');
    assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
-   assert(!state.overflow,'PiP does not cause horizontal overflow');
+   assert(!state.overflow,'peer ribbon does not cause horizontal overflow');
    await page.locator('#opponent-hide').click();
-   assert(await page.locator('#opponent-preview').isHidden(),'peer PiP can be collapsed');
-   assert(await page.locator('#opponent-show').isVisible(),'peer PiP can be reopened');
+   assert(await page.locator('#opponent-preview').isHidden(),'peer ribbon can be collapsed');
+   assert(await page.locator('#opponent-show').isVisible(),'peer ribbon can be reopened');
+   const collapsed=await page.evaluate(()=>({controls:document.getElementById('touch-controls').getBoundingClientRect().top,
+     dock:document.getElementById('opponent-dock').getBoundingClientRect().height,
+     saved:localStorage.getItem('bio-city-peer-preview-collapsed-v2')}));
+   assert(Math.abs(collapsed.controls-state.controls.top)<2,'collapsing peer image never moves the touch buttons');
+   assert(Math.abs(collapsed.dock-state.dock.h)<2,'collapsed peer ribbon reserves the same vertical space');
+   assert.equal(collapsed.saved,'1','collapsed preference persists locally');
    await page.locator('#opponent-show').click();
-   assert(await page.locator('#opponent-preview').isVisible(),'peer PiP reopens without restarting the game');
-   await page.locator('#opponent-move').click();
-   assert(await page.locator('#opponent-preview').evaluate(el=>el.classList.contains('at-top')),'peer PiP can move above game obstacles');
+   assert(await page.locator('#opponent-preview').isVisible(),'peer ribbon reopens without restarting the game');
+   assert.equal(await page.evaluate(()=>localStorage.getItem('bio-city-peer-preview-collapsed-v2')),'0','expanded preference persists locally');
+   assert.equal(await page.locator('#opponent-dock').evaluate(el=>Math.abs(el.getBoundingClientRect().bottom-document.getElementById('viewport').getBoundingClientRect().top)<3),true,'reopened ribbon stays above game stage');
    await page.evaluate(()=>{
      const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
    });
