@@ -129,7 +129,7 @@ export class Room {
  async webSocketMessage(ws,text){
   const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
   if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
-  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>(text.includes('"type":"relay-data"')?180:12)){ws.close(1008,'rate');return;}
+  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>(text.includes('"type":"relay-data"')?180:8)){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
   if(!info.role){
    if(msg?.v===VERSION&&msg.type==='join-request'&&Object.keys(msg).length===2&&now<info.at+AUTH_MS){
