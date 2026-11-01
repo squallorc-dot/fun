@@ -112,7 +112,7 @@ function adapter(game){
    }
    ctx.restore();
   }
-  hud(){return this.games.map((g,i)=>'<span>'+(i?'FRIEND':'HOST')+' <b>'+this.score(null,i).score+'</b></span>').join('');}
+  hud(){return this.games.map((g,i)=>{const p=this.score(null,i);return '<span>'+(i?'FRIEND':'HOST')+' <b>'+p.score+'</b> · '+(game==='g03'?p.progress+'m':'STAGE '+this.games[i].networkSnapshot().stage+'/3')+'</span>';}).join('');}
   dispose(){this.games=[];this.players=[];this.game._finished=true;}
  }
  return Object.freeze({TAG:tag,MODES:MODES[game],EDGES:['fire','jump'],input,
