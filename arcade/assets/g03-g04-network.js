@@ -4,7 +4,7 @@
  * Neither guest physics nor client-reported points can decide the winner.
  */
 ((root)=>{'use strict';
-const TAGS=Object.freeze({g03:'g03-dual-v2',g04:'g04-dual-v2'});
+const TAGS=Object.freeze({g03:'g03-dual-v3',g04:'g04-dual-v3'});
 const MODES=Object.freeze({g03:['stairs'],g04:['pinball']});
 const LIMIT=29000;
 const obj=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
@@ -115,7 +115,7 @@ function adapter(game){
   hud(){return this.games.map((g,i)=>{const p=this.score(null,i);return '<span>'+(i?'FRIEND':'HOST')+' <b>'+p.score+'</b> · '+(game==='g03'?p.progress+'m':'STAGE '+this.games[i].networkSnapshot().stage+'/3')+'</span>';}).join('');}
   dispose(){this.games=[];this.players=[];this.game._finished=true;}
  }
- return Object.freeze({TAG:tag,MODES:MODES[game],EDGES:['fire','jump'],input,
+ return Object.freeze({TAG:tag,MODES:MODES[game],EDGES:game==='g03'?['fire','jump','down']:['fire','jump','skill'],input,
   snapshot:v=>valid(v,game,Number(v?.chapter)||1),Adapter,
   prepare:heroes=>[root.BioGuardianArt?.preload(heroes)||Promise.resolve(true),
    root.BioWorldArt?.preload(game==='g03'?'shaft':'laboratory')||Promise.resolve(true)]});

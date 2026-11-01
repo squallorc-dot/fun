@@ -6,7 +6,26 @@ const server=await signalingTestServer();const browser=await chromium.launch({he
 try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
   const page=await browser.newPage({viewport});await page.addInitScript(()=>{window.WebSocket=class{static OPEN=1;constructor(){this.readyState=1;setTimeout(()=>this.onopen?.(),0);}send(){}close(){this.readyState=3;this.onclose?.();}};});await page.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});
-  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
+  await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());
+  if(locale==='zh'&&viewport.width===390){
+   // Multiplayer touch buttons must follow the exact standalone game's guide.
+   const parity=await page.evaluate(()=>{
+    const s=window.BioFriendsApp.session,original=s.config,output={};
+    try{
+     for(const [game,mode] of [['g03','stairs'],['g04','pinball'],['g06','race'],['g05','volley'],['g05','pong']]){
+      s.config={game,mode,chapter:1,difficulty:'normal'};s.changed();
+      output[game+':'+mode]=[...document.querySelectorAll('#touch-controls [data-action]')]
+       .filter(el=>!el.hidden).map(el=>[el.dataset.action,el.textContent.trim()]);
+     }
+    }finally{s.config=original;s.changed();}
+    return output;
+   });
+   assert.deepEqual(parity['g03:stairs'],[['jump','跳躍'],['down','向下']],'G03 retains exactly one jump and one drop, as in single-player');
+   assert.deepEqual(parity['g04:pinball'],[['fire','發射'],['skill','收球']],'G04 offers solo shot and recall, not duplicated controls');
+   assert.deepEqual(parity['g06:race'],[['fire','氮氣'],['down','煞車']],'G06 retains solo boost and brake');
+   assert.deepEqual(parity['g05:volley'],[['fire','擊球'],['jump','跳躍']],'G05 volley retains solo attack and jump');
+   assert.deepEqual(parity['g05:pong'],[['fire','揮拍']],'G05 pong removes unnecessary jump');
+  }assert(await page.locator('#auto-join').isVisible());assert(!(await page.locator('#connection').isVisible()));
   assert(await page.locator('.auto-poster img').isVisible(),'player-first Bio-City arcade art is visible');
   assert.equal(await page.locator('.auto-poster img').getAttribute('src'),'../assets/covers/bio-city-arcade-cover.webp','poster uses an allowlisted Worker asset');
   assert(await page.locator('.auto-kicker').isVisible(),'arcade heading visible');

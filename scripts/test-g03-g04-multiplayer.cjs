@@ -14,6 +14,8 @@ for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
   const host=new M.Adapter({...common,host:true,finish:()=>finished++});
   const guest=new M.Adapter({...common,host:false});
   check(M.input({moveX:.5,fire:true,jump:false}),'known input allowed');
+  check(M.EDGES.includes(game==='g03'?'down':'skill'),'solo button action edge must synchronize through host authority');
+  check(M.input(game==='g03'?{moveX:0,down:true,jump:false}:{moveX:0,fire:false,skill:true}),'G03/G04 solo-equivalent mobile action accepted by multiplayer');
   check(!M.input({moveX:99,override:true}),'forged input blocked');
   check(JSON.stringify(host.capture()).length<29000,'two independent boards fit authenticated Relay transport');
   for(let i=0;i<240;i++){
