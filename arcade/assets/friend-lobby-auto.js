@@ -24,9 +24,13 @@ function refreshHeroChoices(){
   const chosen=Number(b.dataset.hero)===i;
   b.setAttribute('aria-pressed',String(chosen));
   b.setAttribute('aria-selected',String(chosen));
+  b.dataset.position=chosen?'center':Number(b.dataset.hero)===i-1?'previous':Number(b.dataset.hero)===i+1?'next':'hidden';
+  b.setAttribute('aria-hidden',b.dataset.position==='hidden'?'true':'false');
   b.tabIndex=chosen?0:-1;
  });
  if($('auto-hero-progress'))$('auto-hero-progress').textContent=(i+1)+' / '+heroes.length;
+ if($('auto-hero-prev'))$('auto-hero-prev').disabled=i===0;
+ if($('auto-hero-next'))$('auto-hero-next').disabled=i===heroes.length-1;
 }
 heroes.forEach((name,i)=>{const b=document.createElement('button');b.className='auto-hero-choice';b.type='button';b.dataset.hero=String(i);b.setAttribute('aria-pressed',String(i===0));const picture=document.createElement('img');picture.src=heroArt(i);picture.alt='';picture.loading='lazy';picture.decoding='async';picture.width=176;picture.height=176;b.appendChild(picture);
   const c=document.createElement('canvas');c.width=c.height=90;c.hidden=true;b.appendChild(c);
@@ -55,39 +59,33 @@ stage.append(previous,heroStrip,next);
 const progress=document.createElement('output');progress.id='auto-hero-progress';progress.className='auto-hero-progress';progress.setAttribute('aria-live','polite');
 heroForm.insertBefore(pickerPane,heroForm.firstChild);
 pickerPane.append($('auto-name-label'),$('auto-code-label'),stage,progress,nativePicker);
-let carouselMotionUntil=0,scrollSettled=0;
-function centerGuardian(i,mode){
- const card=heroStrip.querySelector('[data-hero="'+i+'"]');if(!card||heroForm.hidden)return;
- const smooth=mode!=='instant'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
- carouselMotionUntil=performance.now()+(smooth?520:90);
- const list=heroStrip.getBoundingClientRect(),box=card.getBoundingClientRect();
- heroStrip.scrollTo({left:heroStrip.scrollLeft+box.left-list.left-(list.width-box.width)/2,behavior:smooth?'smooth':'auto'});
-}
-function chooseGuardian(i,mode){
+// A fixed-width stage avoids nested flex scroll-width expansion on phones.
+// Side cards are transformed into view; horizontal swipes move the selection.
+function centerGuardian(){refreshHeroChoices();}
+function chooseGuardian(i){
  const index=Math.max(0,Math.min(heroes.length-1,i));
  $('auto-hero').value=String(index);selectGuardian();refreshHeroChoices();
- centerGuardian(index,mode);
 }
 previous.addEventListener('click',()=>chooseGuardian(Number($('auto-hero').value)-1));
 next.addEventListener('click',()=>chooseGuardian(Number($('auto-hero').value)+1));
 heroStrip.addEventListener('keydown',e=>{
- if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Home'||e.key==='End'){
+ if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){
   e.preventDefault();const index=Number($('auto-hero').value);
   chooseGuardian(e.key==='Home'?0:e.key==='End'?heroes.length-1:index+(e.key==='ArrowRight'?1:-1));
  }
 });
-heroStrip.addEventListener('scroll',()=>{
- clearTimeout(scrollSettled);
- scrollSettled=setTimeout(()=>{
-  if(heroForm.hidden||performance.now()<carouselMotionUntil)return;
-  const mid=heroStrip.getBoundingClientRect().left+heroStrip.clientWidth/2;
-  const cards=[...heroStrip.querySelectorAll('.auto-hero-choice')];
-  const nearest=cards.reduce((best,card)=>Math.abs(card.getBoundingClientRect().left+card.offsetWidth/2-mid)<Math.abs(best.getBoundingClientRect().left+best.offsetWidth/2-mid)?card:best,cards[0]);
-  if(nearest&&Number(nearest.dataset.hero)!==Number($('auto-hero').value)){
-   $('auto-hero').value=nearest.dataset.hero;selectGuardian();refreshHeroChoices();
-  }
- },160);
-},{passive:true});
+let swipeStart=null,swipeIgnored=false;
+heroStrip.addEventListener('pointerdown',e=>{if(e.isPrimary)swipeStart={x:e.clientX,y:e.clientY};});
+heroStrip.addEventListener('pointerup',e=>{
+ if(!swipeStart)return;
+ const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;swipeStart=null;
+ if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)*1.15){
+  swipeIgnored=true;chooseGuardian(Number($('auto-hero').value)+(dx<0?1:-1));
+  setTimeout(()=>{swipeIgnored=false;},180);
+ }
+});
+heroStrip.addEventListener('pointercancel',()=>{swipeStart=null;});
+heroStrip.addEventListener('click',e=>{if(swipeIgnored){e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener('resize',()=>{if(!heroForm.hidden)centerGuardian(Number($('auto-hero').value),'instant');});
 
 setInterval(()=>{const now=performance.now();if(!$('auto-form').hidden&&$('auto-hero-portrait').hidden)drawGuardian($('auto-hero-art'),Number($('auto-hero').value),now);if(document.body.classList.contains('auto-connected')&&!document.body.classList.contains('playing')){for(const [id,hero]of [['auto-avatar-host',session.role==='host'?session.hero:session.peerHello?.hero],['auto-avatar-guest',session.role==='guest'?session.hero:session.peerHello?.hero]])if(Number.isInteger(hero)&&$(id)&&!$(id).hidden)drawGuardian($(id),hero,now);}},160);
@@ -96,6 +94,55 @@ function screen(name){$('auto-home').hidden=name!=='home';$('auto-form').hidden=
 function status(text){$('auto-status').textContent=text;}
 function ensurePlayerCards(){if($('auto-avatar-cards'))return;const row=document.createElement('div');row.id='auto-avatar-cards';row.className='auto-avatar-cards';row.innerHTML='<div class="auto-avatar"><img id="auto-avatar-host-image" width="128" height="128" alt=""><canvas id="auto-avatar-host" width="104" height="104" aria-hidden="true" hidden></canvas><div><small>'+(ja?'ホスト':'房主')+'</small><strong id="auto-name-host"></strong></div></div><span class="auto-versus">×</span><div class="auto-avatar"><img id="auto-avatar-guest-image" width="128" height="128" alt=""><canvas id="auto-avatar-guest" width="104" height="104" aria-hidden="true" hidden></canvas><div><small>'+(ja?'ゲスト':'好友')+'</small><strong id="auto-name-guest"></strong></div></div>';$('lobby').insertBefore(row,$('room-name'));}
 function refreshPlayers(){if(!$('auto-avatar-cards')||!session.peerHello)return;const host=session.role==='host'?session.hero:session.peerHello.hero,guest=session.role==='guest'?session.hero:session.peerHello.hero;$('auto-name-host').textContent=heroes[host]||'';$('auto-name-guest').textContent=heroes[guest]||'';for(const [key,n]of [['host',host],['guest',guest]]){const img=$('auto-avatar-'+key+'-image'),fallback=$('auto-avatar-'+key);if(img.dataset.hero!==String(n)){img.dataset.hero=String(n);img.src=heroArt(n);img.alt=heroes[n]||'';img.hidden=false;fallback.hidden=true;img.onerror=()=>{img.hidden=true;fallback.hidden=false;if(rootGuardian())BioGuardianArt.preload([n]).then(()=>drawGuardian(fallback,n,performance.now())).catch(()=>{});};}}}
+// An in-room carousel stays available to BOTH players until they prepare.
+// It sends hero changes through the existing host-authoritative session.setHero.
+function ensureConnectedPicker(){
+ if($('auto-lobby-carousel'))return;
+ const shell=document.createElement('section');shell.id='auto-lobby-carousel';shell.className='auto-connected-picker';
+ const head=document.createElement('div');head.className='auto-connected-picker-heading';
+ const name=document.createElement('strong');name.textContent=ja?'ガーディアンを選ぶ':'守護者選角';
+ const progress=document.createElement('span');progress.id='auto-lobby-progress';progress.setAttribute('aria-live','polite');head.append(name,progress);
+ const stage=document.createElement('div');stage.className='auto-connected-stage';
+ const left=document.createElement('button');left.type='button';left.id='auto-lobby-prev';left.className='auto-hero-nav';left.textContent='‹';left.setAttribute('aria-label',ja?'前のガーディアン':'上一位守護者');
+ const right=document.createElement('button');right.type='button';right.id='auto-lobby-next';right.className='auto-hero-nav';right.textContent='›';right.setAttribute('aria-label',ja?'次のガーディアン':'下一位守護者');
+ const track=document.createElement('div');track.className='auto-connected-track';track.id='auto-lobby-track';track.tabIndex=0;track.setAttribute('role','group');track.setAttribute('aria-label',ja?'左右にスワイプして選ぶ':'左右滑動選擇守護者');
+ for(let i=0;i<heroes.length;i++){const card=document.createElement('button');card.type='button';card.className='auto-connected-card';card.dataset.hero=String(i);card.setAttribute('aria-label',heroes[i]);const img=document.createElement('img');img.src=heroArt(i);img.alt='';img.loading='lazy';img.width=260;img.height=260;const label=document.createElement('span');label.textContent=heroes[i];card.append(img,label);card.onclick=()=>chooseLobbyHero(i);track.appendChild(card);}
+ stage.append(left,track,right);
+ const hint=document.createElement('p');hint.className='auto-connected-hint';hint.textContent=ja?'準備完了前に変更できます。変更は相手と同期されます。':'準備前可切換守護者，選角將與好友同步。';
+ shell.append(head,stage,hint);$('lobby').insertBefore(shell,$('room-name'));
+ left.onclick=()=>chooseLobbyHero(Number($('auto-lobby-hero').value)-1);
+ right.onclick=()=>chooseLobbyHero(Number($('auto-lobby-hero').value)+1);
+ track.onkeydown=e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const index=Number($('auto-lobby-hero').value);chooseLobbyHero(e.key==='Home'?0:e.key==='End'?6:index+(e.key==='ArrowRight'?1:-1));}};
+ let pointer=null,ignoreClick=false;
+ track.addEventListener('pointerdown',e=>{if(e.isPrimary)pointer={x:e.clientX,y:e.clientY};});
+ track.addEventListener('pointerup',e=>{if(!pointer)return;const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;pointer=null;if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)*1.15){ignoreClick=true;chooseLobbyHero(Number($('auto-lobby-hero').value)+(dx<0?1:-1));setTimeout(()=>ignoreClick=false,180);}});
+ track.addEventListener('pointercancel',()=>pointer=null);
+ track.addEventListener('click',e=>{if(ignoreClick){e.preventDefault();e.stopImmediatePropagation();}},true);
+}
+function updateLobbyCarousel(index,canChange){
+ const track=$('auto-lobby-track');if(!track)return;
+ const selected=Math.max(0,Math.min(heroes.length-1,index));
+ for(const card of track.children){
+  const i=Number(card.dataset.hero);
+  card.dataset.position=i===selected?'center':i===selected-1?'previous':i===selected+1?'next':'hidden';
+  card.setAttribute('aria-pressed',String(i===selected));
+  card.setAttribute('aria-hidden',String(card.dataset.position==='hidden'));
+  card.tabIndex=i===selected&&canChange?0:-1;
+  card.disabled=!canChange;
+ }
+ $('auto-lobby-progress').textContent=heroes[selected]+' · '+(selected+1)+' / 7';
+ $('auto-lobby-prev').disabled=!canChange||selected===0;
+ $('auto-lobby-next').disabled=!canChange||selected===6;
+ track.classList.toggle('is-locked',!canChange);
+}
+function chooseLobbyHero(i){
+ const select=$('auto-lobby-hero');if(!select)return;
+ const old=Number(select.value),index=Math.max(0,Math.min(heroes.length-1,i));
+ if(select.disabled){updateLobbyCarousel(old,false);return;}
+ if(!session.setHero(index)){select.value=String(session.hero);updateLobbyCarousel(session.hero,true);return;}
+ select.value=String(index);updateLobbyCarousel(index,true);
+}
+
 function safeDiagnostic(){const d=session.link.diagnose?.();if(!d||d.ice==='none')return '';const count=c=>['host','srflx','relay'].map(k=>Number(c?.[k]||0)).join('/');return 'ICE: '+d.ice+' · '+(ja?'自分':'本機')+' '+count(d.candidates)+' · '+(ja?'相手':'對方')+' '+count(d.remoteCandidates); }
 function close(){const signal=$('auto-signal-status');if(signal)signal.remove();$('auto-tech-details').hidden=true;$('auto-diagnostic-details').hidden=true;sequence++;busy=false;$('auto-start').disabled=false;connection?.close();connection=null;room=null;requestId=null;session.leave();document.body.classList.remove('auto-connected');$('auto-link').removeAttribute('href');$('auto-link').textContent='';const qr=$('auto-qr');qr.width=qr.height=1;qr.hidden=true;}
 function form(kind){role=kind;screen('form');$('auto-name-label').hidden=kind!=='host';$('auto-code-label').hidden=kind!=='guest'||!!invite;$('auto-hero').value=kind==='guest'?'3':'0';selectGuardian();refreshHeroChoices();requestAnimationFrame(()=>centerGuardian(Number($('auto-hero').value),'instant'));status(invite&&kind==='guest'?L.joining:'');}
@@ -114,8 +161,8 @@ $('auto-start').onclick=async()=>{
   session.prepareAuto(role,role==='host'?name:'',hero);connection=BioFriendSignaling.connect({endpoint,room:code,role,token,link:session.link,onJoinRequest:id=>{requestId=id;$('auto-approval').hidden=false;},onJoinCancelled:id=>{if(requestId===id){requestId=null;$('auto-approval').hidden=true;}},onSignalingLost:()=>{let el=$('auto-signal-status');if(!el){el=document.createElement('p');el.id='auto-signal-status';el.setAttribute('role','status');$('lobby').prepend(el);}el.textContent=L.signalLost;},onSignalingRestored:()=>{const el=$('auto-signal-status');if(el)el.textContent=L.signalRestored;},onSignalingUnavailable:()=>{const el=$('auto-signal-status');if(el)el.textContent=L.signalFail;},onProgress:stage=>{const labels=ja?{signaling:'フレンドを探しています',authenticated:'部屋に入りました','peer-joined':'フレンドが参加',offer:'接続しています',answer:'ゲームを同期しています',failed:'接続できませんでした'}:{signaling:'正在尋找好友',authenticated:'已進入房間','peer-joined':'好友已就位',offer:'正在建立雙人連線',answer:'正在同步遊戲',failed:'連線尚未完成'};if(labels[stage])status(L.joining+' · '+labels[stage]);}});
   screen('wait');$('auto-room-name').textContent=role==='host'?name:'';$('auto-room-code').textContent=code;$('auto-share-actions').hidden=role!=='host';$('auto-link').hidden=role!=='host';
   if(role==='host'){const href=BioFriendInvite.create(location.href,room.room,room.guest,ja?'ja':'zh');$('auto-link').href=href;$('auto-link').textContent=href;const qr=qrcode(0,'M');qr.addData(href);qr.make();const canvas=$('auto-qr'),size=qr.getModuleCount(),scale=4,margin=4;canvas.width=canvas.height=(size+margin*2)*scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#000';for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(qr.isDark(y,x))ctx.fillRect((x+margin)*scale,(y+margin)*scale,scale,scale);canvas.hidden=false;status(L.waiting);}else status(token?L.joining:L.codePending);
-  await connection.result;invite=null;room=null;$('auto-link').removeAttribute('href');$('auto-link').textContent='';$('auto-qr').width=$('auto-qr').height=1;$('auto-qr').hidden=true;status('');let players=$('auto-players');if(!players){players=document.createElement('p');players.id='auto-players';$('lobby').prepend(players);}let heroLabel=$('auto-lobby-hero-label');if(!heroLabel){heroLabel=document.createElement('label');heroLabel.id='auto-lobby-hero-label';heroLabel.textContent=L.hero;const select=document.createElement('select');select.id='auto-lobby-hero';heroes.forEach((name,i)=>{const o=document.createElement('option');o.value=i;o.textContent=name;select.appendChild(o);});select.onchange=()=>{if(!session.setHero(Number(select.value)))select.value=String(session.hero);};heroLabel.appendChild(select);$('lobby').prepend(heroLabel);}const peer=session.peerHello;players.textContent=role==='host'?(ja?'ホスト: ':'房主：')+heroes[hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[peer?.hero??0]:(ja?'ホスト: ':'房主：')+heroes[peer?.hero??0]+' · '+(ja?'ゲスト: ':'好友：')+heroes[hero];
-  ensurePlayerCards();refreshPlayers();document.body.classList.add('auto-connected');
+  await connection.result;invite=null;room=null;$('auto-link').removeAttribute('href');$('auto-link').textContent='';$('auto-qr').width=$('auto-qr').height=1;$('auto-qr').hidden=true;status('');let players=$('auto-players');if(!players){players=document.createElement('p');players.id='auto-players';$('lobby').prepend(players);}let heroLabel=$('auto-lobby-hero-label');if(!heroLabel){heroLabel=document.createElement('label');heroLabel.id='auto-lobby-hero-label';heroLabel.textContent=L.hero;const select=document.createElement('select');select.id='auto-lobby-hero';heroes.forEach((name,i)=>{const o=document.createElement('option');o.value=i;o.textContent=name;select.appendChild(o);});select.onchange=()=>{const desired=Number(select.value);select.value=String(session.pendingHero??session.hero);chooseLobbyHero(desired);};heroLabel.appendChild(select);$('lobby').prepend(heroLabel);}const peer=session.peerHello;players.textContent=role==='host'?(ja?'ホスト: ':'房主：')+heroes[hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[peer?.hero??0]:(ja?'ホスト: ':'房主：')+heroes[peer?.hero??0]+' · '+(ja?'ゲスト: ':'好友：')+heroes[hero];
+  ensurePlayerCards();ensureConnectedPicker();refreshPlayers();updateLobbyCarousel(session.pendingHero??session.hero,true);document.body.classList.add('auto-connected');
  }catch(error){if(attempt===sequence){const reason=error?.message;const detail=session.link.diagnose?.();
    // QR guest tokens are single-use after authentication, regardless of RTC success.
    // A failed guest must not silently retry the same invitation capability.
@@ -132,6 +179,6 @@ $('auto-start').onclick=async()=>{
 $('auto-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('auto-link').href);status(L.copied);}catch{status(L.copyFail);}};
 $('auto-share').onclick=async()=>{try{if(navigator.share)await navigator.share({url:$('auto-link').href});else await navigator.clipboard.writeText($('auto-link').href);}catch{status(L.copyFail);}};
 window.addEventListener('pagehide',()=>connection?.close());
-setInterval(()=>{if(!document.body.classList.contains('auto-connected'))return;if(session.phase==='disconnected'){document.body.classList.remove('auto-connected');screen('retry');$('auto-retry-new').textContent=role==='guest'?L.rejoin:L.newRoom;const diagnostic=safeDiagnostic();$('auto-diagnostic').textContent=diagnostic;$('auto-diagnostic-details').hidden=!diagnostic;$('auto-diagnostic-details').open=false;status(L.retryTitle);return;}const peer=session.peerHello,select=$('auto-lobby-hero');if(select){select.disabled=session.phase!=='lobby'||!session.configAck||session.preparing||session.readyFlags.some(Boolean)||session.pendingHero!=null||!peer?.games.includes('feature:hero-v1');select.value=String(session.pendingHero??session.hero);}if(peer&&$('auto-players')){$('auto-players').textContent=role==='host'?(ja?'ホスト: ':'房主：')+heroes[session.hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[peer.hero]:(ja?'ホスト: ':'房主：')+heroes[peer.hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[session.hero];refreshPlayers();}},500);
+setInterval(()=>{if(!document.body.classList.contains('auto-connected'))return;if(session.phase==='disconnected'){document.body.classList.remove('auto-connected');screen('retry');$('auto-retry-new').textContent=role==='guest'?L.rejoin:L.newRoom;const diagnostic=safeDiagnostic();$('auto-diagnostic').textContent=diagnostic;$('auto-diagnostic-details').hidden=!diagnostic;$('auto-diagnostic-details').open=false;status(L.retryTitle);return;}const peer=session.peerHello,select=$('auto-lobby-hero');if(select){select.disabled=session.phase!=='lobby'||!session.configAck||session.preparing||session.readyFlags.some(Boolean)||session.pendingHero!=null||!peer?.games.includes('feature:hero-v1');select.value=String(session.pendingHero??session.hero);updateLobbyCarousel(Number(select.value),!select.disabled);}if(peer&&$('auto-players')){$('auto-players').textContent=role==='host'?(ja?'ホスト: ':'房主：')+heroes[session.hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[peer.hero]:(ja?'ホスト: ':'房主：')+heroes[peer.hero]+' · '+(ja?'ゲスト: ':'好友：')+heroes[session.hero];refreshPlayers();}},500);
 if(window.bioInviteError)status(L.invalid);else if(invite){form('guest');if(endpoint)queueMicrotask(()=>$('auto-start').click());}
 })();
