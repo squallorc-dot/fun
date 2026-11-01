@@ -9,9 +9,10 @@ const heroes=ja?['バーナー姐さん','MJ ロボット','モーモー','葉�
 const canvas=$('game-canvas'),ctx=canvas.getContext('2d'),keys=new Set(),pulses=new Set();let session,controls,plan={reservedLeft:0,reservedRight:0},epoch=-1,lastPhase='',last=performance.now(),lastUI=0;
 let helpChoice=null,helpGame=null;
 const oppPanel=$('opponent-preview'),oppShow=$('opponent-show'),oppCanvas=$('opponent-canvas');
-const oppCtx=oppCanvas.getContext('2d');let oppCollapsed=false,oppTop=false,oppEpoch=-1,lastOppDraw=0;
+const oppCtx=oppCanvas?.getContext('2d')||null;let oppCollapsed=false,oppTop=false,oppEpoch=-1,lastOppDraw=0;
 const phoneDual=()=>window.matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
 function updateOpponentUI(s,active){
+ if(!oppPanel||!oppShow)return; // Legacy QA entry has no production PiP controls.
  if(s.epoch!==oppEpoch){oppEpoch=s.epoch;oppCollapsed=false;oppTop=false;}
  const enabled=active&&['g03','g04'].includes(s.config?.game)&&phoneDual()&&['countdown','playing','paused'].includes(s.phase);
  oppPanel.hidden=!enabled||oppCollapsed;oppShow.hidden=!enabled||!oppCollapsed;
@@ -20,9 +21,9 @@ function updateOpponentUI(s,active){
  $('opponent-move').textContent=oppTop?(ja?'下へ':'移下'):(ja?'上へ':'移上');
  $('opponent-hide').textContent=ja?'閉じる':'收合';oppShow.textContent=ja?'相手を表示':'顯示對手';
 }
-$('opponent-hide').onclick=()=>{oppCollapsed=true;updateOpponentUI(session.inspect(),!$('arena').hidden);};
-$('opponent-show').onclick=()=>{oppCollapsed=false;updateOpponentUI(session.inspect(),!$('arena').hidden);};
-$('opponent-move').onclick=()=>{oppTop=!oppTop;updateOpponentUI(session.inspect(),!$('arena').hidden);};
+$('opponent-hide')?.addEventListener('click',()=>{oppCollapsed=true;updateOpponentUI(session.inspect(),!$('arena').hidden);});
+$('opponent-show')?.addEventListener('click',()=>{oppCollapsed=false;updateOpponentUI(session.inspect(),!$('arena').hidden);});
+$('opponent-move')?.addEventListener('click',()=>{oppTop=!oppTop;updateOpponentUI(session.inspect(),!$('arena').hidden);});
 function setHelpOpen(open){if(!$('help')||!$('help-panel'))return;$('help-panel').hidden=!open;$('help').setAttribute('aria-expanded',String(open));$('help').textContent=ja?(open?'説明を閉じる':'操作ガイド'):(open?'收合說明':'操作說明');}
 const audio=new BioFriendAudio(()=>{const a=audio?.prefs;if(!a)return;$('audio-status').textContent=audio.status==='blocked'?L.audioBlocked:audio.status;});
 function resetInputs(){keys.clear();pulses.clear();controls?.reset();}
@@ -117,6 +118,6 @@ window.addEventListener('blur',()=>{resetInputs();});document.addEventListener('
 for(const [id,key]of [['audio-mode','playMode'],['track','track'],['volume','volume'],['sfx','sfx'],['loop','loop'],['auto','auto']]){const e=$(id);if(e.type==='checkbox')e.checked=audio.prefs[key];else e.value=audio.prefs[key];e.addEventListener('change',()=>audio.set({[key]:e.type==='checkbox'?e.checked:key==='playMode'?e.value:Number(e.value)}));}
 $('music-toggle').onclick=()=>audio.media.paused?audio.play():audio.pause();$('export').onclick=()=>{$('report').textContent=JSON.stringify({version:BioG05Network.TAG,browser:navigator.userAgent.includes('Firefox')?'Firefox':navigator.userAgent.includes('Safari')&&!navigator.userAgent.includes('Chrome')?'Safari':'Chromium',metrics:session.inspect().metrics,results:session.totalResults,physicalLAN:'pending'},null,2);};
 new ResizeObserver(()=>{controls.schedule();size();}).observe($('viewport'));
-function frame(now){const dt=Math.max(0,(now-last)/1000);last=now;session.update(dt);if(session.adapter){if(session.config?.game==='g06'&&session.role==='guest')session.adapter.game.drawGuest(ctx);else session.adapter.game.draw(ctx);if(!oppPanel.hidden&&now-lastOppDraw>=100&&typeof session.adapter.drawOpponent==='function'){session.adapter.drawOpponent(oppCtx);lastOppDraw=now;}}if(now-lastUI>200){lastUI=now;render();}requestAnimationFrame(frame);}render();requestAnimationFrame(frame);
+function frame(now){const dt=Math.max(0,(now-last)/1000);last=now;session.update(dt);if(session.adapter){if(session.config?.game==='g06'&&session.role==='guest')session.adapter.game.drawGuest(ctx);else session.adapter.game.draw(ctx);if(oppPanel&&!oppPanel.hidden&&oppCtx&&now-lastOppDraw>=100&&typeof session.adapter.drawOpponent==='function'){session.adapter.drawOpponent(oppCtx);lastOppDraw=now;}}if(now-lastUI>200){lastUI=now;render();}requestAnimationFrame(frame);}render();requestAnimationFrame(frame);
 rootExpose();function rootExpose(){window.BioFriendsApp={session,inspect:()=>({session:session.inspect(),match:session.adapter?(['g01','g02'].includes(session.config?.game)?session.adapter.game.inspectCoop():session.config?.game==='g06'?(session.role==='guest'?session.adapter.game.inspectGuestRace():session.adapter.game.inspectRace()):['g03','g04'].includes(session.config?.game)?session.adapter.capture():session.adapter.game.inspectMatch()):null,combat:session.config?.game==='g01'?session.adapter?.game.inspectCombat()||null:null,controls:controls.debug,canvas:{width:canvas.width,height:canvas.height,css:canvas.getBoundingClientRect().toJSON()}})};}
 })();
