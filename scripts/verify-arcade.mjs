@@ -45,7 +45,7 @@ for(const key of ['street','defense','shaft','laboratory','arena','race']){
  const bytes=fs.existsSync(file)?fs.readFileSync(file):Buffer.alloc(0);
  assert(bytes.length>1000&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP',key+' must be a complete WebP scene');
 }
-for(const lang of ['zh','ja'])for(const page of [`arcade/${lang}/index.html`,`arcade/${lang}/shooter.html`,`${lang}/play.html`])assert(read(page).includes('world-art.js'),page+' scene renderer missing');
+for(const lang of ['zh','ja'])for(const page of [`arcade/${lang}/index.html`,`arcade/${lang}/shooter.html`])assert(read(page).includes('world-art.js'),page+' scene renderer missing');
 for(const id of ['burner-sister','mj-robot','moo-moo','ye-bao-ex','jelly-trio','veggie-kid','oracle-guardian'])assert(fs.existsSync(path.join(root,`images/funai-care-${id}.png`)),`hero asset missing: ${id}`);
 assert(css.includes('body.stage-active{overflow:hidden}'),'scroll lock CSS missing');
 assert(css.includes('#stage-inner{width:100%'),'viewport-width stage fix missing');

@@ -1,4 +1,4 @@
-// One navigation system for the fourteen editorial pages and the two Arcade lobbies.
+// One navigation system for twelve editorial pages and two unified Arcade centers.
 export const pageKeys=['home','world','heroes','story','music','play','strategy'];
 const escape=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 export const route=(lang,key)=>key==='home'?(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'):key==='play'?`arcade/${lang}/index.html`:`${lang}/${key}.html`;

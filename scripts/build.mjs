@@ -81,7 +81,7 @@ for(const lang of ['zh','ja']){
   }
  }
 }
-if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 14 pages match their central sources.');}
+if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 12 editorial pages match their central sources.');}
 
 // Keep the Arcade lobby on the same seven-route navigation system.
 for(const lang of ['zh','ja']){

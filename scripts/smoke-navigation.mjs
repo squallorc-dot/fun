@@ -67,4 +67,4 @@ try{
   }catch(e){failures.push(lang+' navigation flow: '+e.message);}finally{await page.close();}
  }
 }finally{await browser.close();await new Promise(done=>server.close(done));}
-if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 16 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');
+if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 14 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');

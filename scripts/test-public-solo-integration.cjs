@@ -12,6 +12,7 @@ for(const [html,lang]of [[zh,'zh'],[ja,'ja']]){
  assert(html.includes('../assets/games-core.js?v=20261101.1'),'central build asset version stays synchronized '+lang);
 }
 assert(!fs.existsSync(path.join(root,'arcade/challenge/index.html')),'retired public challenge route removed without redirects');
+for(const lang of ['zh','ja'])assert(!fs.existsSync(path.join(root,lang,'play.html')),'old duplicate play page removed without redirect '+lang);
 const core=read('arcade/assets/games-core.js');
 for(const term of ['發球先彈兩次','安全平台／陷阱','檢查點','桌球','氮氣','深度']){
  assert(core.includes(term),'solo HUD/onscreen translation missing '+term);
