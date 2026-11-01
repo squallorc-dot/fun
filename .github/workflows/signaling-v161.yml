@@ -18,6 +18,7 @@ on:
       - 'scripts/test-peer-mobile-lifecycle-v161.cjs'
       - 'scripts/test-peer-stun-v161.cjs'
       - 'scripts/smoke-signaling-session-v161.mjs'
+      - 'scripts/smoke-g02-webkit-chromium-v161.mjs'
       - 'scripts/smoke-focus-resume-v161.mjs'
       - 'arcade/assets/friend-session.js'
       - 'arcade/assets/peer-link.js'
@@ -96,3 +97,30 @@ jobs:
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g01-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g02-friends-6b.mjs
           BIO_AUTO_SIGNALING=1 node scripts/smoke-g06-friends-6c.mjs
+
+  g02-cross-engine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium and Safari-like WebKit
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 wrangler@4.156.0 jsqr@1.4.0 ws@8.18.0
+          npx playwright install --with-deps chromium webkit
+      - name: Real cross-engine G02 launch regression
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+          BIO_WORKER_ASSETS: '1'
+        run: |
+          node scripts/build-controlled-assets-v161.mjs
+          npx wrangler dev --local --config signaling/worker/wrangler.toml --port 8787 --var ALLOWED_ORIGINS:http://127.0.0.1:8790,http://127.0.0.1:8787 --var RATE_SECRET:LOCAL_ONLY_NOT_A_SECRET_0123456789abcdef --var TEST_ENABLED:true --var TEST_EXPIRES_AT:$(($(date +%s)+3600)) --var TEST_ALLOWED_IPS:192.0.2.1,198.51.100.1,203.0.113.1,203.0.113.2 --persist-to "$RUNNER_TEMP/v161-webkit-worker" > "$RUNNER_TEMP/wrangler-webkit.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" || true' EXIT
+          for i in $(seq 1 60); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          node scripts/smoke-g02-webkit-chromium-v161.mjs
