@@ -38,7 +38,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  test(await frame.locator('.ost-shell-play').count()===4,lang+' songs use shared persistent audio');
  await frame.locator('.ost-shell-play').first().click();
  test((await page.evaluate(()=>window.BioGlobalOST.state.track))===0,lang+' song card selects OST');
- await frame.locator('a[href*="play.html"]').first().click();
+ await frame.locator('.main-nav a[href*="/arcade/"]').first().click();
  await frame.locator('body[data-page="play"]').waitFor();
  test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after second navigation');
  const focus=await page.evaluate(()=>{
@@ -54,7 +54,6 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  // Navigate using a real player entry to the actual game center, not a mocked
  // controller. Keep the original persistent audio element across both games.
  await page.locator('#persistent-close').click();
- await frame.locator('.experience-hero a[href*="/arcade/"]').click();
  await frame.locator('[data-launch="g01"]').waitFor();
  await page.setViewportSize({width:390,height:844});
  test(await page.evaluate(()=>{const bar=document.querySelector('#persistent-dock').getBoundingClientRect(),site=document.querySelector('#bio-website').getBoundingClientRect();return bar.bottom<=site.top+1&&bar.width<=innerWidth&&site.bottom<=innerHeight+1;}),lang+' mobile OST dock does not cover site or bottom navigation');
