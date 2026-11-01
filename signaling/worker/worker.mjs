@@ -191,7 +191,7 @@ export class Room {
     const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
     // A host-approved new guest supersedes an absent guest's recovery grace.
     // Old resume credentials are revoked atomically with the new invitation.
-    const token=randomHex(32);if(current.recovery)delete current.recovery.guest;current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
+    const token=randomHex(32);if(current.recovery)delete current.recovery.guest;delete current.relaySid;delete current.relayActive;const existingHost=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');if(existingHost){const hostInfo=existingHost.deserializeAttachment();delete hostInfo.relayReady;existingHost.serializeAttachment(hostInfo);}current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
     const p=pending.deserializeAttachment();delete p.requestId;p.deadline=Date.now()+AUTH_MS;pending.serializeAttachment(p);await this.schedule(current);
     pending.send(JSON.stringify({v:VERSION,type:'join-approved',token}));
    });return;
