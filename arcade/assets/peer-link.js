@@ -13,8 +13,8 @@ function description(text,kind){
 }
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
- constructor({onState=()=>{},onMessage=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;}
+ constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
@@ -96,7 +96,7 @@ class Link{
    if(channel!=='control'||!keys(v.data,['id'])||!Number.isSafeInteger(v.data.id)){this.stats.rejected++;return;}
    if(v.type==='ping')this.send('pong',{id:v.data.id});else{const sent=this.pendingPings.get(v.data.id);if(sent!==undefined){this.pendingPings.delete(v.data.id);const rtt=performance.now()-sent;if(rtt>=0&&rtt<10000){this.stats.rtts.push(rtt);if(this.stats.rtts.length>2048)this.stats.rtts.shift();}}}
   }else if(this.onMessage(v.type,v.data,channel)===false)return;
-  this.received[channel]=v.seq;this.lastReceived=performance.now();this.stats.received++;
+  this.received[channel]=v.seq;this.lastReceived=performance.now();this.troubleAt=0;this.stats.received++;
  }
  send(type,data,fast=false){
   const channel=fast?'input':'control',dc=this.channels[channel];if(this.state!=='connected'||(!this.relaySend&&dc?.readyState!=='open'))return false;
@@ -147,7 +147,20 @@ class Link{
   if(throttled||(typeof document!=='undefined'&&document.visibilityState==='hidden'))this.lastReceived=now;
   const id=++this.pingId||1;this.pingId=id;this.pendingPings.set(id,now);this.send('ping',{id});
   for(const [key,at]of this.pendingPings)if(now-at>10000)this.pendingPings.delete(key);
-  if(now-this.lastReceived>HEARTBEAT_SILENCE_MS){this.close('timeout');return;}
+  const silence=now-this.lastReceived;
+  if(this.betaStun&&this.transport!=='relay'&&silence>3500){
+   // ICE may report 'connected' while one data channel has silently stopped
+   // delivering traffic. Proactively request an authenticated relay, rather
+   // than allowing the short P2P heartbeat deadline to erase the live round.
+   this.troubleAt||=now;
+   if(now-this.lastDegradedNoticeAt>2000){this.lastDegradedNoticeAt=now;this.onDegraded();}
+  }
+  if(silence>HEARTBEAT_SILENCE_MS){
+   // Manual peers and failed relay links remain fail-closed at the normal
+   // 12-second deadline. Beta P2P only gets its existing 90-second *recovery*
+   // budget while signaling attempts the authenticated relay.
+   if(!(this.betaStun&&this.transport!=='relay'&&now-this.troubleAt<BETA_RECOVERY_MS)){this.close('timeout');return;}
+  }
   this.later(()=>this.heartbeat(),500);
  }
  diagnose(){

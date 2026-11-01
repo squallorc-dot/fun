@@ -15,6 +15,10 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
   const clearRecovery=()=>{clearTimeout(fallbackTimer);clearTimeout(restartTimer);};
   const clearHealth=()=>{clearInterval(healthTimer);healthTimer=null;};
   const requestRelay=()=>{const now=Date.now();if(stopped||relayActive||!socketReady||socket?.readyState!==WebSocket.OPEN||now-lastRelayAttempt<2000)return;lastRelayAttempt=now;try{send('relay-ready');onProgress('relay-request');}catch{}};
+  // Data-channel silence is actionable even if ICE still claims connected.
+  // Use the same consent-based relay protocol as the signaling health loop.
+  const previousDegraded=link.onDegraded;
+  if(link.betaStun)link.onDegraded=()=>{previousDegraded?.();requestRelay();};
   const scheduleFallback=()=>{if(!link.useRelay||fallbackTimer)return;restartTimer=setTimeout(async()=>{if(role==='host'&&link.state!=='connected'&&socket?.readyState===WebSocket.OPEN){const description=await link.restartOffer?.();if(description)send('ice-offer',{description});}},6500);fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(link.state!=='connected')requestRelay();},RELAY_AFTER_MS);};
  const lost=()=>{if(!stopped&&!signalingLost){signalingLost=true;onSignalingLost();}};
  const result=new Promise((resolve,reject)=>{
@@ -69,7 +73,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    }catch{finish(Error('pairing-failed'));}
   };};open();
  });
- return {result,retry(){return requestRetry();},approveJoin(id,accept){if(role!=='host'||socket.readyState!==WebSocket.OPEN||!/^[a-f0-9]{32}$/.test(id)||typeof accept!=='boolean')return false;send('join-decision',{id,accept});return true;},close(){if(!settled||retryPending)cancel();stopped=true;clearRecovery();clearHealth();clearTimeout(reconnectTimer);clearTimeout(timer);clearInterval(poll);resumeToken=null;if(socket?.readyState===WebSocket.OPEN)try{send('leave');}catch{}socket?.close();link.close('closed');}};
+ return {result,retry(){return requestRetry();},approveJoin(id,accept){if(role!=='host'||socket.readyState!==WebSocket.OPEN||!/^[a-f0-9]{32}$/.test(id)||typeof accept!=='boolean')return false;send('join-decision',{id,accept});return true;},close(){if(!settled||retryPending)cancel();stopped=true;clearRecovery();clearHealth();clearTimeout(reconnectTimer);clearTimeout(timer);clearInterval(poll);resumeToken=null;if(socket?.readyState===WebSocket.OPEN)try{send('leave');}catch{}socket?.close();if(link.betaStun)link.onDegraded=previousDegraded;link.close('closed');}};
 }
 root.BioFriendSignaling=Object.freeze({VERSION,TIMEOUT_MS,WAIT_MS,RELAY_AFTER_MS,createRoom,connect});
 })(typeof window==='undefined'?globalThis:window);
