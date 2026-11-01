@@ -114,6 +114,39 @@ try{
  await host.locator('#return').click();
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck,null,{timeout:30000})));
  console.log('PASS WebKit iPhone 13 emulation + Chromium mobile: G02 both start, shared epoch, chapter 2, real guest inputs and return');
+ // Reuse the SAME authenticated cross-engine room for the two new head-to-head
+ // games. Both sides send their own inputs. Host alone computes points.
+ for(const mode of ['stairs','pinball']){
+  await start(host,guest,mode);
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:45000})));
+  if(mode==='pinball')await host.waitForTimeout(1200); // wait for actual first-stage launch gate
+  const before=await host.evaluate(()=>BioFriendsApp.session.lastInputSeq);
+  await Promise.all(pages.map((p,i)=>p.evaluate(i=>{
+   for(const key of [i?'a':'d','j'])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
+  },pages.indexOf(p))));
+  await host.waitForFunction(previous=>{
+   const app=BioFriendsApp.session;
+   return app.phase==='playing'&&app.lastInputSeq>previous+12&&
+    app.adapter?.capture().boards?.length===2;
+  },before,{timeout:20000});
+  const states=await Promise.all(pages.map(p=>p.evaluate(()=>{
+   const app=BioFriendsApp.session,v=app.adapter?.capture();
+   return {game:app.config?.game,mode:app.config?.mode,phase:app.phase,
+    score:v?.scores,angle:v?.boards?.map(x=>x.angle),x:v?.boards?.map(x=>x.player?.x),tick:app.tick};
+  })));
+  assert(states.every(v=>v.game===(mode==='stairs'?'g03':'g04')&&v.mode===mode&&v.score?.length===2&&v.phase==='playing'),
+   mode+' both engines render valid two-player scoreboards');
+  const own=states[0];
+  assert(mode==='stairs'?own.x[0]!==own.x[1]:own.angle[0]!==own.angle[1],
+   mode+' host sees independent actions from WebKit and Chromium');
+  await Promise.all(pages.map(p=>p.evaluate(()=>{
+   for(const key of ['j','a','d'])document.body.dispatchEvent(new KeyboardEvent('keyup',{key,bubbles:true}));
+  })));
+  await host.locator('#return').click();
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck,null,{timeout:25000})));
+  console.log('PASS WebKit/Chromium '+mode+' two authoritative boards, active guest controls, score synchronization and return');
+ }
+
 }catch(error){
  console.error('SAFE G02 CROSS-ENGINE STATES '+JSON.stringify(await Promise.all(pages.map(safe))));
  console.error('SAFE G02 ENGINE SAMPLES '+JSON.stringify(engineSamples.slice(-14)));
