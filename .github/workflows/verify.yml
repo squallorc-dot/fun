@@ -9,6 +9,10 @@ on:
         description: Keep formal acceptance evidence for 30 days
         type: boolean
         default: false
+# Keep only the latest six-job run for each PR; preserve full main/release checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
