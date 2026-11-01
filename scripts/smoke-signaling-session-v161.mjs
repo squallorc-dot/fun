@@ -89,6 +89,7 @@ try{
  for(const mode of ['stairs','pinball']){
   await start(pages[0],pages[1],mode);
   await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:60000})));
+  if(mode==='pinball')await pages[0].waitForTimeout(1200); // wait until the first stage accepts launches
   await Promise.all(pages.map((p,i)=>p.evaluate(i=>{
    for(const key of [i?'a':'d','j'])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
   },i)));
@@ -101,7 +102,7 @@ try{
    const {session,match}=BioFriendsApp.inspect();
    return {phase:session.phase,mode:session.config?.mode,ended:match?.ended,
     count:match?.boards?.length,scores:match?.scores,
-    positions:session.config?.game==='g03'?match?.boards?.map(b=>b.player.x):match?.boards?.map(b=>b.shotsFired)};
+    positions:session.config?.game==='g03'?match?.boards?.map(b=>b.player.x):match?.boards?.map(b=>b.angle)};
   })));
   assert(dual.every(x=>x.mode===mode&&x.count===2&&x.scores.length===2),mode+' both views render two real players');
   assert(dual[0].positions[0]!==dual[0].positions[1],mode+' independent player actions');
