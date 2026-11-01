@@ -7,12 +7,14 @@ export async function setup({viewport={width:1440,height:1000},locales=['zh','ja
  try{for(const [index,locale]of locales.entries()){
   const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});browsers.push(browser);const context=await browser.newContext({viewport,hasTouch:viewport.width<1000,deviceScaleFactor:1});
   await context.addInitScript(profile=>{localStorage.setItem('bio_arcade_pref_v1',JSON.stringify({audioRevision:2,track:2,volume:0,sfx:0,auto:false,playMode:'manual',loop:false}));localStorage.setItem('bio_arcade_controls_v1',JSON.stringify({profile}));},profile);
-  const page=await context.newPage();pages.push(page);page.on('pageerror',e=>errors.push({side:index,message:String(e).slice(0,200)}));await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());await page.goto(origin+'/arcade/qa/friends-v16/index.html?lang='+locale);await page.waitForFunction(()=>!!window.BioFriendsApp);
+  const page=await context.newPage();pages.push(page);page.on('pageerror',e=>errors.push({side:index,message:String(e).slice(0,200)}));await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());await page.goto(origin+'/arcade/qa/friends-v16/index.html?lang='+locale+(auto?'&auto=1':''));await page.waitForFunction(()=>!!window.BioFriendsApp);
  }}catch(error){for(const b of browsers)await b.close();await new Promise(r=>server.close(r));throw error;}
  return {pages,errors,async close(){for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}};
 }
 export async function pair(a,b){
  if(process.env.BIO_AUTO_SIGNALING==='1'){
+  // Automated signaling must exercise the same STUN/Relay recovery contract as the public Beta.
+  assert((await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.betaStun)))).every(Boolean),'automatic QA enables Beta recovery transport on both peers');
   await Promise.all([a,b].map(p=>p.addScriptTag({url:new URL('/arcade/assets/friend-signaling.js',p.url()).href})));
   const room=await a.evaluate(()=>BioFriendSignaling.createRoom(location.origin));
   await Promise.all([a,b].map((p,i)=>p.evaluate(({room,i})=>{const s=BioFriendsApp.session,role=i?'guest':'host';s.prepareAuto(role,'RTC',i?3:0);window.__automatic=BioFriendSignaling.connect({endpoint:location.origin,room:room.room,role,token:i?room.guest:room.host,link:s.link});window.__automaticStatus='pending';__automatic.result.then(()=>window.__automaticStatus='connected',e=>window.__automaticStatus=e.message);},{room,i})));
