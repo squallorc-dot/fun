@@ -12,7 +12,23 @@ async function observe(host,mode){await host.evaluate(mode=>{
  adapter.step=(dt,local,remote)=>{const before=adapter.game.inspectMatch();step(dt,local,remote);const after=adapter.game.inspectMatch();if(after.rally>before.rally&&after.ball){const hitter=after.ball.lastHitter;tally.hits[hitter]++;if(tally.last!==null&&tally.last!==hitter)tally.exchanges++;tally.last=hitter;}if(after.rally<before.rally||after.points.join()!==before.points.join())tally.last=null;};
  },mode);}
 async function collect(host,mode){const t=await host.evaluate(()=>window.__contacts);for(let i=0;i<2;i++)report.contacts[mode][i]+=t.hits[i];report.exchanges[mode]+=t.exchanges;return t;}
-async function lobby(a,b,rematch=false){await b.locator(rematch?'#rematch':'#return').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));}
+async function lobby(a,b,rematch=false){
+ try{
+  await b.locator(rematch?'#rematch':'#return').click();
+  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
+ }catch(error){
+  // Diagnose failed reliable lobby handoff without storing SDP, tokens, addresses or room IDs.
+  const states=await Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
+   const s=BioFriendsApp.session,v=s.inspect();
+   return {side,phase:v.phase,epoch:v.epoch,configMode:v.config?.mode,configEpoch:v.config?.epoch,
+    configAck:v.configAck,ready:v.ready,resultCount:v.resultCount,link:s.link.state,
+    transport:s.link.transport||'p2p',rejected:v.metrics.rejected,
+    controlChannel:s.link.channels.control?.readyState||'none'};
+  },side);}catch{return {side,unavailable:true};}}));
+  console.error('SAFE LOBBY RETURN FAILURE '+JSON.stringify({rematch,states}));
+  throw error;
+ }
+}
 async function health(p){return p.evaluate(()=>{const s=BioFriendsApp.session,v=s.inspect();return {phase:v.phase,epoch:v.epoch,tick:v.tick,result:v.result,resultCount:v.resultCount,totalResults:v.totalResults,metrics:v.metrics,timers:s.link.timers.size,pendingPings:s.link.pendingPings.size,pendingInputs:s.sentInputs.size,heap:performance.memory?.usedJSHeapSize??null};});}
 const v=await setup(),[a,b]=v.pages;
 try{
@@ -39,7 +55,22 @@ try{
   if(n===1){await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));await b.evaluate(()=>window.dispatchEvent(new Event('blur')));await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));report.focusTransition={noAutomaticPause:true,peers:await Promise.all([a,b].map(health))};await a.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='paused')));report.focusTransition.manualPause=true;await a.locator('#pause').click();await b.locator('#pause').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));report.focusTransition.resumedByBoth=true;}
   const game=await complete(a,b,mode),contacts=await collect(a,mode),peers=await Promise.all([a,b].map(health));
   report.stress.push({elapsedMs:Date.now()-began,mode,game,contacts,peers});save();
-  await lobby(a,b,n%2===0);assert.deepEqual(await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation))),generations,'same peer connection throughout repeated game switches');
+  // A rematch auto-starts the SAME mode; it is not a lobby return.
+  // Exercise that genuine continuation once, including a real completed result.
+  if(n===2){
+   const previousEpoch=await a.evaluate(()=>BioFriendsApp.inspect().session.epoch);
+   await b.locator('#rematch').click();
+   await Promise.all([a,b].map(p=>p.waitForFunction(previous=>{
+    const s=BioFriendsApp.inspect().session;
+    return s.epoch===previous+1&&s.config?.continuation===true&&s.configAck&&['countdown','playing'].includes(s.phase);
+   },previousEpoch,{timeout:30000})));
+   await observe(a,mode);
+   const replay=await complete(a,b,mode),replayContacts=await collect(a,mode),replayPeers=await Promise.all([a,b].map(health));
+   report.stress.push({elapsedMs:Date.now()-began,mode,game:replay,contacts:replayContacts,peers:replayPeers,automaticRematch:true});save();
+   console.log(`STRESS REMATCH ${Math.round((Date.now()-began)/1000)}s ${mode} score=${replay.result.points.join(':')}`);
+  }
+  // Switching pong/volley requires RETURN to lobby, not the auto-rematch button.
+  await lobby(a,b,false);assert.deepEqual(await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.generation))),generations,'same peer connection throughout repeated game switches');
   console.log(`STRESS ${Math.round((Date.now()-began)/1000)}s ${mode} score=${game.result.points.join(':')}`);
  }
  report.stressDurationMs=Date.now()-began;

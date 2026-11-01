@@ -6,11 +6,15 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='207b05f89143eec416cfb18a20d4f3f73ff6b0cb';
+const SOURCE_SHA='51c177a83bc4eeb228fe29133f805e1f32bf4329';
 const REPO='squallorc-dot/fun', PR_NUMBER=38;
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;
 const required=['FUNAI CARE bilingual quality gate','v1.6.1 signaling prototype'];
+const requiredJobs={
+ 'FUNAI CARE bilingual quality gate':['verify','browser','arcade-engines','arcade-controls-browser','arcade-performance-browser','arcade-session-browser'],
+ 'v1.6.1 signaling prototype':['signaling-local-rtc','g02-cross-engine']
+};
 const allowedChanges=new Set(['wrangler.toml','package.json','scripts/cloudflare-beta-build-v161.mjs','signaling/Beta雲端自動部署說明.md']);
 const headers={'Accept':'application/vnd.github+json','User-Agent':'BioCity-Cloudflare-Beta-Build'};
 async function api(path){
@@ -30,20 +34,20 @@ try{
  assert.equal(info.draft,true,'candidate PR must remain Draft before Beta acceptance');
  assert.equal(info.merged,false,'do not publish merged PR via release branch');
  const runs=await api('/actions/runs?head_sha='+SOURCE_SHA+'&per_page=100');
- // Owner-approved isolated public Beta for live cross-device diagnosis.
- // This exact SHA is NOT production-accepted. CI status is still recorded and
- // must be green before any promotion to the official main site.
- const diagnosticSha='207b05f89143eec416cfb18a20d4f3f73ff6b0cb';
- assert.equal(SOURCE_SHA,diagnosticSha,'diagnostic authorization applies to one source SHA');
+ // Fail closed: every quality and RTC job must pass on the exact PR head.
  for(const name of required){
   const items=(runs.workflow_runs||[]).filter(x=>x.name===name&&x.head_sha===SOURCE_SHA);
-  assert(items.length>0,'CI has not been triggered: '+name);
-  const green=items.some(x=>x.status==='completed'&&x.conclusion==='success');
-  if(!green)console.warn('OWNER-APPROVED TEST RELEASE ONLY: '+name+' is '+items[0].status+'/'+(items[0].conclusion||'pending')+'. NOT suitable for main.');
+  const green=items.find(x=>x.status==='completed'&&x.conclusion==='success');
+  assert(green,'CI must be completed/success for '+name);
+  const jobsData=await api('/actions/runs/'+green.id+'/jobs?per_page=100');
+  for(const jobName of requiredJobs[name]){
+   const job=(jobsData.jobs||[]).find(x=>x.name===jobName);
+   assert(job&&job.status==='completed'&&job.conclusion==='success','required CI job not green: '+name+'/'+jobName);
+  }
  }
  const compare=await api('/compare/'+SOURCE_SHA+'...'+head);
  assert.equal(compare.status,'ahead','release must advance only tested source');
- assert.equal(compare.ahead_by,10,'three release config commits and two reviewed Beta integrations expected');
+ assert.equal(compare.ahead_by,11,'unexpected release ancestry: source + dedicated release branch');
  assert((compare.files||[]).length>0,'missing release files');
  assert((compare.files||[]).every(x=>allowedChanges.has(x.filename)&&x.status==='added'),'release modifies only approved deployment files');
  const conf=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
@@ -57,7 +61,7 @@ try{
  assert(peer.includes('betaStun=false'),'manual QA must remain opt-in');
  const {files,bytes}=await build();
  assert(files>=80&&bytes>10000000,'missing controlled assets');
- console.log('DIAGNOSTIC Cloudflare Beta build: exact user-approved source '+SOURCE_SHA.slice(0,8)+', CI NOT necessarily green, restricted release delta, '+files+' assets. DO NOT PROMOTE TO MAIN.');
+ console.log('Cloudflare Beta: verified '+SOURCE_SHA.slice(0,8)+' (6 quality and 2 RTC jobs green), limited to four release config files, '+files+' controlled assets. MAIN UNCHANGED.');
 }catch(error){
  console.error('CLOUDFLARE BETA DEPLOY BLOCKED: '+error.message);
  process.exitCode=1;

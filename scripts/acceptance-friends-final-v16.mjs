@@ -36,7 +36,8 @@ try{
    row.connected=row.game.peers.every(p=>p.metrics.state==='connected');row.resultConsistent=true;row.bothEffective=row.contacts.hits.every(n=>n>0);row.exchange=row.contacts.exchanges>0;
    // Report separately: no inference that a working connection is playable at a given latency.
    row.experience=row.bothEffective&&row.exchange?'automated-returns-observed':'automated-returns-not-demonstrated';save();
-   await b.locator(mode==='volley'?'#rematch':'#return').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
+   // This lifecycle check returns to lobby; real rematch auto-continuation is separately verified in acceptance-friends-v16.mjs.
+    await b.locator('#return').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
    if(rtt===100&&loss===0)await resources(v.pages,cdps,mode+'-returned-lobby');
   }
   await a.locator('#leave').click();await b.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected');await wait(500);

@@ -15,6 +15,10 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
   const clearRecovery=()=>{clearTimeout(fallbackTimer);clearTimeout(restartTimer);};
   const clearHealth=()=>{clearInterval(healthTimer);healthTimer=null;};
   const requestRelay=()=>{const now=Date.now();if(stopped||relayActive||!socketReady||socket?.readyState!==WebSocket.OPEN||now-lastRelayAttempt<2000)return;lastRelayAttempt=now;try{send('relay-ready');onProgress('relay-request');}catch{}};
+  // Data-channel silence is actionable even if ICE still claims connected.
+  // Use the same consent-based relay protocol as the signaling health loop.
+  const previousDegraded=link.onDegraded;
+  if(link.betaStun)link.onDegraded=()=>{previousDegraded?.();requestRelay();};
   const scheduleFallback=()=>{if(!link.useRelay||fallbackTimer)return;restartTimer=setTimeout(async()=>{if(role==='host'&&link.state!=='connected'&&socket?.readyState===WebSocket.OPEN){const description=await link.restartOffer?.();if(description)send('ice-offer',{description});}},6500);fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(link.state!=='connected')requestRelay();},RELAY_AFTER_MS);};
  const lost=()=>{if(!stopped&&!signalingLost){signalingLost=true;onSignalingLost();}};
  const result=new Promise((resolve,reject)=>{
@@ -23,7 +27,11 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
   const startLink=(method,...args)=>{const previous=link.pairingTimeout;link.pairingTimeout=timeout;try{return link[method](...args);}finally{link.pairingTimeout=previous;}};
   cancel=()=>finish(Error('cancelled'));
   requestRetry=()=>{if(stopped||!settled||retryPending||retryRequests>=2||retryAttempts>=2||socket?.readyState!==WebSocket.OPEN||link.state==='connected')return Promise.reject(Error('retry-unavailable'));
-   retryRequests++;started=false;const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
+   retryRequests++;started=false;
+    // A retry is a fresh RTC/Relay negotiation on the same authenticated room.
+    // The previous round's relay state must not suppress a new offer/answer.
+    relayActive=false;earlyRelayPackets=[];lastRelayAttempt=0;clearRecovery();
+    const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state)&&!link.betaStun)finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(!link.useRelay&&['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   healthTimer=setInterval(()=>{
     if(stopped||!settled||relayActive||!link.useRelay||link.state!=='connected')return;
@@ -45,7 +53,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    if(message.v!==VERSION||typeof message.type!=='string')return finish(Error('message-format'));
    try{
     if(message.type==='retry-denied'&&retryPending)finish(Error('retry-denied'));
-    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&!started){retryAttempts=message.attempt;if(role==='host'){started=true;send('offer',{description:await startLink('offer')});}}
+    else if(message.type==='retry-start'&&retryPending&&message.attempt===retryPending.attempt&&!started){retryAttempts=message.attempt;if(role==='host'){started=true;scheduleFallback();send('offer',{description:await startLink('offer')});}}
     else if(message.type==='authenticated'&&message.role===role&&/^[a-f0-9]{64}$/.test(message.resumeToken||'')){resumeToken=message.resumeToken;socketReady=true;onProgress('authenticated');if(resuming){signalingLost=false;onSignalingRestored();}}
     else if(message.type==='join-request'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinRequest(message.id);
     else if(message.type==='join-cancelled'&&role==='host'&&/^[a-f0-9]{32}$/.test(message.id||''))onJoinCancelled(message.id);
@@ -69,7 +77,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    }catch{finish(Error('pairing-failed'));}
   };};open();
  });
- return {result,retry(){return requestRetry();},approveJoin(id,accept){if(role!=='host'||socket.readyState!==WebSocket.OPEN||!/^[a-f0-9]{32}$/.test(id)||typeof accept!=='boolean')return false;send('join-decision',{id,accept});return true;},close(){if(!settled||retryPending)cancel();stopped=true;clearRecovery();clearHealth();clearTimeout(reconnectTimer);clearTimeout(timer);clearInterval(poll);resumeToken=null;if(socket?.readyState===WebSocket.OPEN)try{send('leave');}catch{}socket?.close();link.close('closed');}};
+ return {result,retry(){return requestRetry();},approveJoin(id,accept){if(role!=='host'||socket.readyState!==WebSocket.OPEN||!/^[a-f0-9]{32}$/.test(id)||typeof accept!=='boolean')return false;send('join-decision',{id,accept});return true;},close(){if(!settled||retryPending)cancel();stopped=true;clearRecovery();clearHealth();clearTimeout(reconnectTimer);clearTimeout(timer);clearInterval(poll);resumeToken=null;if(socket?.readyState===WebSocket.OPEN)try{send('leave');}catch{}socket?.close();if(link.betaStun)link.onDegraded=previousDegraded;link.close('closed');}};
 }
 root.BioFriendSignaling=Object.freeze({VERSION,TIMEOUT_MS,WAIT_MS,RELAY_AFTER_MS,createRoom,connect});
 })(typeof window==='undefined'?globalThis:window);

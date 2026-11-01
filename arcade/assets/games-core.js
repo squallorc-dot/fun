@@ -366,6 +366,15 @@ const g={w:960,h:540,finish:env.finish,start(){if(seeded)randomState=env.challen
  let support=null;for(const f of platforms){if(f.broken||f.y<p.y+p.r-1||f.y>=p.y+p.r+g.h*.44)continue;const x=platformX(f);if(p.x>=x&&p.x<=x+f.w&&(!support||f.y<support.y))support=f;}
  const anchor=support?support.y-camera:feet;
  fighter(ctx,p.x,anchor,anchor-feet,20,pal[env.hero],t,!p.ground?'jump':Math.abs(p.vx)>18?'walk':'idle',p.dir,env.hero,p.inv>.1&&Math.floor(t*15)%2?.45:1,!!support);fx.draw(ctx,camera);const crushY=crush-camera;rect(ctx,0,0,w,Math.max(0,crushY),'#a62f4d35');if(crushY>0)rect(ctx,0,Math.max(0,crushY-5),w,5,'#f96972');words(ctx,`DEPTH  ${Math.floor(depth)} / ${Math.floor(goal)} m`,16,34,15);words(ctx,`LIVES  ${p.hp}`,16,57,13,p.hp===1?'#ff7b8d':'#a0eddc');if(!p.ground&&p.y-p.fallFrom>210)words(ctx,jaText(env,'踩平台緩衝！','足場で落下を止めよう！'),w/2,90,17,'#ffd3a1','center');words(ctx,`SAFE PLATFORM / TRAP / MOVING`,16,h-15,10,'#92c3d0');},hud(){return `<span>DEPTH <b>${Math.floor(depth)} m</b></span><span>LIFE <b>${p.hp}</b></span><span>GOAL <b>${Math.floor(goal)} m</b></span><span>ENERGY <b>${pickups}</b></span>`;}};
+ g.networkSnapshot=()=>({
+  player:{...p},platforms:platforms.map(q=>({...q})),camera,depth,level,t,score,bonus,pickups,goal,crush,spawny,finished:!!g._finished
+ });
+ g.applyNetworkState=v=>{
+  if(!v||!v.player||!Array.isArray(v.platforms))return false;
+  p={...v.player};platforms=v.platforms.map(q=>({...q}));camera=v.camera;depth=v.depth;level=v.level;
+  t=v.t;score=v.score;bonus=v.bonus;pickups=v.pickups;goal=v.goal;crush=v.crush;spawny=v.spawny;
+  g._finished=!!v.finished;return true;
+ };
  g.debugGeometry=()=>({chapter,zone:zones[chapter-1],time:t,wind:chapter===3?Math.sin(t*.85)*18:chapter===5?Math.sin(t*1.7)*25:0,player:{...p},platforms:platforms.map(f=>({...f,actualX:platformX(f)})),goal,depth,camera,pickups,bonus});
  if(env.testMode)g.testFreeFall=()=>{platforms=[];spawny=10000;p.ground=false;p.vy=0;p.y=90;p.fallFrom=90;};
  if(env.testMode)g.testPlatformRide=()=>{const f=platforms.find(f=>f.type==='moving'&&f.x>60&&f.x+f.w<g.w-60);if(!f)throw Error('No central moving platform in fixture');p.x=platformX(f)+14;p.y=f.y-p.r;p.vx=p.vy=0;p.ground=true;p.fallFrom=p.y;camera=Math.max(0,p.y-g.h*.48);return f.y;};
@@ -441,6 +450,20 @@ R.g04=env=>{
  }
  function collide(b,q,restitution){const dx=b.x-q.x,dy=b.y-q.y,d=Math.hypot(dx,dy),R=b.r+q.r;if(d>=R||d<=.001)return;const nx=dx/d,ny=dy/d,proj=b.vx*nx+b.vy*ny;b.x=q.x+nx*(R+1);b.y=q.y+ny*(R+1);if(proj<0){b.contact=.16;b.impactAngle=Math.atan2(ny,nx);b.vx-=2*proj*nx*restitution;b.vy-=2*proj*ny*restitution;return true;}}
  function shoot(){shots--;shotsFired++;const speed=(350+power*3.4)*Math.min(1,Math.max(.75,g.h/500));balls.push({x:g.w*.5,y:g.h-32,r:Math.max(6,Math.min(g.w,g.h)*.014),vx:-Math.sin(angle)*speed,vy:-Math.cos(angle)*speed,t:8,trail:[],locked:new Set()});env.sfx(450,.13);}
+ g.networkSnapshot=()=>({
+  balls:balls.map(({locked,...q})=>({...q,trail:q.trail.map(k=>({...k}))})),
+  targets:targets.map(q=>({...q})),bumpers:bumpers.map(q=>({...q})),
+  shots,shotsFired,angle,power,score,hits,t,walls,stage,stageHits,transition,
+  stageHistory:stageHistory.map(q=>({...q})),finished:!!g._finished
+ });
+ g.applyNetworkState=v=>{
+  if(!v||!Array.isArray(v.balls)||!Array.isArray(v.targets)||!Array.isArray(v.bumpers))return false;
+  balls=v.balls.map(q=>({...q,locked:new Set(),trail:q.trail.map(k=>({...k}))}));
+  targets=v.targets.map(q=>({...q}));bumpers=v.bumpers.map(q=>({...q}));
+  shots=v.shots;shotsFired=v.shotsFired;angle=v.angle;power=v.power;score=v.score;hits=v.hits;
+  t=v.t;walls=v.walls;stage=v.stage;stageHits=v.stageHits;transition=v.transition;
+  stageHistory=v.stageHistory.map(q=>({...q}));g._finished=!!v.finished;fx.clear();return true;
+ };
  g.debugPhysics=()=>({chapter,mechanic:chapterMechanics[chapter-1],stage,totalStages:total,stageName:STAGES[stage-1].title,balls:balls.map(({locked,...q})=>({...q})),targets:targets.map(q=>({...q})),bumpers:bumpers.map(q=>({...q})),shots,shotsFired,hits,score,physicsDebt,stageHistory:stageHistory.map(q=>({...q})),angle,power,transition});
  // Deterministic phase-transition probe for test harnesses only; production instances do not expose it.
  if(env.testMode){g.testClearStage=()=>{for(const q of targets)q.hp=0;};g.testBall=value=>{balls=[];shoot();Object.assign(balls[0],value);};}

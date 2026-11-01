@@ -15,8 +15,8 @@ try{
   await page.goto(origin+'/arcade/qa/friends-v16/index.html?lang='+locale);
   await page.waitForFunction(()=>!!window.BioFriendsApp);
   assert.equal(await page.locator('#language').inputValue(),locale);
-  await page.locator('#challenge-link').click();
-  await page.waitForFunction(()=>!!window.BioChallengeApp);
+  assert.equal(await page.locator('#challenge-link').count(),0,'legacy asynchronous friend challenge link is removed');
+  assert.equal(await page.locator('#room').count(),1,'manual QA session remains available independently');
   assert.equal(new URL(page.url()).searchParams.get('lang'),locale);
  }
  assert.deepEqual(app.errors,[]);

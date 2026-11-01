@@ -8,18 +8,55 @@ const origin='http://127.0.0.1:8790',endpoint=origin;
 const server=await signalingTestServer();const browsers=[];
 try{
  for(let i=0;i<2;i++)browsers.push(await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})}));
- const pages=await Promise.all(browsers.map(b=>b.newPage()));await Promise.all(pages.map(p=>p.addInitScript(()=>{const Original=window.WebSocket;window.__testSockets=[];window.WebSocket=class extends Original{constructor(...args){super(...args);window.__testSockets.push(this);}};})));
+ const pages=await Promise.all(browsers.map(b=>b.newPage()));await Promise.all(pages.map(p=>p.addInitScript(()=>{const Original=window.WebSocket;window.__testSockets=[];window.__testSocketClosures=[];window.WebSocket=class extends Original{constructor(...args){super(...args);window.__testSockets.push(this);this.addEventListener('close',event=>{const safe=['rate','invalid','relay-invalid','relay-packet','socket-error','expired','leave','host-left','auth','auth-timeout','occupied','unavailable'];window.__testSocketClosures.push({code:event.code,reason:safe.includes(event.reason)?event.reason:'other'});});}};})));
  await Promise.all(pages.map(async(p,i)=>{await p.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});await p.goto(origin+'/arcade/friends/index.html?lang='+(i?'ja':'zh'));await p.waitForFunction(()=>!!window.BioFriendsApp);}));
- await pages[0].locator('#auto-create').click();await pages[0].locator('#auto-name').fill('V161');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-room-code').textContent.length===8);
+ await Promise.all(pages.map(p=>p.waitForFunction(()=>!!window.BioG03Network&&!!window.BioG04Network,{},{timeout:12000})));
+ await pages[0].locator('#auto-create').click();assert.equal(await pages[0].locator('#auto-name').count(),0,'host room names are automatic');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-room-code').textContent.length===8);
  const code=await pages[0].locator('#auto-room-code').textContent();await pages[1].locator('#auto-join').click();await pages[1].locator('#auto-code').fill(code);await pages[1].locator('#auto-start').click();
  await pages[0].waitForFunction(()=>!document.querySelector('#auto-approval').hidden);await pages[0].locator('#auto-yes').click();
  await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected'),null,{timeout:50000})));
  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
- await pages[0].locator('#auto-lobby-hero').selectOption('2');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.heroes[0]===2&&BioFriendsApp.inspect().session.configAck)));
- await pages[1].locator('#auto-lobby-hero').selectOption('5');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.config?.heroes[1]===5&&BioFriendsApp.inspect().session.configAck)));
- await start(pages[0],pages[1],'pong');const matchPromise=complete(pages[0],pages[1],'pong');await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing');await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));const match=await matchPromise;assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
- console.log('PASS genuine RTC game survives signaling WebSocket closure: two players move, return balls and agree on result');
- await Promise.all(pages.map(p=>p.evaluate(()=>window.originalPeer=BioFriendsApp.session.link.pc)));
+ // First arrow must start from the actual selected guardian, not the
+ // native select's initial option 0 before the periodic UI refresh.
+ for(const p of pages){
+  const current=await p.evaluate(()=>BioFriendsApp.session.hero);
+  assert.equal(await p.locator('#auto-lobby-hero').inputValue(),String(current),'connected carousel and hidden selection agree immediately');
+ }
+ assert.equal(await pages[1].evaluate(()=>BioFriendsApp.session.hero),3,'guest form selection survives RTC pairing');
+ assert.equal(await pages[0].locator('#auto-lobby-hero-label').isVisible(),false,'hidden duplicate hero select');
+  for(const expectedHero of [1,2]){await pages[0].locator('#auto-lobby-next').click();await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[0]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));}
+ for(const expectedHero of [4,5]){
+  await pages[1].locator('#auto-lobby-next').click();
+  try{
+   await Promise.all(pages.map(p=>p.waitForFunction(id=>BioFriendsApp.inspect().session.config?.heroes[1]===id&&BioFriendsApp.inspect().session.configAck,expectedHero)));
+  }catch(error){
+   // Diagnostic contains only game state and numeric hero selections, no tokens, ICE or SDP.
+   const states=await Promise.all(pages.map(p=>p.evaluate(()=>{
+    const s=BioFriendsApp.inspect().session;
+    return {phase:s.phase,role:s.role,heroes:s.config?.heroes,ack:s.configAck,link:s.link?.state,peerHello:!!s.peerHello};
+   })));
+   console.error('HERO SYNC DIAGNOSTIC '+JSON.stringify({expectedHero,states}));
+   throw error;
+  }
+ }
+ await start(pages[0],pages[1],'pong');
+ const matchPromise=complete(pages[0],pages[1],'pong');
+ await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));
+ const transports=await Promise.all(pages.map(p=>p.evaluate(()=>BioFriendsApp.session.link.transport)));
+ if(transports.every(type=>type==='p2p')){
+  // Direct data channels continue without the signaling socket.
+  await pages[0].evaluate(()=>window.__testSockets.find(s=>s.readyState===WebSocket.OPEN)?.close());
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>!!document.querySelector('#auto-signal-status')?.textContent&&BioFriendsApp.session.link.state==='connected')));
+ }else{
+  // Authenticated Worker Relay carries actual game packets over this WebSocket.
+  // Closing it here would intentionally disconnect the game, not test signaling independence.
+  assert(transports.every(type=>type==='relay'),'both browsers must agree on their transport before G05 play: '+JSON.stringify(transports));
+  assert((await Promise.all(pages.map(p=>p.evaluate(()=>window.__testSockets.some(s=>s.readyState===WebSocket.OPEN))))).every(Boolean),'both relay transport sockets must remain open during gameplay');
+ }
+ const match=await matchPromise;
+ assert(match.peers.every(x=>x.driver.contacts>0),'both players actually return the ball: '+JSON.stringify(match.peers.map(x=>x.driver)));
+ console.log('PASS genuine '+transports[0].toUpperCase()+' G05 game: two players move, return balls and agree on result'+(transports[0]==='p2p'?' despite signaling closure':' over active authenticated Worker Relay'));
+ await Promise.all(pages.map(p=>p.evaluate(()=>{window.originalPeer=BioFriendsApp.session.link.pc;window.originalTransport=BioFriendsApp.session.link.transport;window.originalSid=BioFriendsApp.session.link.sid;})));
  await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  for(const mode of ['volley','coop','defense','race']){
   await start(pages[0],pages[1],mode);await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:60000})));
@@ -41,15 +78,60 @@ try{
    await pages[0].waitForFunction(t=>BioFriendsApp.inspect().session.tick>t+60,after.tick,{timeout:15000});
   }
   await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.tick>480,null,{timeout:20000});
-  const views=await Promise.all(pages.map(p=>p.evaluate(()=>({same:originalPeer===BioFriendsApp.session.link.pc,view:BioFriendsApp.inspect().session}))));
+  const views=await Promise.all(pages.map(p=>p.evaluate(()=>({same:originalTransport==='relay'?(BioFriendsApp.session.link.transport==='relay'&&!BioFriendsApp.session.link.pc&&originalSid===BioFriendsApp.session.link.sid):(originalTransport==='p2p'&&BioFriendsApp.session.link.transport==='p2p'&&originalPeer===BioFriendsApp.session.link.pc),view:BioFriendsApp.inspect().session}))));
   assert(views.every(v=>v.same&&v.view.phase==='playing'&&v.view.config.mode===mode),mode+' remains on original connection');
   await Promise.all(pages.map(p=>p.evaluate(()=>{for(const key of ['j','a','d','w'])document.body.dispatchEvent(new KeyboardEvent('keyup',{key,bubbles:true}));})));
   await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));
  }
- console.log('PASS automatic pairing same RTC: G05 pong and volley, G01, G02, G06 switch and return; other rounds short');
- const before=await pages[0].evaluate(()=>BioFriendsApp.inspect().session.room);await pages[1].evaluate(()=>BioFriendsApp.session.link.pc.close());await Promise.all(pages.map(p=>p.waitForFunction(()=>!document.querySelector('#auto-retry').hidden,null,{timeout:30000})));await Promise.all(pages.map(p=>p.locator('#auto-retry-start').click()));await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected')&&BioFriendsApp.inspect().session.configAck,null,{timeout:50000})));const recovered=await Promise.all(pages.map(p=>p.evaluate(()=>BioFriendsApp.inspect().session)));assert(recovered.every(s=>s.room===before&&s.phase==='lobby'&&s.result===null&&s.resultCount===0&&s.config.heroes[0]===2&&s.config.heroes[1]===5),'same room, both selected heroes restored, new lobby and no old result');await start(pages[0],pages[1],'volley');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));console.log('PASS real RTC disconnect and two-party same-room retry: prior result cleared; new round starts');
+ console.log('PASS automatic pairing on same live transport: G05 pong and volley, G01, G02, G06 switch and return');
+ // G03/G04 are real two-board head-to-head games, not pre-recorded links.
+ // Exercise both player controls and authoritative frame flow on the existing
+ // authenticated Relay/P2P connection, without rebuilding the room.
+ for(const mode of ['stairs','pinball']){
+  await start(pages[0],pages[1],mode);
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing',null,{timeout:60000})));
+  if(mode==='pinball')await pages[0].waitForTimeout(1200); // wait until the first stage accepts launches
+  await Promise.all(pages.map((p,i)=>p.evaluate(i=>{
+   for(const key of [i?'a':'d','j'])document.body.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
+  },i)));
+  await pages[0].waitForFunction(()=>BioFriendsApp.inspect().session.tick>430,null,{timeout:30000});
+  await pages[1].waitForFunction(mode=>{
+   const s=BioFriendsApp.inspect();
+   return s.session.config?.mode===mode&&s.match?.boards?.length===2&&s.match.scores?.length===2;
+  },mode,{timeout:30000});
+  try{
+   await pages[0].waitForFunction(mode=>{
+    const app=BioFriendsApp.inspect(),v=app.match;
+    return app.session.phase==='playing'&&v?.boards?.length===2&&
+      (mode==='stairs'?Math.abs(v.boards[0].player.x-v.boards[1].player.x)>5:Math.abs(v.boards[0].angle-v.boards[1].angle)>.025);
+   },mode,{timeout:16000});
+  }catch(error){
+   const diagnostic=await Promise.all(pages.map(p=>p.evaluate(()=>{
+    const v=BioFriendsApp.inspect(),s=v.session;
+    return {phase:s.phase,mode:s.config?.mode,link:BioFriendsApp.session.link.state,
+      angles:v.match?.boards?.map(b=>b.angle),x:v.match?.boards?.map(b=>b.player?.x),
+      lastRemoteSeq:BioFriendsApp.session.lastInputSeq,remote:s.remoteInput,
+      sent:s.metrics.sent,received:s.metrics.received};
+   })));
+   console.error('SAFE G03/G04 INDEPENDENT INPUT '+JSON.stringify(diagnostic));
+   throw error;
+  }
+  const dual=await Promise.all(pages.map(p=>p.evaluate(()=>{
+   const {session,match}=BioFriendsApp.inspect();
+   return {phase:session.phase,mode:session.config?.mode,ended:match?.ended,
+    count:match?.boards?.length,scores:match?.scores,
+    positions:session.config?.game==='g03'?match?.boards?.map(b=>b.player.x):match?.boards?.map(b=>b.angle)};
+  })));
+  assert(dual.every(x=>x.mode===mode&&x.count===2&&x.scores.length===2),mode+' both views render two real players');
+  assert(dual[0].positions[0]!==dual[0].positions[1],mode+' independent player actions');
+  await Promise.all(pages.map(p=>p.evaluate(()=>{for(const key of ['j','a','d'])document.body.dispatchEvent(new KeyboardEvent('keyup',{key,bubbles:true}));})));
+  await pages[0].locator('#return').click();
+  await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck,null,{timeout:20000})));
+ }
+ console.log('PASS G03 stairs and G04 pinball: two real boards, independent inputs, shared data channel and return');
+ const before=await pages[0].evaluate(()=>BioFriendsApp.inspect().session.room);const recoveryTransport=await pages[0].evaluate(()=>BioFriendsApp.session.link.transport);if(recoveryTransport==='relay'){await Promise.all(pages.map(p=>p.evaluate(()=>BioFriendsApp.session.link.close('disconnected'))));}else{assert.equal(recoveryTransport,'p2p','known live transport for recovery test');await pages[1].evaluate(()=>BioFriendsApp.session.link.pc.close());}await Promise.all(pages.map(p=>p.waitForFunction(()=>!document.querySelector('#auto-retry').hidden,null,{timeout:30000})));await Promise.all(pages.map(p=>p.locator('#auto-retry-start').click()));try{await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected')&&BioFriendsApp.inspect().session.configAck,null,{timeout:50000})));}catch(error){const states=await Promise.all(pages.map(p=>p.evaluate(()=>{const app=BioFriendsApp.session,view=app.inspect();return {role:view.role,phase:view.phase,epoch:view.epoch,ack:view.configAck,ready:view.ready,game:view.config?.game,link:app.link.state,transport:app.link.transport,peer:!!app.peerHello,appRejected:app.rejected,wireRejected:app.link.stats.rejected,rtc:app.link.diagnose()?.connection,connected:document.body.classList.contains('auto-connected'),retryVisible:!document.querySelector('#auto-retry').hidden,openSockets:(window.__testSockets||[]).filter(s=>s.readyState===WebSocket.OPEN).length};})));console.error('SAFE RETRY STATE '+JSON.stringify(states));throw error;}const recovered=await Promise.all(pages.map(p=>p.evaluate(()=>BioFriendsApp.inspect().session)));assert(recovered.every(s=>s.room===before&&s.phase==='lobby'&&s.result===null&&s.resultCount===0&&s.config.heroes[0]===2&&s.config.heroes[1]===5),'same room, both selected heroes restored, new lobby and no old result');await start(pages[0],pages[1],'volley');await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='playing')));await pages[0].locator('#return').click();await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));console.log('PASS interrupted '+recoveryTransport.toUpperCase()+' transport and two-party same-room retry: prior result cleared; new round starts');
  await pages[0].locator('#leave').click();await pages[1].waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected');
- await pages[0].waitForFunction(()=>!document.querySelector('#auto-home').hidden);await pages[0].locator('#auto-create').click();await pages[0].locator('#auto-name').fill('Invite');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-link').hasAttribute('href'));
+ await pages[0].waitForFunction(()=>!document.querySelector('#auto-home').hidden);await pages[0].locator('#auto-create').click();assert.equal(await pages[0].locator('#auto-name').count(),0,'invites need no room name');await pages[0].locator('#auto-start').click();await pages[0].waitForFunction(()=>document.querySelector('#auto-link').hasAttribute('href'));
  const invite=await pages[0].locator('#auto-link').getAttribute('href');await pages[1].goto(invite);await Promise.all(pages.map(p=>p.waitForFunction(()=>document.body.classList.contains('auto-connected'),null,{timeout:50000})));assert.equal(await pages[1].evaluate(()=>location.hash),'','invitation capability removed from address');
  try{await Promise.all(pages.map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='lobby'&&BioFriendsApp.inspect().session.configAck)));}catch(error){const state=await Promise.all(pages.map(p=>p.evaluate(()=>{const s=BioFriendsApp.session;return {phase:s.phase,role:s.role,epoch:s.epoch,ack:s.configAck,game:s.config?.game,mode:s.config?.mode,peer:!!s.peerHello,link:s.link.state,rejected:s.rejected};})));console.error('SAFE REPAIR DIAGNOSTIC '+JSON.stringify(state));throw error;}console.log('PASS one-click invite: true RTC from URL fragment and shared lobby');
  await pages[0].locator('#leave').click();

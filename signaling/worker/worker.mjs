@@ -129,8 +129,19 @@ export class Room {
  async webSocketMessage(ws,text){
   const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
   if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
-  const now=Date.now();if(now-info.window>=1000){info.window=now;info.count=0;}if(++info.count>(text.includes('"type":"relay-data"')?180:8)){ws.close(1008,'rate');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
+  const now=Date.now();
+  // Gameplay Relay packets can arrive dozens of times per second. Keep a
+  // separate budget for authenticated RTC data and room control commands:
+  // the first retry-ready after a busy game must not inherit relay traffic.
+  // Classify parsed messages, never user-controlled JSON substrings.
+  if(now-info.window>=1000){info.window=now;info.count=0;info.relayCount=0;}
+  const relayPacket=!!info.role&&msg?.v===VERSION&&msg.type==='relay-data';
+  if(relayPacket){
+   info.relayCount=(info.relayCount||0)+1;
+   if(info.relayCount>180){ws.close(1008,'rate');return;}
+  }else if(++info.count>8){ws.close(1008,'rate');return;}
+  ws.serializeAttachment(info);
   if(!info.role){
    if(msg?.v===VERSION&&msg.type==='join-request'&&Object.keys(msg).length===2&&now<info.at+AUTH_MS){
     await this.state.blockConcurrencyWhile(async()=>{
@@ -179,7 +190,14 @@ export class Room {
   if(msg?.v===VERSION&&msg.type==='retry-ready'&&Number.isInteger(msg.attempt)&&msg.attempt>=1&&msg.attempt<=2&&Object.keys(msg).length===3){
    await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||msg.attempt!==(current.retries||0)+1){ws.send(JSON.stringify({v:VERSION,type:'retry-denied'}));return;}
     info.retryAttempt=msg.attempt;info.retryDeadline=Date.now()+45000;ws.serializeAttachment(info);const peer=this.state.getWebSockets().find(other=>{const state=other.deserializeAttachment();return other!==ws&&state?.role&&state.retryAttempt===msg.attempt&&state.retryDeadline>Date.now();});if(!peer)return;
-    const pi=peer.deserializeAttachment();delete pi.retryAttempt;delete pi.retryDeadline;delete info.retryAttempt;delete info.retryDeadline;peer.serializeAttachment(pi);ws.serializeAttachment(info);current.retries=msg.attempt;await this.state.storage.put('room',current);for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'retry-start',attempt:msg.attempt}));
+    const pi=peer.deserializeAttachment();delete pi.retryAttempt;delete pi.retryDeadline;delete info.retryAttempt;delete info.retryDeadline;peer.serializeAttachment(pi);ws.serializeAttachment(info);current.retries=msg.attempt;
+    // The old Relay SID and peer readiness belong to the previous data path.
+    // A user-approved retry must negotiate a fresh pair, never inherit access
+    // to an earlier round's relay state while retaining room authorization.
+    delete current.relaySid;delete current.relayActive;
+    for(const target of [ws,peer]){const attachment=target.deserializeAttachment();delete attachment.relayReady;target.serializeAttachment(attachment);}
+    await this.state.storage.put('room',current);
+    for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'retry-start',attempt:msg.attempt}));
    });return;
   }
   if(msg?.v===VERSION&&msg.type==='leave'&&Object.keys(msg).length===2){if(info.role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else{const current=await this.state.storage.get('room');if(current?.recovery){delete current.recovery.guest;await this.state.storage.put('room',current);}}ws.close(1000,'leave');return;}

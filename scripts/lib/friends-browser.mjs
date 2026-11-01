@@ -7,12 +7,14 @@ export async function setup({viewport={width:1440,height:1000},locales=['zh','ja
  try{for(const [index,locale]of locales.entries()){
   const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});browsers.push(browser);const context=await browser.newContext({viewport,hasTouch:viewport.width<1000,deviceScaleFactor:1});
   await context.addInitScript(profile=>{localStorage.setItem('bio_arcade_pref_v1',JSON.stringify({audioRevision:2,track:2,volume:0,sfx:0,auto:false,playMode:'manual',loop:false}));localStorage.setItem('bio_arcade_controls_v1',JSON.stringify({profile}));},profile);
-  const page=await context.newPage();pages.push(page);page.on('pageerror',e=>errors.push({side:index,message:String(e).slice(0,200)}));await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());await page.goto(origin+'/arcade/qa/friends-v16/index.html?lang='+locale);await page.waitForFunction(()=>!!window.BioFriendsApp);
+  const page=await context.newPage();pages.push(page);page.on('pageerror',e=>errors.push({side:index,message:String(e).slice(0,200)}));await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());await page.goto(origin+'/arcade/qa/friends-v16/index.html?lang='+locale+(auto?'&auto=1':''));await page.waitForFunction(()=>!!window.BioFriendsApp);
  }}catch(error){for(const b of browsers)await b.close();await new Promise(r=>server.close(r));throw error;}
  return {pages,errors,async close(){for(const b of browsers)await b.close();await new Promise(r=>server.close(r));}};
 }
 export async function pair(a,b){
  if(process.env.BIO_AUTO_SIGNALING==='1'){
+  // Automated signaling must exercise the same STUN/Relay recovery contract as the public Beta.
+  assert((await Promise.all([a,b].map(p=>p.evaluate(()=>BioFriendsApp.session.link.betaStun)))).every(Boolean),'automatic QA enables Beta recovery transport on both peers');
   await Promise.all([a,b].map(p=>p.addScriptTag({url:new URL('/arcade/assets/friend-signaling.js',p.url()).href})));
   const room=await a.evaluate(()=>BioFriendSignaling.createRoom(location.origin));
   await Promise.all([a,b].map((p,i)=>p.evaluate(({room,i})=>{const s=BioFriendsApp.session,role=i?'guest':'host';s.prepareAuto(role,'RTC',i?3:0);window.__automatic=BioFriendSignaling.connect({endpoint:location.origin,room:room.room,role,token:i?room.guest:room.host,link:s.link});window.__automaticStatus='pending';__automatic.result.then(()=>window.__automaticStatus='connected',e=>window.__automaticStatus=e.message);},{room,i})));
@@ -25,7 +27,24 @@ export async function pair(a,b){
  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.configAck&&BioFriendsApp.inspect().session.phase==='lobby')));
  assert(await a.locator('#local').inputValue()===''&&await b.locator('#remote').inputValue()==='','pairing fields cleared after establishment');
 }
-export async function start(a,b,mode){await a.locator('#mode').selectOption(mode);await Promise.all([a,b].map(p=>p.waitForFunction(mode=>BioFriendsApp.inspect().session.config?.mode===mode&&BioFriendsApp.inspect().session.configAck,mode)));await a.locator('#ready').click();await b.locator('#ready').click();await Promise.all([a,b].map(p=>p.waitForFunction(()=>['countdown','playing'].includes(BioFriendsApp.inspect().session.phase))));}
+export async function start(a,b,mode){
+ await a.locator('#mode').selectOption(mode);
+ await Promise.all([a,b].map(p=>p.waitForFunction(mode=>BioFriendsApp.inspect().session.config?.mode===mode&&BioFriendsApp.inspect().session.configAck,mode)));
+ await a.locator('#ready').click();await b.locator('#ready').click();
+ await Promise.all([a,b].map(p=>p.waitForFunction(()=>{
+  const s=BioFriendsApp.inspect().session;
+  return ['countdown','playing'].includes(s.phase)&&!s.startPending&&!!BioFriendsApp.session.adapter&&document.body.classList.contains('playing');
+ },null,{timeout:45000})));
+ const [host,guest]=await Promise.all([a,b].map(p=>p.evaluate(()=>{
+  const s=BioFriendsApp.inspect().session;
+  return {epoch:s.epoch,game:s.config?.game,mode:s.config?.mode,chapter:s.config?.chapter,difficulty:s.config?.difficulty,heroes:s.config?.heroes,ready:s.ready,startPending:s.startPending};
+ })));
+ assert.deepEqual({game:host.game,mode:host.mode,chapter:host.chapter,difficulty:host.difficulty,heroes:host.heroes},
+                  {game:guest.game,mode:guest.mode,chapter:guest.chapter,difficulty:guest.difficulty,heroes:guest.heroes},
+                  'both players must enter identical game, guardians and chapter');
+ assert.equal(host.epoch,guest.epoch,'start barrier uses one shared game epoch');
+ assert(host.ready.every(Boolean)&&guest.ready.every(Boolean),'both sides agree on readiness before game is visible');
+}
 // Ordinary keyboard events drive both human input paths. No entity/result setter.
 export async function driver(page,side,{missAfter=12}={}){
  await page.evaluate(({side,missAfter})=>{
@@ -45,9 +64,30 @@ export async function driver(page,side,{missAfter=12}={}){
 }
 export async function complete(a,b,mode){
  await Promise.all([driver(a,0),driver(b,1)]);
+ // Keep bounded, state-only diagnostics across the match. Never collect
+ // SDP, ICE candidates, room codes, link fragments, or player addresses.
+ const timeline=[],started=Date.now();
+ const sample=async()=>Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
+  const v=BioFriendsApp.inspect(),s=v.session,m=v.match;
+  return {side,phase:s.phase,pause:s.pauseReason,tick:s.tick,score:m?.points||null,
+   rally:m?.rally??null,ball:!!m?.ball,ack:s.configAck,
+   link:BioFriendsApp.session.link.state,transport:BioFriendsApp.session.link.transport||'p2p',
+   input:BioFriendsApp.session.lastInputSeq,send:s.metrics.sent,recv:s.metrics.received,
+   rejected:s.metrics.rejected,appRejected:BioFriendsApp.session.rejected,
+   buffered:s.metrics.buffered,relayReady:!!BioFriendsApp.session.link.relaySend,
+   sockets:(window.__testSockets||[]).map(s=>s.readyState),
+   closed:(window.__testSocketClosures||[]).slice(-3),
+   contacts:window.__friendDriver?.contacts||0};
+ },side);}catch{return {side,unavailable:true};}}));
+ const monitor=setInterval(()=>{if(timeline.length>=24)return;sample().then(states=>timeline.push({at:Math.round((Date.now()-started)/1000),states})).catch(()=>{});},2500);
  try{
-  await Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000})));
+  const outcome=await Promise.race([
+   Promise.all([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='finished',null,{timeout:150000}))).then(()=>'finished'),
+   Promise.race([a,b].map(p=>p.waitForFunction(()=>BioFriendsApp.inspect().session.phase==='disconnected',null,{timeout:150000}))).then(()=>'disconnected')
+  ]);
+  if(outcome!=='finished')throw Error('match-disconnected-before-result');
  }catch(error){
+  console.error('SAFE MATCH TIMELINE '+JSON.stringify(timeline.slice(-24)));
   // Safe, bounded diagnostic only. No SDP, candidate IP, room identifier,
   // tokens, invites, or page screenshots in CI logs.
   const details=await Promise.all([a,b].map(async(p,side)=>{try{return await p.evaluate(side=>{
@@ -61,7 +101,7 @@ export async function complete(a,b,mode){
   },side);}catch{return {side,unavailable:true};}}));
   console.error('SAFE TWO-BROWSER FINISH TIMEOUT '+JSON.stringify(details));
   throw error;
- }
+ }finally{clearInterval(monitor);}
  const views=await Promise.all([a,b].map(p=>p.evaluate(()=>({view:BioFriendsApp.inspect(),driver:window.__friendDriver}))));await Promise.all([a,b].map(p=>p.evaluate(()=>window.__stopFriendDriver?.())));
  assert.deepEqual(views[0].view.session.result,views[1].view.session.result,'same authoritative winner and score');assert(views.every(v=>v.view.session.resultCount===1),'settles exactly once');assert(views.every(v=>v.driver.axes>0&&v.driver.actions>0&&v.driver.moved>0&&v.driver.swung>0),'both browsers actually move and swing/jump via keyboard');
  const points=views[0].view.session.result.points;assert(Math.max(...points)===(mode==='pong'?7:5));return {mode,result:views[0].view.session.result,peers:views.map(v=>({metrics:v.view.session.metrics,driver:v.driver}))};

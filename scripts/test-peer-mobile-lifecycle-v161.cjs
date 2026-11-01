@@ -50,4 +50,17 @@ assert.equal(link.state,'connected','returning to foreground remains connected')
 for(let i=0;i<30&&link.state==='connected';i++){now+=500;fire(500);}
 assert.equal(link.state,'timeout','true foreground traffic silence remains bounded');
 assert.equal(link.timers.size,0,'timeout cleans timers');
-console.log('PASS mobile RTC: transient ICE recovery, bounded 8s disconnect, background timer clamp, 12s foreground silence');
+// The STUN/Relay Beta must request a relay and preserve the same live
+// session during its existing recovery budget, not reset the game at 12s.
+let relayRequests=0;
+const beta=new root.BioPeer.Link({betaStun:true,onDegraded:()=>relayRequests++});
+const betaPeer=beta.make('host','d'.repeat(32));
+for(const dc of Object.values(beta.channels))dc.readyState='open';
+beta.channels.input.onopen();
+for(let i=0;i<32;i++){now+=500;fire(500);}
+assert.equal(beta.state,'connected','Beta does not destroy an active round at the P2P silence threshold');
+assert(relayRequests>0,'data-channel silence proactively requests a relay');
+for(let i=0;i<180&&beta.state==='connected';i++){now+=500;fire(500);}
+assert.equal(beta.state,'timeout','if the relay never becomes available, Beta still fails closed at its pre-existing recovery deadline');
+assert.equal(beta.timers.size,0,'Beta timeout cleans timers');
+console.log('PASS mobile RTC: transient ICE recovery, 12s manual silence, proactive Beta relay and bounded recovery');

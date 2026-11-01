@@ -27,18 +27,20 @@ try{
     assert.equal(await page.locator('.auto-hero-choice img').count(),7,'all guardians have original portrait art');
     const carousel=await page.evaluate(()=>{
       const strip=document.querySelector('.auto-hero-choices'),card=document.querySelector('.auto-hero-choice[data-position="center"]');
-      const field=document.querySelector('#auto-name').getBoundingClientRect(),root=document.querySelector('#auto-entry').getBoundingClientRect();
+      const field=document.querySelector('.auto-hero-stage').getBoundingClientRect(),root=document.querySelector('#auto-entry').getBoundingClientRect();
       const box=strip.getBoundingClientRect(),center=card.getBoundingClientRect();
-      return {display:getComputedStyle(strip).display,scrollWidth:document.documentElement.scrollWidth,
+      const left=document.querySelector('#auto-hero-prev').getBoundingClientRect(),right=document.querySelector('#auto-hero-next').getBoundingClientRect();
+      return {display:getComputedStyle(strip).display,stageWidth:box.width,arrowGap:right.left-left.right,scrollWidth:document.documentElement.scrollWidth,
         windowWidth:innerWidth,fieldRight:field.right,rootRight:root.right,
         cardX:(center.left+center.right)/2,stageX:(box.left+box.right)/2,visible:card.offsetWidth>0,
         nextVisible:!!document.querySelector('.auto-hero-choice[data-position="next"]')};
     });
     assert.equal(carousel.display,'block','fixed-stage phone carousel never expands to all seven card widths');
+    assert(carousel.stageWidth>=240&&carousel.arrowGap>=16,'phone arrows have separate clickable areas without a room-name field');
     assert(carousel.visible&&Math.abs(carousel.cardX-carousel.stageX)<5,'selected portrait is centered on screen');
     assert(carousel.nextVisible,'next guardian is partially visible');
     assert(carousel.scrollWidth<=carousel.windowWidth+1&&carousel.fieldRight<=carousel.windowWidth+1&&carousel.rootRight<=carousel.windowWidth+1,
-      'phone room field, portrait and form must not overflow horizontally');
+      'phone hero stage, portrait and form must not overflow horizontally');
     assert.equal(await page.locator('.auto-hero-choice').count(),7,'all seven guardians remain reachable');
    await page.locator('#auto-hero-next').click();
    assert.equal(await page.locator('#auto-hero').inputValue(),'1','next arrow selects second guardian');
@@ -66,7 +68,9 @@ try{
    assert.equal(await page.locator('#auto-hero').inputValue(),'3','arrow and swipe stay synchronized');
    assert(await page.locator('#auto-hero-name').isVisible(),'selected guardian name is visible');
    assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE counts are not main gameplay content');
-   await page.locator('#auto-name').fill('測試');await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
+   assert.equal(await page.locator('#auto-name').count(),0,'room naming is automatic, no input required');
+   assert.equal(await page.locator('#auto-hero').isVisible(),false,'native hero value is hidden behind accessible portrait carousel');
+   await page.locator('#auto-start').click();await page.waitForFunction(()=>!document.querySelector('#auto-qr').hidden||document.querySelector('#auto-status').textContent.includes('失敗'),null,{timeout:12000});assert.equal(await page.locator('#auto-qr').isVisible(),true,'QR available: '+await page.locator('#auto-status').textContent());
    const pixels=await page.locator('#auto-qr').evaluate(c=>({width:c.width,height:c.height,data:Array.from(c.getContext('2d').getImageData(0,0,c.width,c.height).data)}));const decoded=jsQR(Uint8ClampedArray.from(pixels.data),pixels.width,pixels.height);const invite=await page.locator('#auto-link').getAttribute('href');assert(decoded&&decoded.data===invite,'local QR encodes exact invitation');assert(new URL(invite).hash.includes('token='));assert(!new URL(invite).search.includes('token='));
    assert(await page.locator('#auto-room-code').isVisible(),'clear room number for the host');
    assert(await page.locator('#auto-qr').isVisible(),'visible join QR for the friend');
@@ -228,13 +232,15 @@ try{
       s.setHero=id=>{s.hero=id;s.changed();return true;};
     });
     await page.locator('#auto-create').click();
-    await page.locator('#auto-name').fill('測試大廳');
+    assert.equal(await page.locator('#auto-name').count(),0,'host does not need to type a room name');
     await page.locator('#auto-start').click();
     await page.waitForSelector('#auto-lobby-carousel',{timeout:5000});
     assert.equal(await page.locator('.auto-connected-card').count(),7,'joined-room picker shows seven official cards');
+    assert.equal(await page.locator('#auto-lobby-hero-label').isVisible(),false,'no duplicate visible hero dropdown after pairing');
+    assert.equal(await page.locator('#challenge-link').count(),0,'no retired async friend challenge after pairing');
     assert.equal(await page.locator('.auto-connected-card[data-position="center"]').count(),1,'joined room has one centered portrait');
     await page.locator('#auto-lobby-next').click();
-    assert.equal(await page.locator('#auto-lobby-hero').inputValue(),'1','in-room carousel uses session.setHero and native selector');
+    assert.equal(await page.locator('#auto-lobby-hero').inputValue(),'1','in-room carousel synchronizes the hidden hero value through session.setHero');
     assert.equal(await page.locator('.auto-connected-card[data-hero="1"]').getAttribute('aria-pressed'),'true','joined room reflects selection');
    }
   await page.close();

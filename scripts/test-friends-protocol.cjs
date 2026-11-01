@@ -37,6 +37,36 @@ for(const mode of ['pong','volley']){
  check(g.setHero(5),'guest requests hero selection');check(h.config.heroes[1]===5&&g.config.heroes[1]===5&&g.hero===5,'host confirms guest hero');check(h.setHero(2),'host changes hero');check(h.config.heroes[0]===2&&g.config.heroes[0]===2&&g.peerHello.hero===2,'both accept host hero');g.readyFlags[1]=true;check(!g.setHero(1),'cannot change hero when ready');g.readyFlags[1]=false;check(!g.setHero(7),'reject invalid hero');}
 // Simultaneous selections can cross while configurations remain ordered.
 {const h=new w.BioFriends.Session(),g=new w.BioFriends.Session(),tag=w.BioG05Network.TAG,hostWire=[],guestWire=[];h.role='host';g.role='guest';h.hero=0;g.hero=3;h.room=g.room='';h.phase=g.phase='lobby';h.epoch=g.epoch=1;h.link.state=g.link.state='connected';h.peerHello={hero:3,games:g.capabilities};g.peerHello={hero:0,games:h.capabilities};const config={game:'g05',mode:'pong',engine:tag,heroes:[0,3],room:'',epoch:1};h.config=structuredClone(config);g.config=structuredClone(config);h.configAck=g.configAck=true;h.link.send=(t,d)=>{hostWire.push([t,d]);return true;};g.link.send=(t,d)=>{guestWire.push([t,d]);return true;};check(g.setHero(5)&&h.setHero(2),'simultaneous hero requests accepted');const request=guestWire.shift();check(h.receive(request[0],request[1],'control'),'host accepts prior-epoch guest request');for(const [t,d] of hostWire)check(g.receive(t,d,'control'),'guest accepts ordered host updates');for(const [t,d] of guestWire)h.receive(t,d,'control');check(h.config.heroes.join(',')==='2,5'&&g.config.heroes.join(',')==='2,5'&&h.configAck,'simultaneous changes converge');}
+// Starting a round requires a real guest adapter acknowledgement before the
+// host advances physics or exposes a one-sided game. Exercise delayed Safari-like
+// creation, wrong-epoch ACK, and transport send failure without faking results.
+{const h=new w.BioFriends.Session(),g=new w.BioFriends.Session(),tag=w.BioG05Network.TAG,wire=[];
+ for(const [s,role,selected] of [[h,'host',0],[g,'guest',3]]){
+  s.role=role;s.hero=selected;s.room='';s.link.state='connected';
+  s.phase='lobby';s.epoch=9;s.readyFlags=[true,true];s.configAck=true;
+  s.config={game:'g05',mode:'pong',engine:tag,heroes:[0,3],room:'',epoch:9};
+ }
+ h.link.send=(type,data,fast)=>{wire.push([g,type,structuredClone(data),fast]);return true;};
+ g.link.send=(type,data,fast)=>{wire.push([h,type,structuredClone(data),fast]);return true;};
+ h.tryStart();
+ check(h.startPending&&h.phase==='countdown','host waits for guest real adapter creation');
+ h.update(1/30);check(h.tick===0,'no host game steps before guest acknowledges');
+ check(!h.receive('start-ack',{epoch:8},'control'),'stale start acknowledgment rejected');
+ const first=wire.shift();check(first[1]==='start'&&g.receive(first[1],first[2],'control'),'guest receives actual start and creates game');
+ check(g.adapter!==null&&g.phase==='countdown','guest game adapter created before confirming start');
+ check(h.startPending&&h.tick===0,'host cannot enter game before ACK delivery');
+ const ack=wire.shift();check(ack[1]==='start-ack'&&h.receive(ack[1],ack[2],'control'),'host accepts guest start acknowledgment');
+ check(!h.startPending,'host startup barrier is released by real guest ACK');
+ h.update(1/30);check(h.tick>0,'host resumes simulation after both peers are in game');
+ h.leave();g.leave();
+}
+{const h=new w.BioFriends.Session(),tag=w.BioG05Network.TAG;
+ h.role='host';h.hero=0;h.epoch=2;h.phase='lobby';h.configAck=true;h.readyFlags=[true,true];h.link.state='connected';
+ h.config={game:'g05',mode:'pong',engine:tag,heroes:[0,3],room:'',epoch:2};
+ h.link.send=()=>false;h.tryStart();
+ check(h.link.state==='start-failed'&&h.phase==='disconnected'&&!h.startPending,'failed start packet safely ends one-sided round');
+ h.leave();
+}
 // Host adapter physics runs at the original shared 120Hz, independent of render FPS.
 for(const mode of ['pong','volley']){let expected;
  for(const fps of [10,15,30,60,120,240]){

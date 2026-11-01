@@ -32,7 +32,8 @@ for(const lang of ['zh','ja']){
 }
 const friends=read('arcade/qa/friends-v16/index.html'),challenge=read('arcade/qa/challenge-v16/index.html');
 for(const file of ['g01-network.js','g02-network-state.js','g02-network.js','g05-network.js','g06-network.js','friend-session.js'])assert(friends.includes(file),'friends lobby missing '+file);
-assert(friends.includes('challenge-v16/index.html')&&challenge.includes('challenge-ui.js'),'friend challenge route missing');
+assert(!friends.includes('challenge-link')&&challenge.includes('challenge-ui.js'),'retired challenge link hidden while QA engine remains archived');
+assert(!read('arcade/friends/index.html').includes('challenge-link'),'live Beta public room does not expose offline challenge');
 assert(!friends.includes('googletagmanager.com')&&!challenge.includes('googletagmanager.com'),'manual pairing and challenge pages must not load production analytics');
 const tracks=['bio-city-awakening-theme-v2.mp3','burner-sister-summoning-theme.mp3','mj-robot-kizamu-japanese-v1.mp3','mj-robot-kizamu-japanese-v2.mp3'];
 for(const tr of tracks)assert(fs.existsSync(path.join(root,'music',tr)),`OST missing: ${tr}`);
