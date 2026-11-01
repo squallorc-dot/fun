@@ -1,0 +1,21 @@
+/* Production-friendly, no account or server submission: challenge codes stay on-device. */
+:root{color-scheme:dark}html,body{max-width:none;min-width:320px}
+body{background:radial-gradient(ellipse at 50% 0%,#124054,#071725 67%,#06101d);font-family:'Noto Sans TC','Noto Sans JP',system-ui,sans-serif;color:#edfaff}
+header,.panel,#arena,.challenge-process{width:min(1080px,calc(100% - 28px));max-width:none;margin:14px auto;box-sizing:border-box}
+header{border:1px solid #457e96;border-radius:18px;padding:clamp(18px,3vw,30px);background:linear-gradient(120deg,#19475a,#09283b)}
+header h1{font-size:clamp(1.55rem,4vw,2.6rem);line-height:1.25;margin:0 0 12px}
+header #notice{color:#bedee7;line-height:1.7;font-size:.85rem;max-width:800px}
+#friends-link{display:inline-flex;align-items:center;min-height:44px;padding:7px 16px;border-radius:999px;background:#15485b;border:1px solid #73d8d4;color:#f6ffff;text-decoration:none;font-weight:700}
+#friends-link:focus-visible,button:focus-visible{outline:3px solid #b6ffef;outline-offset:2px}
+.challenge-process{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px}
+.challenge-process span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:54px;background:#123d4f;border:1px solid #4c8595;border-radius:12px;font-size:.82rem;color:#c6ebea;font-weight:700;padding:8px}
+.panel{border:1px solid #426c84;border-radius:16px;background:linear-gradient(150deg,#12374a,#081e30);padding:clamp(15px,3vw,27px)}
+.panel input,.panel textarea,.panel select{max-width:100%;min-width:0;box-sizing:border-box}
+#setup-title,#result-title{font-size:clamp(1.2rem,2.7vw,1.65rem);margin-top:0}
+#code,#result{display:block;box-sizing:border-box;width:100%;min-height:80px;font-size:16px;overflow-wrap:anywhere}
+#create,#start,#copy-code,#check,#copy-result,#compare{min-height:44px;border-radius:10px;font-weight:700}
+#create,#start{background:#147f81;border-color:#89e5d5;color:#fff}
+#create:hover,#start:hover,#compare:hover{filter:brightness(1.15)}
+#arena{padding:12px;overflow:hidden}#game-shell{max-width:100%;min-width:0}#viewport{max-width:100%;min-width:0}
+#comparison,#condition,#error{overflow-wrap:anywhere}
+@media(max-width:600px){.challenge-process{grid-template-columns:1fr}.panel{padding:15px}header{padding:17px}#viewport canvas{max-width:100%!important;height:auto!important}}

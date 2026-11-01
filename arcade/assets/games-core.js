@@ -308,7 +308,7 @@ const g={w:960,h:540,finish:env.finish,
   if(spawn===0&&enemies.length===0){if(wave===3){conclude(true,score+Math.floor(p.hp)*8,`${kills} KO`);return;}getWave(++wave);p.hp=Math.min(p.max,p.hp+20);if(coop&&!ally.down)ally.hp=Math.min(ally.max,ally.hp+20);}
  },
  draw(ctx){const w=g.w,h=g.h;arena(ctx,w,h,t);window.BioWorldArt?.chapterAtmosphere?.(ctx,'street',w,h,chapter,t);window.BioWorldArt?.chapterLandmarks?.(ctx,'street',w,h,chapter,t);window.BioWorldArt?.playfield?.(ctx,'street',w,h,{});if(chapter>1){ctx.fillStyle=['','#26492b22','#2741602d','#49312e2b','#5c236033'][chapter-1];ctx.fillRect(0,0,w,h);for(let i=0;i<chapter+2;i++){const x=(i*233+chapter*67)%w;rect(ctx,x,h*.41,6+(chapter%3)*5,h*.46,chapter===5?'#d35da528':'#9ce9dc21');}}
-  words(ctx,`CH ${chapter} · ${episodeNames[chapter-1]} / WAVE 0${wave}`,18,31,13,'#89eff7');
+  words(ctx,`${jaText(env,'第','第')} ${chapter} ${jaText(env,'章','章')} · ${episodeNames[chapter-1]} / ${jaText(env,'第','第')} ${wave} ${jaText(env,'波','波')}`,18,31,13,'#89eff7');
   for(const b of bolts){ctx.strokeStyle=b.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b.x-b.vx*.04,b.y-b.vy*.04);ctx.lineTo(b.x,b.y);ctx.stroke();orb(ctx,b.x,b.y,b.r,b.color);}
   for(const e of enemies){if(e.tele>0){if((e.type==='boss'&&e.attackKind==='slam')||e.attackKind==='charge'){
      ctx.strokeStyle='#ff7795';ctx.lineWidth=3;ctx.setLineDash([10,8]);ctx.beginPath();ctx.ellipse(e.targetX,e.targetY-8,58,37,0,0,TAU);ctx.stroke();ctx.setLineDash([]);
@@ -328,7 +328,7 @@ const g={w:960,h:540,finish:env.finish,
    else if(f.type==='ring'){ctx.strokeStyle=f.color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(f.x,f.y,f.r*(1-f.life/.6),0,TAU);ctx.stroke();}else orb(ctx,f.x,f.y,f.r,f.color);}ctx.globalAlpha=1;
   words(ctx,`HERO  ${env.I.hero[env.hero]}`,16,h-18,12);bar(ctx,16,h-44,Math.min(200,w*.48),10,p.hp/p.max,'#72e9ca');bar(ctx,16,h-55,Math.min(200,w*.48),5,p.energy/100,'#b4a2ff');
  },
- hud(){if(coop)return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(primary?.hp||0)} / ${Math.ceil(ally?.hp||0)}</b></span><span>RESCUE <b>${revives}</b></span><span>SCORE <b>${score}</b></span>`;return `<span>WAVE <b>${wave}/3</b></span><span>HP <b>${Math.ceil(p?.hp||0)}</b></span><span>COMBO <b>${p?.combo||0}</b></span><span>ENERGY <b>${Math.round(p?.energy||0)}%</b></span><span>SKILL <b>${env.I?.skillLabels?.[env.hero]||skillIds[env.hero]}</b></span><span>SCORE <b>${score}</b></span>`;}
+ hud(){if(coop)return `<span>${jaText(env,'波次','ウェーブ')} <b>${wave}/3</b></span><span>${jaText(env,'生命','体力')} <b>${Math.ceil(primary?.hp||0)} / ${Math.ceil(ally?.hp||0)}</b></span><span>${jaText(env,'救援','救助')} <b>${revives}</b></span><span>${jaText(env,'得分','得点')} <b>${score}</b></span>`;return `<span>${jaText(env,'波次','ウェーブ')} <b>${wave}/3</b></span><span>${jaText(env,'生命','体力')} <b>${Math.ceil(p?.hp||0)}</b></span><span>${jaText(env,'連擊','コンボ')} <b>${p?.combo||0}</b></span><span>${jaText(env,'能量','エネルギー')} <b>${Math.round(p?.energy||0)}%</b></span><span>${jaText(env,'技能','スキル')} <b>${env.I?.skillLabels?.[env.hero]||skillIds[env.hero]}</b></span><span>${jaText(env,'得分','得点')} <b>${score}</b></span>`;}
 };
  if(coop){
   g.setRemoteInput=value=>{otherInput=value&&typeof value==='object'?value:{};};
@@ -365,7 +365,7 @@ const g={w:960,h:540,finish:env.finish,start(){if(seeded)randomState=env.challen
  const posY=p.y-camera,feet=posY+p.r;
  let support=null;for(const f of platforms){if(f.broken||f.y<p.y+p.r-1||f.y>=p.y+p.r+g.h*.44)continue;const x=platformX(f);if(p.x>=x&&p.x<=x+f.w&&(!support||f.y<support.y))support=f;}
  const anchor=support?support.y-camera:feet;
- fighter(ctx,p.x,anchor,anchor-feet,20,pal[env.hero],t,!p.ground?'jump':Math.abs(p.vx)>18?'walk':'idle',p.dir,env.hero,p.inv>.1&&Math.floor(t*15)%2?.45:1,!!support);fx.draw(ctx,camera);const crushY=crush-camera;rect(ctx,0,0,w,Math.max(0,crushY),'#a62f4d35');if(crushY>0)rect(ctx,0,Math.max(0,crushY-5),w,5,'#f96972');words(ctx,`DEPTH  ${Math.floor(depth)} / ${Math.floor(goal)} m`,16,34,15);words(ctx,`LIVES  ${p.hp}`,16,57,13,p.hp===1?'#ff7b8d':'#a0eddc');if(!p.ground&&p.y-p.fallFrom>210)words(ctx,jaText(env,'踩平台緩衝！','足場で落下を止めよう！'),w/2,90,17,'#ffd3a1','center');words(ctx,`SAFE PLATFORM / TRAP / MOVING`,16,h-15,10,'#92c3d0');},hud(){return `<span>DEPTH <b>${Math.floor(depth)} m</b></span><span>LIFE <b>${p.hp}</b></span><span>GOAL <b>${Math.floor(goal)} m</b></span><span>ENERGY <b>${pickups}</b></span>`;}};
+ fighter(ctx,p.x,anchor,anchor-feet,20,pal[env.hero],t,!p.ground?'jump':Math.abs(p.vx)>18?'walk':'idle',p.dir,env.hero,p.inv>.1&&Math.floor(t*15)%2?.45:1,!!support);fx.draw(ctx,camera);const crushY=crush-camera;rect(ctx,0,0,w,Math.max(0,crushY),'#a62f4d35');if(crushY>0)rect(ctx,0,Math.max(0,crushY-5),w,5,'#f96972');words(ctx,`${jaText(env,'深度','深さ')}  ${Math.floor(depth)} / ${Math.floor(goal)} m`,16,34,15);words(ctx,`${jaText(env,'生命','ライフ')}  ${p.hp}`,16,57,13,p.hp===1?'#ff7b8d':'#a0eddc');if(!p.ground&&p.y-p.fallFrom>210)words(ctx,jaText(env,'踩平台緩衝！','足場で落下を止めよう！'),w/2,90,17,'#ffd3a1','center');words(ctx,jaText(env,'安全平台／陷阱／移動平台','安全床／罠／移動床'),16,h-15,10,'#92c3d0');},hud(){return `<span>${jaText(env,'深度','深さ')} <b>${Math.floor(depth)} m</b></span><span>${jaText(env,'生命','ライフ')} <b>${p.hp}</b></span><span>${jaText(env,'目標','目標')} <b>${Math.floor(goal)} m</b></span><span>${jaText(env,'能量','エネルギー')} <b>${pickups}</b></span>`;}};
  g.debugGeometry=()=>({chapter,zone:zones[chapter-1],time:t,wind:chapter===3?Math.sin(t*.85)*18:chapter===5?Math.sin(t*1.7)*25:0,player:{...p},platforms:platforms.map(f=>({...f,actualX:platformX(f)})),goal,depth,camera,pickups,bonus});
  if(env.testMode)g.testFreeFall=()=>{platforms=[];spawny=10000;p.ground=false;p.vy=0;p.y=90;p.fallFrom=90;};
  if(env.testMode)g.testPlatformRide=()=>{const f=platforms.find(f=>f.type==='moving'&&f.x>60&&f.x+f.w<g.w-60);if(!f)throw Error('No central moving platform in fixture');p.x=platformX(f)+14;p.y=f.y-p.r;p.vx=p.vy=0;p.ground=true;p.fallFrom=p.y;camera=Math.max(0,p.y-g.h*.48);return f.y;};
@@ -431,7 +431,7 @@ R.g04=env=>{
    rect(ctx,15,h-82,Math.min(118,w*.27),60,'#0a293bcc','#3c8b9d');fighter(ctx,Math.min(70,w*.15),h-30,0,22,pal[env.hero],t%(.64),balls.length?'skill':'idle',1,env.hero);words(ctx,`ANGLE ${Math.round(angle*180/pi)}° · POWER ${Math.floor(power)}%`,15,h-13,12);
    if(transition>0){ctx.fillStyle='#081b33d9';ctx.fillRect(0,h*.39,w,h*.17);words(ctx,`STAGE ${stage} · ${layout.title}`,w*.5,h*.49,Math.max(15,Math.min(23,w*.048)),'#e5fdff','center');}
   },
-  hud(){return `<span>STAGE <b>${stage}/${total}</b></span><span>SHOTS <b>${shots}</b></span><span>TARGETS <b>${targets.filter(q=>q.hp>0).length}</b></span><span>POWER <b>${Math.floor(power)}%</b></span><span>SCORE <b>${score}</b></span>`;}
+  hud(){return `<span>${jaText(env,'關卡','ステージ')} <b>${stage}/${total}</b></span><span>${jaText(env,'剩餘彈數','残弾')} <b>${shots}</b></span><span>${jaText(env,'目標','ターゲット')} <b>${targets.filter(q=>q.hp>0).length}</b></span><span>${jaText(env,'力道','パワー')} <b>${Math.floor(power)}%</b></span><span>${jaText(env,'得分','得点')} <b>${score}</b></span>`;}
  };
  function setupStage(){const design=STAGES[stage-1],w=g.w,h=g.h,unit=Math.min(w,h);
   targets=design.targets.map(([x,y,hp],i)=>{const health=hp+(chapter>=3&&i%3===0?1:0)+(chapter===5&&i%4===0?1:0);const shift=(chapter-1)*.012*(i%2?1:-1);return {x:w*between(x+shift,.12,.88),y:h*between(y+(chapter-1)*.008*(i%3-1),.12,.72),r:Math.max(10,unit*.033),hp:health,maxHp:health};});
@@ -626,7 +626,7 @@ const g={w:960,h:540,finish:env.finish,
    fx.draw(ctx);motionTrail(ctx,trail,f.radius,'#f6efca');if(ball){orb(ctx,ball.x,ball.y,Math.max(4,f.radius*.67),'#122b36');
     kineticBall(ctx,ball.x,ball.y-Math.min(40,ball.z*.22),f.radius,'#fff5db',null,ball.contact,ball.impactAngle||0);
     if(ball.bouncedReceiver)trace(ctx,ball.x,ball.y,f.radius+5,'#eaffbb');}
-   words(ctx,'2 BOUNCES TO SERVE · 1 TO RETURN',15,h-17,Math.max(10,Math.min(13,w*.024)),'#9ceada');
+   words(ctx,jaText(env,'發球先彈兩次 · 回球前彈一次','サーブ2バウンド・返球1バウンド'),15,h-17,Math.max(10,Math.min(13,w*.024)),'#9ceada');
   }else{
    const f=field(),ground=f.floor;rect(ctx,0,ground,w,h-ground,'#184155');rect(ctx,0,ground,w,3,'#9cf2e3');
    ctx.strokeStyle='#c5eee63d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w*.08,ground+12);ctx.lineTo(w*.92,ground+12);ctx.moveTo(w*.5,ground);ctx.lineTo(w*.5,h);ctx.stroke();
@@ -638,9 +638,9 @@ const g={w:960,h:540,finish:env.finish,
   }
   if(pointFlashTime>0)words(ctx,dual?(pointFlash===0?'HOST':'GUEST')+' '+jaText(env,'得分','ポイント'):pointFlash===0?jaText(env,'我方得分！','ポイント！'):jaText(env,'對手得分','相手のポイント'),w*.5,h*.23,17,pointFlash===0?'#b7f5db':'#f0c0a6','center');
   words(ctx,`${points[0]}    :    ${points[1]}`,w/2,37,24,'#ebfcff','center');
-  words(ctx,mode==='pong'?'TABLE TENNIS':'ENERGY VOLLEYBALL',15,h*.135,12,'#8de4eb');
+  words(ctx,mode==='pong'?jaText(env,'桌球','卓球'):jaText(env,'能量排球','エナジーバレー'),15,h*.135,12,'#8de4eb');
  },
- hud(){if(dual)return `<span>HOST <b>${points[0]}</b></span><span>GUEST <b>${points[1]}</b></span><span>FIRST TO <b>${limit}</b></span>`;return `<span>${mode==='pong'?'TABLE TENNIS':'VOLLEY'}</span><span>YOU <b>${points[0]}</b></span><span>AI <b>${points[1]}</b></span><span>FIRST TO <b>${limit}</b></span>${mode==='volley'?`<span>RALLY <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`:`<span>${serve>0?'SERVICE':ball?.bouncedReceiver?'RETURN':'BOUNCE'} <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`}`;},
+ hud(){if(dual)return `<span>${jaText(env,'房主','ホスト')} <b>${points[0]}</b></span><span>${jaText(env,'好友','ゲスト')} <b>${points[1]}</b></span><span>${jaText(env,'先得','先取')} <b>${limit}</b></span>`;return `<span>${mode==='pong'?jaText(env,'桌球','卓球'):jaText(env,'排球','バレー')}</span><span>${jaText(env,'我方','自分')} <b>${points[0]}</b></span><span>${jaText(env,'電腦','CPU')} <b>${points[1]}</b></span><span>${jaText(env,'先得','先取')} <b>${limit}</b></span>${mode==='volley'?`<span>${jaText(env,'回合倒數','ラリー残り')} <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`:`<span>${serve>0?jaText(env,'發球','サーブ'):ball?.bouncedReceiver?jaText(env,'回擊','返球'):jaText(env,'等候落台','バウンド待ち')} <b>${Math.max(0,Math.ceil((mode==='volley'?14:18)-rallyClock))}s</b></span>`}`;},
  inspectMatch(){return {mode,chapter,aiProfile:aiProfiles[chapter-1],points:[...points],serve,ball:ball?{...ball}:null,player:{...player},ai:{...ai},rally,rallyClock,reason:pointReason,field:mode==='volley'?{...field()}:null,serveSide,serveCrossings:[...serveCrossings],netContacts,finished:!!g._finished}},
 };if(dual){
  g.setRemoteInput=value=>{remoteInput=value||{};};
@@ -1081,21 +1081,21 @@ R.g06=env=>{
    // Mini-map samples the actual closed track, rather than an unrelated decorative oval.
    const mx=w-84,my=72;rect(ctx,w-150,14,138,123,'#062133db','#438493');ctx.beginPath();for(let n=0;n<=60;n++){const p=miniMapPoints[n],xx=mx+p.x*.24,yy=my+p.z*.24;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.strokeStyle='#70c0bf';ctx.lineWidth=3;ctx.stroke();
    for(const r of racers()){const dot=trackAt(r.z);orb(ctx,mx+dot.x*.24,my+dot.z*.24,r.player?4:3,r.player?'#fff0ac':r.color);}
-   const finishPoint=miniMapPoints[0];rect(ctx,mx+finishPoint.x*.24-4,my+finishPoint.z*.24-2,8,4,'#fff');words(ctx,'FINISH',mx,126,Math.max(11,8/displayScale),'#c3f8e8','center');
+   const finishPoint=miniMapPoints[0];rect(ctx,mx+finishPoint.x*.24-4,my+finishPoint.z*.24-2,8,4,'#fff');words(ctx,jaText(env,'終點','ゴール'),mx,126,Math.max(11,8/displayScale),'#c3f8e8','center');
    const watch=awareness(),gapText=(v,front)=>v?(front?jaText(env,'前車 ','前車 '):jaText(env,'後車 ','後車 '))+v.metres.toFixed(1)+'m'+(v.checkpointSeconds===null?'':' · '+jaText(env,'上個檢查點 ','前ゲート ')+v.checkpointSeconds.toFixed(2)+'s'):(front?jaText(env,'領先','先頭'):jaText(env,'最後一車','最後尾'));
    words(ctx,`${Math.round(car.speed*3.6)} km/h`,14,top,speedFont,'#9bf0dd');words(ctx,gapText(watch.ahead,true),14,top+line+4,small,'#f9d7a6');words(ctx,gapText(watch.behind,false),14,top+line*2+4,small,'#c3e5e3');words(ctx,jaText(env,models[env.hero].zh,models[env.hero].ja),14,top+line*3+4,small,'#e6d8ff');words(ctx,chapterNames[chapter-1],14,top+line*4+4,Math.max(10,9/displayScale),'#a3d6de');
    if(racePhase==='countdown'){
     for(let n=0;n<3;n++)orb(ctx,w/2+(n-1)*34,h*.28,12,n<Math.ceil(lights)?'#fa6677':'#374956');
     words(ctx,String(Math.ceil(lights)),w/2,h*.40,48,'#fff','center');words(ctx,jaText(env,'準備起跑 · 第','スタート準備 · グリッド')+' '+(gridOrder.indexOf(car.id)+1)+'/6',w/2,h*.46,16,'#d9f2ed','center');
-   }else if(elapsed<.7)words(ctx,'GO!',w/2,h*.35,44,'#a7ffca','center');
+   }else if(elapsed<.7)words(ctx,jaText(env,'出發！','スタート！'),w/2,h*.35,44,'#a7ffca','center');
    if(racePhase==='finishing'&&car.status!=='racing')words(ctx,car.status==='dnf'?jaText(env,'車輛退賽 · 等待賽事結束','DNF · レース終了を待機'):jaText(env,'已完賽 · 等待對手完賽','FINISH · ライバルのゴールを待機'),w/2,h*.27,Math.max(12,w*.022),'#fff0ac','center');
-   if(slipstream)words(ctx,'SLIPSTREAM',w/2,h*.21,15,'#a4f6df','center');if(gateFlash<0)words(ctx,jaText(env,'回到道路內通過檢查點','コースに戻ってゲートを通過'),w/2,h*.21,Math.max(11,w*.025),'#ffd1b6','center');
+   if(slipstream)words(ctx,jaText(env,'尾流加速','スリップストリーム'),w/2,h*.21,15,'#a4f6df','center');if(gateFlash<0)words(ctx,jaText(env,'回到道路內通過檢查點','コースに戻ってゲートを通過'),w/2,h*.21,Math.max(11,w*.025),'#ffd1b6','center');
    if(racePhase==='racing'&&Math.abs(watch.curve)>.65)words(ctx,(watch.curve>0?'→ ':'← ')+(car.slip>.6?jaText(env,'抓地不足 · 煞車','グリップ低下 · 減速'):jaText(env,'彎道預告','カーブ予告')),w/2,h*(slipstream?.25:.21),Math.max(14,10/displayScale),'#ffd7a7','center');
    if(watch.threats.length)words(ctx,[...new Set(watch.threats.map(r=>r.side))].map(side=>side==='left'?'←':'→').join(' ')+jaText(env,' 後車接近',' 後方接近'),w-100,154,Math.max(11,9/displayScale),'#ffbaac','center');
    if(car.boostArmed===false)words(ctx,jaText(env,'放開氮氣再按','ブーストを離して再入力'),14,h-39,Math.max(10,9.5/displayScale),'#f9d7a6');
    bar(ctx,14,h-28,Math.min(160,w*.4),7,car.health/100,'#81e3c5');bar(ctx,14,h-15,Math.min(160,w*.4),5,nitro/100,'#6bc9ff');fighter(ctx,w-42,h-12,0,20,pal[env.hero],t,car.inv?'hurt':'idle',-1,env.hero);
   },
-  hud(){return `<span>${jaText(env,'名次','順位')} <b>${position()}/6</b></span><span>LAP <b>${Math.min(laps,Math.floor(checkpointIndex/3)+1)}/${laps}</b> · GATE ${checkpointIndex}/${checkpointDistances.length}</span><span>TIME <b>${clockText(car.finishTime??elapsed)}</b></span><span>BOOST <b>${Math.floor(nitro)}%</b></span><span>${jaText(env,'超車','追い越し')} <b>${passes}</b></span>${env.cupPoints===null||env.cupPoints===undefined?'':`<span>CUP <b>${env.cupPoints}</b></span>`}`;},
+  hud(){return `<span>${jaText(env,'名次','順位')} <b>${position()}/6</b></span><span>${jaText(env,'圈數','ラップ')} <b>${Math.min(laps,Math.floor(checkpointIndex/3)+1)}/${laps}</b> · ${jaText(env,'檢查點','ゲート')} ${checkpointIndex}/${checkpointDistances.length}</span><span>${jaText(env,'時間','タイム')} <b>${clockText(car.finishTime??elapsed)}</b></span><span>${jaText(env,'氮氣','ブースト')} <b>${Math.floor(nitro)}%</b></span><span>${jaText(env,'超車','追い越し')} <b>${passes}</b></span>${env.cupPoints===null||env.cupPoints===undefined?'':`<span>${jaText(env,'獎盃積分','カップ得点')} <b>${env.cupPoints}</b></span>`}`;},
   raceResult(){return {phase:racePhase,rank:position(),grid:gridOrder.slice(),status:car.status,totalTime:car.finishTime,bestLap:car.lapTimes.length?Math.min(...car.lapTimes):null,lapTimes:[...car.lapTimes],passes,events:events.filter(e=>e.by==='player'||e.against==='player').map(e=>({...e})),standings:classification()};},
   inspectRenderStats(){return {projectionSamples:projectionSamples.size,minimapSamples:miniMapPoints.length};},
   inspectAwareness:awareness,

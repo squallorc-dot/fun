@@ -271,3 +271,17 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
 #stage[data-game="g06"] .race-cup-details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:.73rem}
 #stage[data-game="g06"] .race-cup-details table{table-layout:fixed;overflow-wrap:anywhere}
 #stage[data-game="g06"] .stage-hud{gap:4px 12px;font-size:.73rem}
+
+/* Public play modes: the offline challenge is a proper arcade mode, not
+   an engineering text link. Live multiplayer remains clearly beta. */
+.hub-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2vw,20px);margin:14px 0 20px}
+.hub-more-card{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:clamp(18px,2.6vw,29px);gap:12px;border:1px solid #4a7990;border-radius:18px;background:radial-gradient(ellipse at 12% 8%,#19677954,transparent 65%),linear-gradient(135deg,#112f43,#071927);box-shadow:0 14px 32px #0003}
+.hub-more-async{border-color:#65dac3;background:radial-gradient(ellipse at 10% 10%,#185d617d,transparent 65%),linear-gradient(135deg,#133e4b,#092032)}
+.hub-more-kicker{font:800 .67rem/1.6 'Space Mono',ui-monospace,monospace;letter-spacing:.13em;color:#7de5d9}
+.hub-more-card h3{margin:0;font-size:clamp(1.15rem,2.2vw,1.6rem);color:#f3ffff}
+.hub-more-card p{margin:0;color:#d5ebf1;font-size:.91rem;line-height:1.75}
+.hub-more-meta{color:#a9ccda;font-size:.75rem;line-height:1.55}
+.hub-more-card .hub-more-cta{width:100%;max-width:380px;margin-top:auto;min-height:52px;border-radius:12px;justify-content:space-between;text-align:left}
+.hub-more-async .hub-more-cta{background:#0e8e89;border-color:#8df4da;color:#fff}
+.hub-more-cta:focus-visible{outline:3px solid #dcffff;outline-offset:3px}
+@media(max-width:700px){.hub-more-grid{grid-template-columns:minmax(0,1fr)}.hub-more-card{padding:18px}.hub-more-card .hub-more-cta{max-width:none}}

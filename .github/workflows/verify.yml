@@ -131,6 +131,7 @@ jobs:
           node scripts/test-arcade-controls.cjs
           node scripts/test-arcade-audio.cjs
           node scripts/test-arcade-grounding.cjs
+          node scripts/test-public-solo-integration.cjs
           node scripts/test-arcade-engines.cjs
           node scripts/test-arcade-reliability.cjs
           node scripts/test-g06-race.cjs
