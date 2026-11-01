@@ -295,3 +295,33 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
  .setup-dialog .hero-chip-wrap{scroll-padding-inline:calc((100% - 150px)/2);-webkit-overflow-scrolling:touch}
  .setup-dialog .hero-chip-wrap .hero-chip{flex:0 0 clamp(140px,39vw,174px)}
 }
+
+/* 2026-11-01: Arcade-first bilingual UI; archive legacy experiences without duplicate page clutter. */
+@media(min-width:1120px){
+ .hub-hero{min-height:350px;padding:34px 40px;background-size:auto 100%}
+ .hub-hero h1{font-size:clamp(2.45rem,3.8vw,3.5rem);margin:10px 0}
+ .hero-cta{margin-top:14px}
+ .hero-stats{margin-top:16px}
+ .hub-progress{margin:24px 0 14px}
+ .game-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+ .game-body{padding:16px;gap:8px}
+ .game-body h3{font-size:clamp(1.05rem,1.6vw,1.35rem)}
+ .game-body p{font-size:.85rem}
+ .card-actions .btn{min-height:46px}
+}
+@media(max-width:690px){
+ .hub-hero:before{height:158px;background-position:60% center}
+ .hero-copy{padding:8px 16px 18px}
+ .hub-hero h1{font-size:clamp(1.8rem,7vw,2.15rem);margin:7px 0}
+ .hero-cta{margin-top:10px;min-height:44px}
+ .hero-stats{margin-top:12px;gap:8px;flex-wrap:wrap}
+ .hero-stats>span+span{padding-left:9px}
+ .hub-progress{margin:18px 0 12px}
+ .game-grid{gap:12px}
+ .game-body{padding:13px 14px;gap:8px}
+ .game-body h3{font-size:1.12rem}
+ .game-body p{font-size:.8rem}
+ .card-actions .btn{min-height:44px}
+ .hub-controls{margin-top:20px}
+}
+.hub-storage-note{color:#adcbda;font-size:.78rem;line-height:1.6;margin:12px 0 2px}

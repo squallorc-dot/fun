@@ -20,12 +20,7 @@ try{
    await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
    await page.locator('#game-list .game-card').first().waitFor();
    await page.locator('#game-list').scrollIntoViewIfNeeded();await snap(lang+'-unified-games-'+device+'.png');
-   await page.locator('#protocol-quiz-root [data-qaction="start"]').waitFor();
-   await page.locator('#protocol-quiz').scrollIntoViewIfNeeded();await snap(lang+'-decision-lab-'+device+'.png');
-   await page.locator('.legacy-game-panel > summary').click();
-   await page.locator('[data-ar-hero="0"]').first().waitFor();
-   await page.locator('#protocol-game').scrollIntoViewIfNeeded();await snap(lang+'-classic-defense-'+device+'.png');
-   await page.locator('.legacy-game-panel > summary').click();
+   await page.locator('.hub-more-live .hub-more-cta').scrollIntoViewIfNeeded();await snap(lang+'-friends-entry-'+device+'.png');
    await page.locator('#game-list .game-card').first().scrollIntoViewIfNeeded();await snap(lang+'-arcade-lobby-'+device+'.png');
    await page.locator('[data-launch="g01"]').click();await page.locator('#setup.show').waitFor();await snap(lang+'-g01-select-'+device+'.png');
    await page.locator('#setup-play').click();await page.locator('#hub-canvas').waitFor();await page.waitForTimeout(700);await snap(lang+'-g01-battle-'+device+'.png');
