@@ -30,8 +30,7 @@ for(const lang of ['zh','ja']){
  assert(page.includes('../assets/hub.js'),lang+' hub script missing');
  assert(page.includes('../assets/guardian-art.js')&&page.indexOf('guardian-art.js')<page.indexOf('games-core.js'),lang+' sprite module must load before combat engine');
  assert(shooter.includes('../arcade/assets/guardian-art.js'),lang+' isolated shooter sprite module missing');
- assert(read(`${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} primary website lacks Arcade entrance`);
- assert(read(`content/${lang}/play.html`).includes(`../arcade/${lang}/index.html`),`${lang} canonical content lacks Arcade entrance`);
+ assert(page.includes('id="protocol-quiz-root"')&&page.includes('id="arcade-root"'),`${lang} unified Arcade must preserve original experiences`);
 }
 const friends=read('arcade/qa/friends-v16/index.html'),challenge=read('arcade/qa/challenge-v16/index.html');
 for(const file of ['g01-network.js','g02-network-state.js','g02-network.js','g05-network.js','g06-network.js','friend-session.js'])assert(friends.includes(file),'friends lobby missing '+file);

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {navigation,footer} from './site-shell.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const keys=["home","world","heroes","story","music","play","strategy"];
+const keys=["home","world","heroes","story","music","strategy"];
 function render(lang,key,c,content){
 const l=c.locales[lang], m=c.meta[key][lang], prefix=key==="home"?"":"../";
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");

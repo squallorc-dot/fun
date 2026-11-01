@@ -6,8 +6,8 @@ import http from 'node:http';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const locales=['zh','ja'],sections=['world','heroes','story','music','play','strategy'];
-const files=['FUNAI-CARE.html','FUNAI-CARE_jp.html',...locales.flatMap(l=>sections.map(s=>l+'/'+s+'.html'))];
+const locales=['zh','ja'],sections=['world','heroes','story','music','strategy'];
+const files=['FUNAI-CARE.html','FUNAI-CARE_jp.html',...locales.flatMap(l=>sections.map(s=>l+'/'+s+'.html')), ...locales.map(l=>'arcade/'+l+'/index.html')];
 const mime={'.html':'text/html;charset=utf-8','.css':'text/css;charset=utf-8','.js':'application/javascript;charset=utf-8','.png':'image/png','.mp3':'audio/mpeg'};
 const server=http.createServer((request,response)=>{
  let url=new URL(request.url,'http://localhost');
@@ -98,7 +98,7 @@ try{
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   try{
-   await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
+   await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
    await page.evaluate(()=>{window.dataLayer=[]});
    await page.locator('[data-qaction="start"]').click();
    verify(await page.locator('[data-answer]').count()===4,lang+' decision lab options');
