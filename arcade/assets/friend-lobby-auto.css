@@ -103,3 +103,16 @@ body[data-auto-lobby] .auto-versus{color:#a6fbeb;font-size:1.45rem;font-weight:9
 body[data-auto-lobby] #lobby #status{color:#a4f3da}
 @media(max-width:640px){#auto-entry{border-radius:17px}#auto-entry .auto-poster{height:155px}#auto-entry .auto-hero-card{gap:8px;padding-right:8px;min-height:135px}#auto-entry .auto-hero-card canvas{width:120px;height:120px;flex-basis:120px}body[data-auto-lobby] .auto-avatar canvas{width:57px;height:67px;flex-basis:57px}body[data-auto-lobby] .auto-avatar{gap:3px}body[data-auto-lobby] .auto-avatar-cards{gap:5px}}
 @media(prefers-reduced-motion:reduce){#auto-entry .auto-actions button{transition:none}}
+
+/* Bio-City player-forward lobby visual system */
+body[data-auto-lobby]{background:radial-gradient(ellipse at 75% 0%,#1b5d6866,transparent 43%),radial-gradient(ellipse at 9% 80%,#294e7b55,transparent 55%),repeating-linear-gradient(90deg,transparent 0 43px,#5bdae90c 44px),repeating-linear-gradient(0deg,transparent 0 43px,#5bdae90c 44px),#071522;background-attachment:fixed}
+#auto-entry .auto-beta-notice{order:10;margin-top:18px;font-size:.73rem;opacity:.75;border:0;border-top:1px solid #416777;background:none;padding:12px 0 0}
+#auto-entry{display:flex;flex-direction:column}
+#auto-entry .auto-back-button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 16px;border:1px solid #76c5d4;border-radius:999px;color:#e2ffff;background:#143d51;text-decoration:none;font-weight:750;box-shadow:inset 0 1px #b9ffff27;transition:box-shadow .2s,transform .2s}
+#auto-entry .auto-back-button:hover,#auto-entry .auto-back-button:focus-visible{box-shadow:0 0 22px #40cfdd66;transform:translateY(-1px)}
+#auto-entry .auto-hero-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:9px;margin:14px 0}
+#auto-entry .auto-hero-choice{border:1px solid #487587;border-radius:12px;background:#122e41;color:#e5fafa;min-height:110px;padding:8px 5px;font-size:.82rem;cursor:pointer}
+#auto-entry .auto-hero-choice[aria-pressed=true]{border-color:#8df9dd;background:#1b5860;box-shadow:0 0 16px #46e9d04a}
+#auto-entry .auto-hero-choice canvas{width:72px;height:72px;display:block;margin:auto}
+#auto-entry #auto-tech-details,#auto-entry #auto-diagnostic-details{order:11}
+@media(max-width:640px){#auto-entry .auto-hero-choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
