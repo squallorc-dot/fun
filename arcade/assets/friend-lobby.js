@@ -33,7 +33,7 @@ function render(){
  if(epoch!==s.epoch){epoch=s.epoch;resetInputs();}
  if(lastPhase!==s.phase){resetInputs();if(['paused','disconnected','idle'].includes(s.phase))audio.pause();if(s.phase==='lobby')audio.resume();if(s.phase==='playing'){if(lastPhase==='countdown')audio.round();else audio.resume();}lastPhase=s.phase;controls?.schedule();}
  $('connection').hidden=connected;$('language').disabled=connected||s.phase==='pairing';$('hero').disabled=s.phase==='pairing';if(connected){$('local').value='';$('remote').value='';}
- $('room-name').textContent=s.room||L.title;$('status').textContent=L[s.phase]||L.disconnected;$('role').textContent=s.role==='host'?'Host':s.role==='guest'?'Guest':'';
+ $('room-name').textContent=s.room||L.title;$('status').textContent=L[s.phase]||L.disconnected;$('role').textContent=s.role==='host'?(ja?'ホスト':'房主'):s.role==='guest'?(ja?'ゲスト':'好友'):'';
  $('mode').disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;if(s.config)$('mode').value=s.config.mode;
  $('ready').disabled=s.phase!=='lobby'||!s.configAck||s.preparing;$('ready').textContent=s.preparing?L.preparing:s.ready[s.role==='host'?0:1]?L.cancelReady:L.ready;$('readiness').textContent=s.ready.filter(Boolean).length+'/2';
  $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('side').textContent=s.role==='guest'?L.right:L.left;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';$('rematch').textContent=ja?'もう一度（ロビーへ）':'再玩一局（回大廳）';
