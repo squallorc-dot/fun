@@ -32,6 +32,23 @@ const payload=JSON.stringify({v:1,sid:hostStart.sid,seq:0,type:'hello',data:{pro
 await message(room,host,'relay-data',{channel:'control',payload});
 assert.deepEqual(guest.messages.findLast(m=>m.type==='relay-data'),{v:1,type:'relay-data',channel:'control',payload});
 assert.equal(db.get('room').relaySid,hostStart.sid,'room stores only relay routing ID');
+// A renewed match keeps the authenticated room but never reuses old Relay
+// readiness or session IDs. Both players explicitly consent to retry.
+await message(room,host,'retry-ready',{attempt:1});
+assert.equal(host.messages.some(m=>m.type==='retry-start'),false,'single retry request cannot reset the room');
+await message(room,guest,'retry-ready',{attempt:1});
+assert.equal(db.get('room').relaySid,undefined,'paired retry clears stale relay routing ID');
+assert.equal(db.get('room').relayActive,undefined,'paired retry closes old relay authorization');
+assert.equal(host.info.relayReady,undefined,'host relay readiness reset');
+assert.equal(guest.info.relayReady,undefined,'guest relay readiness reset');
+assert(host.messages.some(m=>m.type==='retry-start')&&guest.messages.some(m=>m.type==='retry-start'),'both authorized players receive retry-start');
+await message(room,host,'relay-ready');
+const priorHostStarts=host.messages.filter(m=>m.type==='relay-start').length;
+assert.equal(priorHostStarts,1,'one retry peer alone cannot enable relay');
+await message(room,guest,'relay-ready');
+const renewedHost=host.messages.filter(m=>m.type==='relay-start').at(-1);
+const renewedGuest=guest.messages.filter(m=>m.type==='relay-start').at(-1);
+assert(renewedHost.sid===renewedGuest.sid&&renewedHost.sid!==hostStart.sid,'second bilateral consent rotates relay SID');
 await message(room,unauthorized,'relay-ready');
 assert.equal(unauthorized.readyState,3,'unauthenticated peer cannot enable relay');
 const oldCount=host.messages.length;
