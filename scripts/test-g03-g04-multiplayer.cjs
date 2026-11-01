@@ -24,9 +24,12 @@ for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
   host.games.forEach((g,i)=>g.draw=()=>painted.push(i));
   guest.games.forEach((g,i)=>g.draw=()=>painted.push(i));
   cx.matchMedia=()=>({matches:true});
+  const scaled=[];ctx.scale=(x,y)=>scaled.push([x,y]);
   host.draw(ctx);check(host.game.w===640&&host.game.h===480&&painted.join(',')==='0','host phone main is full own 4:3 board');
+  check(scaled.some(([x,y])=>Math.abs(x-640/host.games[0].w)<1e-9&&Math.abs(y-480/host.games[0].h)<1e-9),'phone host scales complete native playfield without cropping');
   painted=[];host.drawOpponent(ctx);check(painted.join(',')==='1','host PiP contains guest board');
-  painted=[];guest.draw(ctx);check(guest.game.w===640&&guest.game.h===480&&painted.join(',')==='1','guest phone main is full own board');
+  painted=[];scaled.length=0;guest.draw(ctx);check(guest.game.w===640&&guest.game.h===480&&painted.join(',')==='1','guest phone main is full own board');
+  check(scaled.some(([x,y])=>Math.abs(x-640/guest.games[1].w)<1e-9&&Math.abs(y-480/guest.games[1].h)<1e-9),'phone guest scales complete native playfield without cropping');
   painted=[];guest.drawOpponent(ctx);check(painted.join(',')==='0','guest PiP contains host board');
   painted=[];cx.matchMedia=()=>({matches:false});host.draw(ctx);
   check(host.game.w===1280&&host.game.h===550&&painted.join(',')==='0,1','desktop retains side-by-side split');
