@@ -52,7 +52,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
      else if(message.type==='relay-propose'&&!relayActive){requestRelay();}
      else if(message.type==='relay-start'&&/^[a-f0-9]{32}$/.test(message.sid||'')){clearRecovery();relayActive=true;link.useRelay(message.sid,(channel,payload)=>{if(socket?.readyState!==WebSocket.OPEN)return false;send('relay-data',{channel,payload});return true;});for(const packet of earlyRelayPackets)link.receiveRelay(packet.channel,packet.payload);earlyRelayPackets=[];finish();onProgress('relay-connected');}
      else if(message.type==='relay-data'&&['input','control'].includes(message.channel)&&typeof message.payload==='string'&&message.payload.length<=32768){if(relayActive)link.receiveRelay(message.channel,message.payload);else if(earlyRelayPackets.length<32)earlyRelayPackets.push({channel:message.channel,payload:message.payload});}
-    else if(message.type==='peer-left'||message.type==='peer-missing')finish(Error(message.type));
+    else if(message.type==='peer-left'||message.type==='peer-missing'){if(!settled){onProgress('recovering');arm(90000);}else lost();}
    }catch{finish(Error('pairing-failed'));}
   };};open();
  });
