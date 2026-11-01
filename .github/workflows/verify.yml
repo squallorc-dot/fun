@@ -163,6 +163,7 @@ jobs:
           node scripts/test-g02-coop-isolation-v16.cjs
           node scripts/test-g02-coop-art-cache-6b.cjs
           node scripts/test-friends-protocol.cjs
+          node scripts/test-g03-g04-multiplayer.cjs
           python3 scripts/test-package-qa.py
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
