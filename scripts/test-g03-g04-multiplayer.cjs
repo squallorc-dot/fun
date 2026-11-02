@@ -27,6 +27,23 @@ for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
   const scaled=[];ctx.scale=(x,y)=>scaled.push([x,y]);
   host.draw(ctx);check(host.game.w===640&&host.game.h===480&&painted.join(',')==='0','host phone main is full own 4:3 board');
   check(scaled.some(([x,y])=>Math.abs(x-640/host.games[0].w)<1e-9&&Math.abs(y-480/host.games[0].h)<1e-9),'phone host scales complete native playfield without cropping');
+  // Batch-4 portrait extension must reveal taller scenery without changing
+  // the native 640x480 physics world, host snapshots or guest synchronization.
+  if(chapter===1){
+   const before=JSON.stringify(host.capture());
+   const original=host.games[0].draw;
+   const observed=[];host.games[0].draw=()=>{observed.push({w:host.games[0].w,h:host.games[0].h});};
+   cx.innerHeight=844;
+   cx.matchMedia=query=>({matches:true});
+   painted=[];scaled.length=0;
+   host.draw(ctx);
+   check(host.game.h===(game==='g03'?720:480),'only G03 has taller portrait composition');
+   check(observed.length===1&&observed[0].h===(game==='g03'?720:480),'G03 renders additional actual world rows without changing width');
+   check(host.games[0].w===640&&host.games[0].h===480,'temporary render height is always restored to physics world');
+   check(JSON.stringify(host.capture())===before,'G03/G04 portrait render never changes the authenticated game snapshot');
+   check(scaled.some(([x,y])=>Math.abs(x-1)<1e-9&&Math.abs(y-1)<1e-9),'portrait stage paints world uniformly with no stretching');
+   host.games[0].draw=original;delete cx.innerHeight;cx.matchMedia=()=>({matches:true});
+  }
   painted=[];host.drawOpponent(ctx);check(painted.join(',')==='1','host PiP contains guest board');
   painted=[];scaled.length=0;guest.draw(ctx);check(guest.game.w===640&&guest.game.h===480&&painted.join(',')==='1','guest phone main is full own board');
   check(scaled.some(([x,y])=>Math.abs(x-640/guest.games[1].w)<1e-9&&Math.abs(y-480/guest.games[1].h)<1e-9),'phone guest scales complete native playfield without cropping');
