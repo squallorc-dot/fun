@@ -42,7 +42,14 @@ function readInput(dt=1/120){
 }
 function size(){
  if(!session?.adapter)return;
- const viewport=$('viewport'),w=viewport.clientWidth,ratio=session.adapter.game.h/session.adapter.game.w;const displayRatio=session.adapter.game.w+'/'+session.adapter.game.h;if(viewport.style.getPropertyValue('--bio-play-aspect')!==displayRatio)viewport.style.setProperty('--bio-play-aspect',displayRatio);
+ const viewport=$('viewport'),w=viewport.clientWidth;
+// A portrait switch can change the draw-only G03 viewport height before its
+// next animation frame; keep CSS sizing and canvas transforms in sync.
+if(typeof session.adapter.visualHeight==='function'&&session.adapter.mobile?.()){
+ const nextHeight=session.adapter.visualHeight();
+ if(session.adapter.game.h!==nextHeight)session.adapter.game.h=nextHeight;
+}
+const ratio=session.adapter.game.h/session.adapter.game.w;const displayRatio=session.adapter.game.w+'/'+session.adapter.game.h;if(viewport.style.getPropertyValue('--bio-play-aspect')!==displayRatio)viewport.style.setProperty('--bio-play-aspect',displayRatio);
  const available=Math.max(100,w-(plan.reservedLeft||0)-(plan.reservedRight||0));
  // Treat the playfield like the single-player stage: fill the real available
  // viewport after the shared HUD and one touch dock have been laid out.
