@@ -50,3 +50,9 @@ PR #38 受測來源 `c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`。將 G03/G04 手
 ## 2026-11-02｜第5批手機單機式長形＋G06 操作，CI 測試驅動修正版
 
 PR #38 latest tested source `f28ca911a6e9affc7dbea9ea3932811b0fb0a3b6`，必須全部同 SHA 八項必要 CI 8/8 Success 才可發布；release branch 不允許 force push。G03/G04 使用與單機相同的遊戲世界尺寸 480×720／600×720，聯機雙端一致，TAG v4 拒絕舊端，對手縮圖等比裁切，G06 煞車左氮氣右。本版修復獨立 `arcade-controls-browser` 的 QR/Worker 測試配置錯誤，改為在 Chromium 下單獨驗證 G03/G04 長形比例與 G06 中日文按鍵，原本 QR+真 RTC 驗收仍在 signaling CI 完整執行。G01 真 RTC 合作關卡的自動遊玩加入隊友倒地救援、空中近戰避失誤、遇攻擊預警閃避，紀錄雙端實際按鍵指令，**保留真正 Boss 擊敗、雙人相同結果與恢復遊戲**作為必要門檻。正式 main 不合併；Cloudflare release Build 必須回報 Success 才通知實測。
+
+## 2026-11-03｜好友大廳返回 PLAY 路徑修復
+
+Beta 使用者回報「返回遊戲」指向舊版 Arcade，已統一指向正式 GitHub Pages `/zh/play.html` 與 `/ja/play.html`。涵蓋好友大廳主按鈕、次要入口、HTML fallback、Worker 對舊 `/arcade/{zh,ja}/(index.html)` 之 302 no-store 轉址，以及瀏覽器／Worker／候選資產測試。此修正不變更 RTC、Room、RateGate、Cloudflare 環境權限，不併入 `main`。
+
+經核准的 PR #38 新來源 SHA：`ef4fe865ba7b6893ea2f10e8af951dbeb6b74aaa`。僅當此 SHA 的六項品質 CI 與兩項 RTC CI **全部 Success**，才允許發布分支更新。本分支仍由此完整來源樹加四個 Beta 專用設定檔構成；保留此前 release commit 為父節點，並記錄本 SHA 為另一父節點，以避免重新寫入歷史。

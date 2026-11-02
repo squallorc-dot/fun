@@ -16,7 +16,7 @@ for(const locale of ['zh','ja'])for(const suffix of ['/','/index.html']){
  for(const method of ['GET','HEAD']){
   const redirect=await worker.fetch(new Request(origin+path,{method,headers:{'CF-Connecting-IP':'192.0.2.1'}}),env);
   assert.equal(redirect.status,302,'return to production Arcade: '+path);
-  assert.equal(redirect.headers.get('location'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html');
+  assert.equal(redirect.headers.get('location'),'https://squallorc-dot.github.io/fun/'+locale+'/play.html');
   assert.equal(redirect.headers.get('cache-control'),'no-store');
  }
  assert.equal(calls,before,'do not load stale HTML from static assets: '+path);

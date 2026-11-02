@@ -75,7 +75,7 @@ export default {
    // GitHub Pages main is the single source of truth for both language hubs.
    const hub=/^\/arcade\/(zh|ja)\/(?:index\.html)?$/.exec(url.pathname);
    if(hub)return new Response(null,{status:302,headers:{
-    location:'https://squallorc-dot.github.io/fun/arcade/'+hub[1]+'/index.html',
+    location:'https://squallorc-dot.github.io/fun/'+hub[1]+'/play.html',
     'cache-control':'no-store','referrer-policy':'no-referrer'
    }});
    if(staticPath(url.pathname)){

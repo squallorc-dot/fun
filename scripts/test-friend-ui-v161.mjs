@@ -1,7 +1,18 @@
 // UI and QR tests only: the WebSocket is stubbed. RTC is tested separately without a stub.
 // Never persist invitation or screenshots containing it.
 import assert from 'node:assert/strict';import {createRequire} from 'node:module';import {chromium} from 'playwright';import {signalingTestServer} from './lib/signaling-test-server.mjs';
+import worker from '../signaling/worker/worker.mjs';
 const require=createRequire(import.meta.url),jsQR=require(process.env.JSQR_TEST_PATH||'jsqr');const origin='http://127.0.0.1:8790',endpoint=origin;
+const betaOrigin='https://bio-city-v161-signaling.squall-orc.workers.dev';
+const betaEnv={BETA_PUBLIC_ENABLED:'true',TEST_ENABLED:'false',TEST_OPEN_WINDOW:'false',BETA_PUBLIC_ORIGIN:betaOrigin,ALLOWED_ORIGINS:betaOrigin};
+for(const lang of ['zh','ja'])for(const route of ['/arcade/'+lang+'/index.html','/arcade/'+lang+'/']){
+ for(const method of ['GET','HEAD']){
+  const response=await worker.fetch(new Request(betaOrigin+route,{method,headers:{'CF-Connecting-IP':'203.0.113.5'}}),betaEnv);
+  assert.equal(response.status,302,'Worker legacy arcade route must redirect');
+  assert.equal(response.headers.get('location'),'https://squallorc-dot.github.io/fun/'+lang+'/play.html','Worker legacy arcade route must open canonical PLAY');
+  assert.equal(response.headers.get('cache-control'),'no-store','legacy redirect must not cache');
+ }
+}
 const server=await signalingTestServer();const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});
 try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
@@ -33,8 +44,8 @@ try{
   assert(await page.locator('#help').count()===1,'in-game help button is available');
    assert(await page.locator('#help-close').count()===1,'inline instructions have their own close button');
    assert.equal(await page.locator('#help-panel').isVisible(),false,'help is hidden outside active gameplay');
-  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','return points to current production Arcade in selected language');
-  assert.equal(await page.locator('#single').getAttribute('href'),'https://squallorc-dot.github.io/fun/arcade/'+locale+'/index.html','secondary back link never points at outdated Worker hub');
+  assert.equal(await page.locator('.auto-back-button').getAttribute('href'),'https://squallorc-dot.github.io/fun/'+locale+'/play.html','return points to current production Arcade in selected language');
+  assert.equal(await page.locator('#single').getAttribute('href'),'https://squallorc-dot.github.io/fun/'+locale+'/play.html','secondary back link never points at outdated Worker hub');
   assert(await page.locator('.auto-back-button').evaluate(el=>getComputedStyle(el).borderRadius!=='0px'),'return button has a capsule boundary');
   assert(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundImage.includes('gradient')),'arcade background uses visual gradients');
   assert.equal(await page.locator('#auto-tech-details').isVisible(),false,'ICE diagnostics stay hidden until failure');assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'initial view fits screen');
