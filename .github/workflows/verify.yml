@@ -24,7 +24,9 @@ jobs:
         with:
           node-version: '20'
       - name: Verify build and page structure
-        run: node scripts/verify.mjs
+        run: |
+          node scripts/verify.mjs
+          node scripts/verify-play.mjs
 
   browser:
     runs-on: ubuntu-24.04

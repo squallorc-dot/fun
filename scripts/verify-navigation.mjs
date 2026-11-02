@@ -16,7 +16,7 @@ for(const lang of ['zh','ja']){
   check(html.includes('assets/navigation.css?v='+c.version)&&html.includes('assets/navigation.js?v='+c.version),file+' shell cache version mismatch');
   check(html.includes('aria-haspopup="dialog"')&&html.includes('<dialog id="mobile-explore-panel"'),file+' native accessible explore dialog missing');
  }
- const play=read('arcade/'+lang+'/index.html'),heroes=read('content/'+lang+'/heroes.html'),hub=read('arcade/assets/hub.js');
+ const play=read(lang+'/play.html'),heroes=read('content/'+lang+'/heroes.html'),hub=read('arcade/assets/hub.js');
  check(play.includes('id="game-list"')&&hub.includes("const ids=['g01','g02','g03','g04','g05','g06']"),lang+' unified game center retains six games');
  check((heroes.match(/class="hero-game-link"/g)||[]).length===7,lang+' encyclopedia must have seven hero entries');
  for(let i=1;i<=6;i++)check(hub.includes(`'g0${i}'`),lang+' game module '+i);
