@@ -109,7 +109,7 @@ try{
    const state=await page.evaluate(async()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
     s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
+    s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
       drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
     s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -126,7 +126,7 @@ try{
    assert(state.shown&&state.helpHidden,'G03 phone peer ribbon shown and play instructions initially collapsed');
    assert(state.dockBeforeStage&&state.moveRemoved,'peer ribbon precedes primary stage and no obsolete move control remains');
    assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
-   assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(Math.abs(state.main.w/state.main.h-2/3)<.05,'own G03 board uses native 2:3 solo portrait ratio');
    assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
    assert(!state.touchVisible||state.main.bottom<=state.controls.top+3,'own playfield does not overlap enabled touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
    assert(!state.touchVisible||state.controls.h>=145,'visible touch controls retain a usable height');
@@ -233,7 +233,7 @@ try{
      const s=BioFriendsApp.session;s.adapter?.dispose?.();
      s.role='host';s.hero=0;s.epoch=1;s.phase='finished';s.resultCount=1;s.result=mode.result;
      s.config={game:mode.game,mode:mode.id,heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-     s.adapter={game:{w:mode.w,h:mode.h,hud:()=>'',guestHud:()=>'',inspectCombat:()=>({score:300}),inspectMatch:()=>({points:[7,3]}),draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+     s.update=()=>{};s.adapter={game:{w:mode.w,h:mode.h,hud:()=>'',guestHud:()=>'',inspectCombat:()=>({score:300}),inspectMatch:()=>({points:[7,3]}),draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
      document.body.classList.add('auto-connected');s.changed();
      const banner=document.querySelector('#round-message'),details=document.querySelector('#round-details');
      const c=document.querySelector('#game-canvas').getBoundingClientRect();
@@ -261,7 +261,7 @@ try{
    await page.evaluate(()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=1;
     s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+    s.update=()=>{};s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
     s.result=null;s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    });
    await page.waitForFunction(()=>document.querySelector('#arena').getBoundingClientRect().height>=innerHeight*.93,null,{timeout:5000});
@@ -321,7 +321,7 @@ try{
   const shortLayout=await shortPhone.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
      drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -355,7 +355,7 @@ try{
   const tall=await tallPhone.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 90m · 對手 90m</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 90m · 對手 90m</span>',draw:()=>{}},
     mobile:()=>true,drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -388,7 +388,7 @@ try{
   const layout=await portraitG04.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='guest';s.epoch=1;
    s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 80 · 對手 75</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 80 · 對手 75</span>',draw:()=>{}},
     drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -407,7 +407,7 @@ try{
    const layout=await racer.evaluate(async()=>{
     const s=BioFriendsApp.session;s.role='host';s.epoch=1;
     s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.adapter={game:{w:640,h:800,hud:()=>'<span>賽車</span>',draw:()=>{}},dispose:()=>{}};
+    s.update=()=>{};s.adapter={game:{w:640,h:800,hud:()=>'<span>賽車</span>',draw:()=>{}},dispose:()=>{}};
     s.phase='playing';document.body.classList.add('auto-connected');s.changed();
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     const down=document.querySelector('#touch-controls [data-action="down"]');
@@ -428,7 +428,7 @@ try{
   const layout=await sideways.evaluate(()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
      drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    const canvas=document.getElementById('game-canvas').getBoundingClientRect();
