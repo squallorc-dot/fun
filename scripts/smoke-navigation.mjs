@@ -102,6 +102,11 @@ try{
    const switches=(await events()).filter(x=>x.event==='site_language_switch');
    check(switches.length===1&&switches[0].language_from===lang&&switches[0].language_to===(lang==='zh'?'ja':'zh'),lang+' language direction tracked');
    check(await count('arcade_game_start')===0,lang+' anchor/navigation never starts a game');
+   await page.goto(origin+'/'+lang+'/play.html?game=g03',{waitUntil:'domcontentloaded'});
+   await page.locator('#setup.show').waitFor();
+   const deeplink=(await events()).filter(x=>x.event==='arcade_game_select');
+   check(deeplink.length===1&&deeplink[0].game_id==='g03'&&deeplink[0].entry_point==='deeplink',lang+' game deep link selects exactly once');
+   check(await count('arcade_game_start')===0,lang+' ready-room deep link is not game started');
   }catch(error){failures.push(lang+' analytics flow: '+error.message);}finally{await page.close();}
  }
 }finally{await browser.close();await new Promise(done=>server.close(done));}
