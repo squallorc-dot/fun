@@ -30,7 +30,26 @@
  addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(update);}},{passive:true});
  addEventListener('resize',update);update();
  back?.addEventListener('click',()=>scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'}));
- document.querySelectorAll('.site-header a,.site-bottom-nav a,.site-explore a').forEach(a=>a.addEventListener('click',()=>{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'site_navigation_click',navigation_label:a.textContent.trim(),navigation_target:a.getAttribute('href'),navigation_position:a.closest('.site-explore')?'explore':a.closest('.site-bottom-nav')?'bottom':'header'});}));
+ // Keep legacy fields stable; add resolved destinations for <base> PLAY routes.
+ const languageCode=()=>document.documentElement.lang.startsWith('ja')?'ja':'zh';
+ const emit=(event,detail)=>{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event,...detail});};
+ document.querySelectorAll('.site-header a,.site-bottom-nav a,.site-explore a').forEach(a=>a.addEventListener('click',()=>{
+  const url=a.href;
+  emit('site_navigation_click',{navigation_label:a.textContent.trim(),navigation_target:a.getAttribute('href'),navigation_target_url:url,navigation_position:a.closest('.site-explore')?'explore':a.closest('.site-bottom-nav')?'bottom':'header',language:languageCode()});
+  const targetLanguage=a.getAttribute('lang');
+  if((targetLanguage==='ja'||targetLanguage==='zh-TW')&&(targetLanguage==='ja'?'ja':'zh')!==languageCode())
+   emit('site_language_switch',{language_from:languageCode(),language_to:targetLanguage==='ja'?'ja':'zh',navigation_target_url:url});
+ }));
+ // Same-page anchor actions are not additional GA4 page views.
+ document.addEventListener('click',e=>{
+  const link=e.target.closest('a[href]');if(!link)return;
+  const target=new URL(link.href);
+  if(target.origin===location.origin&&target.pathname===location.pathname&&target.hash==='#game-list')
+   emit('arcade_catalog_click',{entry_point:link.closest('.play-feature')?'feature':link.closest('.hub-hero')?'hero':'other',language:languageCode()});
+  // Measure entry before leaving the production site; Beta itself has no production GTM.
+  if(target.hostname==='bio-city-v161-signaling.squall-orc.workers.dev'&&target.pathname.startsWith('/arcade/friends/'))
+   emit('arcade_friends_beta_click',{entry_point:'play',language:languageCode(),navigation_target_url:target.href});
+ });
  // Section location is visible without adding another fixed bar to phone screens.
  const links=[...document.querySelectorAll('.page-index a[href^="#"]')];
  if(links.length&&'IntersectionObserver' in window){
