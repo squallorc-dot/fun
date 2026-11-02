@@ -87,7 +87,7 @@ if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/b
 // an internal source only (no old URL redirect and no duplicate navigation).
 function makePlay(lang,source,c){
  let html=source;
- html=html.replaceAll(c.base+`arcade/${lang}/index.html`,c.base+`${lang}/play.html`);
+ html=html.replaceAll(c.base+'arcade/zh/index.html',c.base+'zh/play.html').replaceAll(c.base+'arcade/ja/index.html',c.base+'ja/play.html');
  html=html.replace("<head>","<head><base href=\"../arcade/"+lang+"/\">");
  html=html.replaceAll("../../arcade/zh/index.html","../../zh/play.html").replaceAll("../../arcade/ja/index.html","../../ja/play.html");
  html=html.replaceAll("../zh/index.html","../../zh/play.html").replaceAll("../ja/index.html","../../ja/play.html");
