@@ -318,24 +318,34 @@ try{
  const shortPhone=await browser.newPage({viewport:{width:390,height:664},isMobile:true,hasTouch:true});
  try{
   await shortPhone.goto(origin+'/arcade/friends/index.html?lang=zh');
-  const shortLayout=await shortPhone.evaluate(()=>{
+  const shortLayout=await shortPhone.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
    s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
      drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    const r=id=>document.getElementById(id).getBoundingClientRect();
+   const action=(key)=>document.querySelector('#touch-controls [data-action="'+key+'"]');
+   const down=action('down'),jump=action('jump');
+   const downBounds=down.getBoundingClientRect(),jumpBounds=jump.getBoundingClientRect();
    return {peerAbove:r('opponent-dock').bottom<=r('viewport').top+2,
      ownAboveControls:r('game-canvas').bottom<=r('touch-controls').top+3,
      touchVisible:getComputedStyle(document.getElementById('touch-controls')).display!=='none',
      keysVisible:r('touch-controls').top<innerHeight-80,
      peerShown:!document.getElementById('opponent-preview').hidden,
+     down:{left:downBounds.left,right:downBounds.right,text:down.textContent.trim(),shown:!down.hidden},
+     jump:{left:jumpBounds.left,right:jumpBounds.right,text:jump.textContent.trim(),shown:!jump.hidden},
      overflow:document.documentElement.scrollWidth>innerWidth};
   });
   assert(shortLayout.peerShown&&shortLayout.peerAbove&&shortLayout.ownAboveControls,
     'short phone portrait has non-overlapping opponent / main stage / controls');
   assert(shortLayout.touchVisible&&shortLayout.keysVisible&&!shortLayout.overflow,
     'short phone portrait controls remain in view without sideways overflow');
+  assert(shortLayout.down.shown&&shortLayout.jump.shown&&shortLayout.down.text==='向下'&&shortLayout.jump.text==='跳躍',
+    'G03 both actions retain their solo key labels and remain enabled');
+  assert(shortLayout.down.left+6<shortLayout.jump.left,
+    'G03 mobile touch geometry matches standalone: DOWN on inner-left, JUMP on outer-right');
  }finally{await shortPhone.close();}
  // Real touch-capable landscape viewport: orientation and screen-space regression.
  const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
