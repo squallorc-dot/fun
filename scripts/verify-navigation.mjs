@@ -16,12 +16,12 @@ for(const lang of ['zh','ja']){
   check(html.includes('assets/navigation.css?v='+c.version)&&html.includes('assets/navigation.js?v='+c.version),file+' shell cache version mismatch');
   check(html.includes('aria-haspopup="dialog"')&&html.includes('<dialog id="mobile-explore-panel"'),file+' native accessible explore dialog missing');
  }
- const play=read('arcade/'+lang+'/index.html'),heroes=read('content/'+lang+'/heroes.html'),hub=read('arcade/assets/hub.js');
+ const play=read(lang+'/play.html'),heroes=read('content/'+lang+'/heroes.html'),hub=read('arcade/assets/hub.js');
  check(play.includes('id="game-list"')&&hub.includes("const ids=['g01','g02','g03','g04','g05','g06']"),lang+' unified game center retains six games');
  check((heroes.match(/class="hero-game-link"/g)||[]).length===7,lang+' encyclopedia must have seven hero entries');
  for(let i=1;i<=6;i++)check(hub.includes(`'g0${i}'`),lang+' game module '+i);
- for(let i=0;i<7;i++)check(heroes.includes(`index.html?hero=${i}#game-list`),lang+' hero deep link '+i);
- check(play.includes('class="legacy-game-panel"')&&play.includes('id="arcade-root"')&&play.includes('id="protocol-quiz-root"'),lang+' classic shooter/decision lab missing from unified hub');
+ for(let i=0;i<7;i++)check(heroes.includes(`play.html?hero=${i}#game-list`),lang+' hero deep link '+i);
+ check(!play.includes('class="legacy-game-panel"')&&!play.includes('id="arcade-root"')&&!play.includes('id="protocol-quiz-root"'),lang+' six-game hub must not reintroduce retired editorial panels');
  check((read('content/'+lang+'/music.html').match(/<audio preload="none"/g)||[]).length===4,lang+' OST must remain four lazy tracks');
 }
 if(failures.length){console.error(failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' shell, locale, accessibility structure and unified game-entry contracts across 14 pages.');

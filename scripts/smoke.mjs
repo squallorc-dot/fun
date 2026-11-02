@@ -94,31 +94,27 @@ try{
    verify(await page.locator('.film-activate').count()===2,story+' main plus supplemental movie');
   }catch(e){errors.push(home+' film flow '+e.message)}finally{await page.close()}
  }
+ // Archived decision quiz and standalone defense must not appear in the public Arcade.
+ // Validate the six-game hub and actual G02 enter/return flows in both locales.
  for(const lang of locales){
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   try{
    await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
-   await page.evaluate(()=>{window.dataLayer=[]});
-   await page.locator('[data-qaction="start"]').click();
-   verify(await page.locator('[data-answer]').count()===4,lang+' decision lab options');
-   for(let i=0;i<8;i++)await page.locator('[data-answer]').nth(i%4).click();
-   verify(await page.locator('.protocol-report-head').count()===1,lang+' decision lab report');
-   verify(await page.evaluate(()=>window.dataLayer.filter(x=>x.event==='quiz_completed').length)===1,lang+' quiz completed once');
-   await page.locator('[data-qaction="reset"]').click();
-   verify(await page.locator('[data-qaction="start"]').count()===1,lang+' quiz restart');
-   await page.locator('.legacy-game-panel>summary').click();
-   await page.locator('[data-ar-hero="0"]').click();
-   await page.locator('[data-ar-command="start"]').click();
-   await page.locator('#arcade-canvas').waitFor();
-   verify(await page.locator('#arcade-root.arcade-immersive').count()===1,lang+' immersive arcade start');
-   await page.keyboard.press('p');
-   verify(await page.locator('#arcade-overlay').isVisible(),lang+' pause overlay');
-   await page.locator('#arcade-overlay [data-ar-command="menu"]').click();
-   verify(await page.locator('.arcade-roster').count()===1,lang+' arcade return to roster');
-   verify(!(await page.evaluate(()=>document.body.classList.contains('arcade-scroll-locked'))),lang+' body scroll restored');
-  }catch(e){errors.push(lang+' interaction '+e.message)}finally{await page.close()}
+   verify(await page.locator('[data-launch]').count()===6,lang+' six public game launch cards');
+   verify(await page.locator('#hero-choices').count()===1,lang+' seven-guardian selector is mounted');
+   verify(await page.locator('#arcade-root, #protocol-quiz-root, .legacy-game-panel').count()===0,lang+' archived interactions absent from public hub');
+   await page.locator('[data-launch="g02"]').click();
+   verify(await page.locator('#campaign-brief').count()===1,lang+' G02 chapter briefing');
+   await page.locator('#setup-play').click();
+   await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();
+   verify(await page.locator('#stage.active').count()===1,lang+' G02 starts in active stage');
+   await page.locator('#stage-back').click();
+   verify(await page.locator('#stage').getAttribute('aria-hidden')==='true',lang+' G02 returns to hub');
+   verify(await page.locator('#g02-frame').count()===0,lang+' G02 frame disposed');
+  }catch(e){errors.push(lang+' Arcade interaction '+e.message)}finally{await page.close()}
  }
+
 }finally{await browser.close();await new Promise(done=>server.close(done))}
 if(errors.length){console.error('FAIL '+errors.length+' / '+checks+'\n'+errors.join('\n'));process.exitCode=1}
 else console.log('PASS '+checks+' DOM/layout/interactive assertions across 14 pages, five viewports and two languages.');

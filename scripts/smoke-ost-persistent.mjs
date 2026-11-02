@@ -38,7 +38,7 @@ try{for(const [lang,home] of [['zh','FUNAI-CARE.html'],['ja','FUNAI-CARE_jp.html
  test(await frame.locator('.ost-shell-play').count()===4,lang+' songs use shared persistent audio');
  await frame.locator('.ost-shell-play').first().click();
  test((await page.evaluate(()=>window.BioGlobalOST.state.track))===0,lang+' song card selects OST');
- await frame.locator('.main-nav a[href*="/arcade/"]').first().click();
+ await frame.locator('.main-nav a[href*="/play.html"]').first().click();
  await frame.locator('body[data-page="play"]').waitFor();
  test(await page.evaluate(()=>window.BioGlobalOST.state.element===window.__originalSound),lang+' same audio object after second navigation');
  const focus=await page.evaluate(()=>{

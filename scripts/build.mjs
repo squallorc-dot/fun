@@ -83,24 +83,28 @@ for(const lang of ['zh','ja']){
 }
 if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 12 editorial pages match their central sources.');}
 
-// Keep the Arcade lobby on the same seven-route navigation system.
+// PLAY is the single public six-game page. Retain the legacy Arcade markup as
+// an internal source only (no old URL redirect and no duplicate navigation).
+function makePlay(lang,source,c){
+ let html=source;
+ html=html.replaceAll(c.base+`arcade/${lang}/index.html`,c.base+`${lang}/play.html`);
+ html=html.replace("<head>","<head><base href=\"../arcade/"+lang+"/\">");
+ html=html.replaceAll("../../arcade/zh/index.html","../../zh/play.html").replaceAll("../../arcade/ja/index.html","../../ja/play.html");
+ html=html.replaceAll("../zh/index.html","../../zh/play.html").replaceAll("../ja/index.html","../../ja/play.html");
+ html=html.replaceAll('href="#main-content"','href="../../'+lang+'/play.html#main-content"');
+ html=html.replaceAll('href="#game-list"','href="../../'+lang+'/play.html#game-list"');
+ html=html.replace(/(<link rel="stylesheet" href="\.\.\/assets\/arcade-hub\.css)\?v=[^"]+/g,'$1?v=20261102.play1');
+ html=html.replace(/(<script defer src="\.\.\/assets\/hub\.js)\?v=[^"]+/g,'$1?v=20261102.play1');
+ html=html.replace(/<title>[^<]*<\/title>/,'<title>'+(lang==='zh'?'PLAY｜六款守護者遊戲｜FUNAI CARE':'PLAY｜ガーディアンズの6つのゲーム｜FUNAI CARE')+'</title>');
+ const label=lang==='zh'?'焦點挑戰｜G06 極速競賽':'注目の挑戦｜G06 超高速レース',desc=lang==='zh'?'穿梭 Bio-City 賽道，轉向、煞車與氮氣衝刺；選擇守護者，挑戰你的最佳紀錄。':'Bio-Cityのコースを走り、ハンドル・ブレーキ・ブーストを駆使してベスト記録に挑もう。',action=lang==='zh'?'立即挑戰賽車':'レースに挑戦',all=lang==='zh'?'查看全部六款遊戲':'6つのゲームを見る';
+ const feature='<section class="play-feature" aria-labelledby="play-feature-title"><div class="play-feature-art"><img src="../assets/covers/g06.webp?v=20261025.5" width="960" height="540" alt="'+(lang==='zh'?'Bio-City 極速競賽賽車封面':'Bio-City レースゲームのカバー')+'" loading="eager"></div><div class="play-feature-copy"><span class="kicker">FOCUS / G06 RACING</span><h2 id="play-feature-title">'+label+'</h2><p>'+desc+'</p><div class="play-feature-actions"><button class="btn play-feature-primary" type="button" data-launch="g06" data-feature="g06">'+action+'</button><a class="btn secondary" href="../../'+lang+'/play.html#game-list">'+all+' ↓</a></div></div></section>';
+ if(!html.includes('</section><div class="hub-progress">'))throw Error('missing hub section for '+lang);
+ return html.replace('</section><div class="hub-progress">','</section>'+feature+'<div class="hub-progress">');
+}
 for(const lang of ['zh','ja']){
- const file=path.join(root,'arcade',lang,'index.html');
- const original=fs.readFileSync(file,'utf8');
- let html=original.replace(/<body[^>]*>/,'<body data-page="play" class="arcade-page">');
- html=html.replace(/(assets\/(?:hub\.js|race-cup\.js|campaign-core\.js|arcade-hub\.css|games-core\.js|game-guide\.js|world-art\.js|guardian-art\.js))\?v=[^"]+/g,'$1?v='+(c.arcadeVersion||c.version));
- const shell='<!-- SITE SHELL START -->'+navigation(lang,'play',c,{prefix:'../../',arcade:true})+'<!-- SITE SHELL END -->';
- if(html.includes('<!-- SITE SHELL START -->')) html=html.replace(/<!-- SITE SHELL START -->[\s\S]*?<!-- SITE SHELL END -->/,shell);
- else html=html.replace(/<header class="hub-head">[\s\S]*?<\/header>/,shell);
- html=html.replace(/<footer class="hub-foot[^"]*">[\s\S]*?<\/footer>/,footer(lang,c,true));
- html=html.replace(/<main class="hub-main"[^>]*>/,'<main class="hub-main" id="main-content">');
- if(!html.includes('class="skip-link"'))html=html.replace('<!-- SITE SHELL START -->','<a class="skip-link" href="#main-content">'+c.locales[lang].skip+'</a><!-- SITE SHELL START -->');
- const styles=`<link id="site-navigation-style" rel="stylesheet" href="../../assets/navigation.css?v=${c.version}"><link id="site-arcade-integration-style" rel="stylesheet" href="../../assets/arcade-integration.css?v=${c.version}">`;
- html=html.replace(/<link id="site-(?:navigation|arcade-integration)-style"[^>]*>/g,'').replace('</head>',styles+'</head>');
- html=html.replace(/<script id="site-navigation-script"[^>]*><\/script>/g,'');
- html=html.replace(/<button type="button" class="backtop"[^>]*>↑<\/button>/g,'');
- html=html.replace('</body>',`<button type="button" class="backtop" aria-label="${c.locales[lang].backtop}">↑</button><script id="site-navigation-script" defer src="../../assets/navigation.js?v=${c.version}"></script></body>`);
- if(check){if(html!==original){console.error('Out of sync: arcade/'+lang+'/index.html');bad++;}}
- else{fs.writeFileSync(file,html);console.log('Built arcade/'+lang+'/index.html');}
+ const source=fs.readFileSync(path.join(root,'arcade',lang,'index.html'),'utf8');
+ const file=path.join(root,lang,'play.html'),html=makePlay(lang,source,c);
+ if(check){if(!fs.existsSync(file)||fs.readFileSync(file,'utf8')!==html){console.error('Out of sync:',lang+'/play.html');bad++;}}
+ else{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,html,'utf8');console.log('Built',lang+'/play.html');}
 }
 if(check&&bad)process.exitCode=1;

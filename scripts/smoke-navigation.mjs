@@ -46,14 +46,14 @@ try{
    check(await toggle.evaluate(e=>e===document.activeElement),lang+' native focus return');
    await page.locator('.mobile-language summary').click();check(await page.locator('.mobile-language-options').isVisible(),lang+' language dropdown');
    await toggle.click();check(!await page.locator('.mobile-language-options').isVisible(),lang+' explore closes language');await page.keyboard.press('Escape');
-   await page.goto(origin+'/arcade/'+lang+'/index.html?hero=3',{waitUntil:'domcontentloaded'});
+   await page.goto(origin+'/'+lang+'/play.html?hero=3',{waitUntil:'domcontentloaded'});
    await page.locator('[data-launch="g01"]').click();check(await page.locator('[data-hero="3"]').getAttribute('aria-pressed')==='true',lang+' hero carried from encyclopedia');
    await page.locator('#setup-cancel').click();
    await page.locator('#settings-label').click();check(await page.locator('#audio-drawer').getAttribute('aria-hidden')==='false',lang+' audio dialog aria');
    await page.keyboard.press('Escape');check(await page.locator('#audio-drawer').getAttribute('aria-hidden')==='true',lang+' audio Escape');
    check(await page.locator('#settings-label').evaluate(e=>e===document.activeElement),lang+' audio focus return');
    for(const id of ['g01','g02','g03','g04','g05','g06']){
-    await page.goto(origin+'/arcade/'+lang+'/index.html?game='+id,{waitUntil:'domcontentloaded'});
+    await page.goto(origin+'/'+lang+'/play.html?game='+id,{waitUntil:'domcontentloaded'});
     await page.locator('#setup.show').waitFor();
     check(await page.locator('#setup-play').getAttribute('data-game')===id,lang+' overview opens '+id+' ready room');
     await page.locator('#setup-play').click();await page.locator('#stage.active').waitFor();
@@ -61,7 +61,7 @@ try{
     check(await page.locator('.site-bottom-nav').evaluate(e=>getComputedStyle(e).visibility==='hidden'),lang+' '+id+' game hides bottom nav');
     await page.locator('#stage-back').click();check(await page.locator('.site-bottom-nav').isVisible(),lang+' '+id+' lobby restores navigation');
    }
-   await page.goto(origin+'/arcade/'+lang+'/index.html?game=unknown&hero=99',{waitUntil:'domcontentloaded'});
+   await page.goto(origin+'/'+lang+'/play.html?game=unknown&hero=99',{waitUntil:'domcontentloaded'});
    check(!await page.locator('#setup').isVisible(),lang+' invalid deep link stays in lobby');
    check(errors.length===0,lang+' runtime errors '+errors.join(';'));
   }catch(e){failures.push(lang+' navigation flow: '+e.message);}finally{await page.close();}

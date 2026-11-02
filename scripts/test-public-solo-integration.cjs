@@ -1,25 +1,21 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
-const zh=read('arcade/zh/index.html'),ja=read('arcade/ja/index.html');
+const zh=read('zh/play.html'),ja=read('ja/play.html');
 for(const [html,lang]of [[zh,'zh'],[ja,'ja']]){
  assert(!html.includes('../challenge/index.html?lang='+lang),'retired offline challenge has no public entry '+lang);
  assert(!html.includes('hub-more-async'),'no offline challenge card on public hub '+lang);
- for(const id of ['arcade-root','protocol-quiz-root','protocol-quiz'])assert(html.includes('id="'+id+'"'),'unique editorial experience preserved on public hub '+id+' '+lang);
- assert(html.includes('../../assets/protocol-engine.js')&&html.includes('../../assets/arcade-engine.js'),'legacy shooter and decision engine present '+lang);
- assert(html.includes('id="classic-arcade-lazy"')&&!html.includes('<script defer src="../../assets/arcade-engine.js'),'legacy engine loads only when classic game is expanded '+lang);
- const lazyScript=html.match(/<script id="classic-arcade-lazy">([\s\S]*?)<\/script>/)?.[1];
- assert(lazyScript,'classic game lazy loader exists '+lang);
- new Function(lazyScript);
+ for(const id of ['arcade-root','protocol-quiz-root','protocol-quiz'])assert(!html.includes('id="'+id+'"'),'archived duplicate content removed from six-game hub '+id+' '+lang);
+ assert(!html.includes('unified-experiences.css')&&!html.includes('classic-arcade-lazy'),'archived experience scripts are not loaded '+lang);
  assert(html.includes('bio-city-v161-signaling.squall-orc.workers.dev')&&/Beta/.test(html),'real-time remains explicitly separate Beta');
  assert(!html.includes('../qa/friends-v16/index.html?lang='+lang),'do not link private manual SDP lab from public hub');
  assert(html.includes('../assets/games-core.js?v=20261101.1'),'central build asset version stays synchronized '+lang);
 }
 assert(!fs.existsSync(path.join(root,'arcade/challenge/index.html')),'retired public challenge route removed without redirects');
 const sitemap=read('sitemap.xml');
-assert(!/\/(?:zh|ja)\/play\.html/.test(sitemap),'removed public play pages are absent from sitemap');
-for(const lang of ['zh','ja'])assert(sitemap.includes('/arcade/'+lang+'/index.html'),'unified hub remains indexed in sitemap '+lang);
-for(const lang of ['zh','ja'])assert(!fs.existsSync(path.join(root,lang,'play.html')),'old duplicate play page removed without redirect '+lang);
+assert(/\/(?:zh|ja)\/play\.html/.test(sitemap),'PLAY is the public game URL in sitemap');
+for(const lang of ['zh','ja'])assert(sitemap.includes('/'+lang+'/play.html'),'PLAY is indexed in sitemap '+lang);
+for(const lang of ['zh','ja'])assert(fs.existsSync(path.join(root,lang,'play.html')),'official PLAY page exists without redirect '+lang);
 const core=read('arcade/assets/games-core.js');
 for(const term of ['發球先彈兩次','安全平台／陷阱','檢查點','桌球','氮氣','深度']){
  assert(core.includes(term),'solo HUD/onscreen translation missing '+term);
