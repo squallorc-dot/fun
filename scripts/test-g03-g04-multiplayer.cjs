@@ -8,6 +8,7 @@ for(const name of ['games-core.js','g03-g04-network.js'])
 let checks=0;const check=(ok,msg)=>{assert(ok,msg);checks++};
 for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
  const M=game==='g03'?root.BioG03Network:root.BioG04Network;
+ check(M.TAG===game+'-dual-v4','new portrait physics refuses old g03/g04 network engines');
  for(const chapter of [1,2,3,4,5]){
   let finished=0;
   const common={mode,chapter,hero:0,remoteHero:3,difficulty:'normal',locale:'zh',testMode:true};
@@ -24,32 +25,33 @@ for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
   host.games.forEach((g,i)=>g.draw=()=>painted.push(i));
   guest.games.forEach((g,i)=>g.draw=()=>painted.push(i));
   cx.matchMedia=()=>({matches:true});
+  const expected=game==='g03'?[480,720]:[600,720];
+  check(host.games.every(g=>g.w===expected[0]&&g.h===expected[1])&&
+   guest.games.every(g=>g.w===expected[0]&&g.h===expected[1]),
+   'host/guest both use native single-player portrait physics dimensions');
   const scaled=[];ctx.scale=(x,y)=>scaled.push([x,y]);
-  host.draw(ctx);check(host.game.w===640&&host.game.h===480&&painted.join(',')==='0','host phone main is full own 4:3 board');
-  check(scaled.some(([x,y])=>Math.abs(x-640/host.games[0].w)<1e-9&&Math.abs(y-480/host.games[0].h)<1e-9),'phone host scales complete native playfield without cropping');
-  // Batch-4 portrait extension must reveal taller scenery without changing
-  // the native 640x480 physics world, host snapshots or guest synchronization.
-  if(chapter===1){
-   const before=JSON.stringify(host.capture());
-   const original=host.games[0].draw;
-   const observed=[];host.games[0].draw=()=>{observed.push({w:host.games[0].w,h:host.games[0].h});};
-   cx.innerHeight=844;
-   cx.matchMedia=query=>({matches:true});
-   painted=[];scaled.length=0;
-   host.draw(ctx);
-   check(host.game.h===(game==='g03'?720:480),'only G03 has taller portrait composition');
-   check(observed.length===1&&observed[0].h===(game==='g03'?720:480),'G03 renders additional actual world rows without changing width');
-   check(host.games[0].w===640&&host.games[0].h===480,'temporary render height is always restored to physics world');
-   check(JSON.stringify(host.capture())===before,'G03/G04 portrait render never changes the authenticated game snapshot');
-   check(scaled.some(([x,y])=>Math.abs(x-1)<1e-9&&Math.abs(y-1)<1e-9),'portrait stage paints world uniformly with no stretching');
-   host.games[0].draw=original;delete cx.innerHeight;cx.matchMedia=()=>({matches:true});
-  }
-  painted=[];host.drawOpponent(ctx);check(painted.join(',')==='1','host PiP contains guest board');
-  painted=[];scaled.length=0;guest.draw(ctx);check(guest.game.w===640&&guest.game.h===480&&painted.join(',')==='1','guest phone main is full own board');
-  check(scaled.some(([x,y])=>Math.abs(x-640/guest.games[1].w)<1e-9&&Math.abs(y-480/guest.games[1].h)<1e-9),'phone guest scales complete native playfield without cropping');
-  painted=[];guest.drawOpponent(ctx);check(painted.join(',')==='0','guest PiP contains host board');
-  painted=[];cx.matchMedia=()=>({matches:false});host.draw(ctx);
-  check(host.game.w===1280&&host.game.h===550&&painted.join(',')==='0,1','desktop retains side-by-side split');
+  const before=JSON.stringify(host.capture());
+  host.draw(ctx);
+  check(host.game.w===expected[0]&&host.game.h===expected[1]&&painted.join(',')==='0',
+   'host draws exactly its own native portrait game');
+  check(scaled.some(([x,y])=>Math.abs(x-1)<1e-9&&Math.abs(y-1)<1e-9),
+   'host portrait game has uniform 1:1 visual scale');
+  check(JSON.stringify(host.capture())===before,'host render does not alter authoritative snapshot');
+  painted=[];scaled.length=0;host.drawOpponent(ctx);
+  check(painted.join(',')==='1'&&scaled.some(([x,y])=>Math.abs(x-y)<1e-9),
+   'host preview crops guest without stretching');
+  painted=[];scaled.length=0;guest.draw(ctx);
+  check(guest.game.w===expected[0]&&guest.game.h===expected[1]&&painted.join(',')==='1',
+   'guest draws its own native portrait game');
+  check(scaled.some(([x,y])=>Math.abs(x-1)<1e-9&&Math.abs(y-1)<1e-9),
+   'guest portrait game has uniform 1:1 visual scale');
+  painted=[];scaled.length=0;guest.drawOpponent(ctx);
+  check(painted.join(',')==='0'&&scaled.some(([x,y])=>Math.abs(x-y)<1e-9),
+   'guest preview crops host without stretching');
+  painted=[];scaled.length=0;cx.matchMedia=()=>({matches:false});host.draw(ctx);
+  check(host.game.w===1280&&host.game.h===550&&painted.join(',')==='0,1',
+   'desktop retains separate side-by-side worlds');
+  check(scaled.every(([x,y])=>Math.abs(x-y)<1e-9),'desktop never stretches portrait worlds');
   host.games.forEach((g,i)=>g.draw=hostDraw[i]);guest.games.forEach((g,i)=>g.draw=guestDraw[i]);delete cx.matchMedia;
   for(let i=0;i<240;i++){
    const local=game==='g03'?{moveX:1,right:true,jump:i===8}:{moveX:1,fire:i===130};

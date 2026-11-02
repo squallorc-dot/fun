@@ -6,7 +6,7 @@ import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {build} from './build-controlled-assets-v161.mjs';
 
-const SOURCE_SHA='c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb';
+const SOURCE_SHA='f28ca911a6e9affc7dbea9ea3932811b0fb0a3b6';
 const REPO='squallorc-dot/fun', PR_NUMBER=38;
 const RELEASE_BRANCH='release/bio-city-v161-stun-beta';
 const BASE_URL='https://api.github.com/repos/'+REPO;

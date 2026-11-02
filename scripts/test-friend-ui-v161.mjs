@@ -109,7 +109,7 @@ try{
    const state=await page.evaluate(async()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
     s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
+    s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
       drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
     s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -126,7 +126,7 @@ try{
    assert(state.shown&&state.helpHidden,'G03 phone peer ribbon shown and play instructions initially collapsed');
    assert(state.dockBeforeStage&&state.moveRemoved,'peer ribbon precedes primary stage and no obsolete move control remains');
    assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
-   assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(Math.abs(state.main.w/state.main.h-2/3)<.05,'own G03 board uses native 2:3 solo portrait ratio');
    assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
    assert(!state.touchVisible||state.main.bottom<=state.controls.top+3,'own playfield does not overlap enabled touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
    assert(!state.touchVisible||state.controls.h>=145,'visible touch controls retain a usable height');
@@ -233,7 +233,7 @@ try{
      const s=BioFriendsApp.session;s.adapter?.dispose?.();
      s.role='host';s.hero=0;s.epoch=1;s.phase='finished';s.resultCount=1;s.result=mode.result;
      s.config={game:mode.game,mode:mode.id,heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-     s.adapter={game:{w:mode.w,h:mode.h,hud:()=>'',guestHud:()=>'',inspectCombat:()=>({score:300}),inspectMatch:()=>({points:[7,3]}),draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+     s.update=()=>{};s.adapter={game:{w:mode.w,h:mode.h,hud:()=>'',guestHud:()=>'',inspectCombat:()=>({score:300}),inspectMatch:()=>({points:[7,3]}),draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
      document.body.classList.add('auto-connected');s.changed();
      const banner=document.querySelector('#round-message'),details=document.querySelector('#round-details');
      const c=document.querySelector('#game-canvas').getBoundingClientRect();
@@ -261,7 +261,7 @@ try{
    await page.evaluate(()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=1;
     s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+    s.update=()=>{};s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
     s.result=null;s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    });
    await page.waitForFunction(()=>document.querySelector('#arena').getBoundingClientRect().height>=innerHeight*.93,null,{timeout:5000});
@@ -321,7 +321,7 @@ try{
   const shortLayout=await shortPhone.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
      drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -347,16 +347,16 @@ try{
   assert(shortLayout.down.left+6<shortLayout.jump.left,
     'G03 mobile touch geometry matches standalone: DOWN on inner-left, JUMP on outer-right');
  }finally{await shortPhone.close();}
- // Batch 4: tall Samsung-style portrait reclaims blank space for G03's real
- // draw-only taller world, while the peer remains an independent, readable ribbon.
+ // Batch 5: Samsung-style portrait matches the standalone native game
+ // aspect ratio; the real game board occupies the available vertical area.
  const tallPhone=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  try{
   await tallPhone.goto(origin+'/arcade/friends/index.html?lang=zh');
   const tall=await tallPhone.evaluate(async()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:640,h:720,hud:()=>'<span>自己 90m · 對手 90m</span>',draw:()=>{}},
-    visualHeight:()=>720,mobile:()=>true,drawOpponent:()=>true,dispose:()=>{}};
+   s.update=()=>{};s.adapter={game:{w:480,h:720,hud:()=>'<span>自己 90m · 對手 90m</span>',draw:()=>{}},
+    mobile:()=>true,drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {top:b.top,bottom:b.bottom,width:b.width,height:b.height};};
@@ -368,8 +368,10 @@ try{
   });
   assert(tall.dock.bottom<=tall.viewport.top+2&&tall.own.bottom<=tall.controls.top+3,
    'tall phone: larger local stage stays below opponent ribbon and above action buttons');
-  assert(tall.own.height>=350&&tall.own.width>=370,
-   'tall G03 phone renders a genuinely taller near-full-width playfield, not an empty tall wrapper');
+  assert(tall.own.height>=420&&Math.abs(tall.own.height/tall.own.width-1.5)<.025,
+   'tall G03 uses its real solo 2:3 portrait shape, not an empty 4:3 wrapper');
+  assert(tall.viewport.height-tall.own.height<24,
+   'tall G03 fills almost all of the available stage height without vertical black bars');
   assert(tall.peer.width>=98&&tall.dock.height<=105,
    'peer preview remains readable inside a compact single-row ribbon');
   assert(Math.abs(tall.captionTop-tall.buttonTop)<30,
@@ -378,6 +380,47 @@ try{
    'tall phone: touch dock stays compact and no long blank area remains below it');
   assert(!tall.overflow,'tall phone avoids horizontal overflow');
  }finally{await tallPhone.close();}
+ // G04 also uses its original 5:6 solo aspect and G06 follows the solo
+ // BRAKE(left)/BOOST(right) button order in both Chinese and Japanese.
+ const portraitG04=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ try{
+  await portraitG04.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const layout=await portraitG04.evaluate(async()=>{
+   const s=BioFriendsApp.session;s.role='guest';s.epoch=1;
+   s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.update=()=>{};s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 80 · 對手 75</span>',draw:()=>{}},
+    drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const r=id=>document.getElementById(id).getBoundingClientRect();
+   const a=r('game-canvas'),stage=r('viewport');
+   return {ratio:a.height/a.width,stageGap:stage.height-a.height,
+    peerAbove:r('opponent-dock').bottom<=stage.top+2,actionsBelow:a.bottom<=r('touch-controls').top+3};
+  });
+  assert(Math.abs(layout.ratio-1.2)<.025&&layout.stageGap<115&&layout.peerAbove&&layout.actionsBelow,
+   'G04 solo 5:6 portrait physics fits safely with opponent dock and controls');
+ }finally{await portraitG04.close();}
+ for(const lang of ['zh','ja']){
+  const racer=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  try{
+   await racer.goto(origin+'/arcade/friends/index.html?lang='+lang);
+   const layout=await racer.evaluate(async()=>{
+    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+    s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+    s.update=()=>{};s.adapter={game:{w:640,h:800,hud:()=>'<span>賽車</span>',draw:()=>{}},dispose:()=>{}};
+    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const down=document.querySelector('#touch-controls [data-action="down"]');
+    const fire=document.querySelector('#touch-controls [data-action="fire"]');
+    return {down:{x:down.getBoundingClientRect().left,label:down.textContent.trim(),visible:!down.hidden},
+     fire:{x:fire.getBoundingClientRect().left,label:fire.textContent.trim(),visible:!fire.hidden}};
+   });
+   assert(layout.down.visible&&layout.fire.visible&&layout.down.x+6<layout.fire.x,
+    'G06 mobile solo parity: BRAKE is left of BOOST, '+lang);
+   assert(lang==='zh'?layout.down.label==='煞車'&&layout.fire.label==='氮氣':layout.down.label==='ブレーキ'&&layout.fire.label==='ブースト',
+    'G06 semantic action label matches game guide in '+lang);
+  }finally{await racer.close();}
+ }
  // Real touch-capable landscape viewport: orientation and screen-space regression.
  const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
  try{
@@ -385,7 +428,7 @@ try{
   const layout=await sideways.evaluate(()=>{
    const s=BioFriendsApp.session;s.role='host';s.epoch=1;
    s.config={game:'g04',mode:'pinball',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
+   s.update=()=>{};s.adapter={game:{w:600,h:720,hud:()=>'<span>自己 100 · 對手 90</span>',draw:()=>{}},
      drawOpponent:()=>true,dispose:()=>{}};
    s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    const canvas=document.getElementById('game-canvas').getBoundingClientRect();

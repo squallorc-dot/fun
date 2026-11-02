@@ -46,3 +46,7 @@ Cloudflare Git Builds 只應選用 `release/bio-city-v161-stun-beta` 為 Product
 ## 2026-11-02｜第四批：G03/G04 雙人手機可視空間優化
 
 PR #38 受測來源 `c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`。將 G03/G04 手機直式的上方對手縮圖、標題、收合按鍵改為精簡單列，操作區縮為實際需要的高度，留白返還主畫面。G03 在足夠高的直式裝置提供 640×640 或 640×720 **純顯示擴展**，繪製期間暫時增加顯示高度並在 finally 還原 640×480 權威物理世界；場景增加真實可見下方平台，不拉伸角色、不修改碰撞、狀態封包或深度計分。G04 保持原 640×480 射擊與瞄準座標。新增長版 Samsung 及短版 iPhone、縮圖列/操作按鍵與 G03/G04 同步不變的回歸測試，並更新資產版本。只有來源同 SHA 的六項品質與兩項 RTC/WebKit CI 8/8 Success 才可部署 release 分支，正式 main 不變。
+
+## 2026-11-02｜第5批手機單機式長形＋G06 操作，CI 測試驅動修正版
+
+PR #38 latest tested source `f28ca911a6e9affc7dbea9ea3932811b0fb0a3b6`，必須全部同 SHA 八項必要 CI 8/8 Success 才可發布；release branch 不允許 force push。G03/G04 使用與單機相同的遊戲世界尺寸 480×720／600×720，聯機雙端一致，TAG v4 拒絕舊端，對手縮圖等比裁切，G06 煞車左氮氣右。本版修復獨立 `arcade-controls-browser` 的 QR/Worker 測試配置錯誤，改為在 Chromium 下單獨驗證 G03/G04 長形比例與 G06 中日文按鍵，原本 QR+真 RTC 驗收仍在 signaling CI 完整執行。G01 真 RTC 合作關卡的自動遊玩加入隊友倒地救援、空中近戰避失誤、遇攻擊預警閃避，紀錄雙端實際按鍵指令，**保留真正 Boss 擊敗、雙人相同結果與恢復遊戲**作為必要門檻。正式 main 不合併；Cloudflare release Build 必須回報 Success 才通知實測。

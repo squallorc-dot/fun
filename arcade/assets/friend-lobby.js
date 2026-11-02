@@ -43,12 +43,8 @@ function readInput(dt=1/120){
 function size(){
  if(!session?.adapter)return;
  const viewport=$('viewport'),w=viewport.clientWidth;
-// A portrait switch can change the draw-only G03 viewport height before its
-// next animation frame; keep CSS sizing and canvas transforms in sync.
-if(typeof session.adapter.visualHeight==='function'&&session.adapter.mobile?.()){
- const nextHeight=session.adapter.visualHeight();
- if(session.adapter.game.h!==nextHeight)session.adapter.game.h=nextHeight;
-}
+// Native portrait dimensions are fixed for both host and guest. Only the
+// CSS scale changes when the browser rotates or resizes.
 const ratio=session.adapter.game.h/session.adapter.game.w;const displayRatio=session.adapter.game.w+'/'+session.adapter.game.h;if(viewport.style.getPropertyValue('--bio-play-aspect')!==displayRatio)viewport.style.setProperty('--bio-play-aspect',displayRatio);
  const available=Math.max(100,w-(plan.reservedLeft||0)-(plan.reservedRight||0));
  // Treat the playfield like the single-player stage: fill the real available
@@ -123,7 +119,8 @@ const settings=BioControlProfiles.createSettings({onOpen:()=>{session.pause('set
 let controlGame;function rebuildControls(){controls?.dispose();const game=session.config?.game||'g05',buttons=[...document.querySelectorAll('#touch-controls [data-action]')].filter(el=>!el.hidden);
 // Standalone G03 puts DOWN at the inner/left action slot and JUMP at the outer/right.
 // This order feeds the shared control-layout engine; DOM order alone is not visual order.
-if(game==='g03')buttons.sort((a,b)=>['down','jump'].indexOf(a.dataset.action)-['down','jump'].indexOf(b.dataset.action));
+const soloOrder=game==='g03'?['down','jump']:game==='g06'?['down','fire']:null;
+if(soloOrder)buttons.sort((a,b)=>soloOrder.indexOf(a.dataset.action)-soloOrder.indexOf(b.dataset.action));
 controls=BioControlProfiles.createInput({root:$('touch-controls'),stick:$('stick-pad'),knob:$('stick-knob'),buttons:buttons.map(el=>({el,key:el.dataset.action})),context:()=>({game,mode:session.config?.mode||'pong',axis:['g01','g02','g04','g06'].includes(game)?'xy':game==='g03'?'x':session.config?.mode==='volley'?'x':'y'}),enabled:()=>['countdown','playing'].includes(session.phase),space:()=>$('viewport'),onLayout:p=>{plan=p;size();}});}rebuildControls();
 async function act(task){$('error').textContent='';audio.unlock();try{await task();}catch{$('error').textContent=L.error;}render();}
 $('host').onclick=()=>act(async()=>{$('local').value=await session.host($('room').value,Number($('hero').value));});
