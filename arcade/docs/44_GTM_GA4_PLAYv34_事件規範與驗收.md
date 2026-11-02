@@ -18,7 +18,7 @@
 | `site_language_switch` | 由頁面 A 語言切到 B 語言 | `language_from`、`language_to` |
 | `arcade_catalog_click` | 首屏或焦點區前往六款遊戲列表 | `entry_point`、`language` |
 | `arcade_feature_click` | 焦點 G06 的點擊 | `game_id`、`feature_id`、`language` |
-| `arcade_game_select` | 點擊 G01～G06 遊戲卡／G06 焦點，但尚未開始 | `game_id`、`entry_point`、`language` |
+| `arcade_game_select` | 點擊 G01～G06 遊戲卡／G06 焦點，或用 `?game=g03` 深連結進入準備室；尚未開始 | `game_id`、`entry_point`、`language` |
 | `arcade_game_start` | 實際啟動遊戲（進入舞台） | `game_id`、`hero_id`、`difficulty`、`chapter`、`mode`、`language` |
 | `arcade_game_finish` | 遊戲結束，成功／失敗 | `game_id`、`outcome`、`final_score`、`chapter`、`language` |
 | `arcade_campaign_stage` | 五章章節完成／失敗 | `game_id`、`chapter`、`outcome`、`language` |
