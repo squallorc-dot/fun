@@ -66,5 +66,43 @@ try{
    check(errors.length===0,lang+' runtime errors '+errors.join(';'));
   }catch(e){failures.push(lang+' navigation flow: '+e.message);}finally{await page.close();}
  }
+ // GTM analytics contract: actual clicks must emit once without requiring a live tag manager.
+ for(const lang of ['zh','ja']){
+  const page=await pageFor(1440);
+  try{
+   await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
+   await page.locator('[data-launch="g06"][data-feature="g06"]').waitFor();
+   // Disable only default link navigation; preserve capture/bubble click listeners and dataLayer.
+   await page.evaluate(()=>document.addEventListener('click',event=>{
+    if(event.target.closest('a[href]'))event.preventDefault();
+   },true));
+   const events=()=>page.evaluate(()=>window.dataLayer.filter(item=>item&&typeof item.event==='string'));
+   const count=async name=>(await events()).filter(item=>item.event===name).length;
+   await page.locator('[data-launch="g06"][data-feature="g06"]').click();
+   check(await count('arcade_feature_click')===1,lang+' G06 focus event exactly once');
+   check(await count('arcade_game_select')===1,lang+' G06 focus selects once');
+   check((await events()).find(x=>x.event==='arcade_game_select')?.entry_point==='feature',lang+' G06 focus attribution');
+   check(await count('arcade_game_start')===0,lang+' selecting does not count as playing');
+   await page.locator('#setup-cancel').click();
+   await page.locator('#game-list [data-launch="g01"]').click();
+   const selected=(await events()).filter(x=>x.event==='arcade_game_select');
+   check(selected.length===2&&selected[1].game_id==='g01'&&selected[1].entry_point==='catalog',lang+' catalog select distinct from G06 focus');
+   await page.locator('#setup-cancel').click();
+   await page.locator('.hero-cta').click();
+   await page.locator('.play-feature a[href*="#game-list"]').click();
+   const catalogs=(await events()).filter(x=>x.event==='arcade_catalog_click');
+   check(catalogs.length===2&&catalogs[0].entry_point==='hero'&&catalogs[1].entry_point==='feature',lang+' catalog jump click attribution');
+   await page.locator('.hub-more-card a[href*="/arcade/friends/"]').click();
+   const friend=(await events()).filter(x=>x.event==='arcade_friends_beta_click');
+   check(friend.length===1&&friend[0].language===lang&&friend[0].navigation_target_url.includes('/arcade/friends/'),lang+' beta exits measured on production origin');
+   await page.locator('.main-nav a[href*="heroes.html"]').click();
+   const nav=(await events()).filter(x=>x.event==='site_navigation_click');
+   check(nav.length===1&&nav[0].navigation_target_url.endsWith('/'+lang+'/heroes.html')&&nav[0].navigation_position==='header',lang+' navigation target resolves despite PLAY base');
+   await page.locator('.language-links a[lang="'+(lang==='zh'?'ja':'zh-TW')+'"]').click();
+   const switches=(await events()).filter(x=>x.event==='site_language_switch');
+   check(switches.length===1&&switches[0].language_from===lang&&switches[0].language_to===(lang==='zh'?'ja':'zh'),lang+' language direction tracked');
+   check(await count('arcade_game_start')===0,lang+' anchor/navigation never starts a game');
+  }catch(error){failures.push(lang+' analytics flow: '+error.message);}finally{await page.close();}
+ }
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 14 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');
