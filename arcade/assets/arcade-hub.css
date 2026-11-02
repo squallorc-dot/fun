@@ -325,3 +325,17 @@ kbd{display:inline-block;background:#19394e;border:1px solid #507a90;border-bott
  .hub-controls{margin-top:20px}
 }
 .hub-storage-note{color:#adcbda;font-size:.78rem;line-height:1.6;margin:12px 0 2px}
+
+/* Official PLAY v3.4: compact G06 focus; actual games remain unchanged. */
+.play-feature{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);align-items:stretch;overflow:hidden;border:1px solid #477f91;border-radius:18px;margin:14px 0 22px;background:linear-gradient(130deg,#10354a,#071d31);box-shadow:0 12px 28px #0004}
+.play-feature-art{min-width:0;background:#07192d}
+.play-feature-art img{display:block;width:100%;height:100%;min-height:160px;object-fit:cover;object-position:center}
+.play-feature-copy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:10px;min-width:0;padding:clamp(14px,2.7vw,28px)}
+.play-feature-copy h2{font-size:clamp(1.15rem,2.5vw,1.65rem);line-height:1.3;margin:0;color:#ecfcff}
+.play-feature-copy p{font-size:.87rem;line-height:1.7;color:#c6e4ee;margin:0}
+.play-feature-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.play-feature-actions .btn{min-height:46px;max-width:100%;white-space:normal;text-align:center}
+.play-feature-primary{background:#75e4dc;color:#082b36;border:1px solid #abfff6;font-weight:800}
+@media(max-width:690px){.play-feature{grid-template-columns:120px minmax(0,1fr);margin:12px 0 17px;border-radius:14px}.play-feature-art img{min-height:100%;object-fit:cover}.play-feature-copy{padding:12px;gap:6px}.play-feature-copy h2{font-size:1rem}.play-feature-copy p{font-size:.75rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.play-feature-actions{gap:6px}.play-feature-actions .btn{min-height:44px;padding:7px 9px;font-size:.76rem}}
+@media(max-width:370px){.play-feature{grid-template-columns:102px minmax(0,1fr)}.play-feature-copy{padding:9px}.play-feature-actions .btn.secondary{display:none}}
+@media(prefers-reduced-motion:reduce){.play-feature *, .game-card *{scroll-behavior:auto;transition:none!important}}
