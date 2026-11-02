@@ -15,3 +15,5 @@ arcade/qa/racing-v15/
 
 arcade/qa/friends-v16/results/
 arcade/qa/artifact-v16/
+signaling/worker/candidate-assets/
+signaling/worker/.wrangler/

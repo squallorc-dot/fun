@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');const w={};vm.runInNewContext(fs.readFileSync('arcade/assets/games-core.js','utf8'),{window:w,Math});vm.runInNewContext(fs.readFileSync('arcade/assets/g05-network.js','utf8'),{window:w,structuredClone,performance});let checks=0;const check=(v,s)=>{assert(v,s);checks++;};
 for(const mode of ['pong','volley']){
- let finished=0;const g=w.BioSuiteGames.g05({hero:0,remoteHero:6,multiplayer:true,mode,sfx(){},finish(){finished++;}});g.w=640;g.h=480;g.start();const initial=g.inspectMatch();
+ let finished=0;const g=w.BioSuiteGames.g05({hero:0,remoteHero:6,multiplayer:true,mode,sfx(){},finish(){finished++;}});g.w=640;g.h=480;g.start();check(g.hud().includes('房主')&&g.hud().includes('好友')&&!/HOST|GUEST/.test(g.hud()),'multiplayer HUD displays localized player names');const initial=g.inspectMatch();
  for(let i=0;i<60;i++){g.setRemoteInput({});g.update(1/120,{});}const still=g.inspectMatch();check(still.ai.x===initial.ai.x&&still.ai.y===initial.ai.y,'second human has no AI movement');
  g.setRemoteInput(mode==='pong'?{moveY:1}:{moveX:1,jump:true,fire:true});g.update(1/120,{});const moved=g.inspectMatch();check(mode==='pong'?moved.ai.y>still.ai.y:moved.ai.x>still.ai.x&&!moved.ai.ground,'remote axes/jump control the right player');
  const state=g.networkSnapshot();check(w.BioG05Network.snapshot(JSON.parse(JSON.stringify(state)),mode),'complete legitimate network state accepted');

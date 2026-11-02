@@ -9,7 +9,10 @@ import {chromium} from 'playwright';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const file=path.join(root,'arcade/qa/p2p-v16/index.html');
 const source=fs.readFileSync(file,'utf8'),transport=fs.readFileSync(path.join(root,'arcade/assets/peer-link.js'),'utf8');
-assert(transport.includes('iceServers:[]'),'First phase must not use STUN/TURN');
+// The original manual P2P lab remains host-only; the opt-in auto-lobby
+// gets STUN in its separate config. This lab must not activate Google STUN.
+assert(transport.includes('betaStun=false')&&transport.includes('const iceServers=this.betaStun?[{urls:BETA_STUN_URL}]:[];'),
+  'Manual P2P defaults to host-only while Beta STUN remains opt-in');
 assert(!/https?:\/\/[^"']+/.test(source),'No external transport service URLs in lab');
 const server=http.createServer((req,res)=>{
  const pathname=new URL(req.url,'http://localhost').pathname;

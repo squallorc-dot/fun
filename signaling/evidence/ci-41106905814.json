@@ -1,0 +1,12 @@
+{
+  "sha": "41617aea37609b266043b0b9c4fcd43bc31f3d9d",
+  "run": "https://github.com/squallorc-dot/fun/actions/runs/41106905814",
+  "job": 124239007588,
+  "step": "Validate high latency matches and CDP resource lifecycle",
+  "annotations": [
+    "FRIENDS SAFE FAILURE [{\"phase\":\"lobby\",\"role\":\"host\",\"ice\":\"connected\",\"candidates\":1,\"metrics\":{\"state\":\"connected\",\"sent\":122,\"received\":121,\"rejected\":0,\"dropped\":0,\"buffered\":0,\"rtt50\":100.69999999995343,\"rtt95\":100.89999999990687,\"jitter\":0.12203389831218805,\"samples\":60,\"fps\":60.0030001500068,\"inputAck50\":null,\"inputAck95\":null,\"corrections\":0}},{\"phase\":\"lobby\",\"role\":\"guest\",\"ice\":\"connected\",\"candidates\":1,\"metrics\":{\"state\":\"connected\",\"sent\":121,\"received\":120,\"rejected\":1,\"dropped\":0,\"buffered\":0,\"rtt50\":101,\"rtt95\":101.19999999995343,\"jitter\":0.1440677966338472,\"samples\":60,\"fps\":60.0030001500068,\"inputAck50\":137.60000000009313,\"inputAck95\":139.80000000004657,\"corrections\":0}}]\nnode:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\npage.waitForFunction: Timeout 30000ms exceeded.\n    at /home/runner/work/fun/fun/scripts/lib/friends-browser.mjs:25:35\n    at pair (/home/runner/work/fun/fun/scripts/lib/friends-browser.mjs:25:26)\n    at async file:///home/runner/work/fun/fun/scripts/acceptance-friends-final-v16.mjs:30:3 {\n  name: 'TimeoutError'\n}\n\nNode.js v20.20.2\n",
+    "{\"errors\":[\"TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.\"]}"
+  ],
+  "regression": "Control messages may precede the second RTCDataChannel open event; acknowledgements cannot be sent until both channels are open. Bounded buffering fixes the reproduced ordering. Original protocol timeout unchanged.",
+  "localRtcLimit": "Cloud Chromium produces no host ICE candidates under existing policy; native RTC validation runs on GitHub Actions."
+}

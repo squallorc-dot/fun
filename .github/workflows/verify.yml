@@ -9,6 +9,11 @@ on:
         description: Keep formal acceptance evidence for 30 days
         type: boolean
         default: false
+
+# Cancel older verification attempts for this PR; never cancel main build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
@@ -158,6 +163,7 @@ jobs:
           node scripts/test-g02-coop-isolation-v16.cjs
           node scripts/test-g02-coop-art-cache-6b.cjs
           node scripts/test-friends-protocol.cjs
+          node scripts/test-g03-g04-multiplayer.cjs
           python3 scripts/test-package-qa.py
           node scripts/test-arcade-sprites.cjs
           node scripts/test-g04-stages.cjs
@@ -202,6 +208,9 @@ jobs:
           node scripts/smoke-g02-mobile.mjs
           node scripts/smoke-arcade-controls.mjs
           node scripts/smoke-g02-network-clock-6b.mjs
+      - name: Test real G03/G04 solo portrait parity and G06 touch order
+        timeout-minutes: 12
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friend-portrait-v5.mjs
       - name: Package byte-exact controls evidence with recoverable aliases
         if: always()
         run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/controls 'arcade/qa/controls-v14/' 'arcade/qa/g02-mobile-v14/'
