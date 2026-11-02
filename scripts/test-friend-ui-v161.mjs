@@ -1,7 +1,18 @@
 // UI and QR tests only: the WebSocket is stubbed. RTC is tested separately without a stub.
 // Never persist invitation or screenshots containing it.
 import assert from 'node:assert/strict';import {createRequire} from 'node:module';import {chromium} from 'playwright';import {signalingTestServer} from './lib/signaling-test-server.mjs';
+import worker from '../signaling/worker/worker.mjs';
 const require=createRequire(import.meta.url),jsQR=require(process.env.JSQR_TEST_PATH||'jsqr');const origin='http://127.0.0.1:8790',endpoint=origin;
+const betaOrigin='https://bio-city-v161-signaling.squall-orc.workers.dev';
+const betaEnv={BETA_PUBLIC_ENABLED:'true',TEST_ENABLED:'false',TEST_OPEN_WINDOW:'false',BETA_PUBLIC_ORIGIN:betaOrigin,ALLOWED_ORIGINS:betaOrigin};
+for(const lang of ['zh','ja'])for(const route of ['/arcade/'+lang+'/index.html','/arcade/'+lang+'/']){
+ for(const method of ['GET','HEAD']){
+  const response=await worker.fetch(new Request(betaOrigin+route,{method,headers:{'CF-Connecting-IP':'203.0.113.5'}}),betaEnv);
+  assert.equal(response.status,302,'Worker legacy arcade route must redirect');
+  assert.equal(response.headers.get('location'),'https://squallorc-dot.github.io/fun/'+lang+'/play.html','Worker legacy arcade route must open canonical PLAY');
+  assert.equal(response.headers.get('cache-control'),'no-store','legacy redirect must not cache');
+ }
+}
 const server=await signalingTestServer();const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});
 try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
