@@ -59,8 +59,13 @@ function adapter(game){
    this.locale=locale;
    const mobile=()=>typeof matchMedia==='function'&&matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
    this.mobile=mobile;
-   // Only change the composition. The authoritative 640x480 game worlds remain intact.
-   this.game={w:mobile()?640:1280,h:mobile()?480:550,_finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
+   // G03 portrait gains genuinely visible platform rows below the player.  This
+   // is a draw-only viewport extension: no physics, snapshots or camera update
+   // operates on this display height. G04 retains the 640x480 aiming geometry.
+   this.visualHeight=()=>game==='g03'&&mobile()&&typeof matchMedia==='function'&&
+    matchMedia('(orientation:portrait) and (max-width:700px)').matches?
+    (typeof innerHeight==='number'&&innerHeight>=800?720:typeof innerHeight==='number'&&innerHeight>=710?640:480):480;
+   this.game={w:mobile()?640:1280,h:mobile()?this.visualHeight():550,_finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
   }
   score(board,index){
    const v=board||(this.games[index]?.networkSnapshot());
@@ -98,15 +103,23 @@ function adapter(game){
   }
   render(){} // Guest never advances the authoritative game worlds.
   draw(ctx){
-   const phone=this.mobile(),w=phone?640:1280,h=phone?480:550;
+   const phone=this.mobile(),w=phone?640:1280,h=phone?this.visualHeight():550;
    if(this.game.w!==w||this.game.h!==h){this.game.w=w;this.game.h=h;}
    ctx.save();ctx.fillStyle='#071a2a';ctx.fillRect(0,0,w,h);
    if(phone){
     // The own board uses the FULL playfield; the remote board has a separate PiP canvas.
     const own=this.games[this.host?0:1];
-    // Native game worlds are 960x540; scale ALL of the local world to the
-    // phone composition, or the right/bottom of the playfield is clipped.
-    ctx.save();ctx.scale(w/own.w,h/own.h);own.draw(ctx);ctx.restore();
+    // Native G03/G04 worlds always simulate at 640x480. For tall G03
+    // portrait screens, extend ONLY the drawn viewport to reveal additional
+    // genuine platforms below the player. Restoring g.h even on draw errors
+    // keeps authority, network snapshots, collisions and camera unchanged.
+    ctx.save();
+    const nativeHeight=own.h;
+    try{
+     if(game==='g03'&&h>nativeHeight)own.h=h;
+     ctx.scale(w/own.w,h/own.h);
+     own.draw(ctx);
+    }finally{own.h=nativeHeight;ctx.restore();}
     ctx.restore();return;
    }
    const slots=[{x:12,y:43,w:616,h:461},{x:652,y:43,w:616,h:461}];

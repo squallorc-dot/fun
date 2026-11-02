@@ -11,7 +11,7 @@
 - Preview builds：建議關閉；不要新增 route、custom domain 或 Worker。
 
 ## 來源與發布關卡
-本批遊戲來源：PR #38 的 `3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`（六款 G01～G06 雙人版本、RTC/Relay）。
+本批遊戲來源：PR #38 的 `c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`（六款 G01～G06 雙人版本、RTC/Relay）。
 `scripts/cloudflare-beta-build-v161.mjs` 在 Cloudflare 執行期間重新確認：
 1. PR #38 仍為 Draft、未合併，且 HEAD 精確等於上述 SHA。
 2. 同 SHA 的六項品質 CI：`verify`、`browser`、`arcade-engines`、`arcade-controls-browser`、`arcade-performance-browser`、`arcade-session-browser` 全部成功。
@@ -33,7 +33,7 @@ Beta 入口：https://bio-city-v161-signaling.squall-orc.workers.dev/arcade/frie
 若需要回復，於 Cloudflare Worker → Deployments/Versions 選擇先前可用版本 Roll back。若暫停自動發版，至 Settings → Builds 停用 Git integration。請勿將上述 Beta 專用設定檔合併至 `main`。
 ## 2026-11-02｜第三批回歸修復發布基準
 
-發布來源固定 PR #38 HEAD `3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`，內容含 G03/G04 手機主畫布完整縮放及雙語返回 GitHub Pages `main` 新版遊戲中心。發布分支採非破壞性的雙親整合提交，保留原 release 歷史，樹內容由上述來源加**四個** Beta 專用設定檔構成；預檢以真實 GitHub compare 淨差異與兩項同 SHA CI 核准，不再依賴寫死的 commit 數量。
+發布來源固定 PR #38 HEAD `c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`，內容含 G03/G04 手機主畫布完整縮放及雙語返回 GitHub Pages `main` 新版遊戲中心。發布分支採非破壞性的雙親整合提交，保留原 release 歷史，樹內容由上述來源加**四個** Beta 專用設定檔構成；預檢以真實 GitHub compare 淨差異與兩項同 SHA CI 核准，不再依賴寫死的 commit 數量。
 
 Cloudflare Git Builds 只應選用 `release/bio-city-v161-stun-beta` 為 Production branch，**關閉 Preview Builds**；PR #38 開發分支不含根目錄 `wrangler.toml` 是刻意隔離，PR 上的 Cloudflare Build failure 不能拿來代表 release 部署。正式站 main 保持不變。
 
@@ -41,4 +41,8 @@ Cloudflare Git Builds 只應選用 `release/bio-city-v161-stun-beta` 為 Product
 
 ## 2026-11-02｜G03 雙人與單機按鈕順序一致
 
-候選來源 PR #38：`3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`，配合 G03 手機上方對手即時縮圖列以及單機一致的動作按鍵位置。G03 右側**向下（左）／跳躍（右）**，沿用 BioControlProfiles 的共用位置計算；G04／G05／G06 的按鍵排列維持原有規則。補上觸控手機上實際畫面座標測試與腳本版次更新。僅在來源六項品質 CI 與 RTC/WebKit 雙項專項同版 8/8 SUCCESS，才發布此 Beta。正式 main 不變。
+候選來源 PR #38：`c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`，配合 G03 手機上方對手即時縮圖列以及單機一致的動作按鍵位置。G03 右側**向下（左）／跳躍（右）**，沿用 BioControlProfiles 的共用位置計算；G04／G05／G06 的按鍵排列維持原有規則。補上觸控手機上實際畫面座標測試與腳本版次更新。僅在來源六項品質 CI 與 RTC/WebKit 雙項專項同版 8/8 SUCCESS，才發布此 Beta。正式 main 不變。
+
+## 2026-11-02｜第四批：G03/G04 雙人手機可視空間優化
+
+PR #38 受測來源 `c06eeacad9dc9fc8beee4e32c7c1e1bc6e7eecdb`。將 G03/G04 手機直式的上方對手縮圖、標題、收合按鍵改為精簡單列，操作區縮為實際需要的高度，留白返還主畫面。G03 在足夠高的直式裝置提供 640×640 或 640×720 **純顯示擴展**，繪製期間暫時增加顯示高度並在 finally 還原 640×480 權威物理世界；場景增加真實可見下方平台，不拉伸角色、不修改碰撞、狀態封包或深度計分。G04 保持原 640×480 射擊與瞄準座標。新增長版 Samsung 及短版 iPhone、縮圖列/操作按鍵與 G03/G04 同步不變的回歸測試，並更新資產版本。只有來源同 SHA 的六項品質與兩項 RTC/WebKit CI 8/8 Success 才可部署 release 分支，正式 main 不變。

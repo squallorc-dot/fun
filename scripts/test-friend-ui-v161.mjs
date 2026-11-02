@@ -347,6 +347,37 @@ try{
   assert(shortLayout.down.left+6<shortLayout.jump.left,
     'G03 mobile touch geometry matches standalone: DOWN on inner-left, JUMP on outer-right');
  }finally{await shortPhone.close();}
+ // Batch 4: tall Samsung-style portrait reclaims blank space for G03's real
+ // draw-only taller world, while the peer remains an independent, readable ribbon.
+ const tallPhone=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ try{
+  await tallPhone.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const tall=await tallPhone.evaluate(async()=>{
+   const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+   s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.adapter={game:{w:640,h:720,hud:()=>'<span>自己 90m · 對手 90m</span>',draw:()=>{}},
+    visualHeight:()=>720,mobile:()=>true,drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {top:b.top,bottom:b.bottom,width:b.width,height:b.height};};
+   const own=bounds('game-canvas'),dock=bounds('opponent-dock'),peer=bounds('opponent-canvas');
+   const controls=bounds('touch-controls'),viewport=bounds('viewport');
+   const caption=document.getElementById('opponent-name').getBoundingClientRect(),button=document.getElementById('opponent-hide').getBoundingClientRect();
+   return {own,dock,peer,controls,viewport,captionTop:caption.top,buttonTop:button.top,
+    overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(tall.dock.bottom<=tall.viewport.top+2&&tall.own.bottom<=tall.controls.top+3,
+   'tall phone: larger local stage stays below opponent ribbon and above action buttons');
+  assert(tall.own.height>=350&&tall.own.width>=370,
+   'tall G03 phone renders a genuinely taller near-full-width playfield, not an empty tall wrapper');
+  assert(tall.peer.width>=98&&tall.dock.height<=105,
+   'peer preview remains readable inside a compact single-row ribbon');
+  assert(Math.abs(tall.captionTop-tall.buttonTop)<30,
+   'peer label and collapse button share one horizontal row');
+  assert(tall.controls.height<=200&&tall.controls.bottom<=844&&844-tall.controls.bottom<155,
+   'tall phone: touch dock stays compact and no long blank area remains below it');
+  assert(!tall.overflow,'tall phone avoids horizontal overflow');
+ }finally{await tallPhone.close();}
  // Real touch-capable landscape viewport: orientation and screen-space regression.
  const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
  try{
