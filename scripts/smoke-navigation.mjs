@@ -109,5 +109,43 @@ try{
    check(await count('arcade_game_start')===0,lang+' ready-room deep link is not game started');
   }catch(error){failures.push(lang+' analytics flow: '+error.message);}finally{await page.close();}
  }
+ // Standalone decision lab: real browser interactions and 8-question result in both locales.
+ for(const lang of ['zh','ja']){
+  for(const width of [390,1440]){
+   const page=await pageFor(width);
+   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+   try{
+    await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
+    const link=page.locator('.decision-entry-cta');
+    check(await link.count()===1,lang+' decision entry visible on PLAY '+width);
+    check(await link.getAttribute('href')==='../../'+lang+'/decision-lab.html',lang+' decision entry destination '+width);
+    await link.click();
+    await page.waitForURL('**/'+lang+'/decision-lab.html');
+    await page.locator('#protocol-quiz-root [data-qaction="start"]').waitFor();
+    check(await page.locator('#protocol-game-root').count()===0,lang+' lab does not render old defense game');
+    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),lang+' lab no horizontal overflow '+width);
+    const localeLink=page.locator('.language-links a[lang="'+(lang==='zh'?'ja':'zh-TW')+'"]');
+    check((await localeLink.getAttribute('href'))?.endsWith('/decision-lab.html'),lang+' language link stays in lab');
+    await page.locator('#protocol-quiz-root [data-qaction="start"]').click();
+    check(await page.locator('.protocol-question').count()===1,lang+' first question rendered');
+    for(let question=1;question<=8;question++){
+     check(await page.locator('.protocol-option').count()===4,lang+' Q'+question+' 4 options');
+     await page.locator('.protocol-option[data-answer="0"]').click();
+    }
+    check(await page.locator('.protocol-report-head').count()===1,lang+' report after 8 answers');
+    check(await page.locator('.protocol-axis').count()===4,lang+' four scoring dimensions');
+    check(await page.locator('.protocol-lead-hero').count()===1&&await page.locator('.protocol-aide-hero').count()===1,lang+' two guardian recommendations');
+    const quizEvents=await page.evaluate(()=>window.dataLayer.filter(x=>x&&['quiz_started','quiz_completed'].includes(x.event)));
+    check(quizEvents.length===2&&quizEvents[0].event==='quiz_started'&&quizEvents[1].event==='quiz_completed',lang+' event semantics once');
+    check(quizEvents[1].language===lang&&quizEvents[1].recommended_hero&&quizEvents[1].quiz_questions===8,lang+' completion payload');
+    check(!quizEvents.some(e=>'answers' in e||'question' in e),lang+' raw answers never tracked');
+    const toGame=page.locator('.protocol-control-row a[href*="play.html?game=g02"]');
+    check(await toGame.count()===1,lang+' quiz result can open G02 single-player');
+    await page.locator('[data-qaction="reset"]').click();
+    check(await page.locator('[data-qaction="start"]').count()===1,lang+' quiz reset');
+    check(errors.length===0,lang+' lab runtime errors '+errors.join(';'));
+   }catch(error){failures.push(lang+' decision lab '+width+': '+error.message);}finally{await page.close();}
+  }
+ }
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 if(failures.length){console.error('FAIL '+failures.length+' / '+checks+'\n'+failures.join('\n'));process.exitCode=1;}else console.log('PASS '+checks+' navigation/layout assertions: 14 pages, 7 widths, 2 languages, hero/game deep links and modal focus.');
