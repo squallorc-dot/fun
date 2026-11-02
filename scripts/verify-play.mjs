@@ -32,7 +32,7 @@ for(const lang of ['zh','ja']){
  assert(html.includes('href="https://squallorc-dot.github.io/fun/'+lang+'/decision-lab.html"'),'canonical decision lab: '+lang);
  assert(html.includes('hreflang="ja" href="https://squallorc-dot.github.io/fun/ja/decision-lab.html"'),'Japanese locale link: '+lang);
  assert(html.includes('hreflang="zh-TW" href="https://squallorc-dot.github.io/fun/zh/decision-lab.html"'),'Traditional Chinese locale link: '+lang);
- assert((html.match(/<h1\\b/g)||[]).length===1,'one h1 per lab: '+lang);
+  assert(html.includes('<h1 id="decision-title"')&&(html.match(/<h1 /g)||[]).length===1,'one h1 per lab: '+lang);
 }
 const protocol=fs.readFileSync('assets/protocol-engine.js','utf8');
 assert(protocol.includes("reportEvent('quiz_started'")&&protocol.includes("reportEvent('quiz_completed'"),'quiz starts and completes must emit dataLayer events');
