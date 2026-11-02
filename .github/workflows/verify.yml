@@ -201,7 +201,7 @@ jobs:
           node-version: '20'
       - name: Install Playwright and Chromium
         run: |
-          npm install --no-save --no-package-lock playwright@1.56.1 jsqr@1.4.0
+          npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Test bilingual mobile control profiles and actual gameplay
         run: |
@@ -210,7 +210,7 @@ jobs:
           node scripts/smoke-g02-network-clock-6b.mjs
       - name: Test real G03/G04 solo portrait parity and G06 touch order
         timeout-minutes: 12
-        run: node scripts/ci-browser-check.mjs scripts/test-friend-ui-v161.mjs
+        run: node scripts/ci-browser-check.mjs scripts/smoke-friend-portrait-v5.mjs
       - name: Package byte-exact controls evidence with recoverable aliases
         if: always()
         run: python3 scripts/package-qa.py --output arcade/qa/artifact-v16/controls 'arcade/qa/controls-v14/' 'arcade/qa/g02-mobile-v14/'
