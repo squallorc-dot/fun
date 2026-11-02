@@ -54,18 +54,20 @@ function adapter(game){
       this.players[i]={won:!!won,points:Math.max(0,Number(points)||0),note:String(note||'').slice(0,80)};
       this.finishedBy=i;this.game._finished=true;finish();
      }};
-    const g=root.BioSuiteGames[game](env);g.w=640;g.h=480;g.start();return g;
+    // Share the exact same logical world proportions as the single-player
+    // arcade. Both authority and guest use these dimensions on every device,
+    // so physics, collisions, aiming and network snapshots remain consistent.
+    const g=root.BioSuiteGames[game](env);
+    [g.w,g.h]=game==='g03'?[480,720]:[600,720];
+    g.start();return g;
    });
    this.locale=locale;
    const mobile=()=>typeof matchMedia==='function'&&matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
    this.mobile=mobile;
-   // G03 portrait gains genuinely visible platform rows below the player.  This
-   // is a draw-only viewport extension: no physics, snapshots or camera update
-   // operates on this display height. G04 retains the 640x480 aiming geometry.
-   this.visualHeight=()=>game==='g03'&&mobile()&&typeof matchMedia==='function'&&
-    matchMedia('(orientation:portrait) and (max-width:700px)').matches?
-    (typeof innerHeight==='number'&&innerHeight>=800?720:typeof innerHeight==='number'&&innerHeight>=710?640:480):480;
-   this.game={w:mobile()?640:1280,h:mobile()?this.visualHeight():550,_finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
+   // Composition and authoritative physics share solo-game portrait ratio
+   // on phones; desktop still has two separate side-by-side views.
+   this.game={w:mobile()?this.games[0].w:1280,h:mobile()?this.games[0].h:550,
+    _finished:false,draw:ctx=>this.draw(ctx),hud:()=>this.hud()};
   }
   score(board,index){
    const v=board||(this.games[index]?.networkSnapshot());
@@ -103,30 +105,24 @@ function adapter(game){
   }
   render(){} // Guest never advances the authoritative game worlds.
   draw(ctx){
-   const phone=this.mobile(),w=phone?640:1280,h=phone?this.visualHeight():550;
+   const phone=this.mobile(),w=phone?this.games[0].w:1280,h=phone?this.games[0].h:550;
    if(this.game.w!==w||this.game.h!==h){this.game.w=w;this.game.h=h;}
    ctx.save();ctx.fillStyle='#071a2a';ctx.fillRect(0,0,w,h);
    if(phone){
     // The own board uses the FULL playfield; the remote board has a separate PiP canvas.
     const own=this.games[this.host?0:1];
-    // Native G03/G04 worlds always simulate at 640x480. For tall G03
-    // portrait screens, extend ONLY the drawn viewport to reveal additional
-    // genuine platforms below the player. Restoring g.h even on draw errors
-    // keeps authority, network snapshots, collisions and camera unchanged.
-    ctx.save();
-    const nativeHeight=own.h;
-    try{
-     if(game==='g03'&&h>nativeHeight)own.h=h;
-     ctx.scale(w/own.w,h/own.h);
-     own.draw(ctx);
-    }finally{own.h=nativeHeight;ctx.restore();}
+    // Both mobile worlds are the same native portrait proportions as solo.
+    // Never scale the X and Y axes independently.
+    ctx.save();ctx.scale(w/own.w,h/own.h);own.draw(ctx);ctx.restore();
     ctx.restore();return;
    }
    const slots=[{x:12,y:43,w:616,h:461},{x:652,y:43,w:616,h:461}];
    for(let i=0;i<2;i++){
     const a=slots[i],g=this.games[i];
     ctx.save();ctx.translate(a.x,a.y);ctx.beginPath();ctx.rect(0,0,a.w,a.h);ctx.clip();
-    ctx.scale(a.w/g.w,a.h/g.h);g.draw(ctx);ctx.restore();
+    const zoom=Math.min(a.w/g.w,a.h/g.h),dw=g.w*zoom,dh=g.h*zoom;
+    ctx.translate((a.w-dw)/2,(a.h-dh)/2);ctx.scale(zoom,zoom);
+    g.draw(ctx);ctx.restore();
     ctx.save();ctx.strokeStyle=i===(this.host?0:1)?'#64e8e1':'#6595c5';ctx.lineWidth=3;ctx.strokeRect(a.x,a.y,a.w,a.h);
     ctx.fillStyle='#ddfaff';ctx.font='bold 20px sans-serif';ctx.fillText((i?'FRIEND':'HOST')+'  '+this.score(null,i).score,a.x+8,a.y-12);ctx.restore();
    }
@@ -136,7 +132,16 @@ function adapter(game){
    if(!this.mobile()||!ctx?.canvas)return false;
    const g=this.games[this.host?1:0];if(!g)return false;
    const w=ctx.canvas.width,h=ctx.canvas.height;
-   ctx.save();ctx.clearRect(0,0,w,h);ctx.scale(w/g.w,h/g.h);g.draw(ctx);ctx.restore();
+   // Keep the opponent preview wide/readable without squashing the tall
+   // guardian/ball. It is a focus crop, not a stretched full-stage copy.
+   const zoom=w/g.w,visibleHeight=h/zoom,snapshot=g.networkSnapshot();
+   const focus=game==='g03'?
+    (snapshot.player?.y||0)-(snapshot.camera||0)-visibleHeight*.42:
+    g.h-visibleHeight*.80;
+   const top=Math.max(0,Math.min(g.h-visibleHeight,focus));
+   ctx.save();ctx.clearRect(0,0,w,h);ctx.fillStyle='#071a2a';ctx.fillRect(0,0,w,h);
+   ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();
+   ctx.translate(0,-top*zoom);ctx.scale(zoom,zoom);g.draw(ctx);ctx.restore();
    return true;
   }
   hud(){
