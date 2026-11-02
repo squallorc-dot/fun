@@ -4,7 +4,7 @@
  * Neither guest physics nor client-reported points can decide the winner.
  */
 ((root)=>{'use strict';
-const TAGS=Object.freeze({g03:'g03-dual-v3',g04:'g04-dual-v3'});
+const TAGS=Object.freeze({g03:'g03-dual-v4',g04:'g04-dual-v4'});
 const MODES=Object.freeze({g03:['stairs'],g04:['pinball']});
 const LIMIT=29000;
 const obj=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);

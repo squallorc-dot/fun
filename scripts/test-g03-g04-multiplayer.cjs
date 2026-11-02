@@ -8,6 +8,7 @@ for(const name of ['games-core.js','g03-g04-network.js'])
 let checks=0;const check=(ok,msg)=>{assert(ok,msg);checks++};
 for(const [game,mode] of [['g03','stairs'],['g04','pinball']]){
  const M=game==='g03'?root.BioG03Network:root.BioG04Network;
+ check(M.TAG===game+'-dual-v4','new portrait physics refuses old g03/g04 network engines');
  for(const chapter of [1,2,3,4,5]){
   let finished=0;
   const common={mode,chapter,hero:0,remoteHero:3,difficulty:'normal',locale:'zh',testMode:true};
