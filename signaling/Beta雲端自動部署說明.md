@@ -11,7 +11,7 @@
 - Preview builds：建議關閉；不要新增 route、custom domain 或 Worker。
 
 ## 來源與發布關卡
-本批遊戲來源：PR #38 的 `d99fca0c06615619f619c8677bd99a1c244c4f48`（六款 G01～G06 雙人版本、RTC/Relay）。
+本批遊戲來源：PR #38 的 `3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`（六款 G01～G06 雙人版本、RTC/Relay）。
 `scripts/cloudflare-beta-build-v161.mjs` 在 Cloudflare 執行期間重新確認：
 1. PR #38 仍為 Draft、未合併，且 HEAD 精確等於上述 SHA。
 2. 同 SHA 的六項品質 CI：`verify`、`browser`、`arcade-engines`、`arcade-controls-browser`、`arcade-performance-browser`、`arcade-session-browser` 全部成功。
@@ -33,8 +33,12 @@ Beta 入口：https://bio-city-v161-signaling.squall-orc.workers.dev/arcade/frie
 若需要回復，於 Cloudflare Worker → Deployments/Versions 選擇先前可用版本 Roll back。若暫停自動發版，至 Settings → Builds 停用 Git integration。請勿將上述 Beta 專用設定檔合併至 `main`。
 ## 2026-11-02｜第三批回歸修復發布基準
 
-發布來源固定 PR #38 HEAD `d99fca0c06615619f619c8677bd99a1c244c4f48`，內容含 G03/G04 手機主畫布完整縮放及雙語返回 GitHub Pages `main` 新版遊戲中心。發布分支採非破壞性的雙親整合提交，保留原 release 歷史，樹內容由上述來源加**四個** Beta 專用設定檔構成；預檢以真實 GitHub compare 淨差異與兩項同 SHA CI 核准，不再依賴寫死的 commit 數量。
+發布來源固定 PR #38 HEAD `3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`，內容含 G03/G04 手機主畫布完整縮放及雙語返回 GitHub Pages `main` 新版遊戲中心。發布分支採非破壞性的雙親整合提交，保留原 release 歷史，樹內容由上述來源加**四個** Beta 專用設定檔構成；預檢以真實 GitHub compare 淨差異與兩項同 SHA CI 核准，不再依賴寫死的 commit 數量。
 
 Cloudflare Git Builds 只應選用 `release/bio-city-v161-stun-beta` 為 Production branch，**關閉 Preview Builds**；PR #38 開發分支不含根目錄 `wrangler.toml` 是刻意隔離，PR 上的 Cloudflare Build failure 不能拿來代表 release 部署。正式站 main 保持不變。
 
 只有 GitHub Build 成功且實際 Worker HTTPS 回應與最新版資產一致，才可請使用者開始 iPhone Safari 與 Samsung Chrome 實測。跨網域返回正式網站不保證 OST 真正無縫銜接。
+
+## 2026-11-02｜G03 雙人與單機按鈕順序一致
+
+候選來源 PR #38：`3a94305bf3e8f9ddd8d538d42f19c14a5b5e3cea`，配合 G03 手機上方對手即時縮圖列以及單機一致的動作按鍵位置。G03 右側**向下（左）／跳躍（右）**，沿用 BioControlProfiles 的共用位置計算；G04／G05／G06 的按鍵排列維持原有規則。補上觸控手機上實際畫面座標測試與腳本版次更新。僅在來源六項品質 CI 與 RTC/WebKit 雙項專項同版 8/8 SUCCESS，才發布此 Beta。正式 main 不變。

@@ -106,29 +106,45 @@ try{
   }
   if(locale==='zh'&&viewport.width===390){
    // UI-only: the real two-board host/guest state is exercised by engine and RTC tests.
-   const state=await page.evaluate(()=>{
+   const state=await page.evaluate(async()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='guest';s.epoch=1;
     s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
     s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 122m · 對手 122m</span>',draw:()=>{}},
       drawOpponent:ctx=>{ctx.fillStyle='#245768';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);return true;},dispose:()=>{}};
     s.phase='playing';s.result=null;document.body.classList.add('auto-connected');s.changed();
-    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height};};
-    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),shown:!document.getElementById('opponent-preview').hidden,
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const bounds=id=>{const b=document.getElementById(id).getBoundingClientRect();return {w:b.width,h:b.height,top:b.top,bottom:b.bottom,left:b.left,right:b.right};};
+    return {main:bounds('game-canvas'),peer:bounds('opponent-preview'),peerCanvas:bounds('opponent-canvas'),
+      dock:bounds('opponent-dock'),controls:bounds('touch-controls'),stage:bounds('viewport'),
+      shown:!document.getElementById('opponent-preview').hidden,
+      touchVisible:getComputedStyle(document.getElementById('touch-controls')).display!=='none',
+      dockBeforeStage:document.getElementById('game-shell').firstElementChild.id==='opponent-dock',
+      moveRemoved:!document.getElementById('opponent-move'),
       helpHidden:document.getElementById('help-panel').hidden,
       score:document.getElementById('score').textContent,overflow:document.documentElement.scrollWidth>innerWidth};
    });
-   assert(state.shown&&state.helpHidden,'G03 phone PiP shown and play instructions initially collapsed');
-   assert(state.main.w>state.peer.w*2,'own game is at least twice the PiP width');
+   assert(state.shown&&state.helpHidden,'G03 phone peer ribbon shown and play instructions initially collapsed');
+   assert(state.dockBeforeStage&&state.moveRemoved,'peer ribbon precedes primary stage and no obsolete move control remains');
+   assert(state.main.w>state.peerCanvas.w*2,'own game stays more than twice the live peer image width');
    assert(Math.abs(state.main.w/state.main.h-4/3)<.12,'own G03 board maintains its ratio');
+   assert(state.dock.bottom<=state.stage.top+2,'peer ribbon is fully ABOVE the own playfield, never overlaying it');
+   assert(!state.touchVisible||state.main.bottom<=state.controls.top+3,'own playfield does not overlap enabled touch controls: '+JSON.stringify({main:state.main,stage:state.stage,controls:state.controls,dock:state.dock}));
+   assert(!state.touchVisible||state.controls.h>=145,'visible touch controls retain a usable height');
    assert(state.score.includes('自己')&&state.score.includes('對手'),'own and peer share compact HUD');
-   assert(!state.overflow,'PiP does not cause horizontal overflow');
+   assert(!state.overflow,'peer ribbon does not cause horizontal overflow');
    await page.locator('#opponent-hide').click();
-   assert(await page.locator('#opponent-preview').isHidden(),'peer PiP can be collapsed');
-   assert(await page.locator('#opponent-show').isVisible(),'peer PiP can be reopened');
+   assert(await page.locator('#opponent-preview').isHidden(),'peer ribbon can be collapsed');
+   assert(await page.locator('#opponent-show').isVisible(),'peer ribbon can be reopened');
+   const collapsed=await page.evaluate(()=>({controls:document.getElementById('touch-controls').getBoundingClientRect().top,
+     dock:document.getElementById('opponent-dock').getBoundingClientRect().height,
+     saved:localStorage.getItem('bio-city-peer-preview-collapsed-v2')}));
+   assert(Math.abs(collapsed.controls-state.controls.top)<2,'collapsing peer image never moves the touch buttons');
+   assert(Math.abs(collapsed.dock-state.dock.h)<2,'collapsed peer ribbon reserves the same vertical space');
+   assert.equal(collapsed.saved,'1','collapsed preference persists locally');
    await page.locator('#opponent-show').click();
-   assert(await page.locator('#opponent-preview').isVisible(),'peer PiP reopens without restarting the game');
-   await page.locator('#opponent-move').click();
-   assert(await page.locator('#opponent-preview').evaluate(el=>el.classList.contains('at-top')),'peer PiP can move above game obstacles');
+   assert(await page.locator('#opponent-preview').isVisible(),'peer ribbon reopens without restarting the game');
+   assert.equal(await page.evaluate(()=>localStorage.getItem('bio-city-peer-preview-collapsed-v2')),'0','expanded preference persists locally');
+   assert.equal(await page.locator('#opponent-dock').evaluate(el=>{const gap=document.getElementById('viewport').getBoundingClientRect().top-el.getBoundingClientRect().bottom;return gap>=-1&&gap<=8;}),true,'reopened ribbon stays above game stage with small intentional gap');
    await page.evaluate(()=>{
      const s=BioFriendsApp.session;s.config={...s.config,game:'g04',mode:'pinball'};s.changed();
    });
@@ -298,6 +314,39 @@ try{
    }
   await page.close();
  }
+ // Short-height iPhone-style portrait: opponent is above the board, keys stay accessible.
+ const shortPhone=await browser.newPage({viewport:{width:390,height:664},isMobile:true,hasTouch:true});
+ try{
+  await shortPhone.goto(origin+'/arcade/friends/index.html?lang=zh');
+  const shortLayout=await shortPhone.evaluate(async()=>{
+   const s=BioFriendsApp.session;s.role='host';s.epoch=1;
+   s.config={game:'g03',mode:'stairs',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+   s.adapter={game:{w:640,h:480,hud:()=>'<span>自己 12m · 對手 12m</span>',draw:()=>{}},
+     drawOpponent:()=>true,dispose:()=>{}};
+   s.phase='playing';document.body.classList.add('auto-connected');s.changed();
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const r=id=>document.getElementById(id).getBoundingClientRect();
+   const action=(key)=>document.querySelector('#touch-controls [data-action="'+key+'"]');
+   const down=action('down'),jump=action('jump');
+   const downBounds=down.getBoundingClientRect(),jumpBounds=jump.getBoundingClientRect();
+   return {peerAbove:r('opponent-dock').bottom<=r('viewport').top+2,
+     ownAboveControls:r('game-canvas').bottom<=r('touch-controls').top+3,
+     touchVisible:getComputedStyle(document.getElementById('touch-controls')).display!=='none',
+     keysVisible:r('touch-controls').top<innerHeight-80,
+     peerShown:!document.getElementById('opponent-preview').hidden,
+     down:{left:downBounds.left,right:downBounds.right,text:down.textContent.trim(),shown:!down.hidden},
+     jump:{left:jumpBounds.left,right:jumpBounds.right,text:jump.textContent.trim(),shown:!jump.hidden},
+     overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(shortLayout.peerShown&&shortLayout.peerAbove&&shortLayout.ownAboveControls,
+    'short phone portrait has non-overlapping opponent / main stage / controls');
+  assert(shortLayout.touchVisible&&shortLayout.keysVisible&&!shortLayout.overflow,
+    'short phone portrait controls remain in view without sideways overflow');
+  assert(shortLayout.down.shown&&shortLayout.jump.shown&&shortLayout.down.text==='向下'&&shortLayout.jump.text==='跳躍',
+    'G03 both actions retain their solo key labels and remain enabled');
+  assert(shortLayout.down.left+6<shortLayout.jump.left,
+    'G03 mobile touch geometry matches standalone: DOWN on inner-left, JUMP on outer-right');
+ }finally{await shortPhone.close();}
  // Real touch-capable landscape viewport: orientation and screen-space regression.
  const sideways=await browser.newPage({viewport:{width:844,height:390},isMobile:true,hasTouch:true});
  try{

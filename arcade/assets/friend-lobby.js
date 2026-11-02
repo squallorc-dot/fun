@@ -8,22 +8,30 @@ if($('help')){$('help').textContent=ja?'操作ガイド':'操作說明';$('help-
 const heroes=ja?['バーナー姐さん','MJ ロボット','モーモー','葉宝 EX','ゼリー三兄妹','野菜ソルジャー','オラクル']:['Burner 姐','MJ 機器人','萌牛阿哞','葉寶 EX','果凍三兄妹','野菜小將','Oracle 守望者'];heroes.forEach((name,i)=>{const o=document.createElement('option');o.value=i;o.textContent=name;$('hero').appendChild(o);});
 const canvas=$('game-canvas'),ctx=canvas.getContext('2d'),keys=new Set(),pulses=new Set();let session,controls,plan={reservedLeft:0,reservedRight:0},epoch=-1,lastPhase='',last=performance.now(),lastUI=0;
 let helpChoice=null,helpGame=null;
-const oppPanel=$('opponent-preview'),oppShow=$('opponent-show'),oppCanvas=$('opponent-canvas');
-const oppCtx=oppCanvas?.getContext('2d')||null;let oppCollapsed=false,oppTop=false,oppEpoch=-1,lastOppDraw=0;
+const oppDock=$('opponent-dock'),oppPanel=$('opponent-preview'),oppShow=$('opponent-show'),oppCanvas=$('opponent-canvas');
+const oppCtx=oppCanvas?.getContext('2d')||null,oppPreferenceKey='bio-city-peer-preview-collapsed-v2';
+let oppCollapsed=false,oppEpoch=-1,lastOppDraw=0;
+try{oppCollapsed=localStorage.getItem(oppPreferenceKey)==='1';}catch{}
 const phoneDual=()=>window.matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
 function updateOpponentUI(s,active){
- if(!oppPanel||!oppShow)return; // Legacy QA entry has no production PiP controls.
- if(s.epoch!==oppEpoch){oppEpoch=s.epoch;oppCollapsed=false;oppTop=false;}
+ if(!oppDock||!oppPanel||!oppShow)return; // Legacy QA entry has no production PiP controls.
+ if(s.epoch!==oppEpoch)oppEpoch=s.epoch; // Preserve collapse preference across rounds.
  const enabled=active&&['g03','g04'].includes(s.config?.game)&&phoneDual()&&['countdown','playing','paused'].includes(s.phase);
+ oppDock.hidden=!enabled;
  oppPanel.hidden=!enabled||oppCollapsed;oppShow.hidden=!enabled||!oppCollapsed;
- oppPanel.classList.toggle('at-top',oppTop);
- $('opponent-name').textContent=s.role==='host'?(ja?'ゲスト':'好友'):(ja?'ホスト':'房主');
- $('opponent-move').textContent=oppTop?(ja?'下へ':'移下'):(ja?'上へ':'移上');
- $('opponent-hide').textContent=ja?'閉じる':'收合';oppShow.textContent=ja?'相手を表示':'顯示對手';
+ $('opponent-name').textContent=s.role==='host'?(ja?'相手の画面 · ゲスト':'好友即時畫面'):(ja?'相手の画面 · ホスト':'房主即時畫面');
+ $('opponent-hide').textContent=ja?'閉じる':'收合';
+ oppShow.textContent=ja?'相手の画面を表示':'顯示對手即時畫面';
+ oppShow.setAttribute('aria-expanded',String(!oppCollapsed));
+ $('opponent-hide').setAttribute('aria-expanded',String(!oppCollapsed));
 }
-$('opponent-hide')?.addEventListener('click',()=>{oppCollapsed=true;updateOpponentUI(session.inspect(),!$('arena').hidden);});
-$('opponent-show')?.addEventListener('click',()=>{oppCollapsed=false;updateOpponentUI(session.inspect(),!$('arena').hidden);});
-$('opponent-move')?.addEventListener('click',()=>{oppTop=!oppTop;updateOpponentUI(session.inspect(),!$('arena').hidden);});
+function setOpponentCollapsed(collapsed){
+ oppCollapsed=collapsed;
+ try{localStorage.setItem(oppPreferenceKey,collapsed?'1':'0');}catch{}
+ updateOpponentUI(session.inspect(),!$('arena').hidden);
+}
+$('opponent-hide')?.addEventListener('click',()=>setOpponentCollapsed(true));
+$('opponent-show')?.addEventListener('click',()=>setOpponentCollapsed(false));
 function setHelpOpen(open){if(!$('help')||!$('help-panel'))return;$('help-panel').hidden=!open;$('help').setAttribute('aria-expanded',String(open));$('help').textContent=ja?(open?'説明を閉じる':'操作ガイド'):(open?'收合說明':'操作說明');}
 const audio=new BioFriendAudio(()=>{const a=audio?.prefs;if(!a)return;$('audio-status').textContent=audio.status==='blocked'?L.audioBlocked:audio.status;});
 function resetInputs(){keys.clear();pulses.clear();controls?.reset();}
@@ -59,7 +67,7 @@ function render(){
  $('room-name').textContent=s.room||L.title;$('status').textContent=L[s.phase]||L.disconnected;$('role').textContent=s.role==='host'?(ja?'ホスト':'房主'):s.role==='guest'?(ja?'ゲスト':'好友'):'';
  $('mode').disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;if(s.config)$('mode').value=s.config.mode;
  $('ready').disabled=s.phase!=='lobby'||!s.configAck||s.preparing;const continuing=s.phase==='lobby'&&s.config?.continuation===true;$('ready').hidden=continuing&&(s.preparing||s.ready[s.role==='host'?0:1]);$('ready').textContent=s.preparing?L.preparing:s.ready[s.role==='host'?0:1]?L.cancelReady:L.ready;$('readiness').textContent=s.startPending?(ja?'フレンドのゲーム開始を確認中…':'正在等待好友完成遊戲畫面同步…'):continuing?(ja?'次の試合を準備中…':'正在接續下一局，準備倒數…'):s.ready.filter(Boolean).length+'/2';
- $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('viewport').dataset.game=s.config?.game||'';updateOpponentUI(s,active);const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();$('side').textContent=compactDual?(ja?'自分の画面':'自己畫面'):s.role==='guest'?L.right:L.left;$('return').textContent=compactDual?(ja?'ロビー':'大廳'):L.return;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';const hasChapters=['g01','g02','g03','g04','g06'].includes(s.config?.game),completed=s.config?.game==='g06'?(s.result?.players?.length===2&&s.result.players.every(p=>p.status==='finished')):!!s.result?.win;const nextChapter=hasChapters&&completed&&(s.config?.chapter||1)<5;const nextLabel=nextChapter?(ja?`次のチャプター（${s.config.chapter+1}/5）`:`下一關（${s.config.chapter+1}/5）`):hasChapters?(completed?(ja?'新しい周回を始める':'重新闖關'):(ja?'このチャプターをもう一度':'重試本關')):(ja?'次の試合へ':'再玩下一局');$('rematch').textContent=s.nextRequested?(ja?'ホストの開始を待っています':'等待房主開始下一局'):nextLabel;$('rematch').disabled=!!s.nextRequested;
+ $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('viewport').dataset.game=s.config?.game||'';$('game-shell').dataset.game=s.config?.game||'';updateOpponentUI(s,active);const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();$('side').textContent=compactDual?(ja?'自分の画面':'自己畫面'):s.role==='guest'?L.right:L.left;$('return').textContent=compactDual?(ja?'ロビー':'大廳'):L.return;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';const hasChapters=['g01','g02','g03','g04','g06'].includes(s.config?.game),completed=s.config?.game==='g06'?(s.result?.players?.length===2&&s.result.players.every(p=>p.status==='finished')):!!s.result?.win;const nextChapter=hasChapters&&completed&&(s.config?.chapter||1)<5;const nextLabel=nextChapter?(ja?`次のチャプター（${s.config.chapter+1}/5）`:`下一關（${s.config.chapter+1}/5）`):hasChapters?(completed?(ja?'新しい周回を始める':'重新闖關'):(ja?'このチャプターをもう一度':'重試本關')):(ja?'次の試合へ':'再玩下一局');$('rematch').textContent=s.nextRequested?(ja?'ホストの開始を待っています':'等待房主開始下一局'):nextLabel;$('rematch').disabled=!!s.nextRequested;
  if($('help')){const key=s.config?.game+':'+s.config?.mode;if(helpGame!==key){helpGame=key;helpChoice=null;}const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();const visible=active&&document.body.dataset.autoLobby==='true'&&['countdown','playing','paused'].includes(s.phase)&&(helpChoice??!compactDual);setHelpOpen(visible);}
   const race=s.config?.game==='g06',dual=['g03','g04'].includes(s.config?.game),time=v=>Number.isFinite(v)?v.toFixed(2)+'s':'—';$('result').textContent=s.result?(dual?`${s.config.game==='g03'?(ja?'階段チャレンジ':'極限下樓梯'):(ja?'ピンボール':'能源彈珠')} · ${(ja?'ホスト':'房主')} ${s.result.players[0].score} : ${(ja?'ゲスト':'好友')} ${s.result.players[1].score} · ${s.result.winner===null?(ja?'引き分け':'平手'):(ja?'勝者':'勝方')+' '+(s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友'))}`:race?s.result.standings.map(r=>`${r.position}. ${r.name} ${r.status==='finished'?(ja?'完走':'完賽'):r.status==='dnf'?(ja?'リタイア':'未完賽'):(ja?'進行中':'比賽中')} ${time(r.time)}`).join(' · ')+' | '+s.result.players.map(p=>`${p.id==='player'?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} 第${p.rank}${ja?'位':'名'} ${ja?'ベスト':'最佳圈'} ${time(p.bestLap)} ${ja?'追越':'超車'} ${p.overtakes} ${ja?'衝突':'碰撞'} ${p.collisions}`).join(' · '):['g01','g02'].includes(s.config?.game)?`${s.result.win?'勝利':(ja?'失敗':'挑戰失敗')} · ${ja?'スコア':'得分'} ${s.result.score} · ${ja?'撃破':'擊倒'} ${s.result.kills}`:`${L.winner}：${s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} · ${s.result.points.join(' : ')}`):'';if(session.adapter&&dual)$('score').innerHTML=session.adapter.game.hud();else if(session.adapter&&race)$('score').innerHTML=s.role==='guest'?session.adapter.game.guestHud():session.adapter.game.hud();else $('score').textContent=session.adapter?(['g01','g02'].includes(s.config?.game)?String(session.adapter.game.inspectCombat().score):session.adapter.game.inspectMatch().points.join(' : ')):'';
  // The joint result is a readable scoreboard on desktop and both phones.
@@ -105,7 +113,11 @@ function render(){
 }
 session=new BioFriends.Session({readInput,onChange:render,locale:ja?'ja':'zh',betaStun:document.body.dataset.autoLobby==='true'||new URLSearchParams(location.search).get('auto')==='1',sfx:(f,l)=>audio.effect(f,l)});
 const settings=BioControlProfiles.createSettings({onOpen:()=>{session.pause('settings');resetInputs();},onClose:()=>{resetInputs();controls.schedule();}});
-let controlGame;function rebuildControls(){controls?.dispose();const game=session.config?.game||'g05',buttons=[...document.querySelectorAll('[data-action]')].filter(el=>!el.hidden);controls=BioControlProfiles.createInput({root:$('touch-controls'),stick:$('stick-pad'),knob:$('stick-knob'),buttons:buttons.map(el=>({el,key:el.dataset.action})),context:()=>({game,mode:session.config?.mode||'pong',axis:['g01','g02','g04','g06'].includes(game)?'xy':game==='g03'?'x':session.config?.mode==='volley'?'x':'y'}),enabled:()=>['countdown','playing'].includes(session.phase),space:()=>$('viewport'),onLayout:p=>{plan=p;size();}});}rebuildControls();
+let controlGame;function rebuildControls(){controls?.dispose();const game=session.config?.game||'g05',buttons=[...document.querySelectorAll('#touch-controls [data-action]')].filter(el=>!el.hidden);
+// Standalone G03 puts DOWN at the inner/left action slot and JUMP at the outer/right.
+// This order feeds the shared control-layout engine; DOM order alone is not visual order.
+if(game==='g03')buttons.sort((a,b)=>['down','jump'].indexOf(a.dataset.action)-['down','jump'].indexOf(b.dataset.action));
+controls=BioControlProfiles.createInput({root:$('touch-controls'),stick:$('stick-pad'),knob:$('stick-knob'),buttons:buttons.map(el=>({el,key:el.dataset.action})),context:()=>({game,mode:session.config?.mode||'pong',axis:['g01','g02','g04','g06'].includes(game)?'xy':game==='g03'?'x':session.config?.mode==='volley'?'x':'y'}),enabled:()=>['countdown','playing'].includes(session.phase),space:()=>$('viewport'),onLayout:p=>{plan=p;size();}});}rebuildControls();
 async function act(task){$('error').textContent='';audio.unlock();try{await task();}catch{$('error').textContent=L.error;}render();}
 $('host').onclick=()=>act(async()=>{$('local').value=await session.host($('room').value,Number($('hero').value));});
 $('guest').onclick=()=>act(async()=>{$('local').value=await session.join($('remote').value,Number($('hero').value));$('remote').value='';});
