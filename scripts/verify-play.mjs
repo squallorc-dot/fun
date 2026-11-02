@@ -22,5 +22,19 @@ assert(hub.includes("ga('arcade_feature_click'"),'feature click is a distinct GA
 assert(hub.includes("ga('arcade_game_select'"),'game selection is tracked separately from game start');
 const nav=fs.readFileSync('assets/navigation.js','utf8');
 for(const e of ['site_navigation_click','site_language_switch','arcade_catalog_click','arcade_friends_beta_click'])assert(nav.includes("'"+e+"'"),'navigation tracking missing '+e);
+for(const lang of ['zh','ja']){
+ const html=fs.readFileSync(lang+'/decision-lab.html','utf8');
+ const play=fs.readFileSync(lang+'/play.html','utf8');
+ assert(play.includes('id="decision-entry-title"')&&play.includes('../../'+lang+'/decision-lab.html'),'PLAY must expose decision lab after six game cards: '+lang);
+ assert(play.indexOf('id="game-list"')<play.indexOf('id="decision-entry-title"'),'decision entry follows six games: '+lang);
+ assert(html.includes('id="protocol-quiz-root"')&&!html.includes('id="protocol-game-root"'),'standalone quiz only: '+lang);
+ assert(html.includes('assets/protocol-engine.js')&&html.includes('assets/decision-lab-init.js'),'quiz scripts present: '+lang);
+ assert(html.includes('href="https://squallorc-dot.github.io/fun/'+lang+'/decision-lab.html"'),'canonical decision lab: '+lang);
+ assert(html.includes('hreflang="ja" href="https://squallorc-dot.github.io/fun/ja/decision-lab.html"'),'Japanese locale link: '+lang);
+ assert(html.includes('hreflang="zh-TW" href="https://squallorc-dot.github.io/fun/zh/decision-lab.html"'),'Traditional Chinese locale link: '+lang);
+ assert((html.match(/<h1\\b/g)||[]).length===1,'one h1 per lab: '+lang);
+}
+const protocol=fs.readFileSync('assets/protocol-engine.js','utf8');
+assert(protocol.includes("reportEvent('quiz_started'")&&protocol.includes("reportEvent('quiz_completed'"),'quiz starts and completes must emit dataLayer events');
 assert(hub.includes("ga('arcade_game_start'")&&hub.includes("ga('game_completed'"),'core gameplay events preserved');
 console.log('PASS bilingual PLAY page contract, GTM, G06 and shared engines');
