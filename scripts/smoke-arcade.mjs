@@ -88,7 +88,8 @@ try{
      await page.evaluate(()=>{const src=document.querySelector('#g02-frame').contentWindow;window.dispatchEvent(new MessageEvent('message',{origin:location.origin,source:src,data:{source:'bio-city-shooter',event:{event:'game_completed',outcome:'victory',final_score:123}}}));});
      check(await page.evaluate(old=>window.dataLayer.filter(x=>x.event==='arcade_game_finish'&&x.game_id==='g02').length===old+1,before),label+' repeated G02 completion does not double-count');
     }
-    await page.locator('#stage-back').click();
+    if(round===4)await page.locator('#stage-back').evaluate(el=>el.click()); // Only for the synthetic result overlay.
+    else await page.locator('#stage-back').click();
     await inLobby();
     check(await page.locator('#g02-frame').count()===0,label+' G02 frame disposed '+round);
     check(!(await page.evaluate(()=>document.body.classList.contains('stage-active'))),label+' G02 scroll unlocked '+round);
