@@ -5,12 +5,12 @@ const app=await setup({viewport:{width:390,height:844}});
 try{
  for(const [i,page] of app.pages.entries()){
   const locale=i?'ja':'zh',origin=new URL(page.url()).origin;
-  await page.goto(origin+'/arcade/'+locale+'/index.html');
+  await page.goto(origin+'/'+locale+'/play.html');
   const live=page.locator('a[href*="bio-city-v161-signaling.squall-orc.workers.dev/arcade/friends/?lang='+locale+'"]');
   assert.equal(await live.count(),1,'live multiplayer remains separate and explicitly beta');
   assert.equal(await page.locator('.hub-more-async').count(),0,'offline code exchange UI is removed');
   assert.equal(await page.locator('a[href*="challenge/index.html"]').count(),0,'offline friend code links are retired');
-  assert.equal(await page.locator('[data-launch]').count(),6,'all six solo games remain available');
+  assert.equal(await page.locator('#game-list [data-launch]').count(),6,'all six solo games remain available');
   assert.equal(await page.locator('#hero-choices').count(),1,'solo hero selector remains mounted');
   assert.equal(await page.locator('#arcade-root, #protocol-quiz-root').count(),0,'archived experiences do not extend the public game hub');
  }

@@ -25,7 +25,7 @@ try{
    s=s.replace('game=gameCode({hero:','game=gameCode({testMode:true,hero:').replace('inspectGame:()=>','placeRace:state=>game.testRaceState(state),inspectGame:()=>');
    return route.fulfill({status:200,contentType:'text/javascript',body:s});
   });
-  await page.goto(origin+'/arcade/'+locale+'/index.html');await page.locator('[data-launch="g06"]').click();await page.locator('#campaign-chapter').selectOption(String(chapter));await page.locator('#setup-play').click();
+  await page.goto(origin+'/'+locale+'/play.html');await page.locator('#game-list [data-launch="g06"]').click();await page.locator('#campaign-chapter').selectOption(String(chapter));await page.locator('#setup-play').click();
   await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&BioSuiteHub.inspectGame()?.phase==='countdown');
   const grid=await page.evaluate(()=>BioSuiteHub.inspectGame());check(grid.progress===0&&grid.elapsed===0&&grid.traffic.filter(r=>r.type==='car').every(r=>r.speed===0),'grid held before GO');
   if(chapter===2){
@@ -60,7 +60,7 @@ try{
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('bio_arcade_campaign_v11_g06_normal')));check(saved.wins===2&&saved.unlocked===5,'podium completion uses existing campaign storage');
   if(chapter<=3)await page.screenshot({path:path.join(qa,locale+'-'+chapter+'-result.png')});
   samples.push({locale,chapter,width,height,profile,rank:1});
-  await page.locator('#stage-back').click();await page.locator('[data-launch="g05"]').click();await page.locator('#setup-play').click();await page.locator('#hub-canvas').waitFor();check(await page.locator('#race-results').count()===0,'race result does not leak into another game');
+  await page.locator('#stage-back').click();await page.locator('#game-list [data-launch="g05"]').click();await page.locator('#setup-play').click();await page.locator('#hub-canvas').waitFor();check(await page.locator('#race-results').count()===0,'race result does not leak into another game');
   check(errors.length===0,errors.join(';'));await context.close();
  }
  fs.writeFileSync(path.join(qa,'results.json'),JSON.stringify({checks,browser:browser.version(),samples,physicalDevices:'pending'},null,2)+'\n');

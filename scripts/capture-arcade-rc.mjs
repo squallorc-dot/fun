@@ -17,7 +17,7 @@ try{
    await page.goto(origin+'/'+(lang==='zh'?'FUNAI-CARE.html':'FUNAI-CARE_jp.html'),{waitUntil:'domcontentloaded'});
    await page.locator('.home-arcade-feature').scrollIntoViewIfNeeded();await snap(lang+'-home-arcade-'+device+'.png');
    // Both languages now have one actual Arcade page; capture its games and preserved experiences.
-   await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
+   await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
    await page.locator('#game-list .game-card').first().waitFor();
    await page.locator('#game-list').scrollIntoViewIfNeeded();await snap(lang+'-unified-games-'+device+'.png');
    await page.locator('.hub-more-live .hub-more-cta').scrollIntoViewIfNeeded();await snap(lang+'-friends-entry-'+device+'.png');

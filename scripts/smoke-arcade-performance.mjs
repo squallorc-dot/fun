@@ -26,7 +26,7 @@ const state=(frame,id)=>frame.evaluate(id=>{
  return {now:performance.now()/1000,sim:s.simulation,paused:id==='g02'?s.phase!=='playing':s.paused,controls:s.controls};
 },id);
 async function start(page,id,mode){
- await page.locator('[data-launch="'+id+'"]').click();
+ await page.locator('#game-list [data-launch="'+id+'"]').click();
  if(mode)await page.locator('[data-mode="'+mode+'"]').click();
  await page.locator('#setup-play').click();let frame=page;
  if(id==='g02'){
@@ -57,7 +57,7 @@ try{
   },fps);
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(String(error)));
   await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());
-  await page.goto(origin+'/arcade/'+locale+'/index.html');
+  await page.goto(origin+'/'+locale+'/play.html');
   for(const [id,mode]of modes){
    const label=[locale,viewport.width,id,mode||'',fps].join('/'),frame=await start(page,id,mode);
    await frame.waitForFunction(id=>(id==='g02'?BioArcadeShooter.state:BioSuiteHub.debugState).simulation.frames>=2,id);

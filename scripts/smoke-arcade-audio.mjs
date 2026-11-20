@@ -13,11 +13,11 @@ try{
  for(const locale of ['zh','ja'])for(const embedded of [false,true]){
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+(embedded?`/listen.html?page=arcade/${locale}/index.html`:`/arcade/${locale}/index.html`));
+  await page.goto(origin+(embedded?`/listen.html?page=${locale}/play.html`:`/${locale}/play.html`));
   const hub=embedded?page.frameLocator('#bio-website'):page;
   let previous='';
   for(const id of ['g01','g02','g06']){
-   await hub.locator(`[data-launch="${id}"]`).click();await hub.locator('#setup-play').click();
+   await hub.locator(`#game-list [data-launch="${id}"]`).click();await hub.locator('#setup-play').click();
    await hub.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
    const audio=hub.locator('#arcade-bgm');
    await audio.evaluate(el=>new Promise((resolve,reject)=>{if(el.currentTime>.05&&!el.paused)return resolve();const deadline=setTimeout(()=>reject(Error('audio clock did not advance')),5000);const tick=()=>{if(el.currentTime>.05&&!el.paused){clearTimeout(deadline);el.removeEventListener('timeupdate',tick);resolve();}};el.addEventListener('timeupdate',tick);}));
@@ -37,7 +37,7 @@ try{
  ]){
   const context=await browser.newContext();await context.addInitScript(prefs=>localStorage.setItem('bio_arcade_pref_v1',JSON.stringify(prefs)),fixture.prefs);
   const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+'/arcade/zh/index.html?game=g06');assert.equal(await page.locator('#music-mode').inputValue(),fixture.mode);
+  await page.goto(origin+'/zh/play.html?game=g06');assert.equal(await page.locator('#music-mode').inputValue(),fixture.mode);
   await page.locator('#setup-play').click();
   if(fixture.playing){await page.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});if(fixture.track)assert((await page.locator('#arcade-bgm').getAttribute('src')).endsWith(fixture.track));}
   else assert(await page.locator('#arcade-bgm').evaluate(el=>el.paused),'explicit silence/autoplay setting is preserved');
@@ -46,7 +46,7 @@ try{
  for(const width of [320,375,390,430,580,844])for(const locale of ['zh','ja']){
   const page=await browser.newPage({viewport:{width,height:844}});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+`/arcade/${locale}/index.html?game=g06`);
+  await page.goto(origin+`/${locale}/play.html?game=g06`);
   const geometry=await page.locator('.campaign-settings').evaluate(el=>({width:el.clientWidth,scroll:el.scrollWidth,labels:[...el.querySelectorAll('label')].map(x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width};})}));
   assert(geometry.scroll<=geometry.width+1,'campaign settings fit their container');
   if(width<=580)assert(geometry.labels[1].y>geometry.labels[0].y+40,'mobile selectors each occupy a full row');
