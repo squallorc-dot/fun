@@ -83,8 +83,8 @@ for(const lang of ['zh','ja']){
 }
 if(check){if(bad){console.error(bad+' files need rebuilding. Run: node scripts/build.mjs');process.exitCode=1;}else console.log('All 12 editorial pages match their central sources.');}
 
-// PLAY is the single public six-game page. Retain the legacy Arcade markup as
-// an internal source only (no old URL redirect and no duplicate navigation).
+// PLAY is generated from a private content template. The publicly served legacy
+// arcade/{zh,ja}/index.html paths are compatibility redirects, never build inputs.
 function makePlay(lang,source,c){
  let html=source;
  html=html.replaceAll(c.base+'arcade/zh/index.html',c.base+'zh/play.html').replaceAll(c.base+'arcade/ja/index.html',c.base+'ja/play.html');
@@ -103,7 +103,7 @@ function makePlay(lang,source,c){
  return html.replace('</section><div class="hub-progress">','</section>'+feature+'<div class="hub-progress">').replace('</section><section class="hub-controls">','</section>'+decisionCard+'<section class="hub-controls">').replace('</head>','<link rel="stylesheet" href="../../assets/decision-lab.css?v=20261103.1"></head>');
 }
 for(const lang of ['zh','ja']){
- const source=fs.readFileSync(path.join(root,'arcade',lang,'index.html'),'utf8');
+ const source=fs.readFileSync(path.join(root,'content','arcade-templates',lang,'index.html'),'utf8');
  const file=path.join(root,lang,'play.html'),html=makePlay(lang,source,c);
  if(check){if(!fs.existsSync(file)||fs.readFileSync(file,'utf8')!==html){console.error('Out of sync:',lang+'/play.html');bad++;}}
  else{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,html,'utf8');console.log('Built',lang+'/play.html');}
