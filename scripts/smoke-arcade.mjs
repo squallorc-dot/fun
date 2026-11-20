@@ -33,7 +33,7 @@ try{
   await page.route('**/*',route=>route.request().url().startsWith(base+'/')?route.continue():route.abort());
   const label=lang+' '+viewport.width;
   try{
-   await page.goto(base+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
+   await page.goto(base+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
    await page.locator('#game-list .game-card').first().waitFor();
    check(await page.locator('#track-select option').count()===5,label+' exactly four OST choices plus mute');
    check(await page.locator('#music-mode option').count()===4,label+' exposes scene/manual/shuffle/off music modes');

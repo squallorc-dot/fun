@@ -40,7 +40,7 @@ try{
   const context=await browser.newContext({viewport:{width,height},hasTouch:width<1100,isMobile:width<1100,deviceScaleFactor:2});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+'/arcade/'+locale+'/index.html');
+  await page.goto(origin+'/'+locale+'/play.html');
   for(const profile of ['two','left','right','desktop']){
    await page.evaluate(profile=>BioControlProfiles.set({profile}),profile);
    await page.locator('[data-launch="g02"]').click();await page.locator('#setup-play').click();starts++;

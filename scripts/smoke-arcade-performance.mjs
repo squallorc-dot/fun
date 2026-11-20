@@ -57,7 +57,7 @@ try{
   },fps);
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(String(error)));
   await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());
-  await page.goto(origin+'/arcade/'+locale+'/index.html');
+  await page.goto(origin+'/'+locale+'/play.html');
   for(const [id,mode]of modes){
    const label=[locale,viewport.width,id,mode||'',fps].join('/'),frame=await start(page,id,mode);
    await frame.waitForFunction(id=>(id==='g02'?BioArcadeShooter.state:BioSuiteHub.debugState).simulation.frames>=2,id);

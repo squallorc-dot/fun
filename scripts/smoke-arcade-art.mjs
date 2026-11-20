@@ -12,7 +12,7 @@ try{for(const locale of ['zh','ja'])for(const [width,height,dpr]of sizes){
  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
  await page.route('**/hub.js*',r=>{let s=fs.readFileSync(path.join(root,'arcade/assets/hub.js'),'utf8');s=s.replace('game=gameCode({hero:','game=gameCode({testMode:true,hero:').replace('window.BioSuiteHub={','window.__capture=()=>{const input={moveX:0,moveY:0,pointer:{down:false}};for(let i=0;i<(active==="g06"?720:360);i++)game.update(1/120,input);document.querySelector("#stage-hud").innerHTML=game.hud();resizeCanvas();const state=JSON.stringify(BioSuiteHub.inspectGame());game.draw(document.querySelector("#hub-canvas").getContext("2d"));return {before:state,after:JSON.stringify(BioSuiteHub.inspectGame())};};window.BioSuiteHub={');return r.fulfill({contentType:'text/javascript',body:s});});
  await page.route('**/arcade-engine.js*',r=>{let s=fs.readFileSync(path.join(root,'assets/arcade-engine.js'),'utf8');s=s.replace('shell();','window.__capture=()=>{for(let i=0;i<360;i++)update(1/120);refreshHud();fitCanvas();const state=JSON.stringify(game);draw();return {before:state,after:JSON.stringify(game)};};shell();');return r.fulfill({contentType:'text/javascript',body:s});});
- await page.goto(origin+`/arcade/${locale}/index.html`);
+ await page.goto(origin+`/${locale}/play.html`);
  for(const id of Object.keys(keys)){
   await page.locator(`[data-launch="${id}"]`).click();await page.locator('[data-hero="0"]').click();if(id==='g05')await page.locator('[data-mode="pong"]').click();await page.evaluate(()=>window.__seed());await page.locator('#setup-play').click();
   let frame=page;if(id==='g02'){await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();frame=page.frames().find(f=>f.url().includes('/shooter.html'));}else await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&!!window.__capture);
@@ -31,7 +31,7 @@ if(label!=='before'){
  const page=await browser.newPage(),requests=[];
  page.on('requestfailed',request=>{if(request.url().startsWith(origin+'/'))requests.push({url:request.url(),failure:request.failure()});});
  page.on('response',response=>{if(response.url().includes('/guardians/'))requests.push({url:response.url(),status:response.status(),type:response.headers()['content-type']});});
- await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());await page.goto(origin+'/arcade/zh/index.html');
+ await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());await page.goto(origin+'/zh/play.html');
  try{const one=await page.evaluate(async hero=>{
   let checked=0;const failures=[],canvas=document.createElement('canvas');canvas.width=2560;canvas.height=2880;const ctx=canvas.getContext('2d',{willReadFrequently:true});
 
@@ -46,7 +46,7 @@ if(label!=='before'){
  }finally{fs.writeFileSync(path.join(out,'atlas-audit.json'),JSON.stringify(atlas,null,2));await page.close();}
  }
  fs.writeFileSync(path.join(out,'atlas-audit.json'),JSON.stringify(atlas,null,2));check(atlas.checked===497,'all high-resolution animation frames decoded');check(!atlas.failures.length,atlas.failures.slice(0,5).join(';'));
- const recovery=await browser.newPage();await recovery.route('**/*',r=>r.request().url().includes('/guardians/2x/')||!r.request().url().startsWith(origin+'/')?r.abort():r.continue());await recovery.goto(origin+'/arcade/ja/index.html');
+ const recovery=await browser.newPage();await recovery.route('**/*',r=>r.request().url().includes('/guardians/2x/')||!r.request().url().startsWith(origin+'/')?r.abort():r.continue());await recovery.goto(origin+'/ja/play.html');
  const fallback=await recovery.evaluate(async()=>{await BioGuardianArt.preload([0],{highResolutionHero:true});const c=document.createElement('canvas');return {info:BioGuardianArt.inspect(),drawn:BioGuardianArt.draw(c.getContext('2d'),0,'idle',0,80,140)};});
  check(fallback.drawn&&fallback.info.atlases[0].fallback&&fallback.info.atlases[0].resolution===1&&fallback.info.atlases[0].ready,'missing optional 2x atlas falls back to decoded native image');await recovery.close();
 }

@@ -10,7 +10,7 @@ try{
   const page=await browser.newPage({viewport,reducedMotion:'reduce',hasTouch:viewport.width!==1440,isMobile:[375,430,844].includes(viewport.width)}),errors=[];
   page.on('pageerror',e=>errors.push(String(e)));page.on('response',r=>{if(r.url().startsWith(origin+'/')&&r.status()>=400)errors.push('HTTP '+r.status()+' '+r.url());});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+`/arcade/${lang}/index.html`,{waitUntil:'networkidle'});
+  await page.goto(origin+`/${lang}/play.html`,{waitUntil:'networkidle'});
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lang+' lobby overflow '+viewport.width);
   check(await page.locator('.card-help').count()===6,'all game cards expose a guide');
   await page.locator('[data-guide="g05"]').click();check(await page.locator('#guide-content kbd').count()===3,'volley guide is structured');await page.keyboard.press('Escape');

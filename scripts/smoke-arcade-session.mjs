@@ -18,7 +18,7 @@ async function create(locale,viewport,prefs){
  const context=await browser.newContext({viewport});
  if(prefs)await context.addInitScript(value=>localStorage.setItem('bio_arcade_pref_v1',JSON.stringify(value)),prefs);
  const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
- await page.goto(origin+'/arcade/'+locale+'/index.html');
+ await page.goto(origin+'/'+locale+'/play.html');
  return {context,page};
 }
 async function start(page,id){await page.locator('[data-launch="'+id+'"]').click();await page.locator('#setup-play').click();}
@@ -137,7 +137,7 @@ try{
  {
   const context=await browser.newContext(),page=await context.newPage();
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
-  await page.goto(origin+'/listen.html?page=arcade/zh/index.html');
+  await page.goto(origin+'/listen.html?page=zh/play.html');
   await page.locator('#persistent-expand').click();await page.locator('#persistent-toggle').click();
   await page.waitForFunction(()=>!document.querySelector('#persistent-audio').paused);
   await hidden(page,true);check(await page.locator('#persistent-audio').evaluate(el=>el.paused),'continuous OST suspends in a background tab');
