@@ -17,7 +17,7 @@ try{
   const hub=embedded?page.frameLocator('#bio-website'):page;
   let previous='';
   for(const id of ['g01','g02','g06']){
-   await hub.locator(`[data-launch="${id}"]`).click();await hub.locator('#setup-play').click();
+   await hub.locator(`#game-list [data-launch="${id}"]`).click();await hub.locator('#setup-play').click();
    await hub.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
    const audio=hub.locator('#arcade-bgm');
    await audio.evaluate(el=>new Promise((resolve,reject)=>{if(el.currentTime>.05&&!el.paused)return resolve();const deadline=setTimeout(()=>reject(Error('audio clock did not advance')),5000);const tick=()=>{if(el.currentTime>.05&&!el.paused){clearTimeout(deadline);el.removeEventListener('timeupdate',tick);resolve();}};el.addEventListener('timeupdate',tick);}));

@@ -39,7 +39,7 @@ try{
    check(await page.locator('#music-mode option').count()===4,label+' exposes scene/manual/shuffle/off music modes');
    check((await page.locator('#music-mode').inputValue())==='shuffle',label+' fresh user defaults to a random soundtrack for each stage');
 
-   check(await page.locator('[data-launch]').count()===6,label+' six cards');
+   check(await page.locator('#game-list [data-launch]').count()===6,label+' six cards');
    check(await page.locator('.hero-chip').count()===7||await page.locator('#hero-choices').count()===1,label+' seven hero selector');
    // Existing shooter records must survive migration into the new game lobby.
    await page.evaluate(()=>{localStorage.setItem('bio-city-arcade-high-v1','321');localStorage.setItem('bio_arcade_pref_v1',JSON.stringify({track:5,volume:42,sfx:35}));});
@@ -50,7 +50,7 @@ try{
    await page.evaluate(()=>{window.dataLayer=[];});
    const inLobby=async()=>check(await page.locator('#stage').getAttribute('aria-hidden')==='true',label+' lobby restored');
    const open=async(id)=>{
-    await page.locator('[data-launch="'+id+'"]').click();
+    await page.locator('#game-list [data-launch="'+id+'"]').click();
     if(viewport.width<=690&&id==='g02'){await page.locator('#hero-next').click();check(await page.locator('#hero-index').textContent()==='2 / 7',label+' carousel next arrow');check(await page.evaluate(()=>BioSuiteHub.hero)===1,label+' selected hero updates');await page.locator('#hero-prev').click();check(await page.evaluate(()=>BioSuiteHub.hero)===0,label+' carousel previous arrow');}
     check(await page.locator('#campaign-brief').count()===1,label+' '+id+' chapter briefing shown');
     check((await page.locator('#campaign-brief').textContent()).includes('1'),label+' '+id+' first chapter description shown');
@@ -97,7 +97,7 @@ try{
    // Different game engines must start, pause, resume and exit without leaving overlays or scroll locks.
    for(const id of ['g01','g03','g04','g05','g06']){
     if(id==='g05'){
-      await page.locator('[data-launch="g05"]').click();
+      await page.locator('#game-list [data-launch="g05"]').click();
       await page.locator('[data-mode="pong"]').click();
       await page.locator('#setup-play').click();
       await page.locator('#stage.active').waitFor();
@@ -183,7 +183,7 @@ try{
    await page.locator('#stage-back').click();await inLobby();
    check(!(await status()).rafQueued,label+' exit retains no RAF');
    // Volleyball and Pong use different persistent records.
-   await page.locator('[data-launch="g05"]').click();
+   await page.locator('#game-list [data-launch="g05"]').click();
    await page.locator('[data-mode="volley"]').click();
    await page.locator('#setup-play').click();
    await page.locator('#hub-canvas').waitFor();

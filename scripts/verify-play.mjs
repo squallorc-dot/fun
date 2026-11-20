@@ -52,7 +52,7 @@ assert(!builder.includes("path.join(root,'arcade',lang,'index.html')"),'public l
 for(const lang of ['zh','ja']){
  const template=fs.readFileSync('content/arcade-templates/'+lang+'/index.html','utf8');
  const legacy=fs.readFileSync('arcade/'+lang+'/index.html','utf8');
- assert(template.includes('data-launch="g06"')&&template.includes('src="../assets/hub.js'),lang+' game source remains a full playable hub');
+ assert(template.includes('id="game-list"')&&template.includes('src="../assets/hub.js'),lang+' game source retains catalog container and shared hub runtime');
  assert(legacy.includes('name="robots" content="noindex,follow"'),lang+' legacy page must be noindex');
  assert(legacy.includes('rel="canonical" href="https://squallorc-dot.github.io/fun/'+lang+'/play.html"'),lang+' legacy canonical targets PLAY');
  assert(legacy.includes("new URL('../../"+lang+"/play.html', window.location.href)"),lang+' redirect is relative to current site base');

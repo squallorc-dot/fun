@@ -10,7 +10,7 @@ try{
   assert.equal(await live.count(),1,'live multiplayer remains separate and explicitly beta');
   assert.equal(await page.locator('.hub-more-async').count(),0,'offline code exchange UI is removed');
   assert.equal(await page.locator('a[href*="challenge/index.html"]').count(),0,'offline friend code links are retired');
-  assert.equal(await page.locator('[data-launch]').count(),6,'all six solo games remain available');
+  assert.equal(await page.locator('#game-list [data-launch]').count(),6,'all six solo games remain available');
   assert.equal(await page.locator('#hero-choices').count(),1,'solo hero selector remains mounted');
   assert.equal(await page.locator('#arcade-root, #protocol-quiz-root').count(),0,'archived experiences do not extend the public game hub');
  }

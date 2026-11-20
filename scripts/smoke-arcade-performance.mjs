@@ -26,7 +26,7 @@ const state=(frame,id)=>frame.evaluate(id=>{
  return {now:performance.now()/1000,sim:s.simulation,paused:id==='g02'?s.phase!=='playing':s.paused,controls:s.controls};
 },id);
 async function start(page,id,mode){
- await page.locator('[data-launch="'+id+'"]').click();
+ await page.locator('#game-list [data-launch="'+id+'"]').click();
  if(mode)await page.locator('[data-mode="'+mode+'"]').click();
  await page.locator('#setup-play').click();let frame=page;
  if(id==='g02'){

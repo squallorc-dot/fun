@@ -43,7 +43,7 @@ try{
   await page.goto(origin+'/'+locale+'/play.html');
   for(const profile of ['two','left','right','desktop']){
    await page.evaluate(profile=>BioControlProfiles.set({profile}),profile);
-   await page.locator('[data-launch="g02"]').click();await page.locator('#setup-play').click();starts++;
+   await page.locator('#game-list [data-launch="g02"]').click();await page.locator('#setup-play').click();starts++;
    await page.frameLocator('#g02-frame').locator('#arcade-canvas').waitFor();
    const frame=page.frames().find(f=>f.url().includes('/shooter.html'));
    await frame.waitForFunction(profile=>BioArcadeShooter.state.phase==='playing'&&BioArcadeShooter.state.controls.layout&&BioArcadeShooter.state.controlPrefs.profile===profile,profile);
@@ -56,7 +56,7 @@ try{
   }
   if(width===390){
    await page.evaluate(()=>BioControlProfiles.set({profile:'two'}));
-   await page.locator('[data-launch="g02"]').click();await page.locator('#setup-play').click();starts++;
+   await page.locator('#game-list [data-launch="g02"]').click();await page.locator('#setup-play').click();starts++;
    await page.frameLocator('#g02-frame').locator('canvas').waitFor();const frame=page.frames().find(f=>f.url().includes('/shooter.html'));
    await page.setViewportSize({width:844,height:390});
    await frame.waitForFunction(()=>innerWidth===844&&BioArcadeShooter.state.controls.layout?.compact);

@@ -101,10 +101,10 @@ try{
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   try{
    await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
-   verify(await page.locator('[data-launch]').count()===6,lang+' six public game launch cards');
+   verify(await page.locator('#game-list [data-launch]').count()===6,lang+' six public game launch cards');
    verify(await page.locator('#hero-choices').count()===1,lang+' seven-guardian selector is mounted');
    verify(await page.locator('#arcade-root, #protocol-quiz-root, .legacy-game-panel').count()===0,lang+' archived interactions absent from public hub');
-   await page.locator('[data-launch="g02"]').click();
+   await page.locator('#game-list [data-launch="g02"]').click();
    verify(await page.locator('#campaign-brief').count()===1,lang+' G02 chapter briefing');
    await page.locator('#setup-play').click();
    await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();

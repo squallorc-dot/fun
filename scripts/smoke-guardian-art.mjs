@@ -11,7 +11,7 @@ try{
  check(borders.checked===781,'all 781 PNG frames decoded');check(borders.fail.length===0,borders.fail.slice(0,5).join('; '));await inspect.close();
  const recovery=await browser.newPage();let missingHero=true;
  await recovery.route('**/*',r=>missingHero&&r.request().url().includes('/guardians/burner-sister.png')||!r.request().url().startsWith(base+'/')?r.abort():r.continue());
- await recovery.goto(base+'/zh/play.html');await recovery.locator('[data-launch="g01"]').click();await recovery.locator('#setup-play').click();
+ await recovery.goto(base+'/zh/play.html');await recovery.locator('#game-list [data-launch="g01"]').click();await recovery.locator('#setup-play').click();
  await recovery.locator('#stage-load-retry').waitFor();
  check(await recovery.evaluate(()=>BioSuiteHub.inspectGame()===null&&!BioSuiteHub.debugState.rafQueued),'missing required hero art shows a retry without starting combat');
  missingHero=false;await recovery.locator('#stage-load-retry').click();await recovery.locator('#hub-canvas').waitFor();
@@ -22,7 +22,7 @@ try{
   // All seven heroes at phone and desktop sizes; all remaining viewports exercise the complete flow with Burner.
   const heroes=[375,1440].includes(viewport.width)?[0,1,2,3,4,5,6]:[0];
   for(const hero of heroes){
-   await page.locator('[data-launch="g01"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
+   await page.locator('#game-list [data-launch="g01"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
    await page.locator('#hub-canvas').waitFor();
    await page.waitForFunction(()=>window.BioGuardianArt.inspect().atlases.length===5&&window.BioGuardianArt.inspect().atlases.every(x=>x.ready));
    check((await page.evaluate(()=>BioSuiteHub.inspectGame().player.hero))===hero,label+' selected G01 hero '+hero);
@@ -32,7 +32,7 @@ try{
    await page.waitForFunction(()=>!BioSuiteHub.inspectGame().player.action);await page.keyboard.down('k');await page.waitForFunction(()=>BioSuiteHub.inspectGame().player.clip==='jump');await page.keyboard.up('k');
    check(await page.evaluate(()=>BioGuardianArt.inspect().cached<=5),label+' atlas memory bounded '+hero);
    await page.locator('#stage-back').click();check((await page.locator('#stage').getAttribute('aria-hidden'))==='true',label+' G01 returns to lobby '+hero);
-   await page.locator('[data-launch="g02"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
+   await page.locator('#game-list [data-launch="g02"]').click();await page.locator('[data-hero="'+hero+'"]').click();await page.locator('#setup-play').click();
    const frame=page.frameLocator('#g02-frame');await frame.locator('.arcade-playing').waitFor();const child=page.frames().find(f=>f.url().includes('/shooter.html'));
    await child.waitForFunction(()=>window.BioGuardianArt?.inspect().atlases.some(x=>x.ready));
    await child.waitForFunction(key=>BioGuardianArt.inspect().atlases.some(x=>x.key===key&&x.ready),manifest.atlases[hero].key);

@@ -21,7 +21,7 @@ async function create(locale,viewport,prefs){
  await page.goto(origin+'/'+locale+'/play.html');
  return {context,page};
 }
-async function start(page,id){await page.locator('[data-launch="'+id+'"]').click();await page.locator('#setup-play').click();}
+async function start(page,id){await page.locator('#game-list [data-launch="'+id+'"]').click();await page.locator('#setup-play').click();}
 async function running(page){await page.locator('#hub-canvas').waitFor();await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&!BioSuiteHub.debugState.paused);}
 const read=page=>page.evaluate(()=>BioSuiteHub.debugState);
 async function seekNearEnd(page){await page.waitForFunction(()=>{const el=BioSuiteHub.musicElement;return Number.isFinite(el.duration)&&el.duration>0&&el.seekable.length>0&&el.seekable.end(el.seekable.length-1)>=el.duration-.2;});await page.locator('#arcade-bgm').evaluate(el=>{el.currentTime=el.duration-.15;});}
@@ -142,7 +142,7 @@ try{
   await page.waitForFunction(()=>!document.querySelector('#persistent-audio').paused);
   await hidden(page,true);check(await page.locator('#persistent-audio').evaluate(el=>el.paused),'continuous OST suspends in a background tab');
   await hidden(page,false);await page.waitForFunction(()=>!document.querySelector('#persistent-audio').paused);
-  const hub=page.frameLocator('#bio-website');await hub.locator('[data-launch="g06"]').click();await hub.locator('#setup-play').click();
+  const hub=page.frameLocator('#bio-website');await hub.locator('#game-list [data-launch="g06"]').click();await hub.locator('#setup-play').click();
   await hub.locator('#music-status[data-state="playing"]').waitFor({state:'attached'});
   check(await page.locator('#persistent-audio').evaluate(el=>el.paused),'game and continuous OST never play together');
   await hub.locator('#stage-back').click();await page.waitForFunction(()=>!document.querySelector('#persistent-audio').paused);
