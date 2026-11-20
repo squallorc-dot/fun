@@ -14,7 +14,7 @@ try{
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   await page.goto(origin+'/zh/play.html',{waitUntil:'domcontentloaded'});
   for(const [i,id]of ['g01','g02','g03','g04','g05','g06'].entries()){
-   await page.locator(`[data-launch="${id}"]`).click();await page.locator(`[data-hero="${[0,1,3,5,2,6][i]}"]`).click();
+   await page.locator(`#game-list [data-launch="${id}"]`).click();await page.locator(`[data-hero="${[0,1,3,5,2,6][i]}"]`).click();
    if(id==='g05')await page.locator('[data-mode="volley"]').click();
    await page.locator('#setup-play').click();
    let frame=page;
@@ -43,7 +43,7 @@ try{
   await snapshot(page,`${lang}-selection-${device}`);
   await page.locator('#setup-cancel').click();
   for(const id of ['g01','g02','g03','g04','g05','g06']){
-   await page.locator(`[data-launch="${id}"]`).click();await page.locator('[data-hero="2"]').click();
+   await page.locator(`#game-list [data-launch="${id}"]`).click();await page.locator('[data-hero="2"]').click();
    if(id==='g05')await page.locator('[data-mode="volley"]').click();
    await page.locator('#setup-play').click();
    const child=id==='g02'?(await page.frameLocator('#g02-frame').locator('canvas').waitFor(),page.frames().find(f=>f.url().includes('/shooter.html'))):page;
