@@ -36,5 +36,11 @@ for(const lang of ['zh','ja']){
 }
 const protocol=fs.readFileSync('assets/protocol-engine.js','utf8');
 assert(protocol.includes("reportEvent('quiz_started'")&&protocol.includes("reportEvent('quiz_completed'"),'quiz starts and completes must emit dataLayer events');
+assert(protocol.includes("if(quiz.started||quiz.done||quiz.index!==0||quiz.answers.length)return"),'quiz_started is guarded against duplicate starts');
+assert(protocol.includes("if(!quiz.started||quiz.done)return"),'quiz completion requires an active, unfinished questionnaire');
+assert(protocol.includes("language:lang"),'Decision Lab events use language zh/ja');
+assert(hub.includes("language:currentLocale"),'Arcade events use language zh/ja');
+assert(hub.includes("outcome:completed?'win':'loss'"),'G02 arcade_game_finish must use canonical win/loss');
+assert(hub.includes("ga('arcade_game_finish'")&&hub.includes("ga('game_completed'"),'distinct game finish funnel and raw game completion must be retained');
 assert(hub.includes("ga('arcade_game_start'")&&hub.includes("ga('game_completed'"),'core gameplay events preserved');
 console.log('PASS bilingual PLAY page contract, GTM, G06 and shared engines');
