@@ -44,3 +44,19 @@ assert(hub.includes("outcome:completed?'win':'loss'"),'G02 arcade_game_finish mu
 assert(hub.includes("ga('arcade_game_finish'")&&hub.includes("ga('game_completed'"),'distinct game finish funnel and raw game completion must be retained');
 assert(hub.includes("ga('arcade_game_start'")&&hub.includes("ga('game_completed'"),'core gameplay events preserved');
 console.log('PASS bilingual PLAY page contract, GTM, G06 and shared engines');
+
+
+const builder=fs.readFileSync('scripts/build.mjs','utf8');
+assert(builder.includes("path.join(root,'content','arcade-templates',lang,'index.html')"),'PLAY must use private templates');
+assert(!builder.includes("path.join(root,'arcade',lang,'index.html')"),'public legacy redirects must never be PLAY build sources');
+for(const lang of ['zh','ja']){
+ const template=fs.readFileSync('content/arcade-templates/'+lang+'/index.html','utf8');
+ const legacy=fs.readFileSync('arcade/'+lang+'/index.html','utf8');
+ assert(template.includes('data-launch="g06"')&&template.includes('src="../assets/hub.js'),lang+' game source remains a full playable hub');
+ assert(legacy.includes('name="robots" content="noindex,follow"'),lang+' legacy page must be noindex');
+ assert(legacy.includes('rel="canonical" href="https://squallorc-dot.github.io/fun/'+lang+'/play.html"'),lang+' legacy canonical targets PLAY');
+ assert(legacy.includes("new URL('../../"+lang+"/play.html', window.location.href)"),lang+' redirect is relative to current site base');
+ assert(legacy.includes('target.search = window.location.search')&&legacy.includes('target.hash = window.location.hash'),lang+' redirects preserve query and hash');
+ assert(legacy.includes('window.location.replace(target.href)'),lang+' redirect replaces legacy history entry');
+ assert(!legacy.includes('src="../assets/hub.js')&&!legacy.includes('googletagmanager.com/gtm.js'),lang+' legacy does not boot a second game or tracker');
+}

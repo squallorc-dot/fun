@@ -11,14 +11,14 @@ try{
  check(borders.checked===781,'all 781 PNG frames decoded');check(borders.fail.length===0,borders.fail.slice(0,5).join('; '));await inspect.close();
  const recovery=await browser.newPage();let missingHero=true;
  await recovery.route('**/*',r=>missingHero&&r.request().url().includes('/guardians/burner-sister.png')||!r.request().url().startsWith(base+'/')?r.abort():r.continue());
- await recovery.goto(base+'/arcade/zh/index.html');await recovery.locator('[data-launch="g01"]').click();await recovery.locator('#setup-play').click();
+ await recovery.goto(base+'/zh/play.html');await recovery.locator('[data-launch="g01"]').click();await recovery.locator('#setup-play').click();
  await recovery.locator('#stage-load-retry').waitFor();
  check(await recovery.evaluate(()=>BioSuiteHub.inspectGame()===null&&!BioSuiteHub.debugState.rafQueued),'missing required hero art shows a retry without starting combat');
  missingHero=false;await recovery.locator('#stage-load-retry').click();await recovery.locator('#hub-canvas').waitFor();
  await recovery.keyboard.down('d');await recovery.waitForFunction(()=>BioSuiteHub.inspectGame().player.clip==='walk');check(true,'movement works after the required hero atlas is restored');await recovery.close();
  for(const lang of ['zh','ja'])for(const viewport of [{width:375,height:812},{width:430,height:932},{width:768,height:1024},{width:1440,height:900},{width:844,height:390}]){
   const page=await browser.newPage({viewport}),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.on('response',r=>{if(r.url().startsWith(base+'/')&&r.status()>=400)errors.push(r.url()+' '+r.status())});await page.route('**/*',r=>r.request().url().startsWith(base+'/')?r.continue():r.abort());
-  await page.goto(base+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});const label=lang+' '+viewport.width;
+  await page.goto(base+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});const label=lang+' '+viewport.width;
   // All seven heroes at phone and desktop sizes; all remaining viewports exercise the complete flow with Burner.
   const heroes=[375,1440].includes(viewport.width)?[0,1,2,3,4,5,6]:[0];
   for(const hero of heroes){

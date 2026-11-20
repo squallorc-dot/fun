@@ -66,6 +66,24 @@ try{
    check(errors.length===0,lang+' runtime errors '+errors.join(';'));
   }catch(e){failures.push(lang+' navigation flow: '+e.message);}finally{await page.close();}
  }
+ // Legacy URLs redirect to the official PLAY, keeping language, query, hash and G02 iframe compatibility.
+ for(const lang of ['zh','ja']){
+  const page=await pageFor(390);
+  try{
+   await page.goto(origin+'/arcade/'+lang+'/index.html?game=g06&hero=3#game-list',{waitUntil:'domcontentloaded'});
+   await page.waitForURL('**/'+lang+'/play.html?game=g06&hero=3#game-list');
+   const redirected=new URL(page.url());
+   check(redirected.pathname==='/'+lang+'/play.html'&&redirected.search==='?game=g06&hero=3'&&redirected.hash==='#game-list',lang+' legacy redirects without losing query/hash');
+   await page.locator('#setup.show').waitFor();
+   check(await page.locator('#setup-play').getAttribute('data-game')==='g06',lang+' redirected deep link still chooses G06');
+   await page.goto(origin+'/arcade/'+lang+'/index.html?game=g02',{waitUntil:'domcontentloaded'});
+   await page.waitForURL('**/'+lang+'/play.html?game=g02');
+   await page.locator('#setup.show').waitFor();
+   await page.locator('#setup-play').click();
+   await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();
+   check(await page.locator('#stage.active').count()===1,lang+' G02 iframe still starts through canonical PLAY');
+  }catch(e){failures.push(lang+' legacy compatibility: '+e.message);}finally{await page.close();}
+ }
  // GTM analytics contract: actual clicks must emit once without requiring a live tag manager.
  for(const lang of ['zh','ja']){
   const page=await pageFor(1440);

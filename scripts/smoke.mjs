@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const locales=['zh','ja'],sections=['world','heroes','story','music','strategy'];
-const files=['FUNAI-CARE.html','FUNAI-CARE_jp.html',...locales.flatMap(l=>sections.map(s=>l+'/'+s+'.html')), ...locales.map(l=>'arcade/'+l+'/index.html')];
+const files=['FUNAI-CARE.html','FUNAI-CARE_jp.html',...locales.flatMap(l=>sections.map(s=>l+'/'+s+'.html')), ...locales.map(l=>l+'/play.html')];
 const mime={'.html':'text/html;charset=utf-8','.css':'text/css;charset=utf-8','.js':'application/javascript;charset=utf-8','.png':'image/png','.mp3':'audio/mpeg'};
 const server=http.createServer((request,response)=>{
  let url=new URL(request.url,'http://localhost');
@@ -100,7 +100,7 @@ try{
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
   try{
-   await page.goto(origin+'/arcade/'+lang+'/index.html',{waitUntil:'domcontentloaded'});
+   await page.goto(origin+'/'+lang+'/play.html',{waitUntil:'domcontentloaded'});
    verify(await page.locator('[data-launch]').count()===6,lang+' six public game launch cards');
    verify(await page.locator('#hero-choices').count()===1,lang+' seven-guardian selector is mounted');
    verify(await page.locator('#arcade-root, #protocol-quiz-root, .legacy-game-panel').count()===0,lang+' archived interactions absent from public hub');

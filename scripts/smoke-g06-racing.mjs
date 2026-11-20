@@ -25,7 +25,7 @@ try{
    s=s.replace('game=gameCode({hero:','game=gameCode({testMode:true,hero:').replace('inspectGame:()=>','placeRace:state=>game.testRaceState(state),inspectGame:()=>');
    return route.fulfill({status:200,contentType:'text/javascript',body:s});
   });
-  await page.goto(origin+'/arcade/'+locale+'/index.html');await page.locator('[data-launch="g06"]').click();await page.locator('#campaign-chapter').selectOption(String(chapter));await page.locator('#setup-play').click();
+  await page.goto(origin+'/'+locale+'/play.html');await page.locator('[data-launch="g06"]').click();await page.locator('#campaign-chapter').selectOption(String(chapter));await page.locator('#setup-play').click();
   await page.waitForFunction(()=>!BioSuiteHub.debugState.loading&&BioSuiteHub.inspectGame()?.phase==='countdown');
   const grid=await page.evaluate(()=>BioSuiteHub.inspectGame());check(grid.progress===0&&grid.elapsed===0&&grid.traffic.filter(r=>r.type==='car').every(r=>r.speed===0),'grid held before GO');
   if(chapter===2){
