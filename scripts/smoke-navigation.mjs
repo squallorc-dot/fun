@@ -128,6 +128,14 @@ try{
     check((await localeLink.getAttribute('href'))?.endsWith('/decision-lab.html'),lang+' language link stays in lab');
     await page.locator('#protocol-quiz-root [data-qaction="start"]').click();
     check(await page.locator('.protocol-question').count()===1,lang+' first question rendered');
+    const quizLog=()=>page.evaluate(()=>window.dataLayer.filter(x=>x&&['quiz_started','quiz_completed'].includes(x.event)));
+    let starts=await quizLog();
+    check(starts.length===1&&starts[0].event==='quiz_started'&&starts[0].language===lang,lang+' first questionnaire start once with zh/ja language');
+    // Going back to the previous question does not begin another questionnaire.
+    await page.locator('.protocol-option[data-answer="0"]').click();
+    await page.locator('[data-qaction="back"]').click();
+    starts=await quizLog();
+    check(starts.length===1&&starts[0].event==='quiz_started',lang+' previous-question navigation does not emit extra quiz_started');
     for(let question=1;question<=8;question++){
      check(await page.locator('.protocol-option').count()===4,lang+' Q'+question+' 4 options');
      await page.locator('.protocol-option[data-answer="0"]').click();
@@ -135,7 +143,7 @@ try{
     check(await page.locator('.protocol-report-head').count()===1,lang+' report after 8 answers');
     check(await page.locator('.protocol-axis').count()===4,lang+' four scoring dimensions');
     check(await page.locator('.protocol-lead-hero').count()===1&&await page.locator('.protocol-aide-hero').count()===1,lang+' two guardian recommendations');
-    const quizEvents=await page.evaluate(()=>window.dataLayer.filter(x=>x&&['quiz_started','quiz_completed'].includes(x.event)));
+    const quizEvents=await quizLog();
     check(quizEvents.length===2&&quizEvents[0].event==='quiz_started'&&quizEvents[1].event==='quiz_completed',lang+' event semantics once');
     check(quizEvents[1].language===lang&&quizEvents[1].recommended_hero&&quizEvents[1].quiz_questions===8,lang+' completion payload');
     check(!quizEvents.some(e=>'answers' in e||'question' in e),lang+' raw answers never tracked');
@@ -143,6 +151,26 @@ try{
     check(await toGame.count()===1,lang+' quiz result can open G02 single-player');
     await page.locator('[data-qaction="reset"]').click();
     check(await page.locator('[data-qaction="start"]').count()===1,lang+' quiz reset');
+    check((await quizLog()).length===2,lang+' reset alone does not emit analytics');
+    await page.locator('[data-qaction="start"]').click();
+    let secondRun=await quizLog();
+    check(secondRun.length===3&&secondRun.filter(x=>x.event==='quiz_started').length===2,lang+' retake emits exactly a second start');
+    for(let i=0;i<8;i++)await page.locator('.protocol-option[data-answer="0"]').click();
+    secondRun=await quizLog();
+    check(secondRun.length===4&&secondRun.filter(x=>x.event==='quiz_completed').length===2,lang+' retake emits exactly a second completion');
+    check(secondRun.every(x=>x.language===lang),lang+' all quiz events share canonical zh/ja language');
+    // Abandoning midway and returning to this page starts a new session.
+    await page.locator('[data-qaction="reset"]').click();
+    await page.locator('[data-qaction="start"]').click();
+    await page.locator('.protocol-option[data-answer="0"]').click();
+    check((await quizLog()).filter(x=>x.event==='quiz_completed').length===2,lang+' partial third run has no completion');
+    await page.locator('.decision-return').click();
+    await page.waitForURL('**/'+lang+'/play.html');
+    await page.locator('.decision-entry-cta').click();
+    await page.waitForURL('**/'+lang+'/decision-lab.html');
+    await page.locator('[data-qaction="start"]').click();
+    const reentered=await quizLog();
+    check(reentered.length===1&&reentered[0].event==='quiz_started'&&reentered[0].language===lang,lang+' new visit after abandoning emits a single start');
     check(errors.length===0,lang+' lab runtime errors '+errors.join(';'));
    }catch(error){failures.push(lang+' decision lab '+width+': '+error.message);}finally{await page.close();}
   }

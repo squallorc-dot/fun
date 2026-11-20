@@ -74,7 +74,22 @@ try{
     }
 
     check(await page.evaluate(()=>document.body.classList.contains('stage-active')),label+' G02 parent stage lock '+round);
-    await page.locator('#stage-back').click();
+    if(round===4){
+     // Reproduce the G02 iframe's original 'victory' result; only the finish funnel is normalized.
+     const before=await page.evaluate(()=>window.dataLayer.filter(x=>x.event==='arcade_game_finish'&&x.game_id==='g02').length);
+     await frame.locator('body').evaluate(()=>parent.postMessage({source:'bio-city-shooter',event:{event:'game_completed',outcome:'victory',final_score:123}},location.origin));
+     await page.waitForFunction(old=>window.dataLayer.filter(x=>x.event==='arcade_game_finish'&&x.game_id==='g02').length===old+1,before);
+     const normalized=await page.evaluate(()=>({
+      finish:window.dataLayer.filter(x=>x.event==='arcade_game_finish'&&x.game_id==='g02').at(-1),
+      completed:window.dataLayer.filter(x=>x.event==='game_completed'&&x.game_id==='g02').at(-1)
+     }));
+     check(normalized.finish.outcome==='win'&&normalized.finish.language===lang,label+' G02 victory normalizes to win with zh/ja language');
+     check(normalized.completed.outcome==='victory',label+' G02 raw game_completed is retained separately from canonical finish');
+     await page.evaluate(()=>{const src=document.querySelector('#g02-frame').contentWindow;window.dispatchEvent(new MessageEvent('message',{origin:location.origin,source:src,data:{source:'bio-city-shooter',event:{event:'game_completed',outcome:'victory',final_score:123}}}));});
+     check(await page.evaluate(old=>window.dataLayer.filter(x=>x.event==='arcade_game_finish'&&x.game_id==='g02').length===old+1,before),label+' repeated G02 completion does not double-count');
+    }
+    if(round===4)await page.locator('#stage-back').evaluate(el=>el.click()); // Only for the synthetic result overlay.
+    else await page.locator('#stage-back').click();
     await inLobby();
     check(await page.locator('#g02-frame').count()===0,label+' G02 frame disposed '+round);
     check(!(await page.evaluate(()=>document.body.classList.contains('stage-active'))),label+' G02 scroll unlocked '+round);
