@@ -101,18 +101,37 @@ export default {
    // The room code identifies a DO; two independent 256-bit capabilities authorize access.
    const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',bytes=crypto.getRandomValues(new Uint8Array(8));
    const room=Array.from(bytes,b=>alphabet[b%32]).join(''),host=randomHex(32),guest=randomHex(32);
-   const stub=env.ROOMS.get(env.ROOMS.idFromName(room));
+   const stub=env.ROOMS.get(env.ROOMS.idFromName(room),{locationHint:'apac'});
    const response=await stub.fetch('https://room.internal/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({host:await digest(host),guest:await digest(guest)})});
    if(!response.ok)return json({error:'create-failed'},503,headers);
    return json({v:VERSION,room,host,guest,expiresIn:ROOM_MS/1000},201,headers);
   }
   const match=/^\/rooms\/([A-Z2-9]{8})\/socket$/.exec(url.pathname);
-  if(request.method==='GET'&&match&&request.headers.get('Upgrade')?.toLowerCase()==='websocket'){const denied=await guarded(request,env,'socket',headers);if(denied)return denied;return env.ROOMS.get(env.ROOMS.idFromName(match[1])).fetch(request);}
+  if(request.method==='GET'&&match&&request.headers.get('Upgrade')?.toLowerCase()==='websocket'){const denied=await guarded(request,env,'socket',headers);if(denied)return denied;return env.ROOMS.get(env.ROOMS.idFromName(match[1]),{locationHint:'apac'}).fetch(request);}
   return json({error:'not-found'},404,headers);
  }
 };
 export class Room {
- constructor(state){this.state=state;}
+ constructor(state){this.state=state;this.relayRoomCache=undefined;this.relayRoomLoading=null;}
+ // WebSocket hibernation recreates the instance. Rehydrate persisted room
+ // authority on the first Relay frame, never once per packet.
+ async relayRoom(){
+  if(this.relayRoomCache!==undefined)return this.relayRoomCache;
+  if(!this.relayRoomLoading)this.relayRoomLoading=this.state.storage.get('room');
+  try{
+   const stored=await this.relayRoomLoading;
+   if(this.relayRoomCache===undefined)this.relayRoomCache=stored?structuredClone(stored):null;
+   return this.relayRoomCache;
+  }finally{this.relayRoomLoading=null;}
+ }
+ async storeRoom(room){
+  await this.state.storage.put('room',room);
+  this.relayRoomCache=structuredClone(room);
+ }
+ async clearRoom(){
+  await this.state.storage.deleteAll();
+  this.relayRoomCache=null;
+ }
  async schedule(room){
   if(!room)return;
   const deadlines=this.state.getWebSockets().filter(ws=>ws.readyState===1).map(ws=>ws.deserializeAttachment()).filter(x=>x&&!x.role).map(x=>x.deadline??x.at+AUTH_MS);
@@ -125,7 +144,7 @@ export class Room {
    if(await this.state.storage.get('room'))return json({error:'exists'},409);
    let data;try{data=await request.json();}catch{return json({error:'format'},400);}
    if(!tokenPattern.test(data.host||'')||!tokenPattern.test(data.guest||'')||data.host===data.guest)return json({error:'format'},400);
-   const expires=Date.now()+ROOM_MS;await this.state.storage.put('room',{host:data.host,guest:data.guest,guestOnce:true,guestExpires:expires,expires});await this.state.storage.setAlarm(expires);return json({ok:true});
+   const expires=Date.now()+ROOM_MS;await this.storeRoom({host:data.host,guest:data.guest,guestOnce:true,guestExpires:expires,expires});await this.state.storage.setAlarm(expires);return json({ok:true});
   }
   const room=await this.state.storage.get('room');
   if(!room||room.expires<=Date.now())return json({error:'expired'},410);
@@ -134,16 +153,20 @@ export class Room {
   return new Response(null,{status:101,webSocket:pair[0]});
  }
  async webSocketMessage(ws,text){
-  const info=ws.deserializeAttachment(),room=await this.state.storage.get('room');
-  if(!info||!room||room.expires<=Date.now()||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
+  const info=ws.deserializeAttachment();
+  if(!info||typeof text!=='string'||text.length>MAX_TEXT||new TextEncoder().encode(text).byteLength>MAX_TEXT){ws.close(1008,'invalid');return;}
   let msg;try{msg=JSON.parse(text);}catch{ws.close(1008,'invalid');return;}
+  // Only authenticated Relay candidates skip the storage read. Every frame
+  // still enforces room expiration, authenticated role, SID, and rate caps.
+  const relayPacket=!!info.role&&msg?.v===VERSION&&msg.type==='relay-data';
+  const room=relayPacket?await this.relayRoom():await this.state.storage.get('room');
+  if(!room||room.expires<=Date.now()){ws.close(1008,'invalid');return;}
   const now=Date.now();
   // Gameplay Relay packets can arrive dozens of times per second. Keep a
   // separate budget for authenticated RTC data and room control commands:
   // the first retry-ready after a busy game must not inherit relay traffic.
   // Classify parsed messages, never user-controlled JSON substrings.
   if(now-info.window>=1000){info.window=now;info.count=0;info.relayCount=0;}
-  const relayPacket=!!info.role&&msg?.v===VERSION&&msg.type==='relay-data';
   if(relayPacket){
    info.relayCount=(info.relayCount||0)+1;
    if(info.relayCount>180){ws.close(1008,'rate');return;}
@@ -156,7 +179,7 @@ export class Room {
      const host=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');
      if(!host||this.state.getWebSockets().some(other=>{const v=other.deserializeAttachment();return other!==ws&&(v?.role==='guest'||v?.requestId);})){ws.close(1008,'unavailable');return;}
      const bucket=current.requests||{at:now,count:0};if(now-bucket.at>=60000){bucket.at=now;bucket.count=0;}if(++bucket.count>10){ws.close(1008,'rate');return;}
-     current.requests=bucket;await this.state.storage.put('room',current);info.requestId=randomHex(16);info.deadline=now+REQUEST_MS;ws.serializeAttachment(info);await this.schedule(current);
+     current.requests=bucket;await this.storeRoom(current);info.requestId=randomHex(16);info.deadline=now+REQUEST_MS;ws.serializeAttachment(info);await this.schedule(current);
      host.send(JSON.stringify({v:VERSION,type:'join-request',id:info.requestId}));ws.send(JSON.stringify({v:VERSION,type:'waiting-approval'}));
     });return;
    }
@@ -171,11 +194,11 @@ export class Room {
     if(this.state.getWebSockets().some(other=>other!==ws&&other.deserializeAttachment()?.role===msg.role)){ws.close(1008,'occupied');return;}
     if(msg.role==='guest'&&current.guestOnce){current.guest=null;delete current.guestOnce;delete current.guestExpires;}
     if(msg.role==='host')current.host=null;
-    const next=randomHex(32);current.recovery??={};current.recovery[msg.role]={hash:await digest(next),count:msg.resume===true?(recovery.count+1):0,until:0};await this.state.storage.put('room',current);
+    const next=randomHex(32);current.recovery??={};current.recovery[msg.role]={hash:await digest(next),count:msg.resume===true?(recovery.count+1):0,until:0};await this.storeRoom(current);
     info.role=msg.role;ws.serializeAttachment(info);ws.send(JSON.stringify({v:VERSION,type:'authenticated',role:info.role,resumeToken:next}));
     const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role);
     if(peer){
-     if(!current.active){current.active=true;current.expires=Date.now()+ACTIVE_MS;await this.state.storage.put('room',current);}
+     if(!current.active){current.active=true;current.expires=Date.now()+ACTIVE_MS;await this.storeRoom(current);}
      peer.send(JSON.stringify({v:VERSION,type:'peer-joined'}));ws.send(JSON.stringify({v:VERSION,type:'peer-joined'}));
     }
     await this.schedule(current);
@@ -185,7 +208,7 @@ export class Room {
   if(msg?.v===VERSION&&msg.type==='relay-ready'&&Object.keys(msg).length===2){
    info.relayReady=true;ws.serializeAttachment(info);const peer=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role===(info.role==='host'?'guest':'host'));if(!peer)return;
    if(!peer.deserializeAttachment()?.relayReady){peer.send(JSON.stringify({v:VERSION,type:'relay-propose'}));return;}
-   const current=await this.state.storage.get('room');if(!current)return;current.relaySid??=randomHex(16);current.relayActive=true;await this.state.storage.put('room',current);for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'relay-start',sid:current.relaySid}));return;
+   const current=await this.state.storage.get('room');if(!current)return;current.relaySid??=randomHex(16);current.relayActive=true;await this.storeRoom(current);for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'relay-start',sid:current.relaySid}));return;
   }
   if(msg?.v===VERSION&&msg.type==='relay-data'){
    if(!room.relayActive||!info.relayReady||!['input','control'].includes(msg.channel)||typeof msg.payload!=='string'||msg.payload.length>32768||Object.keys(msg).some(k=>!['v','type','channel','payload'].includes(k))){ws.close(1008,'relay-invalid');return;}
@@ -203,11 +226,11 @@ export class Room {
     // to an earlier round's relay state while retaining room authorization.
     delete current.relaySid;delete current.relayActive;
     for(const target of [ws,peer]){const attachment=target.deserializeAttachment();delete attachment.relayReady;target.serializeAttachment(attachment);}
-    await this.state.storage.put('room',current);
+    await this.storeRoom(current);
     for(const target of [ws,peer])target.send(JSON.stringify({v:VERSION,type:'retry-start',attempt:msg.attempt}));
    });return;
   }
-  if(msg?.v===VERSION&&msg.type==='leave'&&Object.keys(msg).length===2){if(info.role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else{const current=await this.state.storage.get('room');if(current?.recovery){delete current.recovery.guest;await this.state.storage.put('room',current);}}ws.close(1000,'leave');return;}
+  if(msg?.v===VERSION&&msg.type==='leave'&&Object.keys(msg).length===2){if(info.role==='host'){await this.clearRoom();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-left');}else{const current=await this.state.storage.get('room');if(current?.recovery){delete current.recovery.guest;await this.storeRoom(current);}}ws.close(1000,'leave');return;}
   if(info.role==='host'&&msg?.v===VERSION&&msg.type==='join-decision'&&typeof msg.accept==='boolean'&&/^[a-f0-9]{32}$/.test(msg.id||'')&&Object.keys(msg).length===4){
    await this.state.blockConcurrencyWhile(async()=>{
     const pending=this.state.getWebSockets().find(other=>{const v=other.deserializeAttachment();return !v?.role&&v?.requestId===msg.id&&v.deadline>Date.now();});
@@ -216,7 +239,7 @@ export class Room {
     const current=await this.state.storage.get('room');if(!current||current.expires<=Date.now()||this.state.getWebSockets().some(other=>other.deserializeAttachment()?.role==='guest'))return;
     // A host-approved new guest supersedes an absent guest's recovery grace.
     // Old resume credentials are revoked atomically with the new invitation.
-    const token=randomHex(32);if(current.recovery)delete current.recovery.guest;delete current.relaySid;delete current.relayActive;const existingHost=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');if(existingHost){const hostInfo=existingHost.deserializeAttachment();delete hostInfo.relayReady;existingHost.serializeAttachment(hostInfo);}current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.state.storage.put('room',current);
+    const token=randomHex(32);if(current.recovery)delete current.recovery.guest;delete current.relaySid;delete current.relayActive;const existingHost=this.state.getWebSockets().find(other=>other.deserializeAttachment()?.role==='host');if(existingHost){const hostInfo=existingHost.deserializeAttachment();delete hostInfo.relayReady;existingHost.serializeAttachment(hostInfo);}current.guest=await digest(token);current.guestOnce=true;current.guestExpires=Date.now()+AUTH_MS;await this.storeRoom(current);
     const p=pending.deserializeAttachment();delete p.requestId;p.deadline=Date.now()+AUTH_MS;pending.serializeAttachment(p);await this.schedule(current);
     pending.send(JSON.stringify({v:VERSION,type:'join-approved',token}));
    });return;
@@ -227,14 +250,14 @@ export class Room {
   if(!peer){ws.send(JSON.stringify({v:VERSION,type:'peer-missing'}));return;}peer.send(text);
  }
  async webSocketClose(ws){const info=ws.deserializeAttachment(),role=info?.role;if(!role){if(info?.requestId){const host=this.state.getWebSockets().find(other=>other!==ws&&other.deserializeAttachment()?.role==='host');host?.send(JSON.stringify({v:VERSION,type:'join-cancelled',id:info.requestId}));}await this.schedule(await this.state.storage.get('room'));return;}
-  await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current)return;const recovery=current.recovery?.[role];if(recovery){if(recovery.count>=MAX_RESUMES){if(role==='host'){await this.state.storage.deleteAll();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-expired');return;}delete current.recovery.guest;}else recovery.until=Math.min(current.expires,Date.now()+RESUME_MS);await this.state.storage.put('room',current);}for(const other of this.state.getWebSockets())if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));await this.schedule(current);});
+  await this.state.blockConcurrencyWhile(async()=>{const current=await this.state.storage.get('room');if(!current)return;const recovery=current.recovery?.[role];if(recovery){if(recovery.count>=MAX_RESUMES){if(role==='host'){await this.clearRoom();for(const other of this.state.getWebSockets())if(other!==ws)other.close(1000,'host-expired');return;}delete current.recovery.guest;}else recovery.until=Math.min(current.expires,Date.now()+RESUME_MS);await this.storeRoom(current);}for(const other of this.state.getWebSockets())if(other!==ws&&other.deserializeAttachment()?.role)other.send(JSON.stringify({v:VERSION,type:'peer-left'}));await this.schedule(current);});
  }
  async webSocketError(ws){ws.close(1011,'socket-error');}
  async alarm(){
   const room=await this.state.storage.get('room'),now=Date.now();
-  if(!room||room.expires<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.state.storage.deleteAll();return;}
-  if(room.recovery?.host?.until&&room.recovery.host.until<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'host-expired');await this.state.storage.deleteAll();return;}
-  if(room.recovery?.guest?.until&&room.recovery.guest.until<=now){delete room.recovery.guest;await this.state.storage.put('room',room);}
+  if(!room||room.expires<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'expired');await this.clearRoom();return;}
+  if(room.recovery?.host?.until&&room.recovery.host.until<=now){for(const ws of this.state.getWebSockets())ws.close(1000,'host-expired');await this.clearRoom();return;}
+  if(room.recovery?.guest?.until&&room.recovery.guest.until<=now){delete room.recovery.guest;await this.storeRoom(room);}
   for(const ws of this.state.getWebSockets()){const info=ws.deserializeAttachment();if(info&&!info.role&&(info.deadline??info.at+AUTH_MS)<=now)ws.close(1008,'auth-timeout');}
   await this.schedule(room);
  }

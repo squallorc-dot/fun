@@ -11,15 +11,24 @@ async function createRoom(endpoint){
 function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest=()=>{},onJoinCancelled=()=>{},onSignalingLost=()=>{},onSignalingRestored=()=>{},onSignalingUnavailable=()=>{},onProgress=()=>{}}){
  if(!/^[A-Z2-9]{8}$/.test(room)||!['host','guest'].includes(role)||!(role==='guest'&&token==null||/^[a-f0-9]{64}$/.test(token))||typeof onJoinRequest!=='function'||typeof onJoinCancelled!=='function'||typeof onSignalingLost!=='function'||typeof onSignalingRestored!=='function'||typeof onSignalingUnavailable!=='function'||typeof onProgress!=='function'||!link||!Number.isFinite(timeout)||timeout<=0||timeout>TIMEOUT_MS)throw Error('parameters');
  const url=endpointURL(endpoint,'/rooms/'+room+'/socket');url.protocol=url.protocol==='https:'?'wss:':'ws:';
- let socket,socketReady=false,lastRelayAttempt=0,resumeToken=null,resumeAttempts=0,reconnectTimer=null,retryAttempts=0,retryRequests=0,retryPending=null,requestRetry;const send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,signalingLost=false,relayActive=false,earlyRelayPackets=[],poll,timer,cancel,fallbackTimer,restartTimer,healthTimer,degradedAt=0;
+ let socket,socketReady=false,lastRelayAttempt=0,resumeToken=null,resumeAttempts=0,reconnectTimer=null,retryAttempts=0,retryRequests=0,retryPending=null,requestRetry;const send=(type,extra={})=>socket.send(JSON.stringify({v:VERSION,type,...extra}));let stopped=false,started=false,settled=false,signalingLost=false,relayActive=false,earlyRelayPackets=[],poll,timer,cancel,fallbackTimer,restartTimer,healthTimer,degradedAt=0,relayReason=null;
   const clearRecovery=()=>{clearTimeout(fallbackTimer);clearTimeout(restartTimer);};
   const clearHealth=()=>{clearInterval(healthTimer);healthTimer=null;};
-  const requestRelay=()=>{const now=Date.now();if(stopped||relayActive||!socketReady||socket?.readyState!==WebSocket.OPEN||now-lastRelayAttempt<2000)return;lastRelayAttempt=now;try{send('relay-ready');onProgress('relay-request');}catch{}};
+  const diagnoseRelay=()=>{
+   const pc=link.pc,state=pc?.connectionState,ice=pc?.iceConnectionState;
+   if(state==='failed'||ice==='failed')return 'ice-failed';
+   if(state==='disconnected'||ice==='disconnected')return 'ice-disconnected';
+   if(link.state!=='connected')return null;
+   if(Object.values(link.channels||{}).some(dc=>dc.readyState!=='open'))return 'channel-closed';
+   if(typeof link.lastReceived==='number'&&performance.now()-link.lastReceived>3500)return 'packet-silence';
+   return null;
+  };
+  const requestRelay=(reason='peer-request')=>{const now=Date.now();if(stopped||relayActive||!socketReady||socket?.readyState!==WebSocket.OPEN||now-lastRelayAttempt<2000)return;lastRelayAttempt=now;try{send('relay-ready');relayReason??=reason;onProgress('relay-request');}catch{}};
   // Data-channel silence is actionable even if ICE still claims connected.
   // Use the same consent-based relay protocol as the signaling health loop.
   const previousDegraded=link.onDegraded;
-  if(link.betaStun)link.onDegraded=()=>{previousDegraded?.();requestRelay();};
-  const scheduleFallback=()=>{if(!link.useRelay||fallbackTimer)return;restartTimer=setTimeout(async()=>{if(role==='host'&&link.state!=='connected'&&socket?.readyState===WebSocket.OPEN){const description=await link.restartOffer?.();if(description)send('ice-offer',{description});}},6500);fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(link.state!=='connected')requestRelay();},RELAY_AFTER_MS);};
+  if(link.betaStun)link.onDegraded=()=>{previousDegraded?.();requestRelay(diagnoseRelay()||'packet-silence');};
+  const scheduleFallback=()=>{if(!link.useRelay||fallbackTimer)return;restartTimer=setTimeout(async()=>{if(role==='host'&&link.state!=='connected'&&socket?.readyState===WebSocket.OPEN){const description=await link.restartOffer?.();if(description)send('ice-offer',{description});}},6500);fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(link.state!=='connected')requestRelay(diagnoseRelay()||'initial-timeout');},RELAY_AFTER_MS);};
  const lost=()=>{if(!stopped&&!signalingLost){signalingLost=true;onSignalingLost();}};
  const result=new Promise((resolve,reject)=>{
   const finish=(err)=>{if(!err)clearRecovery();if(settled){if(retryPending){const pending=retryPending;retryPending=null;clearTimeout(timer);clearInterval(poll);if(err){if(socket?.readyState===WebSocket.OPEN)try{send('retry-cancel',{attempt:pending.attempt});}catch{}link.close('failed');pending.reject(err);}else pending.resolve();return;}if(err)lost();return;}settled=true;clearTimeout(timer);clearInterval(poll);if(err){clearRecovery();clearHealth();onProgress('failed');stopped=true;link.close('failed');socket.close();reject(err);}else{onProgress('connected');resolve();}};
@@ -30,7 +39,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
    retryRequests++;started=false;
     // A retry is a fresh RTC/Relay negotiation on the same authenticated room.
     // The previous round's relay state must not suppress a new offer/answer.
-    relayActive=false;earlyRelayPackets=[];lastRelayAttempt=0;clearRecovery();
+    relayActive=false;earlyRelayPackets=[];lastRelayAttempt=0;relayReason=null;clearRecovery();
     const attempt=retryAttempts+1;return new Promise((resolve,reject)=>{retryPending={resolve,reject,attempt};arm(timeout);poll=setInterval(()=>{if(link.state==='connected')finish();else if(started&&['failed','timeout'].includes(link.state)&&!link.betaStun)finish(Error('rtc-'+link.state));},100);send('retry-ready',{attempt});});};arm(WAIT_MS);
   poll=setInterval(()=>{if(link.state==='connected')finish();else if(!link.useRelay&&['failed','disconnected','timeout'].includes(link.state))finish(Error('rtc-'+link.state));},100);
   healthTimer=setInterval(()=>{
@@ -39,7 +48,7 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
     const deadChannel=Object.values(link.channels||{}).some(dc=>dc.readyState!=='open');
     const noPackets=typeof link.lastReceived==='number'&&performance.now()-link.lastReceived>3500;
     const impaired=state==='disconnected'||state==='failed'||deadChannel||noPackets;
-    if(impaired){degradedAt||=Date.now();if(Date.now()-degradedAt>=1500)requestRelay();}
+    if(impaired){degradedAt||=Date.now();if(Date.now()-degradedAt>=1500)requestRelay(diagnoseRelay()||'packet-silence');}
     else degradedAt=0;
    },500);
    const reconnect=()=>{if(stopped||reconnectTimer)return;if(!resumeToken||resumeAttempts>=2){onSignalingUnavailable();return;}reconnectTimer=setTimeout(()=>{reconnectTimer=null;if(!stopped){resumeAttempts++;open(true);}},resumeAttempts?2000:1000);};
@@ -69,9 +78,9 @@ function connect({endpoint,room,role,token,link,timeout=TIMEOUT_MS,onJoinRequest
       // The peer has declared its transport unusable. A locally healthy
       // ICE status cannot prove the other side is still receiving packets;
       // both peers must explicitly agree before changing transports.
-      requestRelay();
+      requestRelay(diagnoseRelay()||'peer-request');
      }
-     else if(message.type==='relay-start'&&/^[a-f0-9]{32}$/.test(message.sid||'')){clearRecovery();relayActive=true;link.useRelay(message.sid,(channel,payload)=>{if(socket?.readyState!==WebSocket.OPEN)return false;try{send('relay-data',{channel,payload});return true;}catch{return false;}},()=>socket?.readyState===WebSocket.OPEN?(Number(socket.bufferedAmount)||0):Infinity);for(const packet of earlyRelayPackets)link.receiveRelay(packet.channel,packet.payload);earlyRelayPackets=[];finish();onProgress('relay-connected');}
+     else if(message.type==='relay-start'&&/^[a-f0-9]{32}$/.test(message.sid||'')){clearRecovery();relayActive=true;link.useRelay(message.sid,(channel,payload)=>{if(socket?.readyState!==WebSocket.OPEN)return false;try{send('relay-data',{channel,payload});return true;}catch{return false;}},()=>socket?.readyState===WebSocket.OPEN?(Number(socket.bufferedAmount)||0):Infinity,relayReason||diagnoseRelay()||(link.state==='connected'?'peer-request':'initial-timeout'));for(const packet of earlyRelayPackets)link.receiveRelay(packet.channel,packet.payload);earlyRelayPackets=[];finish();onProgress('relay-connected');}
      else if(message.type==='relay-data'&&['input','control'].includes(message.channel)&&typeof message.payload==='string'&&message.payload.length<=32768){if(relayActive)link.receiveRelay(message.channel,message.payload);else if(earlyRelayPackets.length<32)earlyRelayPackets.push({channel:message.channel,payload:message.payload});}
     else if(message.type==='peer-left'||message.type==='peer-missing'){if(!settled){onProgress('recovering');arm(90000);}else lost();}
    }catch{finish(Error('pairing-failed'));}

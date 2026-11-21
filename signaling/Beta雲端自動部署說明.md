@@ -63,3 +63,10 @@ Beta 使用者回報「返回遊戲」指向舊版 Arcade，已統一指向正�
 只在保留原 Beta 回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7` 為第一父節點、以上驗收來源為第二父節點的受控整合提交上發版。相對 PR 來源的淨差異仍只允許四個既有 Beta 專用檔案。
 新增遊戲內 P2P／Relay、RTT、ACK、Dropped／Buffered 與 Snapshot 大小診斷；方案 A 僅在實際傳輸緩衝壅塞時丟棄一般非可靠幀（32 KiB），可靠控制維持 128 KiB 失敗保護。沒有修改正式 `main`、GTM／GA4、遊戲物理或勝負規則。
 Cloudflare Git Builds 必須由 `release/bio-city-v161-stun-beta` 觸發，先執行 `npm run build` 的同 SHA CI/四檔案預檢，再由 `npx wrangler deploy` 發布；Build 必須顯示 Success 且確認線上內容更新後才進行真機實測。
+
+## 2026-11-21｜APAC Relay 中繼優化及切換原因診斷受控發版
+
+來源固定 PR #38 Draft HEAD `e1386701037e43b5788067f15a56c3b5faa575d3`；六項品質與兩項 RTC CI：Run `44872651225`、`44872651235`，合計 8/8 Success。
+本次只更新受測來源的七個程式／測試檔案：Room 新房間 `locationHint:'apac'`、授權 Relay 熱路徑的快取與休眠恢復、純本機 Relay 切換原因診斷及回歸測試。保留既有 32 KiB 一般幀及 128 KiB 控制保護、房間驗證與到期、速率限制，不涉及 G01～G06 Snapshot 結構或遊戲規則。
+本版第一父節點為既有 Beta `9879c093ed962b3ecd36e9aa563563388a72497d`（含原回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7`），第二父節點為已驗收 PR 來源 `e1386701037e43b5788067f15a56c3b5faa575d3`；發布樹相對來源僅有四個 Beta 專用設定檔差異，禁止合併至正式 `main`。
+Cloudflare Workers Build（`bio-city-v161-signaling`）需顯示 Success 並確認線上版號對應本版後才開始跨網路實測。保持 PR Draft。

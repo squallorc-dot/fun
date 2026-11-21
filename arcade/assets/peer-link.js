@@ -1,6 +1,7 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
 const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,BETA_RECOVERY_MS=90000,HEARTBEAT_SILENCE_MS=12000;
+const RELAY_REASONS=new Set(['initial-timeout','ice-failed','ice-disconnected','channel-closed','packet-silence','peer-request']);
 // Only ordinary unreliable frame snapshots use the lower queue watermark.
 // Reliable control retains its previous fail-closed 128 KiB protection.
 const FRAME_QUEUE_MAX=32768,CONTROL_QUEUE_MAX=131072,SNAPSHOT_SAMPLE_MAX=256;
@@ -16,14 +17,14 @@ function description(text,kind){
 }
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
- constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
+ constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.relayReason=null;this.resetStats();}
  resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,droppedBackpressure:0,droppedSimulated:0,buffered:0,rtts:[],snapshotSizes:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   // Capture safe, address-free RTC states before closing an unsuccessful pairing.
   if(this.pc)this.lastDiagnostic=this.diagnose();
-  this.generation++;this.disconnectTicket=null;this.relaySend=null;this.relayBufferedAmount=null;this.transport='p2p';for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.generation++;this.disconnectTicket=null;this.relaySend=null;this.relayBufferedAmount=null;this.transport='p2p';this.relayReason=null;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
   this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
@@ -158,9 +159,9 @@ class Link{
   }
   return transmit();
  }
- useRelay(sid,transmit,bufferedAmount=()=>0){
+ useRelay(sid,transmit,bufferedAmount=()=>0,reason=null){
   if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function'||typeof bufferedAmount!=='function')throw Error('relay-invalid');
-  if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;if(this.state!=='connected')this.status('connected');return;}
+  if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;if(RELAY_REASONS.has(reason))this.relayReason=reason;if(this.state!=='connected')this.status('connected');return;}
   const preserve=this.state==='connected';
   if(preserve){
    // Transport handoff must not reset an active game round through idle.
@@ -171,7 +172,7 @@ class Link{
    this.channels={};try{pc?.close();}catch{}
    this.resetStats();
   }else{this.close('idle');this.resetStats();}
-  this.sid=sid;this.transport='relay';this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;
+  this.sid=sid;this.transport='relay';this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;this.relayReason=RELAY_REASONS.has(reason)?reason:null;
   if(!preserve)this.status('connected');
   this.heartbeat();
  }
@@ -228,7 +229,7 @@ class Link{
   };
   return {state:this.state,transport:'P2P',connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
  }
- measure(){const a=this.stats.rtts,sizes=this.stats.snapshotSizes;return {state:this.state,transport:this.state==='connected'?(this.transport==='relay'?'Relay':'P2P'):'—',sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,droppedBackpressure:this.stats.droppedBackpressure,droppedSimulated:this.stats.droppedSimulated,buffered:this.stats.buffered,snapshotBytes50:percentile(sizes,.5),snapshotBytes95:percentile(sizes,.95),rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
+ measure(){const a=this.stats.rtts,sizes=this.stats.snapshotSizes;return {state:this.state,transport:this.state==='connected'?(this.transport==='relay'?'Relay':'P2P'):'—',sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,droppedBackpressure:this.stats.droppedBackpressure,droppedSimulated:this.stats.droppedSimulated,buffered:this.stats.buffered,relayReason:this.transport==='relay'?this.relayReason:null,snapshotBytes50:percentile(sizes,.5),snapshotBytes95:percentile(sizes,.95),rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
  // Controlled application-layer impairment for diagnostics, not a fake RTC link.
  simulate({delay=0,loss=0,jitter=0}={}){if(!Number.isFinite(delay)||delay<0||delay>250||!Number.isFinite(loss)||loss<0||loss>.05||!Number.isFinite(jitter)||jitter<0||jitter>50)throw Error('impairment-range');this.impairment={delay,loss,jitter};}
