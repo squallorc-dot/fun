@@ -538,5 +538,94 @@ try{
   assert(layout.phone&&layout.preview,'touch landscape phone uses full own board plus PiP');
   assert(layout.canvasWidth>0&&layout.canvasHeight>0&&!layout.overflow,'touch landscape PiP does not overflow or hide primary canvas');
  }finally{await sideways.close();}
+ // Six-game phone-and-desktop regression for both supported languages.
+ // UI-only adapters isolate layout from gameplay and P2P; the existing
+ // G02 cross-engine and browser/session acceptances remain mandatory.
+ const gameMatrix=[
+  ['g01','coop',640,480,'42'],
+  ['g02','defense',600,600,'42'],
+  ['g03','stairs',480,720,'<span>DEPTH <b>122 m</b></span><span>LIFE <b>3</b></span><span>GOAL <b>250 m</b></span><span>ENERGY <b>5</b></span>'],
+  ['g04','pinball',600,720,'<span>STAGE <b>3/9</b></span><span>SHOTS <b>8</b></span><span>TARGETS <b>4</b></span><span>POWER <b>95%</b></span><span>SCORE <b>420</b></span>'],
+  ['g05','pong',640,480,'2 : 1'],
+  ['g06','race',640,800,'<span>名次 <b>1/6</b></span><span>圈數 <b>2/3</b></span><span>時間 <b>0:19.100</b></span><span>氮氣 <b>90%</b></span><span>超車 <b>1</b></span>']
+ ];
+ for(const lang of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:390,height:664},{width:1280,height:800}]){
+  const phone=viewport.width===390;
+  const testPage=await browser.newPage({viewport,isMobile:phone,hasTouch:phone});
+  try{
+   await testPage.goto(origin+'/arcade/friends/index.html?lang='+lang);
+   for(const [game,mode,w,h,hud] of gameMatrix){
+    const layout=await testPage.evaluate(async ({game,mode,w,h,hud})=>{
+     const s=BioFriendsApp.session;
+     s.adapter?.dispose?.();
+     document.querySelector('#viewport > iframe[data-ui-probe]')?.remove();
+     s.role='host';s.epoch=(s.epoch||0)+1;s.phase='playing';s.result=null;
+     s.config={game,mode,heroes:[0,3],room:'',epoch:s.epoch,chapter:1,difficulty:'normal'};
+     s.update=()=>{};
+     s.adapter={game:{w,h,hud:()=>hud,guestHud:()=>hud,inspectCombat:()=>({score:42}),inspectMatch:()=>({points:[2,1]}),draw:()=>{}},
+      drawOpponent:()=>true,dispose:()=>{}};
+     document.body.classList.add('auto-connected');s.changed();
+     if(game==='g02'){
+      const frame=document.createElement('iframe');frame.dataset.uiProbe='true';
+      frame.title='G02 outer-viewport layout probe';frame.src='about:blank';
+      frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;z-index:1';
+      document.getElementById('viewport').appendChild(frame);
+     }
+     await new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
+     const box=el=>{const v=el.getBoundingClientRect();return {left:v.left,right:v.right,top:v.top,bottom:v.bottom,width:v.width,height:v.height};};
+     const node=id=>document.getElementById(id),score=node('score'),dock=node('touch-controls');
+     const sc=getComputedStyle(score),dc=getComputedStyle(dock);
+     const parts=[...score.children].map(el=>({...box(el),display:getComputedStyle(el).display,text:el.textContent}));
+     const role=()=>node('side').textContent,host=role();
+     s.role='guest';s.changed();const guest=role();s.role='host';s.changed();
+     const buttons=[...dock.querySelectorAll('.bio-action')].filter(el=>!el.hidden&&getComputedStyle(el).display!=='none').map(el=>({...box(el),key:el.dataset.action}));
+     const iframe=node('viewport').querySelector('iframe[data-ui-probe]');
+     return {roles:[host,guest],viewport:box(node('viewport')),canvas:box(node('game-canvas')),dock:box(dock),
+      dockGrow:dc.flexGrow,dockVisible:dc.display!=='none',buttons,iframe:iframe?box(iframe):null,
+      peerVisible:!node('opponent-preview').hidden,peer:box(node('opponent-dock')),
+      score:{className:score.className,display:sc.display,wrap:sc.flexWrap,overflow:sc.overflow,rect:box(score),parts},
+      noteStyle:{whiteSpace:getComputedStyle(node('transport-brief')).whiteSpace,pointerEvents:getComputedStyle(node('transport-brief')).pointerEvents},
+      overflow:document.documentElement.scrollWidth>innerWidth};
+    },{game,mode,w,h,hud});
+    const tag=lang+' '+viewport.width+'x'+viewport.height+' '+game;
+    const coop=['g01','g02'].includes(game),dual=['g03','g04'].includes(game);
+    if(coop)assert.deepEqual(layout.roles,lang==='zh'?['房主｜你的英雄','好友｜你的英雄']:['ホスト｜自分のヒーロー','ゲスト｜自分のヒーロー'],tag+' co-op role names');
+    if(game==='g05')assert.deepEqual(layout.roles,lang==='zh'?['你控制左側','你控制右側']:['あなたは左側を操作','あなたは右側を操作'],tag+' ball-game left/right names unchanged');
+    if(game==='g06')assert.deepEqual(layout.roles,lang==='zh'?['房主｜你的賽車','好友｜你的賽車']:['ホスト｜自分のレースカー','ゲスト｜自分のレースカー'],tag+' G06 roles unchanged');
+    if(dual&&phone)assert.deepEqual(layout.roles,lang==='zh'?['自己畫面','自己畫面']:['自分の画面','自分の画面'],tag+' local two-board label unchanged');
+    assert(!layout.overflow,tag+' no horizontal overflow');
+    assert.equal(layout.noteStyle.pointerEvents,'none',tag+' diagnostics are touch transparent');
+    if(phone){
+     assert.equal(layout.noteStyle.whiteSpace,'nowrap',tag+' diagnostics remain one line');
+     assert(layout.viewport.height>100&&layout.canvas.bottom<=layout.dock.top+3,tag+' stage does not overlap touch dock');
+     if(['g01','g02','g05'].includes(game)){
+      assert(layout.dockVisible&&layout.dockGrow==='0',tag+' dock no longer stretches vertically');
+      assert(layout.dock.height>=110&&layout.dock.height<=(game==='g05'?.32:.40)*viewport.height+4,tag+' own dock height cap');
+      assert(layout.buttons.length>=1&&layout.buttons.every(b=>b.width>=40&&b.height>=40&&b.top>=layout.dock.top-3&&b.bottom<=layout.dock.bottom+3),tag+' all action buttons remain within tap zone');
+      assert(layout.viewport.bottom<=layout.dock.top+3,tag+' reclaimed height belongs to the game stage');
+      if(game==='g02')assert(layout.iframe&&Math.abs(layout.iframe.width-layout.viewport.width)<3&&Math.abs(layout.iframe.height-layout.viewport.height)<3,tag+' G02 iframe still fills parent exactly');
+     }
+     if(dual){
+      assert(layout.peerVisible&&layout.peer.bottom<=layout.viewport.top+4,tag+' opponent preview stays above the local board');
+      assert(layout.score.display==='flex'&&layout.score.wrap==='wrap'&&layout.score.overflow==='visible',tag+' multi-field HUD wraps without ellipsis');
+      assert.equal(layout.score.parts.length,game==='g03'?4:5,tag+' all native game status fields retained');
+      assert(layout.score.parts.every(p=>p.display!=='none'&&p.left>=layout.score.rect.left-3&&p.right<=layout.score.rect.right+3&&p.bottom<=layout.score.rect.bottom+3),tag+' no status field is clipped');
+      const fields=game==='g03'?['DEPTH','LIFE','GOAL','ENERGY']:['STAGE','SHOTS','TARGETS','POWER','SCORE'];
+      assert(layout.score.parts.every((p,i)=>p.text.includes(fields[i])),tag+' all status labels and values remain');
+      assert(layout.buttons.length>=2&&layout.buttons.every(b=>b.width>=40&&b.height>=40&&b.top>=layout.dock.top-3&&b.bottom<=layout.dock.bottom+3),tag+' G03/G04 special keys stay tappable');
+     }
+     if(game==='g06'){
+      assert(layout.score.className.includes('g06-score')&&layout.score.parts.length===5,tag+' G06 score structure unchanged');
+      assert(layout.score.parts.slice(0,3).every(p=>p.display!=='none')&&layout.score.parts.slice(3).every(p=>p.display==='none'),tag+' validated G06 priority unchanged');
+      assert.equal(layout.dockGrow,'0',tag+' validated G06 dock unchanged');
+     }
+    }else{
+     assert(layout.viewport.height>180,tag+' desktop stage remains visible');
+     if(dual)assert.equal(layout.score.parts.length,game==='g03'?4:5,tag+' desktop multi-field HUD complete');
+     if(game==='g06')assert(layout.score.className.includes('g06-score')&&layout.score.parts.every(p=>p.display!=='none'),tag+' G06 desktop unchanged');
+    }
+   }
+  }finally{await testPage.close();}
+ }
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
 }finally{await browser.close();await new Promise(r=>server.close(r));}
