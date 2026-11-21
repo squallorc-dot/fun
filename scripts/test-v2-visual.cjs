@@ -1,17 +1,18 @@
 /* Phase 1A: render-only visual tiers must not change game authority or bytes. */
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const visualCode=read('arcade/assets/visual-v2.js'),coreCode=read('arcade/assets/games-core.js');
 let checks=0;const check=(value,message)=>{assert(value,message);checks++;};
 const gradients=()=>({addColorStop(){}});
 const ink=()=>{const words=[];const raw={canvas:{width:960,height:800},createLinearGradient:gradients,createRadialGradient:gradients,measureText:s=>({width:String(s).length*8}),fillText:(text,x,y,font)=>words.push({text,x,y,font})};const ctx=new Proxy(raw,{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>{o[k]=v;return true;}});return {ctx,words};};
-function create(seed=741){
+function create(seed=741,sourceCode=coreCode){
  let state=seed>>>0,time=0;
  const math=Object.create(Math);math.random=()=>((state=(Math.imul(state,1664525)+1013904223)>>>0)/4294967296);
  const scope={window:{},Math:math,console,performance:{now:()=>time},Date,Map,Set,Promise,Uint8Array};
  vm.runInNewContext(visualCode,scope,{filename:'visual-v2.js'});
- vm.runInNewContext(coreCode,scope,{filename:'games-core.js'});
+ vm.runInNewContext(sourceCode,scope,{filename:'games-core.js'});
  return {scope,advance:()=>time+=8.33333};
 }
 const modes=['low','standard','high'],games=['g01','g03','g04','g05','g06'];
@@ -131,13 +132,93 @@ check(!visualCode.includes('networkSnapshot')&&!visualCode.includes('applyNetwor
 // G06 second foreground-material pass: golden network bytes/digest taken
 // verbatim from the green 735ad3ee host+guest fixed-input race baseline.
 // Local rendering may change light/air/vehicle geometry, never authority.
-const g06Gold={
- 1:{bytes:5153,digest:'194451dc'},
- 2:{bytes:5155,digest:'d3a666ee'},
- 3:{bytes:5162,digest:'5073d1bb'},
- 4:{bytes:5167,digest:'e24520cb'},
- 5:{bytes:5158,digest:'970831fd'}
-};
+// The golden reference is rebuilt from the exact green 735ad3ee Git blob.
+// Only its eleven known render-layer additions are undone; the SHA-1 pin
+// prevents altered authority/physics or relaxed snapshot expectations.
+const g06RenderOnlyUndo=[
+ [
+  "  window.BioVisualV2?.raceWheel?.(ctx,width,feedback?.speed||0,t);\n  ctx.save();ctx.rotate(between(steer,-1,1)*.028);\n  ctx.translate(0,-(feedback?.pitch||0)*width*.016+Math.sin(t*80)*impact*width*.012);\n",
+  "  ctx.save();ctx.translate(0,-(feedback?.pitch||0)*width*.016+Math.sin(t*80)*impact*width*.012);\n"
+ ],
+ [
+  "  window.BioVisualV2?.raceBody?.(ctx,width,model.kind,model.accent,steer,braking);\n",
+  ""
+ ],
+ [
+  "  window.BioVisualV2?.raceExhaust?.(ctx,width,boost,t,feedback?.speed||0);\n",
+  ""
+ ],
+ [
+  "  window.BioVisualV2?.raceSkyline?.(ctx,w,h,chapter,pan);\n",
+  ""
+ ],
+ [
+  "  window.BioVisualV2?.raceFixture?.(ctx,x,y,u,side,chapter,world);\n",
+  ""
+ ],
+ [
+  "     // Raised purely graphical red/white kerb outside the physical lane.\n     surface(ctx,[cameraPoint(d,side*1.055,.11),cameraPoint(next,side*1.055,.11),cameraPoint(next,side*1.055,0),cameraPoint(d,side*1.055,0)],'#263e50');\n",
+  ""
+ ],
+ [
+  "     roadSurface(ctx,d,next,side*.985,side*1.055,Math.floor(world/9)%2?'#fff3e4':'#d46b66',.11);\n",
+  ""
+ ],
+ [
+  "     // Neon rail ribbon follows exactly the same existing projection.\n     if(Math.round(world/stripLength)%3===0)window.BioVisualV2?.raceRail?.(ctx,project(d,side*1.15,.62),project(next,side*1.15,.62),chapter);\n",
+  ""
+ ],
+ [
+  "    if(d<90&&Math.round(world/stripLength)%5===0)window.BioVisualV2?.raceRoadGrain?.(ctx,project(d,-.72),project(d,.72),world);\n",
+  ""
+ ],
+ [
+  "  // Visual event ledger only; overtaking/scoring remains in raceStep().\n  if(player&&passes>0)window.BioVisualV2?.emit?.('g06','pass-'+passes,'pass',player.x,player.y-42,'#befff2',t);\n",
+  ""
+ ],
+ [
+  "  window.BioVisualV2?.raceSpeedLines?.(ctx,w,h,car.speed,slipstream,t);\n",
+  "  if(car.speed>78){ctx.strokeStyle='#bce7ed2e';ctx.lineWidth=1;for(let i=0;i<12;i++){const side=i%2?1:-1,phase=(t*2.5+i*.17)%1,x=w*.5+side*w*(.35+phase*.2),y=h*(.43+phase*.5);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*phase*w*.04,y+phase*h*.09);ctx.stroke();}}\n"
+ ]
+];
+function pinnedG06GoldenCore(){
+ let source=coreCode;
+ for(const [enhanced,baseline] of g06RenderOnlyUndo){
+  check(source.split(enhanced).length===2,'G06 render-only inverse must match exactly one hunk');
+  source=source.replace(enhanced,baseline);
+ }
+ const bytes=Buffer.from(source,'utf8');
+ const hash=crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+ check(hash==='21ff8820ba2e321d1203f9a7bca069ddd9e2e05e',
+  'G06 baseline must be the byte-exact 735ad3ee Git blob');
+ return source;
+}
+const g06BaselineCore=pinnedG06GoldenCore();
+function g06GoldenRun(chapter){
+ const {scope,advance}=create(741,g06BaselineCore),visual=scope.window.BioVisualV2;
+ check(visual.setQuality('standard'),'G06 pinned golden tier');
+ const hero=chapter-1,game=scope.window.BioSuiteGames.g06({
+  hero,remoteHero:(hero+3)%7,multiplayer:true,authority:true,chapter,
+  mode:'race',difficulty:'normal',sessionCountdown:true,
+  finish(){},sfx(){},I:{hero:['Burner','MJ','Moo','Ye Bao','Jelly','Veggie','Oracle']}
+ });
+ game.w=640;game.h=800;game.start();
+ const {ctx}=ink();
+ for(let n=0;n<90;n++){
+  game.setRemoteInput({moveX:-.25,up:true,fire:n%27<8});
+  game.update(1/120,{moveX:n%30<15?.45:-.4,fire:n%22<8,up:true,left:false,right:false,down:false});
+  advance();
+  if(n%30===0){
+   const before=JSON.stringify(game.networkSnapshot());
+   game.draw(ctx);game.drawGuest(ctx);
+   check(JSON.stringify(game.networkSnapshot())===before,
+    '735ad3ee baseline G06 host/guest draw preserves state');
+  }
+ }
+ const json=JSON.stringify(game.networkSnapshot());
+ return {json,bytes:Buffer.byteLength(json,'utf8'),digest:g06Digest(json)};
+}
+const g06Gold=Object.fromEntries([1,2,3,4,5].map(chapter=>[chapter,g06GoldenRun(chapter)]));
 function g06Digest(text){
  let h=2166136261>>>0;
  for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619)>>>0;
@@ -168,7 +249,7 @@ for(let chapter=1;chapter<=5;chapter++){
    }
   }
   const json=JSON.stringify(game.networkSnapshot()),bytes=Buffer.byteLength(json,'utf8');
-  check(bytes===g06Gold[chapter].bytes&&g06Digest(json)===g06Gold[chapter].digest,
+  check(bytes===g06Gold[chapter].bytes&&g06Digest(json)===g06Gold[chapter].digest&&json===g06Gold[chapter].json,
    'G06 chapter '+chapter+'/'+tier+' equals 735ad3ee golden serialized authority');
   results.push(json);
  }
@@ -198,7 +279,8 @@ for(const tier of modes){
  check(v.emit('g06','pass-proof','pass',100,200,'#fff',.5),'G06 pass flash enters bounded local event pool');
  check(v.shake('g06').x===0&&v.shake('g06').y===0,'G06 near pass never causes impact shudder');
  v.emit('g06','impact-proof','impact',100,200,'#fff',.5);
- check(v.shake('g06').y!==0,'G06 collision keeps presentation-only micro-shake');
+ check(tier==='low'?v.shake('g06').x===0&&v.shake('g06').y===0:v.shake('g06').y!==0,
+  'G06 collision has no low-tier shake, but standard/high retain presentation-only micro-shake');
 }
 check(['raceSkyline','raceWheel','raceBody','raceExhaust','raceFixture','raceRail','raceRoadGrain','raceSpeedLines'].every(k=>typeof scope.window.BioVisualV2[k]==='function'),
  'all G06 foreground functions exported to the same solo/multiplayer visual layer');
