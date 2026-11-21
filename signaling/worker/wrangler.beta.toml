@@ -1,0 +1,38 @@
+# Public Beta candidate for the EXISTING Worker. Defaults closed.
+# Do not set workers_dev/BETA_PUBLIC_ENABLED true until latest SHA CI,
+# account, secrets, dry-run and actual signed-off release checks all pass.
+name = "bio-city-v161-signaling"
+main = "worker.mjs"
+compatibility_date = "2025-04-01"
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "./candidate-assets"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+not_found_handling = "none"
+
+[vars]
+TEST_ENABLED = "false"
+TEST_OPEN_WINDOW = "false"
+BETA_PUBLIC_ENABLED = "false"
+BETA_PUBLIC_ORIGIN = "https://bio-city-v161-signaling.squall-orc.workers.dev"
+ALLOWED_ORIGINS = "https://bio-city-v161-signaling.squall-orc.workers.dev"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[durable_objects.bindings]]
+name = "RATE_GATES"
+class_name = "RateGate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["RateGate"]
