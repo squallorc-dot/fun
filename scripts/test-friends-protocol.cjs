@@ -18,6 +18,31 @@ for(const mode of ['pong','volley']){
  check(!s.receive('frame',{epoch:1,tick:1000,state:{points:[7,0]}},'control'),'guest cannot author state');const y=s.adapter.game.inspectMatch().ai.y;now+=400;s.update(1/60);check(s.adapter.game.inspectMatch().ai.y===y,'stale input becomes neutral');now+=2200;s.update(1/60);check(s.phase==='paused'&&Object.keys(s.remote).length===0,'prolonged input silence still pauses safely');
  s.result={points:[7,0]};s.readyFlags=[true,true];s.clearRound();check(s.adapter===null&&s.result===null&&s.readyFlags.every(v=>!v)&&Object.keys(s.remote).length===0,'next game removes prior physics/input/result/readiness');s.leave();
 }
+// Simulator-only reliable control FIFO: browser timers can wake in reverse
+// order at the same simulated RTT. A ping must never overtake the initial
+// hello/config/ack and strand a second real pairing at lobby epoch 0.
+{
+ const source=fs.readFileSync('arcade/assets/peer-link.js','utf8');
+ for(const reversed of [false,true]){
+  let clock=1000,nextId=0;const timers=[],world={};
+  const mockSetTimeout=(fn,ms)=>{const id=++nextId;timers.push({id,fn,ms});return id;};
+  const mockClearTimeout=id=>{const i=timers.findIndex(x=>x.id===id);if(i>=0)timers.splice(i,1);};
+  vm.runInNewContext(source,{window:world,performance:{now:()=>clock},setTimeout:mockSetTimeout,clearTimeout:mockClearTimeout});
+  const received=[],from=new world.BioPeer.Link(),to=new world.BioPeer.Link({onMessage:type=>{received.push(type);return true;}});
+  from.sid=to.sid='a'.repeat(32);from.state=to.state='connected';
+  from.channels.control={readyState:'open',bufferedAmount:0,send:data=>to.receive('control',data)};
+  from.channels.input={readyState:'open',bufferedAmount:0,send:()=>{}};
+  to.channels.control={readyState:'open',bufferedAmount:0,send:()=>{}};
+  to.channels.input={readyState:'open',bufferedAmount:0,send:()=>{}};
+  from.simulate({delay:50});
+  check(from.send('hello',{protocol:1})&&from.send('ping',{id:1}),'control handshake and heartbeat scheduled under simulated RTT');
+  while(timers.length){const timer=reversed?timers.pop():timers.shift();clock+=1;timer.fn();}
+  check(received.join()==='hello'&&to.stats.rejected===0&&to.received.control===1,'reliable control hello remains first even when delayed timers run backward');
+  check(from.send('config',{epoch:1})&&from.delayedReliableControl.length===1,'next reliable control is queued without altering wire schema');
+  from.close('closed');
+  check(from.delayedReliableControl.length===0&&timers.length===0,'new RTC generation clears pending simulated controls');
+ }
+}
 // Read-only quality telemetry: the accepted guest snapshots determine ACK latency
 // and the latest 30-second window; no host physics, send cadence or payload changes.
 {
