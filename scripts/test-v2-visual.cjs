@@ -68,4 +68,63 @@ for(const locale of ['zh','ja']){
  for(const file of ['arcade/'+locale+'/index.html','arcade/'+locale+'/shooter.html',locale+'/play.html'])check(read(file).includes('visual-v2.js'),'common v2 rendering loaded in '+file);
 }
 check(read('arcade/friends/index.html').includes('visual-v2.js'),'friend lobby loads same visual module');
+
+// The first G03/G04/G05 material pass is local, deterministic and mode-shared.
+// Each render must leave the authoritative bytes unchanged, and all three
+// quality tiers must serialize exactly the same state (including volleyball).
+for(const [id,mode,size] of [
+ ['g03','stairs',[480,720]],['g04','pinball',[600,720]],
+ ['g05','pong',[640,480]],['g05','volley',[640,480]]
+]){
+ const tierResults=[];
+ for(const tier of modes){
+  const {scope,advance}=create(1221);
+  const visual=scope.window.BioVisualV2;
+  check(visual.setQuality(tier),'material quality selectable '+tier);
+  const env={hero:0,remoteHero:3,multiplayer:true,authority:true,mode,chapter:2,difficulty:'normal',finish(){},sfx(){},I:{hero:['Burner','MJ','Moo','Ye Bao','Jelly','Veggie','Oracle']},testMode:true};
+  const game=scope.window.BioSuiteGames[id](env);
+  game.w=size[0];game.h=size[1];game.start();
+  const {ctx}=ink();
+  for(let frame=0;frame<64;frame++){
+   const input={moveX:frame%23<11?.5:-.5,moveY:0,jump:frame===9,fire:frame===12,up:false,down:false,left:frame%23>=11,right:frame%23<11};
+   game.setRemoteInput?.({moveX:-.5,fire:frame===15});
+   game.update(1/120,input);advance();
+   if(frame%8===0){
+    const before=JSON.stringify(game.networkSnapshot()),bytes=Buffer.byteLength(before,'utf8');
+    game.draw(ctx);
+    const after=JSON.stringify(game.networkSnapshot());
+    check(before===after&&bytes===Buffer.byteLength(after,'utf8'),id+'/'+mode+'/'+tier+' drawing preserves identical bytes');
+   }
+  }
+  const snapshot=JSON.stringify(game.networkSnapshot());
+  tierResults.push({snapshot,bytes:Buffer.byteLength(snapshot,'utf8')});
+ }
+ const phase1ABytes={'g03:stairs':3269,'g04:pinball':641,'g05:pong':459,'g05:volley':1183};
+ check(tierResults[0].bytes===phase1ABytes[id+':'+mode],id+'/'+mode+' retains exact 9c483524 Phase 1A fixture byte size');
+ for(const result of tierResults)check(result.snapshot===tierResults[0].snapshot&&result.bytes===tierResults[0].bytes,id+'/'+mode+' identical authority across material quality levels');
+}
+// Every platform type must have its own visible channel, and all other
+// foreground functions must work at low/standard/high with no persistent data.
+for(const tier of modes){
+ const {scope}=create(31),v=scope.window.BioVisualV2;
+ v.setQuality(tier);
+ const colors=[];
+ const gradientStops=()=>({addColorStop(){}});
+ const props={createLinearGradient:gradientStops,createRadialGradient:gradientStops,canvas:{width:640,height:480}};
+ const ctx=new Proxy(props,{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,value)=>{if(k==='fillStyle')colors.push(value);o[k]=value;return true;}});
+ for(const [type,tone] of [['safe','#79f0df'],['moving','#6ebcff'],['fragile','#ffc875'],['trap','#ff668c']]){
+  colors.length=0;
+  check(v.platform(ctx,45,130,140,type)===undefined&&colors.includes(tone),tier+' distinct '+type+' platform material');
+ }
+ v.bumper(ctx,180,160,21,.14);v.target(ctx,320,150,22,2,1,.2);
+ v.launcher(ctx,320,420,.3,65,480);
+ v.pongSurface(ctx,{left:64,right:576,top:110,bottom:394,mid:320});
+ v.paddle(ctx,110,180,0,.15);v.paddle(ctx,530,180,1,0);
+ v.volleyCourt(ctx,640,480,{floor:413,netTop:260});
+ check(v.inspect().activeParticles===0&&v.inspect().channels===0,tier+' material drawing does not add locally serialized or event state');
+}
+check(['platform','bumper','target','launcher','pongSurface','paddle','volleyCourt'].every(k=>typeof scope.window.BioVisualV2[k]==='function'),'all material painters shared by solo and multiplayer');
+check(coreCode.includes('BioVisualV2?.platform')&&coreCode.includes('BioVisualV2?.target')&&coreCode.includes('BioVisualV2?.launcher')&&coreCode.includes('BioVisualV2?.pongSurface')&&coreCode.includes('BioVisualV2?.paddle')&&coreCode.includes('BioVisualV2?.volleyCourt'),'all three games use the shared local presentation module');
+check(!visualCode.includes('networkSnapshot')&&!visualCode.includes('applyNetworkState'),'v2 material library cannot alter multiplayer serializer');
+
 console.log('V2 VISUAL NODE PASS '+checks+' tier, snapshot byte, event cap, G05 layout, G02 controls and entry checks');
