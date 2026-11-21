@@ -17,7 +17,7 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[],snapshotSizes:[]};this.latestFrameToken=0;this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,droppedBackpressure:0,droppedSimulated:0,buffered:0,rtts:[],snapshotSizes:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
@@ -112,53 +112,51 @@ class Link{
   if(this.state!=='connected'||(!this.relaySend&&dc?.readyState!=='open'))return false;
   const text=JSON.stringify({v:V,sid:this.sid,seq:this.seq[channel]++,type,data});
   if(text.length>MAX_PACKET)return false;
-  // Input controls remain on their original fast-channel behavior. Only the
-  // replaceable, host-authoritative ordinary state frame may be discarded.
+  // Only ordinary host snapshots are replaceable. Never drop reliable control
+  // at the 32 KiB frame watermark, even while Relay is active.
   const discardable=fast&&type==='frame';
   const bytes=discardable?new TextEncoder().encode(text).byteLength:0;
-  const frameToken=discardable?++this.latestFrameToken:0;
-  const pending=this.relaySend?(this.relayBufferedAmount?.()??0):(Number(dc.bufferedAmount)||0);
-  if(discardable&&pending+bytes>FRAME_QUEUE_MAX){
-   this.stats.dropped++;this.stats.buffered++;return true;
-  }
-  if(pending>CONTROL_QUEUE_MAX){
-   this.stats.buffered++;
-   if(!fast)this.close('congested');else this.stats.dropped++;
-   return false; // Reliable control fails visibly, never silently drops.
-  }
-  if(this.relaySend){
-   if(!this.relaySend(channel,text)){
+  const transmit=()=>{
+   const relay=!!this.relaySend;
+   if(!relay&&dc?.readyState!=='open')return false;
+   // Check current underlying queue at the actual send point. A pending
+   // simulated-latency timer is not by itself evidence of network congestion.
+   const pending=relay?(this.relayBufferedAmount?.()??0):(Number(dc.bufferedAmount)||0);
+   if(discardable&&pending+bytes>FRAME_QUEUE_MAX){
+    this.stats.dropped++;this.stats.droppedBackpressure++;this.stats.buffered++;
+    return true; // Intentional disposable frame loss must not close the round.
+   }
+   if(pending>CONTROL_QUEUE_MAX){
     this.stats.buffered++;
-    if(!fast)this.close('disconnected');else this.stats.dropped++;
-    return false;
+    if(!fast)this.close('congested');else this.stats.dropped++;
+    return false; // Reliable control fails closed instead of silently dropping.
+   }
+   if(relay){
+    if(!this.relaySend(channel,text)){
+     this.stats.buffered++;
+     if(!fast)this.close('disconnected');else this.stats.dropped++;
+     return false;
+    }
+   }else{
+    try{dc.send(text);}catch{this.close('disconnected');return false;}
    }
    this.stats.sent++;if(discardable)this.sampleSnapshot(bytes);
    return true;
-  }
-  const p=this.impairment;
-  if(fast&&p.loss>0&&this.noise()<p.loss){this.stats.dropped++;return true;}
-  const transmit=()=>{
-   if(discardable&&frameToken!==this.latestFrameToken){this.stats.dropped++;return;}
-   if(dc.readyState!=='open')return;
-   if(discardable&&(Number(dc.bufferedAmount)||0)+bytes>FRAME_QUEUE_MAX){
-    this.stats.dropped++;this.stats.buffered++;return;
-   }
-   if((Number(dc.bufferedAmount)||0)>CONTROL_QUEUE_MAX){
-    this.stats.buffered++;
-    if(!fast)this.close('congested');else this.stats.dropped++;
-    return;
-   }
-   try{
-    dc.send(text);this.stats.sent++;if(discardable)this.sampleSnapshot(bytes);
-   }catch{this.close('disconnected');}
   };
+  if(this.relaySend)return transmit(); // Relay has no test impairment timer.
+  const p=this.impairment;
+  if(fast&&p.loss>0&&this.noise()<p.loss){
+   this.stats.dropped++;this.stats.droppedSimulated++;
+   return true;
+  }
   const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));
   if(delay){
    const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);
    this.deadlines[channel]=due;
    this.later(transmit,Math.max(0,due-performance.now()));
-  }else transmit();
-  return true;
+   return true;
+  }
+  return transmit();
  }
  useRelay(sid,transmit,bufferedAmount=()=>0){
   if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function'||typeof bufferedAmount!=='function')throw Error('relay-invalid');
@@ -230,7 +228,7 @@ class Link{
   };
   return {state:this.state,transport:'P2P',connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
  }
- measure(){const a=this.stats.rtts,sizes=this.stats.snapshotSizes;return {state:this.state,transport:this.state==='connected'?(this.transport==='relay'?'Relay':'P2P'):'—',sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,snapshotBytes50:percentile(sizes,.5),snapshotBytes95:percentile(sizes,.95),rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
+ measure(){const a=this.stats.rtts,sizes=this.stats.snapshotSizes;return {state:this.state,transport:this.state==='connected'?(this.transport==='relay'?'Relay':'P2P'):'—',sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,droppedBackpressure:this.stats.droppedBackpressure,droppedSimulated:this.stats.droppedSimulated,buffered:this.stats.buffered,snapshotBytes50:percentile(sizes,.5),snapshotBytes95:percentile(sizes,.95),rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
  // Controlled application-layer impairment for diagnostics, not a fake RTC link.
  simulate({delay=0,loss=0,jitter=0}={}){if(!Number.isFinite(delay)||delay<0||delay>250||!Number.isFinite(loss)||loss<0||loss>.05||!Number.isFinite(jitter)||jitter<0||jitter>50)throw Error('impairment-range');this.impairment={delay,loss,jitter};}
