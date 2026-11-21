@@ -1103,7 +1103,7 @@ R.g06=env=>{
   },onResize(){},
   update(dt,input){if(env.authority===false||g._finished||!Number.isFinite(dt)||dt<=0)return;debt+=Math.min(.25,dt);while(debt+1e-10>=1/120&&!g._finished){debt=Math.max(0,debt-1/120);raceStep(1/120,input);}},
   setRemoteInput(input){if(!multiplayer||!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['moveX','left','right','up','accelerate','down','fire','skill'].includes(k))||Object.entries(input).some(([k,v])=>k==='moveX'?typeof v!=='number'||!Number.isFinite(v)||Math.abs(v)>1:typeof v!=='boolean'))return false;remoteInput={...input};return true;},
-  draw(ctx){const w=g.w,h=g.h,sector=Math.min(2,Math.floor((progress%lapLength)/400));ctx.save();const cameraNudge=window.BioVisualV2?.shake?.('g06');if(cameraNudge)ctx.translate(cameraNudge.x,cameraNudge.y);drawRaceWorld(ctx,w,h);ctx.restore();
+  draw(ctx){const w=g.w,h=g.h,sector=Math.min(2,Math.floor((progress%lapLength)/400));ctx.save();const cameraNudge=window.BioVisualV2?.shake?.('g06');if(cameraNudge)ctx.translate(cameraNudge.x,cameraNudge.y);drawRaceWorld(ctx,w,h);window.BioVisualV2?.ambient?.(ctx,'race',w,h);ctx.restore();
    const displayScale=Math.max(.2,Number(env.renderScale)||1),small=Math.max(12,10.5/displayScale),speedFont=Math.max(26,15/displayScale),top=Math.max(37,speedFont+8),line=Math.max(20,small*1.18);
    // Mini-map samples the actual closed track, rather than an unrelated decorative oval.
    const mx=w-84,my=72;rect(ctx,w-150,14,138,123,'#062133db','#438493');ctx.beginPath();for(let n=0;n<=60;n++){const p=miniMapPoints[n],xx=mx+p.x*.24,yy=my+p.z*.24;n?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);}ctx.strokeStyle='#70c0bf';ctx.lineWidth=3;ctx.stroke();

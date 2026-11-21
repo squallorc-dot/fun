@@ -112,11 +112,23 @@ try{
   await start(page,'g02');const shooter=page.frameLocator('#g02-frame');
   await shooter.locator('#arcade-canvas').waitFor();const child=()=>shooter.locator('#arcade-root').evaluate(()=>BioArcadeShooter.state);
   check((await child()).sfx===23&&await shooter.locator('#ar-sound-label').textContent()==='ON','G02 inherits saved SFX rather than a separate OFF default');
-  await shooter.locator('[data-ar-command="sound"]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===0&&document.querySelector('#sfx-volume').value==='0');
-  check(await page.locator('#sfx-volume').inputValue()==='0','G02 mute updates the shared slider');
-  await shooter.locator('[data-ar-command="sound"]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===23);
+  // G02 iframe intentionally hides duplicate buttons; exercise the visible
+  // parent OST drawer and SFX range control with real keyboard events.
+  check(await page.locator('#stage-music').isVisible()&&await shooter.locator('[data-ar-command="pause"]').isVisible(),'G02 visible OST control and original pause II remain accessible');
+  await page.locator('#stage-music').click();
+  const slider=page.locator('#sfx-volume');
+  await slider.waitFor({state:'visible'});
+  check(await slider.inputValue()==='23','visible SFX range inherits persisted G02 volume');
+  await slider.press('Home');
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===0&&document.querySelector('#sfx-volume').value==='0'&&document.querySelector('#g02-frame')?.contentWindow?.BioArcadeShooter?.state?.sfx===0);
+  check(await shooter.locator('#ar-sound-label').textContent()==='OFF','muting through visible slider updates G02 audio');
+  for(let key=0;key<23;key++)await slider.press('ArrowRight');
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')).sfx===23&&document.querySelector('#sfx-volume').value==='23'&&document.querySelector('#g02-frame')?.contentWindow?.BioArcadeShooter?.state?.sfx===23);
+  check(await shooter.locator('#ar-sound-label').textContent()==='ON','restoring through visible slider updates G02 audio');
   const prefs=await page.evaluate(()=>JSON.parse(localStorage.getItem('bio_arcade_pref_v1')));
-  check(prefs.volume===31&&prefs.playMode==='manual'&&prefs.track===1&&prefs.loop,'SFX toggle preserves BGM choices');
+  check(prefs.sfx===23&&prefs.volume===31&&prefs.playMode==='manual'&&prefs.track===1&&prefs.loop,'SFX mute and restore preserve saved BGM mode, track, volume and loop');
+  await page.locator('#close-audio').click();
+  check(await shooter.locator('[data-ar-command="pause"]').isVisible(),'G02 pause II remains accessible after closing OST drawer');
   await shooter.locator('[data-ar-hold="fire"]').evaluate(el=>{for(const pointerId of [31,32])el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId}));});
   check((await child()).fireOwners===2,'G02 tracks both fingers on fire');
   await shooter.locator('[data-ar-hold="fire"]').evaluate(el=>el.dispatchEvent(new PointerEvent('lostpointercapture',{bubbles:true,pointerId:31})));
