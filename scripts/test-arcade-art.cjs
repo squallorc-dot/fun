@@ -19,3 +19,4 @@ const ctx=new Proxy({strokeRect:(...args)=>modules.push(args),scale:(...args)=>s
  vm.runInNewContext(fs.readFileSync(path.join(root,'arcade/assets/guardian-art.js'),'utf8'),guardianScope);const guardian=guardianScope.window.BioGuardianArt,pending=guardian.preload([0],{highResolutionHero:true});[...timers.values()][0]();await pending;const fallback=guardian.inspect().atlases[0];check(fallback.ready&&fallback.fallback&&fallback.resolution===1,'optional high-resolution timeout falls back to native artwork');
  console.log('ART NODE PASS '+checks+' source, crop, tiling, layer and fallback checks');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+require('./test-v2-visual.cjs');
