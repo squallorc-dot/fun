@@ -147,9 +147,14 @@ p2p.channels.input.bufferedAmount=0;
 assert.equal(p2p.send('frame',{state:{tick:2}},true),true);
 assert.equal(p2p.channels.input.sent.length,2,'fresh P2P frame is sent after backlog clears');
 p2p.channels.control.bufferedAmount=140000;
-const reliableBefore=p2p.channels.control.sent.length;
+// Closing a congested reliable link clears p2p.channels. Keep a reference
+// to the original fake channel so the assertion still verifies no send.
+const reliableControl=p2p.channels.control;
+const reliableBefore=reliableControl.sent.length;
 assert.equal(p2p.send('result',{epoch:1},false),false,'P2P reliable control over 128KiB fails closed');
-assert.equal(p2p.channels.control.sent.length,reliableBefore,'congested control was not silently accepted');
+assert.equal(reliableControl.sent.length,reliableBefore,'congested control was not silently accepted');
+assert.equal(reliableControl.readyState,'closed','fail-closed shuts down the underlying control channel');
+assert.equal(p2p.channels.control,undefined,'fail-closed clears the channel map');
 assert.equal(p2p.state,'congested');
 p2p.close();
 // Relay: the test includes the mandatory reliable heartbeat emitted by useRelay.
