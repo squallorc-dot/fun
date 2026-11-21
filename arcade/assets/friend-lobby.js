@@ -13,6 +13,7 @@ const oppCtx=oppCanvas?.getContext('2d')||null,oppPreferenceKey='bio-city-peer-p
 let oppCollapsed=false,oppEpoch=-1,lastOppDraw=0;
 try{oppCollapsed=localStorage.getItem(oppPreferenceKey)==='1';}catch{}
 const phoneDual=()=>window.matchMedia('(max-width:700px), (pointer:coarse) and (max-height:700px)').matches;
+const phonePortrait=()=>window.matchMedia('(max-width:700px) and (orientation:portrait)').matches;
 function updateOpponentUI(s,active){
  if(!oppDock||!oppPanel||!oppShow)return; // Legacy QA entry has no production PiP controls.
  if(s.epoch!==oppEpoch)oppEpoch=s.epoch; // Preserve collapse preference across rounds.
@@ -32,7 +33,7 @@ function setOpponentCollapsed(collapsed){
 }
 $('opponent-hide')?.addEventListener('click',()=>setOpponentCollapsed(true));
 $('opponent-show')?.addEventListener('click',()=>setOpponentCollapsed(false));
-function setHelpOpen(open){if(!$('help')||!$('help-panel'))return;$('help-panel').hidden=!open;$('help').setAttribute('aria-expanded',String(open));$('help').textContent=ja?(open?'説明を閉じる':'操作ガイド'):(open?'收合說明':'操作說明');}
+function setHelpOpen(open){if(!$('help')||!$('help-panel'))return;$('help-panel').hidden=!open;$('help').setAttribute('aria-expanded',String(open));$('help').textContent=ja?(open?'説明を閉じる':phonePortrait()?'説明を表示':'操作ガイド'):(open?'收合說明':phonePortrait()?'顯示說明':'操作說明');}
 const audio=new BioFriendAudio(()=>{const a=audio?.prefs;if(!a)return;$('audio-status').textContent=audio.status==='blocked'?L.audioBlocked:audio.status;});
 function resetInputs(){keys.clear();pulses.clear();controls?.reset();}
 function readInput(dt=1/120){
@@ -71,7 +72,7 @@ function render(){
  $('mode').disabled=s.role!=='host'||s.phase!=='lobby'||!s.configAck;if(s.config)$('mode').value=s.config.mode;
  $('ready').disabled=s.phase!=='lobby'||!s.configAck||s.preparing;const continuing=s.phase==='lobby'&&s.config?.continuation===true;$('ready').hidden=continuing&&(s.preparing||s.ready[s.role==='host'?0:1]);$('ready').textContent=s.preparing?L.preparing:s.ready[s.role==='host'?0:1]?L.cancelReady:L.ready;$('readiness').textContent=s.startPending?(ja?'フレンドのゲーム開始を確認中…':'正在等待好友完成遊戲畫面同步…'):continuing?(ja?'次の試合を準備中…':'正在接續下一局，準備倒數…'):s.ready.filter(Boolean).length+'/2';
  $('arena').hidden=!active;document.body.classList.toggle('playing',active);document.body.classList.toggle('round-finished',s.phase==='finished');$('viewport').dataset.game=s.config?.game||'';$('game-shell').dataset.game=s.config?.game||'';updateOpponentUI(s,active);const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();$('side').textContent=compactDual?(ja?'自分の画面':'自己畫面'):s.role==='guest'?L.right:L.left;$('return').textContent=compactDual?(ja?'ロビー':'大廳'):L.return;$('pause').textContent=s.phase==='paused'?L.resume:L.pause;$('pause').disabled=!['playing','paused','countdown'].includes(s.phase);$('rematch').hidden=s.phase!=='finished';const hasChapters=['g01','g02','g03','g04','g06'].includes(s.config?.game),completed=s.config?.game==='g06'?(s.result?.players?.length===2&&s.result.players.every(p=>p.status==='finished')):!!s.result?.win;const nextChapter=hasChapters&&completed&&(s.config?.chapter||1)<5;const nextLabel=nextChapter?(ja?`次のチャプター（${s.config.chapter+1}/5）`:`下一關（${s.config.chapter+1}/5）`):hasChapters?(completed?(ja?'新しい周回を始める':'重新闖關'):(ja?'このチャプターをもう一度':'重試本關')):(ja?'次の試合へ':'再玩下一局');$('rematch').textContent=s.nextRequested?(ja?'ホストの開始を待っています':'等待房主開始下一局'):nextLabel;$('rematch').disabled=!!s.nextRequested;
- if($('help')){const key=s.config?.game+':'+s.config?.mode;if(helpGame!==key){helpGame=key;helpChoice=null;}const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();const visible=active&&document.body.dataset.autoLobby==='true'&&['countdown','playing','paused'].includes(s.phase)&&(helpChoice??!compactDual);setHelpOpen(visible);}
+ if($('help')){const key=s.config?.game+':'+s.config?.mode;if(helpGame!==key){helpGame=key;helpChoice=null;}const compactDual=['g03','g04'].includes(s.config?.game)&&phoneDual();const visible=active&&document.body.dataset.autoLobby==='true'&&['countdown','playing','paused'].includes(s.phase)&&(helpChoice??(!compactDual&&!phonePortrait()));setHelpOpen(visible);}
   const race=s.config?.game==='g06',dual=['g03','g04'].includes(s.config?.game),time=v=>Number.isFinite(v)?v.toFixed(2)+'s':'—';$('result').textContent=s.result?(dual?`${s.config.game==='g03'?(ja?'階段チャレンジ':'極限下樓梯'):(ja?'ピンボール':'能源彈珠')} · ${(ja?'ホスト':'房主')} ${s.result.players[0].score} : ${(ja?'ゲスト':'好友')} ${s.result.players[1].score} · ${s.result.winner===null?(ja?'引き分け':'平手'):(ja?'勝者':'勝方')+' '+(s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友'))}`:race?s.result.standings.map(r=>`${r.position}. ${r.name} ${r.status==='finished'?(ja?'完走':'完賽'):r.status==='dnf'?(ja?'リタイア':'未完賽'):(ja?'進行中':'比賽中')} ${time(r.time)}`).join(' · ')+' | '+s.result.players.map(p=>`${p.id==='player'?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} 第${p.rank}${ja?'位':'名'} ${ja?'ベスト':'最佳圈'} ${time(p.bestLap)} ${ja?'追越':'超車'} ${p.overtakes} ${ja?'衝突':'碰撞'} ${p.collisions}`).join(' · '):['g01','g02'].includes(s.config?.game)?`${s.result.win?'勝利':(ja?'失敗':'挑戰失敗')} · ${ja?'スコア':'得分'} ${s.result.score} · ${ja?'撃破':'擊倒'} ${s.result.kills}`:`${L.winner}：${s.result.winner===0?(ja?'ホスト':'房主'):(ja?'ゲスト':'好友')} · ${s.result.points.join(' : ')}`):'';if(session.adapter&&dual)$('score').innerHTML=session.adapter.game.hud();else if(session.adapter&&race)$('score').innerHTML=s.role==='guest'?session.adapter.game.guestHud():session.adapter.game.hud();else $('score').textContent=session.adapter?(['g01','g02'].includes(s.config?.game)?String(session.adapter.game.inspectCombat().score):session.adapter.game.inspectMatch().points.join(' : ')):'';
  // The joint result is a readable scoreboard on desktop and both phones.
  let dualBoard=$('dual-result-board');
@@ -109,7 +110,10 @@ function render(){
  const m=s.metrics,number=v=>Number.isFinite(v)?Math.round(v):'—';
   const brief=`${m.transport}${m.transport==='Relay'&&m.relayReason?' ('+m.relayReason+')':''} · RTT p50/p95 ${number(m.rtt50)}/${number(m.rtt95)} ms · ACK p95 ${number(m.inputAck95)} ms · Dropped/Buffered ${m.dropped}/${m.buffered} · Snapshot p50/p95 ${number(m.snapshotBytes50)}/${number(m.snapshotBytes95)} bytes`;
   // The manual QA harness has #metrics but no in-arena diagnostics node.
-  const liveBrief=$('transport-brief');if(liveBrief){liveBrief.textContent=brief;liveBrief.hidden=!connected;}
+  const compactBrief=m.transport==='Relay'
+   ?`Relay${m.relayReason?' ('+m.relayReason+')':''} · RTT ${number(m.rtt50)}ms`
+   :`${m.transport} · RTT ${number(m.rtt50)}/${number(m.rtt95)}ms · ACK ${number(m.inputAck95)}ms`;
+  const liveBrief=$('transport-brief');if(liveBrief){liveBrief.textContent=phonePortrait()?compactBrief:brief;liveBrief.hidden=!connected;}
   $('metrics').textContent=brief+` · jitter ${m.jitter.toFixed(1)} ms · FPS ${m.fps?.toFixed(1)||'—'} · ACK p50 ${number(m.inputAck50)} ms · corrections ${m.corrections} · rejected ${s.rejected+m.rejected}`;
  $('countdown').textContent=s.phase==='countdown'?Math.ceil(session.countdown):s.phase==='paused'?'Ⅱ':'';
  if(s.phase==='paused'){

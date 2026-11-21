@@ -30,11 +30,30 @@ try{
     s.inputLatency=[56];
     s.link.measure=()=>({...oldMeasure.call(s.link),transport:'Relay',relayReason:'ice-failed',rtt50:12,rtt95:34,dropped:2,buffered:3,snapshotBytes50:800,snapshotBytes95:1200});
     for(const role of ['host','guest']){s.role=role;s.changed();if(s.inspect().metrics.inputAck95!==56)throw Error('ACK p95 sample not reflected in Session metrics');output.push(document.querySelector('#transport-brief').textContent);}
-    return output;
+    const fullDetails=document.querySelector('#metrics').textContent;
+    s.link.measure=()=>({...oldMeasure.call(s.link),transport:'P2P',relayReason:null,rtt50:12,rtt95:34,dropped:2,buffered:3,snapshotBytes50:800,snapshotBytes95:1200});
+    s.changed();
+    const line=document.querySelector('#transport-brief'),p2p=line.textContent,style=getComputedStyle(line);
+    return {relay:output,p2p,fullDetails,layout:{whiteSpace:style.whiteSpace,overflow:style.overflow,textOverflow:style.textOverflow,pointerEvents:style.pointerEvents,height:line.getBoundingClientRect().height,lineHeight:parseFloat(style.lineHeight)}};
    }finally{s.role=oldRole;s.link.state=oldState;s.link.measure=oldMeasure;s.inputLatency=oldInputLatency;s.changed();}
   });
-  for(const row of diagnostics)for(const expected of ['Relay (ice-failed)','RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
-   assert(row.includes(expected),'host/guest compact diagnostics include '+expected);
+  const isPhonePortrait=viewport.width<=700&&viewport.height>viewport.width;
+  for(const row of diagnostics.relay){
+   if(isPhonePortrait)assert.equal(row,'Relay (ice-failed) · RTT 12ms','phone role retains Relay reason in short summary');
+   else for(const expected of ['Relay (ice-failed)','RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+    assert(row.includes(expected),'desktop/landscape full diagnostics include '+expected);
+  }
+  for(const value of ['RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+   assert(diagnostics.fullDetails.includes(value),'full quality details preserved: '+value);
+  if(isPhonePortrait){
+   assert.equal(diagnostics.p2p,'P2P · RTT 12/34ms · ACK 56ms','phone P2P summary stays compact');
+   assert.equal(diagnostics.layout.whiteSpace,'nowrap','phone diagnostic never wraps');
+   assert.equal(diagnostics.layout.overflow,'hidden','phone diagnostic clips overflow');
+   assert.equal(diagnostics.layout.textOverflow,'ellipsis','phone diagnostic truncates if needed');
+   assert(diagnostics.layout.height<=diagnostics.layout.lineHeight+1,'phone diagnostic stays one line tall');
+  }else for(const value of ['P2P','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+   assert(diagnostics.p2p.includes(value),'wide screen retains full diagnostics: '+value);
+  assert.equal(diagnostics.layout.pointerEvents,'none','diagnostic cannot intercept touch input');
   if(locale==='zh'&&viewport.width===390){
    // Multiplayer touch buttons must follow the exact standalone game's guide.
    const parity=await page.evaluate(()=>{
@@ -304,8 +323,14 @@ try{
    assert(play.stage.h>=viewport.height*(viewport.width===390?.40:.70),'playfield occupies available stage');
    assert(play.canvas.h>0&&play.canvas.w>0,'canvas stays visible');
    assert(play.gas&&play.nitro&&play.instructions.includes('自動加速'),'no gas key and nitro preserved');
-   assert(await page.locator('#help-panel').isVisible(),'short in-game instructions are shown by default');
-   assert.equal(await page.locator('#help').getAttribute('aria-expanded'),'true','guide button reflects open status');
+   const isPhoneGuide=viewport.width===390;
+   assert.equal(await page.locator('#help-panel').isVisible(),!isPhoneGuide,'phone help defaults closed, desktop retains open guide');
+   assert.equal(await page.locator('#help').getAttribute('aria-expanded'),String(!isPhoneGuide),'help toggle reflects initial state');
+   if(isPhoneGuide){
+    assert.equal((await page.locator('#help').textContent()).trim(),'顯示說明','phone offers explicit show-help action');
+    await page.locator('#help').click();
+    assert(await page.locator('#help-panel').isVisible(),'phone instructions can still expand');
+   }
    const guide=await page.locator('#help-panel').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),canvas:document.querySelector('#game-canvas').getBoundingClientRect().toJSON()}));
    assert.equal(guide.position,'relative','guide must be in normal flow, not covering game');
    assert(guide.rect.bottom<=guide.canvas.top+1,'guide sits above canvas without obstructing action');
