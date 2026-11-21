@@ -18,14 +18,14 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.relayReason=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,droppedBackpressure:0,droppedSimulated:0,buffered:0,rtts:[],snapshotSizes:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,droppedBackpressure:0,droppedSimulated:0,buffered:0,rtts:[],snapshotSizes:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.delayedReliableControl=[];this.troubleAt=0;this.lastDegradedNoticeAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   // Capture safe, address-free RTC states before closing an unsuccessful pairing.
   if(this.pc)this.lastDiagnostic=this.diagnose();
   this.generation++;this.disconnectTicket=null;this.relaySend=null;this.relayBufferedAmount=null;this.transport='p2p';this.relayReason=null;for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
-  this.earlyMessages=[];
+  this.earlyMessages=[];this.delayedReliableControl?.splice(0);
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
  }
@@ -151,10 +151,17 @@ class Link{
    return true;
   }
   const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));
-  if(delay){
+  if(delay||(!fast&&this.delayedReliableControl.length)){
    const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);
    this.deadlines[channel]=due;
-   this.later(transmit,Math.max(0,due-performance.now()));
+   if(fast)this.later(transmit,Math.max(0,due-performance.now()));
+   else {
+    // Impairment-only: independent timers may run out of order despite
+    // monotonic deadlines. Never let a later reliable control (e.g. ping)
+    // overtake the earlier handshake hello/config/ack on the same RTC channel.
+    this.delayedReliableControl.push(transmit);
+    this.later(()=>this.delayedReliableControl.shift()?.(),Math.max(0,due-performance.now()));
+   }
    return true;
   }
   return transmit();

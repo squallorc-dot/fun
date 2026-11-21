@@ -25,6 +25,8 @@ try{
    await page.locator('[data-hero="5"]').click();await page.locator('#setup-play').click();
    if(id==='g02'){
     await page.frameLocator('#g02-frame').locator('.arcade-playing').waitFor();
+    check(await page.frameLocator('#g02-frame').locator('[data-ar-command="pause"]').isVisible(),'G02 II pause remains visible');
+    check(await page.frameLocator('#g02-frame').locator('[data-ar-command="sound"]').isHidden()&&await page.frameLocator('#g02-frame').locator('[data-ar-command="controls"]').isHidden(),'G02 duplicate nested buttons hidden');
     const child=page.frames().find(f=>f.url().includes('/shooter.html'));
     await child.waitForFunction(()=>BioWorldArt.inspect().some(x=>x.key==='defense'&&x.ready));
     check(await child.locator('canvas').evaluate(c=>c.width===c.height&&c.width===600*Math.max(Math.min(devicePixelRatio,2),Math.min(4,Math.ceil(c.getBoundingClientRect().width/600*devicePixelRatio*4)/4))),'G02 fixed square world');

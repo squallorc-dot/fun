@@ -37,7 +37,7 @@ function preload(heroes,options){
  return Promise.all(heroes.map(h=>get(h,true)?.promise||Promise.resolve(false)));
 }
 function draw(ctx,hero,clip,time,x,y,scale=1,dir=1,alpha=1){const item=get(hero);if(!item?.ready)return false;const frame=frameFor(clip,time),sx=frame%columns*frameSize,sy=Math.floor(frame/columns)*frameSize;
- const density=item.resolution;ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;ctx.drawImage(item.image,sx*density,sy*density,frameSize*density,frameSize*density,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
+ const density=item.resolution;ctx.save();ctx.translate(x,y);ctx.scale((dir<0?-1:1)*scale,scale);ctx.globalAlpha*=alpha;window.BioVisualV2?.spriteLight?.(ctx);ctx.drawImage(item.image,sx*density,sy*density,frameSize*density,frameSize*density,-anchor.x,-anchor.y,frameSize,frameSize);ctx.restore();return true;
 }
 function setCacheCapacity(value){if(!Number.isInteger(value)||value<5||value>6)return false;cacheCapacity=value;while(cache.size>cacheCapacity)cache.delete(cache.keys().next().value);return true;}
 window.BioGuardianArt=Object.freeze({version:'20261025.5',keys,clips,frameSize,columns,anchor,totalFrames:offset,keyFor,frameFor,preload,draw,setCacheCapacity,inspect:()=>({cached:cache.size,decodedBytes:[...cache.values()].reduce((n,x)=>n+(x.ready?x.image.width*x.image.height*4:0),0),atlases:[...cache.values()].map(x=>({key:x.key,ready:x.ready,error:x.error,resolution:x.resolution,fallback:x.fallback}))})});

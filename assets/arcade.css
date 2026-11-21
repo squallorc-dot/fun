@@ -176,3 +176,7 @@ body[data-page="play"] #arcade-root.arcade-immersive{
  .arcade-immersive .arcade-top-actions [data-ar-command="pause"] span{display:none}
  .arcade-immersive #ar-sound-label{font-size:9px}
 }
+/* Phase 1A G02 embedded toolbar deduplication. Outer hub retains OST/settings;
+   the iframe keeps its II pause and leave actions, and legacy event handlers. */
+#arcade-root.arcade-embedded .arcade-top-actions [data-ar-command="sound"],
+#arcade-root.arcade-embedded .arcade-top-actions [data-ar-command="controls"]{display:none!important}

@@ -69,8 +69,8 @@ function livingScene(ctx,key,w,h,c,time){
  }
  ctx.restore();
 }
-function chapterAtmosphere(ctx,key,w,h,chapter=1,time=0){const c=Math.max(1,Math.min(5,Number(chapter)||1));livingScene(ctx,key,w,h,c,time);if(c===1)return;ctx.save();const palettes={street:['','#69e6b5','#86b5f6','#f1a577','#df80ed'],defense:['','#89e0a9','#82cef6','#ed9e80','#f49cce'],shaft:['','#83cea5','#7bb8ec','#e6a174','#e69ae3'],laboratory:['','#67cdbe','#82bef5','#eea184','#e8a0ee'],arena:['','#8cddbb','#84c1ec','#dd9ddd','#f5be8a'],race:['','#75d7a1','#81bff4','#e9a47c','#e49ced']};const accent=(palettes[key]||palettes.street)[c-1];
-ctx.globalAlpha=.17;ctx.fillStyle=accent;ctx.fillRect(0,0,w,h);ctx.globalAlpha=.55;ctx.lineWidth=Math.max(1,w/600);const baseline=h*(key==='shaft'?.13:.42);
+function chapterAtmosphere(ctx,key,w,h,chapter=1,time=0){const c=Math.max(1,Math.min(5,Number(chapter)||1));livingScene(ctx,key,w,h,c,time);/* V2 overlay follows source-only WebP draw, outside the pixel-identical texture cache. */window.BioVisualV2?.ambient?.(ctx,key,w,h);if(c===1)return;ctx.save();const palettes={street:['','#69e6b5','#86b5f6','#f1a577','#df80ed'],defense:['','#89e0a9','#82cef6','#ed9e80','#f49cce'],shaft:['','#83cea5','#7bb8ec','#e6a174','#e69ae3'],laboratory:['','#67cdbe','#82bef5','#eea184','#e8a0ee'],arena:['','#8cddbb','#84c1ec','#dd9ddd','#f5be8a'],race:['','#75d7a1','#81bff4','#e9a47c','#e49ced']};const accent=(palettes[key]||palettes.street)[c-1];
+ctx.globalAlpha=key==='street'&&c===4?.055:.17;ctx.fillStyle=accent;ctx.fillRect(0,0,w,h);ctx.globalAlpha=key==='street'&&c===4?.15:.55;ctx.lineWidth=Math.max(1,w/600);const baseline=h*(key==='shaft'?.13:.42);
 for(let n=0;n<12;n++){const x=((n*173+c*43)%997)/997*w,y=(key==='defense'?h*(n%2?.97:.03):baseline)+Math.sin(time*.5+n*.8+c)*h*(key==='defense'?.008:.025);ctx.strokeStyle=accent;ctx.beginPath();if(c===2){ctx.moveTo(x,y);ctx.lineTo(x-13,y-18);ctx.lineTo(x+21,y-25)}else if(c===3){ctx.moveTo(x-12,y);ctx.lineTo(x+18,y-12);ctx.lineTo(x+4,y-24);ctx.lineTo(x+27,y-35)}else if(c===4){ctx.moveTo(x-16,y);ctx.lineTo(x+14,y-11);ctx.lineTo(x-5,y-22);ctx.lineTo(x+18,y-34)}else{ctx.arc(x,y,11+n%4*5,0,Math.PI*1.7)}ctx.stroke()}
 ctx.restore()}
 
@@ -88,7 +88,7 @@ function chapterLandmarks(ctx,key,w,h,chapter=1,time=0){
   }ctx.restore();return;
  }const isShaft=key==='shaft',isRace=key==='race',floor=isShaft?h*.22:isRace?h*.34:h*.43;
  const colors=['','#56d9af','#84ccf4','#f3aa85','#c49aff'],tone=colors[c-1];
- ctx.globalAlpha=isShaft?.30:.38;ctx.strokeStyle=tone;ctx.fillStyle=tone;ctx.lineWidth=Math.max(1.3,w*.002);
+ ctx.globalAlpha=key==='street'&&c===4?.10:(isShaft?.30:.38);ctx.strokeStyle=tone;ctx.fillStyle=tone;ctx.lineWidth=Math.max(1.3,w*.002);
  const bar=(x,y,ww,hh)=>ctx.fillRect(x,y,ww,hh);
  const beam=(x1,y1,x2,y2)=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()};
  if(c===2){
