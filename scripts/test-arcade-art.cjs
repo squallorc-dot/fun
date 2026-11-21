@@ -20,3 +20,4 @@ const ctx=new Proxy({strokeRect:(...args)=>modules.push(args),scale:(...args)=>s
  console.log('ART NODE PASS '+checks+' source, crop, tiling, layer and fallback checks');
 })().catch(e=>{console.error(e);process.exitCode=1;});
 require('./test-v2-visual.cjs');
+require('./test-bake-guardian-v2.cjs');
