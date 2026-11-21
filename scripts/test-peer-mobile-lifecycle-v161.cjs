@@ -13,7 +13,7 @@ class FakePC {
 const document={visibilityState:'visible'};
 vm.runInNewContext(fs.readFileSync('arcade/assets/peer-link.js','utf8'),{
  window:root,performance:{now:()=>now},RTCPeerConnection:FakePC,document,Math,JSON,
- setTimeout:setTimeoutFake,clearTimeout:clearTimeoutFake
+ setTimeout:setTimeoutFake,clearTimeout:clearTimeoutFake,TextEncoder
 });
 const link=new root.BioPeer.Link();
 let pair=link.make('host','a'.repeat(32));
@@ -63,4 +63,45 @@ assert(relayRequests>0,'data-channel silence proactively requests a relay');
 for(let i=0;i<180&&beta.state==='connected';i++){now+=500;fire(500);}
 assert.equal(beta.state,'timeout','if the relay never becomes available, Beta still fails closed at its pre-existing recovery deadline');
 assert.equal(beta.timers.size,0,'Beta timeout cleans timers');
-console.log('PASS mobile RTC: transient ICE recovery, 12s manual silence, proactive Beta relay and bounded recovery');
+// Backpressure: only replaceable ordinary frames may be dropped at 32 KiB.
+const p2p=new root.BioPeer.Link();
+const channel=label=>({label,readyState:'open',bufferedAmount:40000,sent:[],send(text){this.sent.push(text);},close(){this.readyState='closed';}});
+p2p.state='connected';p2p.transport='p2p';p2p.sid='e'.repeat(32);
+p2p.channels={control:channel('control'),input:channel('input')};
+assert.equal(p2p.send('frame',{state:{tick:1}},true),true);
+assert.equal(p2p.channels.input.sent.length,0,'congested ordinary snapshot is discarded');
+assert.equal(p2p.stats.dropped,1,'discarded snapshot is counted');
+assert.equal(p2p.stats.buffered,1,'frame backlog is counted');
+assert.equal(p2p.send('input',{seq:1},true),true,'guest input is not subject to frame-only low watermark');
+assert.equal(p2p.channels.input.sent.length,1);
+assert.equal(p2p.send('start',{epoch:1},false),true,'reliable control is exempt from 32KiB watermark');
+assert.equal(p2p.channels.control.sent.length,1);
+assert.equal(p2p.measure().transport,'P2P','live P2P path is visible');
+p2p.close();
+let pendingRelay=40000;const relayPackets=[];
+const relayed=new root.BioPeer.Link({betaStun:true});
+relayed.state='connected';relayed.transport='p2p';relayed.sid='f'.repeat(32);
+relayed.useRelay('f'.repeat(32),(label,payload)=>{relayPackets.push({label,payload});return true;},()=>pendingRelay);
+assert.equal(relayed.measure().transport,'Relay','actual relay path exposed');
+assert.equal(relayed.send('frame',{state:{tick:1}},true),true,'relay congested frame is discarded, not re-queued');
+assert.equal(relayPackets.length,0);
+assert.equal(relayed.stats.dropped,1);
+assert.equal(relayed.send('ready',{epoch:1},false),true,'reliable Relay control bypasses low watermark');
+assert.equal(relayPackets.length,1);
+assert.equal(relayPackets[0].label,'control');
+pendingRelay=0;
+assert.equal(relayed.send('frame',{state:{tick:2}},true),true);
+assert.equal(relayPackets.length,2,'fresh relay snapshot forwarded when queue clears');
+assert(relayed.measure().snapshotBytes50>0&&relayed.measure().snapshotBytes95>0,'Snapshot p50/p95 uses real UTF-8 byte lengths');
+relayed.onMessage=()=>true;
+const framePayload=JSON.stringify({v:1,sid:'f'.repeat(32),seq:0,type:'frame',data:{state:{tick:2}}});
+relayed.receiveRelay('input',framePayload);
+const count=relayed.stats.received;
+relayed.receiveRelay('input',framePayload);
+assert.equal(relayed.stats.received,count,'stale relay frame not applied again');
+assert.equal(relayed.stats.rejected,1,'stale seq is rejected');
+pendingRelay=140000;
+assert.equal(relayed.send('finish',{epoch:1},false),false,'control congestion fails closed, never silently drops an outcome');
+assert.equal(relayed.state,'congested');
+p2p.close();relayed.close();
+console.log('PASS mobile RTC: transient ICE recovery, 12s manual silence, proactive Beta relay, 32KiB P2P/Relay frame backpressure, critical control exemption and diagnostics');

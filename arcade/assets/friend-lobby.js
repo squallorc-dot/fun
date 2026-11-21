@@ -106,7 +106,10 @@ function render(){
  banner.hidden=!roundMessage;
  const details=$('round-details');details.hidden=!(s.phase==='finished'&&race);
  if(!details.hidden){$('round-detail-text').textContent=$('result').textContent;$('round-detail-label').textContent=ja?'全順位と記録を見る':'展開完整六車排名與紀錄';}else details.open=false;
- const m=s.metrics;$('metrics').textContent=`RTT p50/p95 ${m.rtt50?.toFixed(1)||'—'} / ${m.rtt95?.toFixed(1)||'—'} ms · jitter ${m.jitter.toFixed(1)} ms · FPS ${m.fps?.toFixed(1)||'—'} · input ACK p50/p95 ${m.inputAck50?.toFixed(1)||'—'} / ${m.inputAck95?.toFixed(1)||'—'} ms · corrections ${m.corrections} · rejected ${s.rejected+m.rejected}`;
+ const m=s.metrics,number=v=>Number.isFinite(v)?Math.round(v):'—';
+  const brief=`${m.transport} · RTT p50/p95 ${number(m.rtt50)}/${number(m.rtt95)} ms · ACK p95 ${number(m.inputAck95)} ms · Dropped/Buffered ${m.dropped}/${m.buffered} · Snapshot p50/p95 ${number(m.snapshotBytes50)}/${number(m.snapshotBytes95)} bytes`;
+  $('transport-brief').textContent=brief;$('transport-brief').hidden=!connected;
+  $('metrics').textContent=brief+` · jitter ${m.jitter.toFixed(1)} ms · FPS ${m.fps?.toFixed(1)||'—'} · ACK p50 ${number(m.inputAck50)} ms · corrections ${m.corrections} · rejected ${s.rejected+m.rejected}`;
  $('countdown').textContent=s.phase==='countdown'?Math.ceil(session.countdown):s.phase==='paused'?'Ⅱ':'';
  if(s.phase==='paused'){
   const why=s.pauseReason==='input-timeout'?(ja?'相手の入力が途切れました':'對方輸入中斷'):s.pauseReason==='engine-backpressure'?(ja?'ゲーム処理を待機中':'遊戲處理暫停'):s.pauseReason==='user'?(ja?'手動で一時停止':'手動暫停'):(ja?'相手が一時停止':'雙方暫停');

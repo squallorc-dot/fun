@@ -1,6 +1,9 @@
 /* Shared manual WebRTC transport. No signaling service, analytics or persistence. */
 ((root)=>{'use strict';
 const V=1,MAX_SDP=120000,MAX_PACKET=32768,DISCONNECT_GRACE_MS=8000,BETA_RECOVERY_MS=90000,HEARTBEAT_SILENCE_MS=12000;
+// Only ordinary unreliable frame snapshots use the lower queue watermark.
+// Reliable control retains its previous fail-closed 128 KiB protection.
+const FRAME_QUEUE_MAX=32768,CONTROL_QUEUE_MAX=131072,SNAPSHOT_SAMPLE_MAX=256;
 // Opt-in for v1.6.1 auto-lobby Beta only. Manual QA pairs remain host-only.
 // STUN helps discover public NAT endpoints, but cannot relay traffic.
 const BETA_STUN_URL='stun:stun.l.google.com:19302';
@@ -14,13 +17,13 @@ function description(text,kind){
 const percentile=(a,q)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*q)-1]:null;
 class Link{
  constructor({onState=()=>{},onMessage=()=>{},onDegraded=()=>{},betaStun=false}={}){this.onState=onState;this.onMessage=onMessage;this.onDegraded=onDegraded;this.betaStun=betaStun===true;this.generation=0;this.timers=new Set();this.channels={};this.state='idle';this.pairingTimeout=30000;this.gatherCancel=new Set();this.randomState=12939;this.impairment={delay:0,loss:0,jitter:0};this.lastDiagnostic=null;this.resetStats();}
- resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[]};this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
+ resetStats(){this.earlyMessages=[];this.stats={sent:0,received:0,rejected:0,dropped:0,buffered:0,rtts:[],snapshotSizes:[]};this.latestFrameToken=0;this.seq={control:0,input:0};this.received={control:-1,input:-1};this.buckets={};this.pingId=0;this.lastReceived=performance.now();this.lastHeartbeatAt=this.lastReceived;this.disconnectTicket=null;this.pendingPings=new Map();this.deadlines={control:0,input:0};this.troubleAt=0;this.lastDegradedNoticeAt=0;}
  status(value){if(this.state===value)return;this.state=value;this.onState(value);}
  later(fn,ms){const generation=this.generation,id=setTimeout(()=>{this.timers.delete(id);if(generation===this.generation)fn();},ms);this.timers.add(id);return id;}
  close(reason='closed'){
   // Capture safe, address-free RTC states before closing an unsuccessful pairing.
   if(this.pc)this.lastDiagnostic=this.diagnose();
-  this.generation++;this.disconnectTicket=null;this.relaySend=null;this.transport='p2p';for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
+  this.generation++;this.disconnectTicket=null;this.relaySend=null;this.relayBufferedAmount=null;this.transport='p2p';for(const cancel of this.gatherCancel)cancel();this.gatherCancel.clear();for(const id of this.timers)clearTimeout(id);this.timers.clear();this.pendingPings?.clear();
   this.earlyMessages=[];
   const pc=this.pc;this.pc=null;for(const dc of Object.values(this.channels)){dc.onopen=dc.onclose=dc.onmessage=dc.onerror=null;try{dc.close();}catch{}}this.channels={};try{pc?.close();}catch{}
   this.local='';this.sid='';this.status(reason);
@@ -96,20 +99,70 @@ class Link{
    if(channel!=='control'||!keys(v.data,['id'])||!Number.isSafeInteger(v.data.id)){this.stats.rejected++;return;}
    if(v.type==='ping')this.send('pong',{id:v.data.id});else{const sent=this.pendingPings.get(v.data.id);if(sent!==undefined){this.pendingPings.delete(v.data.id);const rtt=performance.now()-sent;if(rtt>=0&&rtt<10000){this.stats.rtts.push(rtt);if(this.stats.rtts.length>2048)this.stats.rtts.shift();}}}
   }else if(this.onMessage(v.type,v.data,channel)===false)return;
+  if(v.type==='frame')this.sampleSnapshot(new TextEncoder().encode(text).byteLength);
   this.received[channel]=v.seq;this.lastReceived=performance.now();this.troubleAt=0;this.stats.received++;
  }
- send(type,data,fast=false){
-  const channel=fast?'input':'control',dc=this.channels[channel];if(this.state!=='connected'||(!this.relaySend&&dc?.readyState!=='open'))return false;
-  const text=JSON.stringify({v:V,sid:this.sid,seq:this.seq[channel]++,type,data});if(text.length>MAX_PACKET)return false;
-  if(this.relaySend){if(!this.relaySend(channel,text)){this.stats.buffered++;return false;}this.stats.sent++;return true;}
-  if(dc.bufferedAmount>131072){this.stats.buffered++;if(!fast)this.close('congested');return false;}
-  const p=this.impairment;if(fast&&p.loss>0&&this.noise()<p.loss){this.stats.dropped++;return true;}
-  const transmit=()=>{if(dc.readyState==='open'&&dc.bufferedAmount<=131072){try{dc.send(text);this.stats.sent++;}catch{this.close('disconnected');}}};
-  const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));if(delay){const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);this.deadlines[channel]=due;this.later(transmit,Math.max(0,due-performance.now()));}else transmit();return true;
+ sampleSnapshot(bytes){
+  if(!Number.isSafeInteger(bytes)||bytes<0)return;
+  const sizes=this.stats.snapshotSizes;sizes.push(bytes);
+  if(sizes.length>SNAPSHOT_SAMPLE_MAX)sizes.shift();
  }
- useRelay(sid,transmit){
-  if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function')throw Error('relay-invalid');
-  if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;if(this.state!=='connected')this.status('connected');return;}
+ send(type,data,fast=false){
+  const channel=fast?'input':'control',dc=this.channels[channel];
+  if(this.state!=='connected'||(!this.relaySend&&dc?.readyState!=='open'))return false;
+  const text=JSON.stringify({v:V,sid:this.sid,seq:this.seq[channel]++,type,data});
+  if(text.length>MAX_PACKET)return false;
+  // Input controls remain on their original fast-channel behavior. Only the
+  // replaceable, host-authoritative ordinary state frame may be discarded.
+  const discardable=fast&&type==='frame';
+  const bytes=discardable?new TextEncoder().encode(text).byteLength:0;
+  const frameToken=discardable?++this.latestFrameToken:0;
+  const pending=this.relaySend?(this.relayBufferedAmount?.()??0):(Number(dc.bufferedAmount)||0);
+  if(discardable&&pending+bytes>FRAME_QUEUE_MAX){
+   this.stats.dropped++;this.stats.buffered++;return true;
+  }
+  if(pending>CONTROL_QUEUE_MAX){
+   this.stats.buffered++;
+   if(!fast)this.close('congested');else this.stats.dropped++;
+   return false; // Reliable control fails visibly, never silently drops.
+  }
+  if(this.relaySend){
+   if(!this.relaySend(channel,text)){
+    this.stats.buffered++;
+    if(!fast)this.close('disconnected');else this.stats.dropped++;
+    return false;
+   }
+   this.stats.sent++;if(discardable)this.sampleSnapshot(bytes);
+   return true;
+  }
+  const p=this.impairment;
+  if(fast&&p.loss>0&&this.noise()<p.loss){this.stats.dropped++;return true;}
+  const transmit=()=>{
+   if(discardable&&frameToken!==this.latestFrameToken){this.stats.dropped++;return;}
+   if(dc.readyState!=='open')return;
+   if(discardable&&(Number(dc.bufferedAmount)||0)+bytes>FRAME_QUEUE_MAX){
+    this.stats.dropped++;this.stats.buffered++;return;
+   }
+   if((Number(dc.bufferedAmount)||0)>CONTROL_QUEUE_MAX){
+    this.stats.buffered++;
+    if(!fast)this.close('congested');else this.stats.dropped++;
+    return;
+   }
+   try{
+    dc.send(text);this.stats.sent++;if(discardable)this.sampleSnapshot(bytes);
+   }catch{this.close('disconnected');}
+  };
+  const delay=Math.max(0,p.delay+(p.jitter?(this.noise()-.5)*p.jitter:0));
+  if(delay){
+   const due=fast?performance.now()+delay:Math.max(this.deadlines.control,performance.now()+delay);
+   this.deadlines[channel]=due;
+   this.later(transmit,Math.max(0,due-performance.now()));
+  }else transmit();
+  return true;
+ }
+ useRelay(sid,transmit,bufferedAmount=()=>0){
+  if(!this.betaStun||!/^[a-f0-9]{32}$/.test(sid)||typeof transmit!=='function'||typeof bufferedAmount!=='function')throw Error('relay-invalid');
+  if(this.transport==='relay'&&this.sid===sid){this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;if(this.state!=='connected')this.status('connected');return;}
   const preserve=this.state==='connected';
   if(preserve){
    // Transport handoff must not reset an active game round through idle.
@@ -120,7 +173,7 @@ class Link{
    this.channels={};try{pc?.close();}catch{}
    this.resetStats();
   }else{this.close('idle');this.resetStats();}
-  this.sid=sid;this.transport='relay';this.relaySend=transmit;
+  this.sid=sid;this.transport='relay';this.relaySend=transmit;this.relayBufferedAmount=bufferedAmount;
   if(!preserve)this.status('connected');
   this.heartbeat();
  }
@@ -175,9 +228,9 @@ class Link{
    }
    return summary;
   };
-  return {state:this.state,connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
+  return {state:this.state,transport:'P2P',connection:pc.connectionState||'none',ice:pc.iceConnectionState||'none',gathering:pc.iceGatheringState||'none',control:this.channels.control?.readyState||'none',input:this.channels.input?.readyState||'none',candidates:count(pc.localDescription?.sdp),remoteCandidates:count(pc.remoteDescription?.sdp)};
  }
- measure(){const a=this.stats.rtts;return {state:this.state,sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
+ measure(){const a=this.stats.rtts,sizes=this.stats.snapshotSizes;return {state:this.state,transport:this.state==='connected'?(this.transport==='relay'?'Relay':'P2P'):'—',sent:this.stats.sent,received:this.stats.received,rejected:this.stats.rejected,dropped:this.stats.dropped,buffered:this.stats.buffered,snapshotBytes50:percentile(sizes,.5),snapshotBytes95:percentile(sizes,.95),rtt50:percentile(a,.5),rtt95:percentile(a,.95),jitter:a.length>1?a.slice(1).reduce((n,v,i)=>n+Math.abs(v-a[i]),0)/(a.length-1):0,samples:a.length};}
  noise(){this.randomState=(Math.imul(this.randomState,1664525)+1013904223)>>>0;return this.randomState/4294967296;}
  // Controlled application-layer impairment for diagnostics, not a fake RTC link.
  simulate({delay=0,loss=0,jitter=0}={}){if(!Number.isFinite(delay)||delay<0||delay>250||!Number.isFinite(loss)||loss<0||loss>.05||!Number.isFinite(jitter)||jitter<0||jitter>50)throw Error('impairment-range');this.impairment={delay,loss,jitter};}
