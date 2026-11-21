@@ -22,31 +22,31 @@ try{
   assert.equal(await page.locator('#transport-brief').count(),1,'one compact in-arena diagnostic output');
    assert.equal(await page.locator('#transport-brief').evaluate(el=>getComputedStyle(el).pointerEvents),'none','diagnostic never intercepts touch controls');
   const diagnostics=await page.evaluate(()=>{
-   const s=window.BioFriendsApp.session,oldState=s.link.state,oldRole=s.role,oldMeasure=s.link.measure,oldInputLatency=s.inputLatency,output=[];
+   const s=window.BioFriendsApp.session,oldState=s.link.state,oldRole=s.role,oldMeasure=s.link.measure,oldInputLatency=s.inputLatency,oldRecent=s.ackRecent,oldGaps=s.snapshotGaps,output=[];
    try{
     s.link.state='connected';
     // Session.inspect derives Input ACK p95 from session.inputLatency,
     // overriding any value injected by the transport-layer measure mock.
-    s.inputLatency=[56];
+    s.inputLatency=[40,56];const at=performance.now();s.ackRecent=[{at,ms:40},{at,ms:355}];s.snapshotGaps=[{at,ms:460}];
     s.link.measure=()=>({...oldMeasure.call(s.link),transport:'Relay',relayReason:'ice-failed',rtt50:12,rtt95:34,dropped:2,buffered:3,snapshotBytes50:800,snapshotBytes95:1200});
-    for(const role of ['host','guest']){s.role=role;s.changed();if(s.inspect().metrics.inputAck95!==56)throw Error('ACK p95 sample not reflected in Session metrics');output.push(document.querySelector('#transport-brief').textContent);}
+    for(const role of ['host','guest']){s.role=role;s.changed();if(s.inspect().metrics.inputAck95!==56||s.inspect().metrics.inputAck50!==40)throw Error('ACK percentile samples not reflected');output.push(document.querySelector('#transport-brief').textContent);}
     const fullDetails=document.querySelector('#metrics').textContent;
     s.link.measure=()=>({...oldMeasure.call(s.link),transport:'P2P',relayReason:null,rtt50:12,rtt95:34,dropped:2,buffered:3,snapshotBytes50:800,snapshotBytes95:1200});
     s.changed();
     const line=document.querySelector('#transport-brief'),p2p=line.textContent,style=getComputedStyle(line);
     return {relay:output,p2p,fullDetails,layout:{whiteSpace:style.whiteSpace,overflow:style.overflow,textOverflow:style.textOverflow,pointerEvents:style.pointerEvents,height:line.getBoundingClientRect().height,lineHeight:parseFloat(style.lineHeight)}};
-   }finally{s.role=oldRole;s.link.state=oldState;s.link.measure=oldMeasure;s.inputLatency=oldInputLatency;s.changed();}
+   }finally{s.role=oldRole;s.link.state=oldState;s.link.measure=oldMeasure;s.inputLatency=oldInputLatency;s.ackRecent=oldRecent;s.snapshotGaps=oldGaps;s.changed();}
   });
   const isPhonePortrait=viewport.width<=700&&viewport.height>viewport.width;
   for(const row of diagnostics.relay){
-   if(isPhonePortrait)assert.equal(row,'Relay (ice-failed) · RTT 12ms','phone role retains Relay reason in short summary');
-   else for(const expected of ['Relay (ice-failed)','RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+   if(isPhonePortrait)assert.equal(row,'Relay (ice-failed) · RTT 12ms · ACK 40/56ms','phone Relay reason and ACK distribution are shown');
+   else for(const expected of ['Relay (ice-failed)','RTT p50/p95 12/34 ms','ACK p50/p95 40/56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
     assert(row.includes(expected),'desktop/landscape full diagnostics include '+expected);
   }
-  for(const value of ['RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+  for(const value of ['RTT p50/p95 12/34 ms','ACK p50/p95 40/56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes','ACK >250ms /30s 1/2','Snapshot gap max /30s 460 ms'])
    assert(diagnostics.fullDetails.includes(value),'full quality details preserved: '+value);
   if(isPhonePortrait){
-   assert.equal(diagnostics.p2p,'P2P · RTT 12/34ms · ACK 56ms','phone P2P summary stays compact');
+   assert.equal(diagnostics.p2p,'P2P · RTT 12/34ms · ACK 40/56ms','phone P2P displays ACK p50/p95');
    assert.equal(diagnostics.layout.whiteSpace,'nowrap','phone diagnostic never wraps');
    assert.equal(diagnostics.layout.overflow,'hidden','phone diagnostic clips overflow');
    assert.equal(diagnostics.layout.textOverflow,'ellipsis','phone diagnostic truncates if needed');
@@ -308,7 +308,8 @@ try{
    await page.evaluate(()=>{
     const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=1;
     s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
-    s.update=()=>{};s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+    const hud=()=>'<span>名次 <b>1/6</b></span><span>圈數 <b>2/3</b> · 關卡 3/9</span><span>時間 <b>0:19.100</b></span><span>氮氣 <b>100%</b></span><span>超車 <b>2</b></span>';
+    s.update=()=>{};s.adapter={game:{w:640,h:800,hud,guestHud:hud,draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
     s.result=null;s.phase='playing';document.body.classList.add('auto-connected');s.changed();
    });
    await page.waitForFunction(()=>document.querySelector('#arena').getBoundingClientRect().height>=innerHeight*.93,null,{timeout:5000});
@@ -317,12 +318,25 @@ try{
     const jump=document.querySelector('#touch-controls [data-action="jump"]'),fire=document.querySelector('#touch-controls [data-action="fire"]');
     return {arena:rect('#arena'),stage:rect('#viewport'),canvas:rect('#game-canvas'),gas:jump.hidden,
      nitro:!fire.hidden&&fire.textContent.includes('氮氣'),instructions:document.querySelector('#rules').textContent,
-     overflow:document.documentElement.scrollWidth>innerWidth};
+     overflow:document.documentElement.scrollWidth>innerWidth,
+     hud:(()=>{const e=document.getElementById('score'),cs=getComputedStyle(e),r=e.getBoundingClientRect();
+      return {race:e.classList.contains('g06-score'),gap:cs.columnGap,wrap:cs.flexWrap,
+       bounds:{left:r.left,right:r.right},parts:[...e.children].map(c=>({text:c.textContent,display:getComputedStyle(c).display,left:c.getBoundingClientRect().left,right:c.getBoundingClientRect().right}))};})(),
+     dockGrow:getComputedStyle(document.getElementById('touch-controls')).flexGrow};
    });
    assert(play.arena.h>=viewport.height*.93,'full-height arcade play surface');
    assert(play.stage.h>=viewport.height*(viewport.width===390?.40:.70),'playfield occupies available stage');
    assert(play.canvas.h>0&&play.canvas.w>0,'canvas stays visible');
    assert(play.gas&&play.nitro&&play.instructions.includes('自動加速'),'no gas key and nitro preserved');
+   assert(play.hud.race&&play.hud.parts.length===5,'G06 keeps full source HUD');
+   assert(parseFloat(play.hud.gap)>=4&&play.hud.wrap==='wrap','G06 HUD fields have spacing and wrap');
+   if(viewport.width===390){
+    assert(play.hud.parts.slice(0,3).every(x=>x.display!=='none'&&x.left>=play.hud.bounds.left-2&&x.right<=play.hud.bounds.right+2),'G06 phone rank lap and time are not clipped');
+    assert(play.hud.parts.slice(3).every(x=>x.display==='none'),'G06 phone toolbar prioritizes first three fields');
+    assert.equal(play.dockGrow,'0','G06 mobile touch dock does not flex-grow');
+   }else assert(play.hud.parts.every(x=>x.display!=='none'),'G06 desktop displays all five fields');
+   const roles=await page.evaluate(()=>{const s=BioFriendsApp.session,previous=s.role,out=[];for(const role of ['host','guest']){s.role=role;s.changed();out.push(document.getElementById('side').textContent);}s.role=previous;s.changed();return out;});
+   assert.deepEqual(roles,['房主｜你的賽車','好友｜你的賽車'],'G06 Chinese role labels are race-specific');
    const isPhoneGuide=viewport.width===390;
    assert.equal(await page.locator('#help-panel').isVisible(),!isPhoneGuide,'phone help defaults closed, desktop retains open guide');
    assert.equal(await page.locator('#help').getAttribute('aria-expanded'),String(!isPhoneGuide),'help toggle reflects initial state');
@@ -341,6 +355,19 @@ try{
    await page.locator('#help').click();
    assert.equal(await page.locator('#help-panel').isVisible(),false,'toolbar button can toggle off');
    assert(!play.overflow,'no horizontal overflow during play');
+  }
+  if(locale==='ja'&&viewport.width===390){
+   const labels=await page.evaluate(()=>{
+    const s=BioFriendsApp.session,oldRole=s.role,oldConfig=s.config,oldPhase=s.phase,oldAdapter=s.adapter,out=[];
+    try{
+     s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:1};
+     s.phase='playing';s.adapter={game:{w:640,h:800,hud:()=>'',guestHud:()=>'',draw:()=>{},drawGuest:()=>{}},dispose:()=>{}};
+     document.body.classList.add('auto-connected');
+     for(const role of ['host','guest']){s.role=role;s.changed();out.push(document.getElementById('side').textContent);}
+    }finally{s.role=oldRole;s.config=oldConfig;s.phase=oldPhase;s.adapter=oldAdapter;s.changed();}
+    return out;
+   });
+   assert.deepEqual(labels,['ホスト｜自分のレースカー','ゲスト｜自分のレースカー'],'Japanese G06 host and guest race labels');
   }
   if(locale==='zh'&&viewport.width===1280){
     // UI-only in-room carousel; live RTC game completion runs separately.
@@ -399,6 +426,24 @@ try{
     'G03 both actions retain their solo key labels and remain enabled');
   assert(shortLayout.down.left+6<shortLayout.jump.left,
     'G03 mobile touch geometry matches standalone: DOWN on inner-left, JUMP on outer-right');
+  // True coarse-pointer portrait: G06 controls remain tappable and do not grow.
+  const raceDock=await shortPhone.evaluate(async()=>{
+   const s=BioFriendsApp.session;s.adapter?.dispose?.();s.role='host';s.epoch=2;
+   s.config={game:'g06',mode:'race',heroes:[0,3],chapter:1,difficulty:'normal',room:'',epoch:2};
+   s.adapter={game:{w:640,h:800,hud:()=>'<span>名次 <b>1/6</b></span><span>圈數 <b>1/3</b> · 關卡 2/9</span><span>時間 <b>0:12.300</b></span><span>氮氣 <b>90%</b></span>',draw:()=>{}},dispose:()=>{}};
+   s.phase='playing';s.changed();
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   const dock=document.getElementById('touch-controls'),rect=dock.getBoundingClientRect(),cs=getComputedStyle(dock);
+   const buttons=[...dock.querySelectorAll('.bio-action')].filter(el=>getComputedStyle(el).display!=='none');
+   return {visible:cs.display!=='none',grow:cs.flexGrow,height:rect.height,top:rect.top,bottom:rect.bottom,
+    bottomCanvas:document.getElementById('game-canvas').getBoundingClientRect().bottom,
+    buttons:buttons.length,contained:buttons.every(el=>{const r=el.getBoundingClientRect();return r.top>=rect.top-2&&r.bottom<=rect.bottom+2;}),
+    overflow:document.documentElement.scrollWidth>innerWidth};
+  });
+  assert(raceDock.visible&&raceDock.grow==='0','G06 true touch dock remains fixed-height and visible');
+  assert(raceDock.height>=100&&raceDock.height<=664*.32+3,'G06 fixed dock is usable without excess blank area');
+  assert(raceDock.buttons>=2&&raceDock.contained,'G06 brake nitro buttons remain inside dock');
+  assert(raceDock.bottomCanvas<=raceDock.top+3&&!raceDock.overflow,'G06 stage does not obstruct touch input');
  }finally{await shortPhone.close();}
  // Batch 5: Samsung-style portrait matches the standalone native game
  // aspect ratio; the real game board occupies the available vertical area.
@@ -493,5 +538,94 @@ try{
   assert(layout.phone&&layout.preview,'touch landscape phone uses full own board plus PiP');
   assert(layout.canvasWidth>0&&layout.canvasHeight>0&&!layout.overflow,'touch landscape PiP does not overflow or hide primary canvas');
  }finally{await sideways.close();}
+ // Six-game phone-and-desktop regression for both supported languages.
+ // UI-only adapters isolate layout from gameplay and P2P; the existing
+ // G02 cross-engine and browser/session acceptances remain mandatory.
+ const gameMatrix=[
+  ['g01','coop',640,480,'42'],
+  ['g02','defense',600,600,'42'],
+  ['g03','stairs',480,720,'<span>DEPTH <b>122 m</b></span><span>LIFE <b>3</b></span><span>GOAL <b>250 m</b></span><span>ENERGY <b>5</b></span>'],
+  ['g04','pinball',600,720,'<span>STAGE <b>3/9</b></span><span>SHOTS <b>8</b></span><span>TARGETS <b>4</b></span><span>POWER <b>95%</b></span><span>SCORE <b>420</b></span>'],
+  ['g05','pong',640,480,'2 : 1'],
+  ['g06','race',640,800,'<span>名次 <b>1/6</b></span><span>圈數 <b>2/3</b></span><span>時間 <b>0:19.100</b></span><span>氮氣 <b>90%</b></span><span>超車 <b>1</b></span>']
+ ];
+ for(const lang of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:390,height:664},{width:1280,height:800}]){
+  const phone=viewport.width===390;
+  const testPage=await browser.newPage({viewport,isMobile:phone,hasTouch:phone});
+  try{
+   await testPage.goto(origin+'/arcade/friends/index.html?lang='+lang);
+   for(const [game,mode,w,h,hud] of gameMatrix){
+    const layout=await testPage.evaluate(async ({game,mode,w,h,hud})=>{
+     const s=BioFriendsApp.session;
+     s.adapter?.dispose?.();
+     document.querySelector('#viewport > iframe[data-ui-probe]')?.remove();
+     s.role='host';s.epoch=(s.epoch||0)+1;s.phase='playing';s.result=null;
+     s.config={game,mode,heroes:[0,3],room:'',epoch:s.epoch,chapter:1,difficulty:'normal'};
+     s.update=()=>{};
+     s.adapter={game:{w,h,hud:()=>hud,guestHud:()=>hud,inspectCombat:()=>({score:42}),inspectMatch:()=>({points:[2,1]}),draw:()=>{}},
+      drawOpponent:()=>true,dispose:()=>{}};
+     document.body.classList.add('auto-connected');s.changed();
+     if(game==='g02'){
+      const frame=document.createElement('iframe');frame.dataset.uiProbe='true';
+      frame.title='G02 outer-viewport layout probe';frame.src='about:blank';
+      frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;z-index:1';
+      document.getElementById('viewport').appendChild(frame);
+     }
+     await new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done)));
+     const box=el=>{const v=el.getBoundingClientRect();return {left:v.left,right:v.right,top:v.top,bottom:v.bottom,width:v.width,height:v.height};};
+     const node=id=>document.getElementById(id),score=node('score'),dock=node('touch-controls');
+     const sc=getComputedStyle(score),dc=getComputedStyle(dock);
+     const parts=[...score.children].map(el=>({...box(el),display:getComputedStyle(el).display,text:el.textContent}));
+     const role=()=>node('side').textContent,host=role();
+     s.role='guest';s.changed();const guest=role();s.role='host';s.changed();
+     const buttons=[...dock.querySelectorAll('.bio-action')].filter(el=>!el.hidden&&getComputedStyle(el).display!=='none').map(el=>({...box(el),key:el.dataset.action}));
+     const iframe=node('viewport').querySelector('iframe[data-ui-probe]');
+     return {roles:[host,guest],viewport:box(node('viewport')),canvas:box(node('game-canvas')),dock:box(dock),
+      dockGrow:dc.flexGrow,dockVisible:dc.display!=='none',buttons,iframe:iframe?box(iframe):null,
+      peerVisible:!node('opponent-preview').hidden,peer:box(node('opponent-dock')),
+      score:{className:score.className,display:sc.display,wrap:sc.flexWrap,overflow:sc.overflow,rect:box(score),parts},
+      noteStyle:{whiteSpace:getComputedStyle(node('transport-brief')).whiteSpace,pointerEvents:getComputedStyle(node('transport-brief')).pointerEvents},
+      overflow:document.documentElement.scrollWidth>innerWidth};
+    },{game,mode,w,h,hud});
+    const tag=lang+' '+viewport.width+'x'+viewport.height+' '+game;
+    const coop=['g01','g02'].includes(game),dual=['g03','g04'].includes(game);
+    if(coop)assert.deepEqual(layout.roles,lang==='zh'?['房主｜你的英雄','好友｜你的英雄']:['ホスト｜自分のヒーロー','ゲスト｜自分のヒーロー'],tag+' co-op role names');
+    if(game==='g05')assert.deepEqual(layout.roles,lang==='zh'?['你控制左側','你控制右側']:['あなたは左側を操作','あなたは右側を操作'],tag+' ball-game left/right names unchanged');
+    if(game==='g06')assert.deepEqual(layout.roles,lang==='zh'?['房主｜你的賽車','好友｜你的賽車']:['ホスト｜自分のレースカー','ゲスト｜自分のレースカー'],tag+' G06 roles unchanged');
+    if(dual&&phone)assert.deepEqual(layout.roles,lang==='zh'?['自己畫面','自己畫面']:['自分の画面','自分の画面'],tag+' local two-board label unchanged');
+    assert(!layout.overflow,tag+' no horizontal overflow');
+    assert.equal(layout.noteStyle.pointerEvents,'none',tag+' diagnostics are touch transparent');
+    if(phone){
+     assert.equal(layout.noteStyle.whiteSpace,'nowrap',tag+' diagnostics remain one line');
+     assert(layout.viewport.height>100&&layout.canvas.bottom<=layout.dock.top+3,tag+' stage does not overlap touch dock');
+     if(['g01','g02','g05'].includes(game)){
+      assert(layout.dockVisible&&layout.dockGrow==='0',tag+' dock no longer stretches vertically');
+      assert(layout.dock.height>=110&&layout.dock.height<=(game==='g05'?.32:.40)*viewport.height+4,tag+' own dock height cap');
+      assert(layout.buttons.length>=1&&layout.buttons.every(b=>b.width>=40&&b.height>=40&&b.top>=layout.dock.top-3&&b.bottom<=layout.dock.bottom+3),tag+' all action buttons remain within tap zone');
+      assert(layout.viewport.bottom<=layout.dock.top+3,tag+' reclaimed height belongs to the game stage');
+      if(game==='g02')assert(layout.iframe&&Math.abs(layout.iframe.width-layout.viewport.width)<3&&Math.abs(layout.iframe.height-layout.viewport.height)<3,tag+' G02 iframe still fills parent exactly');
+     }
+     if(dual){
+      assert(layout.peerVisible&&layout.peer.bottom<=layout.viewport.top+4,tag+' opponent preview stays above the local board');
+      assert(layout.score.display==='flex'&&layout.score.wrap==='wrap'&&layout.score.overflow==='visible',tag+' multi-field HUD wraps without ellipsis');
+      assert.equal(layout.score.parts.length,game==='g03'?4:5,tag+' all native game status fields retained');
+      assert(layout.score.parts.every(p=>p.display!=='none'&&p.left>=layout.score.rect.left-3&&p.right<=layout.score.rect.right+3&&p.bottom<=layout.score.rect.bottom+3),tag+' no status field is clipped');
+      const fields=game==='g03'?['DEPTH','LIFE','GOAL','ENERGY']:['STAGE','SHOTS','TARGETS','POWER','SCORE'];
+      assert(layout.score.parts.every((p,i)=>p.text.includes(fields[i])),tag+' all status labels and values remain');
+      assert(layout.buttons.length>=2&&layout.buttons.every(b=>b.width>=40&&b.height>=40&&b.top>=layout.dock.top-3&&b.bottom<=layout.dock.bottom+3),tag+' G03/G04 special keys stay tappable');
+     }
+     if(game==='g06'){
+      assert(layout.score.className.includes('g06-score')&&layout.score.parts.length===5,tag+' G06 score structure unchanged');
+      assert(layout.score.parts.slice(0,3).every(p=>p.display!=='none')&&layout.score.parts.slice(3).every(p=>p.display==='none'),tag+' validated G06 priority unchanged');
+      assert.equal(layout.dockGrow,'0',tag+' validated G06 dock unchanged');
+     }
+    }else{
+     assert(layout.viewport.height>180,tag+' desktop stage remains visible');
+     if(dual)assert.equal(layout.score.parts.length,game==='g03'?4:5,tag+' desktop multi-field HUD complete');
+     if(game==='g06')assert(layout.score.className.includes('g06-score')&&layout.score.parts.every(p=>p.display!=='none'),tag+' G06 desktop unchanged');
+    }
+   }
+  }finally{await testPage.close();}
+ }
  console.log('PASS candidate UI: zh/ja, portrait/landscape/desktop, QR and all four game-mode results in compact layouts');
 }finally{await browser.close();await new Promise(r=>server.close(r));}

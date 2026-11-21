@@ -76,3 +76,11 @@ Cloudflare Workers Build（`bio-city-v161-signaling`）需顯示 Success 並確�
 本次受測 PR #38 Draft HEAD `a83b9feb67e2c564e0380ddcd6ceb97895e30fc4`，六項品質 CI Run `44880734409` 與 RTC 專項 Run `44880734247` 均已完成且 8/8 Success。此版針對手機直式僅顯示精簡單行 P2P／Relay 診斷、保留 Relay 轉換原因、操作說明預設收合並可按鈕展開，桌機與品質詳情仍保存完整指標；含繁體中文／日文及觸控防遮擋回歸測試。
 保留既有 P2P、ICE Gathering、APAC 位置提示、Relay 記憶體快取及背壓安全門檻，未修改遊戲勝負、碰撞、得分、Snapshot 結構或配對安全規則。此次從 Beta `1e1692c3ee9669b8186ffea785473d99ef377f5c` 非破壞性接續，保留原回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7`，並以通過 CI 的來源 `a83b9feb67e2c564e0380ddcd6ceb97895e30fc4` 作為第二父節點；與來源相比僅允許四個 Beta 專用部署檔案差異。
 正式 `main`、36 個備份分支與 GTM／GA4 不修改，PR #38 維持 Draft。須等 Cloudflare 官方 Worker Build `bio-city-v161-signaling` Success 再進行新版實機驗收。
+
+## 2026-11-21｜六款手機版面集中精修、ACK 分布診斷與 G06 真碰撞驗收受控發布
+
+本次固定受測來源為 PR #38 Draft HEAD `96d7aa827f20800c350c2340dd16f6c2f8967d5f`。GitHub Actions 品質工作流程 Run `44894850061` 六項全部 Success，RTC 工作流程 Run `44894850053` 兩項全部 Success（合計 **8/8 Success**），並從原始日誌確認：`scripts/smoke-g06-friends-6c.mjs` 的真正雙人 RTC／三圈／九關卡完賽和引擎實錄碰撞，以及 `scripts/test-friend-ui-v161.mjs` 六款繁中／日文、390×844、390×664、1280×800 UI 矩陣都完整 PASS。
+
+內容包括：ACK p50／p95、最近 30 秒尖峰與最大 Snapshot 到達間隔診斷；G06 手機角色與 HUD 精修；G01/G02/G05 操作區節省高度、G03/G04 HUD 防黏字與截斷；G01/G02 合作角色雙語提示；G06 真實方向鍵短暫切入未撞路障、碰撞後恢復原駕駛測試。保持六款遊戲物理、碰撞、勝負、Snapshot 結構、P2P/ICE/APAC、Relay 快取、32 KiB 一般幀與 128 KiB 可靠控制門檻完全不變，不引入 TURN。
+
+Beta 第一父節點保留前版 `ef98cd2e0fd5a208370fb1fac268152bb4efe732`，第二父節點為 8/8 驗收來源 `96d7aa827f20800c350c2340dd16f6c2f8967d5f`，保留原回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7` 和所有既有 Beta 歷史。發布樹與受測來源相比只能有原先四個 Beta 專屬部署檔案（`package.json`、`wrangler.toml`、`scripts/cloudflare-beta-build-v161.mjs`、本文件），`main`、36 個 `backup/`、GTM／GA4 與 PR Draft 不修改。須先確認 `bio-city-v161-signaling` Cloudflare Build Success，再於正式網址進行六款真機雙端驗收。

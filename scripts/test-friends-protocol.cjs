@@ -18,6 +18,37 @@ for(const mode of ['pong','volley']){
  check(!s.receive('frame',{epoch:1,tick:1000,state:{points:[7,0]}},'control'),'guest cannot author state');const y=s.adapter.game.inspectMatch().ai.y;now+=400;s.update(1/60);check(s.adapter.game.inspectMatch().ai.y===y,'stale input becomes neutral');now+=2200;s.update(1/60);check(s.phase==='paused'&&Object.keys(s.remote).length===0,'prolonged input silence still pauses safely');
  s.result={points:[7,0]};s.readyFlags=[true,true];s.clearRound();check(s.adapter===null&&s.result===null&&s.readyFlags.every(v=>!v)&&Object.keys(s.remote).length===0,'next game removes prior physics/input/result/readiness');s.leave();
 }
+// Read-only quality telemetry: the accepted guest snapshots determine ACK latency
+// and the latest 30-second window; no host physics, send cadence or payload changes.
+{
+ const guest=new w.BioFriends.Session();
+ guest.role='guest';guest.epoch=1;guest.config={game:'g05',mode:'pong'};
+ guest.phase='playing';
+ guest.adapter={lastTick:-1,receive(tick){this.lastTick=tick;return true;},dispose(){}};
+ const frame=(tick,ack)=>({epoch:1,tick,phase:'playing',countdown:0,ack,state:{finished:false}});
+ const sample=(tick,ack,at,sentAt)=>{
+  now=at;guest.sentInputs.set(ack,sentAt);
+  check(guest.receive('frame',frame(tick,ack),'input'),'valid guest frame records ACK and arrival time');
+ };
+ sample(1,0,10000,9900); // ACK 100 ms
+ sample(2,1,10050,9995); // ACK 55 ms
+ sample(3,2,10100,9750); // ACK 350 ms: one isolated spike
+ sample(4,3,10600,10580); // ACK 20 ms: frame arrival gap 500 ms
+ const m=guest.inspect().metrics;
+ check(m.inputAck50===55&&m.inputAck95===350,'legacy ACK p50/p95 percentiles retain their meaning');
+ check(m.ackRecentWindowMs===30000&&m.ackSpikeThresholdMs===250,'ACK spike window and threshold are explicit');
+ check(m.ackRecentSamples===4&&m.ackSpikes30s===1,'recent 30s counts isolated ACK spike, not every input');
+ check(m.snapshotGapMax30s===500,'arrival gap max detects a delayed accepted ordinary snapshot');
+ now=10620;
+ check(!guest.receive('frame',frame(3,3),'input'),'stale snapshot is not accepted');
+ check(guest.inspect().metrics.ackRecentSamples===4,'rejected state never changes quality samples');
+ now=41000;
+ const old=guest.inspect().metrics;
+ check(old.ackRecentSamples===0&&old.ackSpikes30s===0&&old.snapshotGapMax30s===null,'30s quality window expires');
+ check(old.inputAck95===350,'legacy ACK p95 history remains compatible after recent window expires');
+ guest.clearRound();
+ check(guest.inspect().metrics.ackRecentSamples===0&&guest.inspect().metrics.snapshotGapMax30s===null,'new round does not inherit recent telemetry');
+}
 // A new pairing must not inherit the previous game's adapter configuration.
 {const s=new w.BioFriends.Session();s.config={game:'g06',mode:'race'};s.prepareAuto('host','test',0);check(s.config===null&&s.epoch===0,'automatic re-pair clears old game configuration');s.config={game:'g02',mode:'defense'};s.link.offer=async()=>'';s.host('test',0);check(s.config===null,'manual re-pair clears old game configuration');}
 // Optional negotiated hero selection stays host-authoritative and clears old readiness.
