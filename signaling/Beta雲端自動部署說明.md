@@ -56,3 +56,10 @@ PR #38 latest tested source `f28ca911a6e9affc7dbea9ea3932811b0fb0a3b6`，必須�
 Beta 使用者回報「返回遊戲」指向舊版 Arcade，已統一指向正式 GitHub Pages `/zh/play.html` 與 `/ja/play.html`。涵蓋好友大廳主按鈕、次要入口、HTML fallback、Worker 對舊 `/arcade/{zh,ja}/(index.html)` 之 302 no-store 轉址，以及瀏覽器／Worker／候選資產測試。此修正不變更 RTC、Room、RateGate、Cloudflare 環境權限，不併入 `main`。
 
 經核准的 PR #38 新來源 SHA：`ef4fe865ba7b6893ea2f10e8af951dbeb6b74aaa`。僅當此 SHA 的六項品質 CI 與兩項 RTC CI **全部 Success**，才允許發布分支更新。本分支仍由此完整來源樹加四個 Beta 專用設定檔構成；保留此前 release commit 為父節點，並記錄本 SHA 為另一父節點，以避免重新寫入歷史。
+
+## 2026-11-21｜多人傳輸診斷與方案 A 背壓修復受控發布
+
+本次來源固定為 PR #38 Draft HEAD `cfb81e79413bc7999acdd777e8b1add8e5748a44`；GitHub Actions Run `44863448709` 與 `44863448719` 的六項品質及兩項 RTC 專項全部為 Success（8/8）。
+只在保留原 Beta 回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7` 為第一父節點、以上驗收來源為第二父節點的受控整合提交上發版。相對 PR 來源的淨差異仍只允許四個既有 Beta 專用檔案。
+新增遊戲內 P2P／Relay、RTT、ACK、Dropped／Buffered 與 Snapshot 大小診斷；方案 A 僅在實際傳輸緩衝壅塞時丟棄一般非可靠幀（32 KiB），可靠控制維持 128 KiB 失敗保護。沒有修改正式 `main`、GTM／GA4、遊戲物理或勝負規則。
+Cloudflare Git Builds 必須由 `release/bio-city-v161-stun-beta` 觸發，先執行 `npm run build` 的同 SHA CI/四檔案預檢，再由 `npx wrangler deploy` 發布；Build 必須顯示 Success 且確認線上內容更新後才進行真機實測。

@@ -18,6 +18,22 @@ try{
  for(const locale of ['zh','ja'])for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1280,height:800}]){
   const page=await browser.newPage({viewport});await page.addInitScript(()=>{window.WebSocket=class{static OPEN=1;constructor(){this.readyState=1;setTimeout(()=>this.onopen?.(),0);}send(){}close(){this.readyState=3;this.onclose?.();}};});await page.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin+'/arcade/friends/index.html')){const response=await route.fetch();const html=(await response.text()).replace('name="bio-signaling-endpoint" content=""','name="bio-signaling-endpoint" content="'+endpoint+'"');await route.fulfill({response,body:html});}else if(url.startsWith(origin+'/')||url.startsWith(endpoint+'/'))await route.continue();else await route.abort();});
   await page.goto(origin+'/arcade/friends/index.html?lang='+locale);assert(await page.locator('#auto-create').isVisible());
+  // Compact diagnostics must update for either local role without covering the game canvas.
+  assert.equal(await page.locator('#transport-brief').count(),1,'one compact in-arena diagnostic output');
+  const diagnostics=await page.evaluate(()=>{
+   const s=window.BioFriendsApp.session,oldState=s.link.state,oldRole=s.role,oldMeasure=s.link.measure,oldInputLatency=s.inputLatency,output=[];
+   try{
+    s.link.state='connected';
+    // Session.inspect derives Input ACK p95 from session.inputLatency,
+    // overriding any value injected by the transport-layer measure mock.
+    s.inputLatency=[56];
+    s.link.measure=()=>({...oldMeasure.call(s.link),transport:'Relay',rtt50:12,rtt95:34,dropped:2,buffered:3,snapshotBytes50:800,snapshotBytes95:1200});
+    for(const role of ['host','guest']){s.role=role;s.changed();if(s.inspect().metrics.inputAck95!==56)throw Error('ACK p95 sample not reflected in Session metrics');output.push(document.querySelector('#transport-brief').textContent);}
+    return output;
+   }finally{s.role=oldRole;s.link.state=oldState;s.link.measure=oldMeasure;s.inputLatency=oldInputLatency;s.changed();}
+  });
+  for(const row of diagnostics)for(const expected of ['Relay','RTT p50/p95 12/34 ms','ACK p95 56 ms','Dropped/Buffered 2/3','Snapshot p50/p95 800/1200 bytes'])
+   assert(row.includes(expected),'host/guest compact diagnostics include '+expected);
   if(locale==='zh'&&viewport.width===390){
    // Multiplayer touch buttons must follow the exact standalone game's guide.
    const parity=await page.evaluate(()=>{
