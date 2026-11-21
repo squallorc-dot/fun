@@ -1,13 +1,14 @@
 /* Versioned lobby and host-authoritative rounds, independent of any test page. */
 ((root)=>{'use strict';
 const PROTOCOL=1,APP_TAG='friends-v1',HERO_CAP='feature:hero-v1',ACTIVE=['countdown','playing','paused'];
+const QUALITY_WINDOW_MS=30000,ACK_SPIKE_MS=250,QUALITY_SAMPLE_CAP=1024;
 const object=v=>!!v&&typeof v==='object'&&!Array.isArray(v),keys=(v,list)=>object(v)&&Object.keys(v).every(k=>list.includes(k));
 const integer=(v,max=1e8)=>Number.isSafeInteger(v)&&v>=0&&v<=max,hero=v=>integer(v,6),name=v=>typeof v==='string'&&v.length<=48&&!/[\u0000-\u001f\u007f]/.test(v);
 const q=(a,p)=>a.length?a.slice().sort((x,y)=>x-y)[Math.ceil(a.length*p)-1]:null;
 class Session{
  constructor({readInput=()=>({}),onChange=()=>{},sfx=()=>{},locale='zh',betaStun=false,adapters={g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{}),...(root.BioG03Network?{g03:root.BioG03Network}:{}),...(root.BioG04Network?{g04:root.BioG04Network}:{})}}={}){
   this.adapters=Object.freeze({...adapters});this.capabilities=Object.entries(this.adapters).flatMap(([id,m])=>m.MODES.map(mode=>id+':'+mode+'@'+m.TAG)).concat(HERO_CAP).sort();
-  this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m),betaStun});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.nextRequested=false;this.closed=false;this.startPending=false;this.startWaitTimer=null;this.engineFailure=null;
+  this.readInput=readInput;this.onChange=onChange;this.sfx=sfx;this.locale=locale;this.link=new root.BioPeer.Link({onState:s=>this.transport(s),onMessage:(...m)=>this.receive(...m),betaStun});this.clock=root.BioArcadeSession.simulation();this.phase='idle';this.epoch=0;this.tick=0;this.readyFlags=[false,false];this.resumeFlags=[false,false];this.resultCount=0;this.totalResults=0;this.rejected=0;this.fps=[];this.inputLatency=[];this.ackRecent=[];this.snapshotGaps=[];this.lastSnapshotAt=null;this.sentInputs=new Map();this.edges={fire:0,jump:0};this.held={};this.remote={};this.remoteEdges={fire:0,jump:0};this.pulses={};this.remoteAt=0;this.lastInputSeq=-1;this.inputSeq=0;this.nextRequested=false;this.closed=false;this.startPending=false;this.startWaitTimer=null;this.engineFailure=null;
  }
  meta(game=this.config?.game||'g05'){return this.adapters[game];}
  edgeNames(){return this.meta()?.EDGES||['fire','jump'];}
@@ -19,7 +20,13 @@ class Session{
   else {clearTimeout(this.heroRequestTimer);this.heroRequestTimer=null;this.pendingHero=null;this.clearRound();this.phase=state==='idle'?'idle':'disconnected';}
   this.changed();
  }
- clearRound(){clearTimeout(this.startWaitTimer);this.startWaitTimer=null;this.startPending=false;this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges=this.emptyEdges();this.pulses={};this.held={};this.edges=this.emptyEdges();this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.nextRequested=false;this.readyTask=(this.readyTask||0)+1;}
+ trimQualityWindow(now=performance.now()){
+  const cutoff=now-QUALITY_WINDOW_MS;
+  for(const samples of [this.ackRecent,this.snapshotGaps]){
+   while(samples.length&&(samples[0].at<cutoff||samples.length>QUALITY_SAMPLE_CAP))samples.shift();
+  }
+ }
+ clearRound(){clearTimeout(this.startWaitTimer);this.startWaitTimer=null;this.startPending=false;this.adapter?.dispose();this.adapter=null;this.clock.clear();this.readyFlags=[false,false];this.resumeFlags=[false,false];this.remote={};this.remoteEdges=this.emptyEdges();this.pulses={};this.held={};this.edges=this.emptyEdges();this.lastInputSeq=-1;this.inputSeq=0;this.sentInputs.clear();this.ackRecent=[];this.snapshotGaps=[];this.lastSnapshotAt=null;this.resultCount=0;this.result=null;this.lastScore=null;this.tick=0;this.remoteAt=performance.now();this.configAck=false;this.preparing=false;this.nextRequested=false;this.readyTask=(this.readyTask||0)+1;}
  setHero(value){if(!hero(value)||this.phase!=='lobby'||!this.configAck||this.preparing||this.readyFlags.some(Boolean)||!this.peerHello?.games.includes(HERO_CAP)||this.pendingHero!=null)return false;if(value===this.hero)return true;if(this.role==='guest'){this.pendingHero=value;if(!this.link.send('hero-request',{epoch:this.epoch,hero:value})){this.pendingHero=null;return false;}if(this.pendingHero!==null)this.heroRequestTimer=setTimeout(()=>{this.pendingHero=null;this.heroRequestTimer=null;this.changed();},5000);this.changed();return true;}if(this.role==='host'){if(!this.link.send('hero-update',{epoch:this.epoch,hero:value}))return false;this.hero=value;return this.configure(this.config.mode,this.config.game);}return false;}
  prepareAuto(role,room='',selectedHero=0){if(!['host','guest'].includes(role)||!name(room)||!hero(selectedHero)||['pairing','connected'].includes(this.link.state))throw Error('room-settings');this.peerHello=null;this.config=null;this.pendingHero=null;this.role=role;this.room=role==='host'?room:'';this.hero=selectedHero;this.epoch=0;}
  async host(room='',selectedHero=0){if(!name(room)||!hero(selectedHero))throw Error('room-settings');this.peerHello=null;this.config=null;this.pendingHero=null;this.role='host';this.room=room;this.hero=selectedHero;this.epoch=0;return this.link.offer();}
@@ -47,7 +54,7 @@ class Session{
   this.preparing=false;this.readyFlags[this.role==='host'?0:1]=!!value;if(!this.link.send('ready',{epoch:this.epoch,value:!!value})){this.readyFlags[this.role==='host'?0:1]=false;this.changed();return false;}this.tryStart();this.changed();return true;
  }
  createRound(){
-  this.engineFailure=null;this.adapter?.dispose();this.clock.clear();this.tick=0;this.resultCount=0;this.result=null;this.inputSeq=0;this.lastInputSeq=-1;this.edges=this.emptyEdges();this.held={};this.remote={};this.pulses={};this.remoteEdges=this.emptyEdges();this.remoteAt=performance.now();this.sentInputs.clear();this.countdown=3;this.phase='countdown';
+  this.engineFailure=null;this.adapter?.dispose();this.clock.clear();this.tick=0;this.resultCount=0;this.result=null;this.inputSeq=0;this.lastInputSeq=-1;this.ackRecent=[];this.snapshotGaps=[];this.lastSnapshotAt=null;this.edges=this.emptyEdges();this.held={};this.remote={};this.pulses={};this.remoteEdges=this.emptyEdges();this.remoteAt=performance.now();this.sentInputs.clear();this.countdown=3;this.phase='countdown';
   this.adapter=new (this.meta().Adapter)({mode:this.config.mode,hero:this.config.heroes[0],remoteHero:this.config.heroes[1],host:this.role==='host',locale:this.locale,chapter:this.config.chapter,difficulty:this.config.difficulty,epoch:this.epoch,onFailure:reason=>{this.engineFailure=['startup-timeout','asset-unavailable','snapshot-overflow'].includes(reason)?reason:'engine-error';this.link.close('engine-error');},onSnapshot:()=>{if(this.phase==='paused')this.publish(true);},onReady:()=>{if(this.role==='guest'&&this.phase==='countdown'&&this.startPending&&this.config?.game==='g02')this.acknowledgeStart();},sfx:(freq,len)=>{this.sfx(freq,len);if(this.role==='host')this.link.send('sound',{epoch:this.epoch,freq,len});},finish:()=>this.finish()});
  }
  acknowledgeStart(){
@@ -136,7 +143,18 @@ class Session{
    if(this.role!=='guest'||!this.adapter||!keys(d,['epoch','tick','phase','countdown','ack','state'])||!integer(d.tick)||!integer(d.ack+1)||!['countdown','playing','paused','finished'].includes(d.phase)||!Number.isFinite(d.countdown)||d.countdown<0||d.countdown>3||type==='result'&&channel!=='control'||d.phase==='finished'&&!d.state.finished||d.state.finished&&d.phase!=='finished')return false;
    if(d.tick<this.adapter.lastTick)return false;
    const immediate=channel==='control';if(!this.adapter.receive(d.tick,d.state,immediate))return false;
-   if(d.ack>=0&&this.sentInputs.has(d.ack)){this.inputLatency.push(performance.now()-this.sentInputs.get(d.ack));if(this.inputLatency.length>512)this.inputLatency.shift();for(const key of this.sentInputs.keys())if(key<=d.ack)this.sentInputs.delete(key);}
+   const arrivedAt=performance.now();
+   if(type==='frame'){
+    if(this.lastSnapshotAt!==null&&arrivedAt>=this.lastSnapshotAt)this.snapshotGaps.push({at:arrivedAt,ms:arrivedAt-this.lastSnapshotAt});
+    this.lastSnapshotAt=arrivedAt;
+   }
+   if(d.ack>=0&&this.sentInputs.has(d.ack)){
+    const ms=arrivedAt-this.sentInputs.get(d.ack);
+    this.inputLatency.push(ms);if(this.inputLatency.length>512)this.inputLatency.shift();
+    if(Number.isFinite(ms)&&ms>=0)this.ackRecent.push({at:arrivedAt,ms});
+    for(const key of this.sentInputs.keys())if(key<=d.ack)this.sentInputs.delete(key);
+   }
+   this.trimQualityWindow(arrivedAt);
    this.tick=Math.max(this.tick,d.tick);this.countdown=d.countdown;
    const old=this.phase;this.phase=d.phase;
    if(type==='result'&&!this.resultCount){this.resultCount=1;this.totalResults++;this.result=this.adapter.result(d.state);}
@@ -164,7 +182,7 @@ class Session{
    this.adapter.render();
   }
  }
- inspect(){return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,pauseReason:this.phase==='paused'?(this.pauseReason||'peer'):null,resume:[...this.resumeFlags],rtc:this.link.diagnose?.()||null,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,startPending:!!this.startPending,engineFailure:this.engineFailure||null,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,nextRequested:this.nextRequested,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),corrections:this.adapter?.corrections||0}};}
+ inspect(){this.trimQualityWindow();const ackRecent=this.ackRecent,snapshotGaps=this.snapshotGaps;return {phase:this.phase,role:this.role||null,room:this.room||'',epoch:this.epoch,tick:this.tick,pauseReason:this.phase==='paused'?(this.pauseReason||'peer'):null,resume:[...this.resumeFlags],rtc:this.link.diagnose?.()||null,config:this.config?structuredClone(this.config):null,configAck:!!this.configAck,ready:[...this.readyFlags],resume:[...this.resumeFlags],preparing:!!this.preparing,startPending:!!this.startPending,engineFailure:this.engineFailure||null,result:this.result?structuredClone(this.result):null,resultCount:this.resultCount,totalResults:this.totalResults,nextRequested:this.nextRequested,remoteInput:{...this.remote},rejected:this.rejected,metrics:{...this.link.measure(),fps:this.fps.length?this.fps.length/this.fps.reduce((n,v)=>n+v,0):null,inputAck50:q(this.inputLatency,.5),inputAck95:q(this.inputLatency,.95),ackRecentWindowMs:QUALITY_WINDOW_MS,ackSpikeThresholdMs:ACK_SPIKE_MS,ackRecentSamples:ackRecent.length,ackSpikes30s:ackRecent.filter(v=>v.ms>ACK_SPIKE_MS).length,snapshotGapMax30s:snapshotGaps.length?Math.max(...snapshotGaps.map(v=>v.ms)):null,corrections:this.adapter?.corrections||0}};}
 }
 root.BioFriends=Object.freeze({Session,PROTOCOL,adapters:Object.freeze({g05:root.BioG05Network,...(root.BioG01Network?{g01:root.BioG01Network}:{}),...(root.BioG02Network?{g02:root.BioG02Network}:{}),...(root.BioG06Network?{g06:root.BioG06Network}:{}),...(root.BioG03Network?{g03:root.BioG03Network}:{}),...(root.BioG04Network?{g04:root.BioG04Network}:{})})});
 })(typeof window==='undefined'?globalThis:window);

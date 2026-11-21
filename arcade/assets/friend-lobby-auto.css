@@ -592,3 +592,29 @@ body[data-auto-lobby].auto-connected #lobby #auto-lobby-hero-label{font-size:.82
   flex-basis:78px;height:78px;
  }
 }
+
+/* G06-only HUD: separate each race field; keep rank/laps/time readable. */
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score.g06-score{
+ display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;min-width:0;
+ white-space:normal;overflow:visible;text-overflow:clip;
+}
+body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score.g06-score>span{
+ display:inline-flex;align-items:baseline;gap:.28em;white-space:nowrap;
+}
+@media(max-width:720px) and (orientation:portrait){
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score.g06-score{
+  grid-column:1/-1;grid-row:2;gap:1px 8px;min-height:0;
+  white-space:normal;overflow:visible;text-overflow:clip;
+ }
+ /* Nitro and overtakes stay in the race canvas/desktop HUD; mobile's toolbar
+    reserves its limited space for rank, lap/gate, and time. */
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #arena .game-actions #score.g06-score>span:nth-child(n+4){display:none}
+ /* G06 only: do not stretch the control dock to fill unused portrait space.
+    The existing BioControlProfiles positions and hit target sizes stay intact. */
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g06"] #viewport{
+  flex:1 1 auto!important;aspect-ratio:auto;max-height:none;height:auto!important;
+ }
+ body[data-auto-lobby].auto-connected.playing:not(.round-finished) #game-shell[data-game="g06"] #touch-controls{
+  flex:0 0 auto!important;min-height:0!important;max-height:32dvh!important;align-self:stretch;
+ }
+}
