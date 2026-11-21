@@ -108,7 +108,8 @@ function render(){
  if(!details.hidden){$('round-detail-text').textContent=$('result').textContent;$('round-detail-label').textContent=ja?'全順位と記録を見る':'展開完整六車排名與紀錄';}else details.open=false;
  const m=s.metrics,number=v=>Number.isFinite(v)?Math.round(v):'—';
   const brief=`${m.transport} · RTT p50/p95 ${number(m.rtt50)}/${number(m.rtt95)} ms · ACK p95 ${number(m.inputAck95)} ms · Dropped/Buffered ${m.dropped}/${m.buffered} · Snapshot p50/p95 ${number(m.snapshotBytes50)}/${number(m.snapshotBytes95)} bytes`;
-  $('transport-brief').textContent=brief;$('transport-brief').hidden=!connected;
+  // The manual QA harness has #metrics but no in-arena diagnostics node.
+  const liveBrief=$('transport-brief');if(liveBrief){liveBrief.textContent=brief;liveBrief.hidden=!connected;}
   $('metrics').textContent=brief+` · jitter ${m.jitter.toFixed(1)} ms · FPS ${m.fps?.toFixed(1)||'—'} · ACK p50 ${number(m.inputAck50)} ms · corrections ${m.corrections} · rejected ${s.rejected+m.rejected}`;
  $('countdown').textContent=s.phase==='countdown'?Math.ceil(session.countdown):s.phase==='paused'?'Ⅱ':'';
  if(s.phase==='paused'){
