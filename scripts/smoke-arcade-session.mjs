@@ -129,6 +129,10 @@ try{
   check(prefs.sfx===23&&prefs.volume===31&&prefs.playMode==='manual'&&prefs.track===1&&prefs.loop,'SFX mute and restore preserve saved BGM mode, track, volume and loop');
   await page.locator('#close-audio').click();
   check(await shooter.locator('[data-ar-command="pause"]').isVisible(),'G02 pause II remains accessible after closing OST drawer');
+  // The visible OST drawer pauses the shooter. Its existing guarded resume
+  // countdown must complete before the engine can accept real touch input.
+  await page.waitForFunction(()=>{const state=document.querySelector('#g02-frame')?.contentWindow?.BioArcadeShooter?.state;return state?.phase==='playing'&&!state.countdown;},null,{timeout:15000});
+  check((await child()).phase==='playing'&&!(await child()).countdown,'G02 OST drawer fully resumes gameplay before multi-pointer actions');
   await shooter.locator('[data-ar-hold="fire"]').evaluate(el=>{for(const pointerId of [31,32])el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId}));});
   check((await child()).fireOwners===2,'G02 tracks both fingers on fire');
   await shooter.locator('[data-ar-hold="fire"]').evaluate(el=>el.dispatchEvent(new PointerEvent('lostpointercapture',{bubbles:true,pointerId:31})));
