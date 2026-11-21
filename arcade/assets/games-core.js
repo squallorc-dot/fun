@@ -793,7 +793,9 @@ R.g06=env=>{
   const model=models[between(Number.isInteger(feedback?.model)?feedback.model:0,0,6)],impact=feedback?.impact||0,lean=steer*width*.055+Math.sin(t*70)*impact*(feedback?.side||1)*width*.015;ctx.save();ctx.translate(x,y);
   ctx.fillStyle='#07101b40';ctx.beginPath();ctx.ellipse(width*.13,width*.025,width*.68,width*.13,.05,0,TAU);ctx.fill();ctx.fillStyle='#030d1b80';ctx.beginPath();ctx.ellipse(0,-width*.025,width*.48,width*.07,0,0,TAU);ctx.fill();
   for(const side of [-1,1]){const xx=side*width*.43;rect(ctx,xx-width*.09,-width*.29,width*.18,width*.29,'#0a1421');rect(ctx,xx-width*.06,-width*.25,width*.12,width*.2,'#202b35');ctx.strokeStyle='#9bb1b4';ctx.lineWidth=Math.max(.5,width*.012);ctx.beginPath();ctx.ellipse(xx,-width*.14,width*.044,width*.075,0,0,TAU);ctx.stroke();for(let n=0;n<3;n++){const yy=-width*.27+((t*(feedback?.speed||0)*.02+n/3)%1)*width*.24;rect(ctx,xx-width*.065,yy,width*.13,width*.012,'#71808088');}}
-  ctx.save();ctx.translate(0,-(feedback?.pitch||0)*width*.016+Math.sin(t*80)*impact*width*.012);
+  window.BioVisualV2?.raceWheel?.(ctx,width,feedback?.speed||0,t);
+  ctx.save();ctx.rotate(between(steer,-1,1)*.028);
+  ctx.translate(0,-(feedback?.pitch||0)*width*.016+Math.sin(t*80)*impact*width*.012);
   const paint=ctx.createLinearGradient(0,-width*.82,0,0);paint.addColorStop(0,'#d8f5f5');paint.addColorStop(.19,color);paint.addColorStop(.65,color);paint.addColorStop(1,'#263d50');
   ctx.beginPath();ctx.moveTo(-width*.48,-width*.09);ctx.lineTo(-width*.43,-width*.41);ctx.lineTo(-width*model.cabin+lean,-width*model.roof);ctx.quadraticCurveTo(lean,-width*(model.roof+.08),width*model.cabin+lean,-width*model.roof);ctx.lineTo(width*.43,-width*.41);ctx.lineTo(width*.48,-width*.09);ctx.closePath();ctx.fillStyle=paint;ctx.fill();
   ctx.beginPath();ctx.moveTo(-width*(model.cabin-.025)+lean,-width*(model.roof-.04));ctx.lineTo(width*(model.cabin-.025)+lean,-width*(model.roof-.04));ctx.lineTo(width*.33,-width*.43);ctx.lineTo(-width*.33,-width*.43);ctx.closePath();ctx.fillStyle='#122b40';ctx.fill();
@@ -810,9 +812,11 @@ R.g06=env=>{
   if(model.kind==='bubble'){for(let n=-1;n<=1;n++){orb(ctx,lean+n*width*.16,-width*(n===0?.64:.58),width*.11,'#c6b8ff88');ctx.beginPath();ctx.arc(lean+n*width*.16,-width*(n===0?.64:.58),width*.11,Math.PI,TAU);ctx.stroke();}}
   if(model.kind==='leaf'){for(const side of [-1,1]){ctx.beginPath();ctx.ellipse(side*width*.17,-width*.77,width*.16,width*.055,side*.6,0,TAU);ctx.fill();}ctx.beginPath();ctx.moveTo(-width*.34,-width*.42);ctx.lineTo(-width*.29,-width*.72);ctx.lineTo(width*.29,-width*.72);ctx.lineTo(width*.34,-width*.42);ctx.stroke();}
   if(model.kind==='ring'){ctx.beginPath();ctx.ellipse(lean,-width*.66,width*.34,width*.12,0,0,TAU);ctx.stroke();orb(ctx,lean,-width*.66,width*.07,'#f8d9ff');for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(side*width*.36,-width*.39);ctx.lineTo(side*width*.29,-width*.74);ctx.stroke();}}
+  window.BioVisualV2?.raceBody?.(ctx,width,model.kind,model.accent,steer,braking);
   window.BioVisualV2?.vehicleGlint?.(ctx,width);
   if(braking)for(const side of [-1,1])orb(ctx,side*width*.30,-width*.24,width*.09,'#ff6b4b55');
   if(boost)for(const side of [-1,1]){const xx=side*width*.16;ctx.beginPath();ctx.moveTo(xx-width*.04,-width*.11);ctx.lineTo(xx,width*(.12+Math.sin(t*36)*.05));ctx.lineTo(xx+width*.04,-width*.11);ctx.fillStyle='#a5efffcc';ctx.fill();}
+  window.BioVisualV2?.raceExhaust?.(ctx,width,boost,t,feedback?.speed||0);
   ctx.restore();ctx.restore();
  }
  function drawSky(ctx,w,h){
@@ -832,6 +836,7 @@ R.g06=env=>{
    for(let i=-2;i<19;i++){const bw=w*.055,x=i*w*.072+pan*.65,bh=h*(.023+(Math.sin(i*7.3)+1)*.035),y=h*.35-bh;rect(ctx,x,y,bw,bh,'#233d51');rect(ctx,x,y,bw*.22,bh,'#1a2e43');for(let wy=y+6;wy<h*.35-4;wy+=9)for(let wx=x+bw*.4;wx<x+bw-3;wx+=8)rect(ctx,wx,wy,2,3,(i+Math.floor(wy))%3?'#c4d8bd66':'#f9bd6e99');}
   }
   if(chapter===1||chapter===3){ctx.save();ctx.beginPath();ctx.rect(0,0,w,h*.35);ctx.clip();ctx.globalAlpha=chapter===1?.9:.52;window.BioWorldArt?.draw(ctx,'race',w,h,{pan:pan*.07,shade:chapter===1?.08:.30,horizon:h*.35});ctx.restore();}
+  window.BioVisualV2?.raceSkyline?.(ctx,w,h,chapter,pan);
   const aerial=ctx.createLinearGradient(0,h*.23,0,h*.35);aerial.addColorStop(0,landscape.haze+'00');aerial.addColorStop(1,landscape.haze);ctx.fillStyle=aerial;ctx.fillRect(0,h*.23,w,h*.12);
   for(let i=0;i<4;i++){const x=((i*w*.31+t*(2+i*.3)+pan*.25)%(w*1.4))-w*.2;ctx.strokeStyle='#e7e5d90d';ctx.lineWidth=h*.009;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x,h*(.075+i*.038));ctx.lineTo(x+w*.17,h*(.07+i*.038));ctx.stroke();}
   const terrain=ctx.createLinearGradient(0,h*.35,0,h);terrain.addColorStop(0,landscape.haze);terrain.addColorStop(.16,landscape.land);terrain.addColorStop(1,landscape.shade);ctx.fillStyle=terrain;ctx.fillRect(0,h*.35,w,h*.65);
@@ -864,6 +869,7 @@ R.g06=env=>{
    for(let i=0;i<3;i++){ctx.strokeStyle=i===1?'#e3a2d3':'#92c7da';ctx.lineWidth=Math.max(1,u*.055);ctx.beginPath();ctx.ellipse(x,y-u*(2.1-i*.63),u*.49,u*.16,0,0,TAU);ctx.stroke();}
    orb(ctx,x,y-u*2.9,u*.2,'#e5b8e0');
   }
+  window.BioVisualV2?.raceFixture?.(ctx,x,y,u,side,chapter,world);
   ctx.restore();
  }
  function drawRaceWorld(ctx,w,h){
@@ -887,12 +893,18 @@ R.g06=env=>{
     roadSurface(ctx,d,next,-1.25,1.25,landscape.shoulder);
     roadSurface(ctx,d,next,-1,1,Math.floor(world/9)%2?route.road:'#293942');
     for(const side of [-1,1]){
+     // Raised purely graphical red/white kerb outside the physical lane.
+     surface(ctx,[cameraPoint(d,side*1.055,.11),cameraPoint(next,side*1.055,.11),cameraPoint(next,side*1.055,0),cameraPoint(d,side*1.055,0)],'#263e50');
      roadSurface(ctx,d,next,side*.985,side*1.05,Math.floor(world/9)%2?'#e5ddd0':'#b46e63');
+     roadSurface(ctx,d,next,side*.985,side*1.055,Math.floor(world/9)%2?'#fff3e4':'#d46b66',.11);
      roadSurface(ctx,d,next,side*1.10,side*1.115,'#d1d6bf');
      surface(ctx,[cameraPoint(d,side*1.15,.62),cameraPoint(next,side*1.15,.62),cameraPoint(next,side*1.15,.47),cameraPoint(d,side*1.15,.47)],chapter===5?'#aaa2c5':'#a6b7b3');
+     // Neon rail ribbon follows exactly the same existing projection.
+     if(Math.round(world/stripLength)%3===0)window.BioVisualV2?.raceRail?.(ctx,project(d,side*1.15,.62),project(next,side*1.15,.62),chapter);
      if(Math.round(world/stripLength)%4===0){const lo=project(d,side*1.15),hi=project(d,side*1.15,.62);if(lo&&hi){ctx.strokeStyle='#687e7d';ctx.lineWidth=Math.max(.6,lo.scale*w*.025);ctx.beginPath();ctx.moveTo(lo.x,lo.y);ctx.lineTo(hi.x,hi.y);ctx.stroke();}}
     }
     if(Math.floor(world/9)%3!==0)for(const lane of [-.34,.34])roadSurface(ctx,d,next,lane-.008,lane+.008,'#d3d8c3');
+    if(d<90&&Math.round(world/stripLength)%5===0)window.BioVisualV2?.raceRoadGrain?.(ctx,project(d,-.72),project(d,.72),world);
     const fog=between((d-85)/140,0,.42);if(fog>0){ctx.globalAlpha=fog;roadSurface(ctx,d,next,-1.25,1.25,landscape.haze);ctx.globalAlpha=1;}
    }
    for(const ob of objects){
@@ -915,11 +927,13 @@ R.g06=env=>{
   }
   const player=project(0,car.lane);
   if(player&&collisions>0&&car.inv>.45)window.BioVisualV2?.emit?.('g06','collision-'+collisions,'impact',player.x,player.y,'#ffd3a7',t);
+  // Visual event ledger only; overtaking/scoring remains in raceStep().
+  if(player&&passes>0)window.BioVisualV2?.emit?.('g06','pass-'+passes,'pass',player.x,player.y-42,'#befff2',t);
   if(player){
    if(car.speed>20&&(car.braking||car.slip>.3||Math.abs(car.lane)>1.04))for(let i=0;i<7;i++){const age=(t*car.speed*.09+i*.19)%1,side=i%2?1:-1;orb(ctx,player.x+side*(12+age*24),player.y-age*23,2+age*5,(Math.abs(car.lane)>1.04?'#c8b595':'#c1d4d6')+['22','33','44'][i%3]);}
    ctx.save();if(car.inv&&Math.floor(t*14)%2)ctx.globalAlpha=.58;vehicle(ctx,player.x,player.y,Math.min(w*.15,vehicleWidth*player.scale*w*.5),pal[env.hero],car.steer,car.braking,car.boost,{...feel,model:env.hero,speed:car.speed});ctx.restore();
   }
-  if(car.speed>78){ctx.strokeStyle='#bce7ed2e';ctx.lineWidth=1;for(let i=0;i<12;i++){const side=i%2?1:-1,phase=(t*2.5+i*.17)%1,x=w*.5+side*w*(.35+phase*.2),y=h*(.43+phase*.5);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*phase*w*.04,y+phase*h*.09);ctx.stroke();}}
+  window.BioVisualV2?.raceSpeedLines?.(ctx,w,h,car.speed,slipstream,t);
   if(car.inv>1.0){ctx.strokeStyle='#f1af9855';ctx.lineWidth=8;ctx.strokeRect(4,4,w-8,h-8);}window.BioVisualV2?.paint?.(ctx,'g06');
  }
  // Racing decisions use a simultaneous snapshot, never the player's rank or a

@@ -127,4 +127,89 @@ check(['platform','bumper','target','launcher','pongSurface','paddle','volleyCou
 check(coreCode.includes('BioVisualV2?.platform')&&coreCode.includes('BioVisualV2?.target')&&coreCode.includes('BioVisualV2?.launcher')&&coreCode.includes('BioVisualV2?.pongSurface')&&coreCode.includes('BioVisualV2?.paddle')&&coreCode.includes('BioVisualV2?.volleyCourt'),'all three games use the shared local presentation module');
 check(!visualCode.includes('networkSnapshot')&&!visualCode.includes('applyNetworkState'),'v2 material library cannot alter multiplayer serializer');
 
+
+// G06 second foreground-material pass: golden network bytes/digest taken
+// verbatim from the green 735ad3ee host+guest fixed-input race baseline.
+// Local rendering may change light/air/vehicle geometry, never authority.
+const g06Gold={
+ 1:{bytes:5153,digest:'194451dc'},
+ 2:{bytes:5155,digest:'d3a666ee'},
+ 3:{bytes:5162,digest:'5073d1bb'},
+ 4:{bytes:5167,digest:'e24520cb'},
+ 5:{bytes:5158,digest:'970831fd'}
+};
+function g06Digest(text){
+ let h=2166136261>>>0;
+ for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619)>>>0;
+ return h.toString(16).padStart(8,'0');
+}
+for(let chapter=1;chapter<=5;chapter++){
+ const results=[];
+ for(const tier of modes){
+  const {scope,advance}=create(741),v=scope.window.BioVisualV2,hero=chapter-1;
+  check(v.setQuality(tier),'G06 material tier '+tier);
+  const game=scope.window.BioSuiteGames.g06({
+   hero,remoteHero:(hero+3)%7,multiplayer:true,authority:true,chapter,
+   mode:'race',difficulty:'normal',sessionCountdown:true,
+   finish(){},sfx(){},I:{hero:['Burner','MJ','Moo','Ye Bao','Jelly','Veggie','Oracle']}
+  });
+  game.w=640;game.h=800;game.start();
+  const {ctx}=ink();
+  for(let n=0;n<90;n++){
+   game.setRemoteInput({moveX:-.25,up:true,fire:n%27<8});
+   game.update(1/120,{moveX:n%30<15?.45:-.4,fire:n%22<8,up:true,left:false,right:false,down:false});
+   advance();
+   if(n%30===0){
+    const before=JSON.stringify(game.networkSnapshot());
+    game.draw(ctx);game.drawGuest(ctx);
+    const after=JSON.stringify(game.networkSnapshot());
+    check(before===after&&Buffer.byteLength(before,'utf8')===Buffer.byteLength(after,'utf8'),
+     'G06 chapter '+chapter+'/'+tier+' host and guest drawings preserve exact snapshot bytes');
+   }
+  }
+  const json=JSON.stringify(game.networkSnapshot()),bytes=Buffer.byteLength(json,'utf8');
+  check(bytes===g06Gold[chapter].bytes&&g06Digest(json)===g06Gold[chapter].digest,
+   'G06 chapter '+chapter+'/'+tier+' equals 735ad3ee golden serialized authority');
+  results.push(json);
+ }
+ for(const value of results)check(value===results[0],'G06 chapter '+chapter+' all three visual tiers have identical network content');
+}
+for(let hero=0;hero<7;hero++){
+ const {scope}=create(741),game=scope.window.BioSuiteGames.g06({
+  hero,remoteHero:(hero+3)%7,multiplayer:true,authority:true,chapter:3,
+  mode:'race',difficulty:'normal',sessionCountdown:true,
+  finish(){},sfx(){},I:{hero:['Burner','MJ','Moo','Ye Bao','Jelly','Veggie','Oracle']}
+ });
+ game.w=640;game.h=800;game.start();
+ const before=JSON.stringify(game.networkSnapshot()),{ctx}=ink();
+ scope.window.BioVisualV2.setQuality('high');game.draw(ctx);game.drawGuest(ctx);
+ check(JSON.stringify(game.networkSnapshot())===before,'G06 both views retain original seven vehicle model authority '+hero);
+}
+for(const tier of modes){
+ const {scope}=create(741),v=scope.window.BioVisualV2,{ctx}=ink();
+ v.setQuality(tier);
+ v.raceSkyline(ctx,640,800,3,20);
+ v.raceWheel(ctx,42,80,.5);v.raceBody(ctx,42,'blade','#fff3a0',.4,true);
+ v.raceExhaust(ctx,42,true,.5,85);v.raceFixture(ctx,80,300,14,-1,1,42);
+ v.raceRail(ctx,{x:100,y:320},{x:104,y:310},5);
+ v.raceRoadGrain(ctx,{x:100,y:600},{x:300,y:600},40);
+ v.raceSpeedLines(ctx,640,800,95,true,.5);
+ check(v.inspect().channels===0&&v.inspect().activeParticles===0,tier+' G06 new material methods are stateless');
+ check(v.emit('g06','pass-proof','pass',100,200,'#fff',.5),'G06 pass flash enters bounded local event pool');
+ check(v.shake('g06').x===0&&v.shake('g06').y===0,'G06 near pass never causes impact shudder');
+ v.emit('g06','impact-proof','impact',100,200,'#fff',.5);
+ check(v.shake('g06').y!==0,'G06 collision keeps presentation-only micro-shake');
+}
+check(['raceSkyline','raceWheel','raceBody','raceExhaust','raceFixture','raceRail','raceRoadGrain','raceSpeedLines'].every(k=>typeof scope.window.BioVisualV2[k]==='function'),
+ 'all G06 foreground functions exported to the same solo/multiplayer visual layer');
+check(coreCode.includes('BioVisualV2?.raceSkyline')&&coreCode.includes('BioVisualV2?.raceWheel')&&coreCode.includes('BioVisualV2?.raceBody')&&coreCode.includes('BioVisualV2?.raceExhaust')&&coreCode.includes('BioVisualV2?.raceFixture')&&coreCode.includes('BioVisualV2?.raceRail')&&coreCode.includes('BioVisualV2?.raceRoadGrain')&&coreCode.includes('BioVisualV2?.raceSpeedLines'),
+ 'G06 road, vehicle and speed visual hooks installed');
+check(coreCode.includes('roadHalf=5.2,vehicleWidth=1.75,carContact=vehicleWidth/roadHalf')&&
+ coreCode.includes('checkpointDistances=Array.from({length:laps*3}')&&
+ coreCode.includes("Math.abs(a.lane-b.lane)>=carContact")&&
+ coreCode.includes("g.networkSnapshot=()=>{"),
+ 'G06 original lane, contact, 9-checkpoint chapter-1 and network serializer contracts intact');
+check(!visualCode.includes('networkSnapshot')&&!visualCode.includes('applyNetworkState')&&!visualCode.includes('drawImage('),
+ 'visual-only G06 additions neither serialize authority nor touch source texture pixels');
+
 console.log('V2 VISUAL NODE PASS '+checks+' tier, snapshot byte, event cap, G05 layout, G02 controls and entry checks');

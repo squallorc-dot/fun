@@ -57,7 +57,7 @@
    Object.assign(p,{alive:true,x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-12,at:clock,life:190+(i%4)*35,r:1.1+(i%3)*.7,color});
   }
   v.holdAt=Number.isFinite(sourceTime)?sourceTime:0;v.holdUntil=clock+(kind==='impact'?40:24);
-  v.shudder=kind==='impact'?2.4:1.1;v.shudderUntil=clock+115;return true;
+  v.shudder=kind==='impact'?2.4:kind==='pass'?0:1.1;v.shudderUntil=clock+115;return true;
  }
  function trackImpact(scope,actor,value,x,y,sourceTime,color){
   const v=channel(scope),key=String(actor),previous=v.gates.get(key)||0;
@@ -229,7 +229,170 @@
   ctx.restore();
  }
 
+
+ // G06 race V2 foreground-only treatment. The track geometry remains owned by
+ // the existing game renderer; these functions receive projected draw values.
+ function raceSkyline(ctx,w,h,chapter,pan){
+  if(![w,h,pan].every(Number.isFinite)||w<=0||h<=0)return;
+  const palette=['#77e7dc','#7cfdba','#79c6ff','#ffc18e','#d1a4ff'][bounded(chapter,1,5)-1];
+  const skylineY=h*.34;
+  ctx.save();
+  ctx.beginPath();ctx.rect(0,0,w,h*.35);ctx.clip();
+  ctx.globalAlpha=quality==='low'?.30:quality==='high'?.76:.52;
+  for(let layer=0;layer<2;layer++){
+   const step=w*(layer?.065:.095),offset=((pan*(layer?.43:.19))%step+step)%step;
+   for(let i=-1;i<Math.ceil(w/step)+1;i++){
+    const x=i*step+offset,bw=step*(layer?.64:.73);
+    const ht=h*(layer?.035:.049)+h*.048*(.5+.5*Math.sin(i*2.73+chapter+layer*5));
+    const top=skylineY-ht+(layer?2:0);
+    ctx.fillStyle=layer?'#102438':'#18354a';
+    ctx.beginPath();ctx.moveTo(x,skylineY);ctx.lineTo(x,top+4);ctx.lineTo(x+bw*.18,top);ctx.lineTo(x+bw,top);ctx.lineTo(x+bw,skylineY);ctx.closePath();ctx.fill();
+    if(quality==='low')continue;
+    ctx.strokeStyle=palette;ctx.lineWidth=layer?1.4:.7;
+    ctx.beginPath();ctx.moveTo(x+bw*.08,top+2);ctx.lineTo(x+bw*.87,top+2);ctx.stroke();
+    if(layer){ctx.fillStyle=palette;for(let row=0;row<3;row++)for(let c=0;c<3;c++){
+     if((i+row+c+chapter)%3===0)ctx.fillRect(x+bw*(.22+c*.18),top+9+row*h*.011,Math.max(1,bw*.065),Math.max(1,h*.003));
+    }}
+   }
+  }
+  ctx.restore();
+ }
+ function raceWheel(ctx,w,speed,time){
+  if(!(w>0))return;
+  ctx.save();
+  for(const side of [-1,1]){
+   const x=side*w*.43;
+   ctx.fillStyle=gradient(ctx,x-w*.078,-w*.29,w*.15,w*.31,[[0,'#4a6270'],[.26,'#07121d'],[.75,'#111923'],[1,'#6c7b83']]);
+   ctx.fillRect(x-w*.067,-w*.27,w*.134,w*.265);
+   ctx.strokeStyle='#b5deeb';ctx.lineWidth=Math.max(.7,w*.012);ctx.beginPath();ctx.ellipse(x,-w*.13,w*.049,w*.072,0,0,Math.PI*2);ctx.stroke();
+   if(quality!=='low'){
+    ctx.strokeStyle='#d3f4f18c';ctx.lineWidth=Math.max(.6,w*.009);
+    for(let i=0;i<3;i++){const y=-w*.27+(((time*speed*.026+i/3)%1+1)%1)*w*.23;
+     ctx.beginPath();ctx.moveTo(x-w*.057,y);ctx.lineTo(x+w*.057,y);ctx.stroke();}
+    ctx.fillStyle='#d9fcff';ctx.beginPath();ctx.arc(x,-w*.135,Math.max(.65,w*.013),0,Math.PI*2);ctx.fill();
+   }
+  }
+  ctx.restore();
+ }
+ function raceBody(ctx,w,model,accent,steer,braking){
+  if(!(w>0))return;
+  ctx.save();
+  // Retain all seven distinct body silhouettes drawn by the engine.
+  ctx.fillStyle=gradient(ctx,-w*.38,-w*.38,w*.75,w*.07,[[0,'#eeffffc4'],[.5,'#c5f6fa52'],[1,'#17273a00']]);
+  ctx.fillRect(-w*.36,-w*.385,w*.72,w*.06);
+  const glass=ctx.createLinearGradient(-w*.24,-w*.73,w*.24,-w*.43);
+  glass.addColorStop(0,'#d4ffffdd');glass.addColorStop(.37,'#517e9d88');glass.addColorStop(.75,'#183c5966');glass.addColorStop(1,'#0b203044');
+  ctx.fillStyle=glass;ctx.beginPath();ctx.moveTo(-w*.21,-w*.67);ctx.lineTo(w*.015,-w*.69);ctx.lineTo(w*.25,-w*.43);ctx.lineTo(-w*.25,-w*.43);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#dcffffa9';ctx.lineWidth=Math.max(.65,w*.012);
+  ctx.beginPath();ctx.moveTo(-w*.23,-w*.65);ctx.lineTo(-w*.12,-w*.67);ctx.stroke();
+  // Rear deck, separate alloy lip, brake LEDs and wheel arch only.
+  ctx.fillStyle=gradient(ctx,-w*.46,-w*.11,0,w*.12,[[0,'#66818e'],[.5,'#21354a'],[1,'#0c1b2c']]);
+  ctx.fillRect(-w*.42,-w*.12,w*.84,w*.065);
+  ctx.strokeStyle=accent;ctx.lineWidth=Math.max(1,w*.016);
+  ctx.beginPath();ctx.moveTo(-w*.42,-w*.34);ctx.lineTo(-w*.36,-w*.37);
+  ctx.moveTo(w*.42,-w*.34);ctx.lineTo(w*.36,-w*.37);ctx.stroke();
+  for(const side of [-1,1]){
+   const x=side*w*.305;
+   if(quality!=='low'){
+    ctx.shadowColor=braking?'#ff5145':'#ff845d';ctx.shadowBlur=quality==='high'?w*.20:w*.11;
+   }
+   ctx.fillStyle=braking?'#ffedc0':'#f96558';ctx.fillRect(x-w*.082,-w*.258,w*.164,w*.046);
+   ctx.shadowBlur=0;ctx.fillStyle='#ffd1b8b5';ctx.fillRect(x-w*.074,-w*.254,w*.148,w*.009);
+  }
+  if(quality==='high'){
+   ctx.strokeStyle='#ffffff48';ctx.lineWidth=.8;
+   ctx.beginPath();ctx.moveTo(-w*.33,-w*.49);ctx.quadraticCurveTo(-w*.27,-w*.73,steer*w*.035,-w*.74);ctx.stroke();
+  }
+  ctx.restore();
+ }
+ function raceExhaust(ctx,w,boost,time,speed=0){
+  if(!(w>0))return;
+  ctx.save();
+  for(const side of [-1,1]){
+   const x=side*w*.16;
+   ctx.fillStyle='#081425';ctx.fillRect(x-w*.065,-w*.12,w*.13,w*.06);
+   if(!boost)continue;
+   const pulse=.85+.15*Math.sin(time*39+side),len=w*(quality==='low'?.20:quality==='high'?.42:.32)*pulse;
+   if(quality!=='low'){
+    ctx.shadowColor='#61e8ff';ctx.shadowBlur=quality==='high'?w*.15:w*.08;
+   }
+   ctx.fillStyle='#3e91ffbb';ctx.beginPath();ctx.moveTo(x-w*.07,-w*.07);ctx.lineTo(x,len);ctx.lineTo(x+w*.07,-w*.07);ctx.closePath();ctx.fill();
+   ctx.shadowBlur=0;ctx.fillStyle='#c8fdff';ctx.beginPath();ctx.moveTo(x-w*.027,-w*.07);ctx.lineTo(x,len*.62);ctx.lineTo(x+w*.027,-w*.07);ctx.closePath();ctx.fill();
+  }
+  // Relative rear wake remains a local optical layer, never a slipstream rule.
+  if(speed>38){
+   const strength=bounded((speed-38)/65,0,1),count=quality==='low'?1:quality==='high'?6:3;
+   ctx.strokeStyle=boost?'#9aefff99':'#a5dff05e';
+   ctx.lineWidth=quality==='high'?1.5:1;
+   for(let i=0;i<count;i++){
+    const side=i%2?1:-1,x=side*w*(.12+i*.045),phase=((time*(1.5+strength*2)+i*.29)%1+1)%1;
+    ctx.globalAlpha=(quality==='low'?.22:.48)*(1-phase);
+    ctx.beginPath();ctx.moveTo(x,w*(.06+phase*.16));ctx.lineTo(x+side*w*.055*strength,w*(.16+phase*.47)*strength);ctx.stroke();
+   }
+  }
+  ctx.restore();
+ }
+ function raceFixture(ctx,x,y,u,side,chapter,world){
+  if(![x,y,u].every(Number.isFinite)||u<.8)return;
+  const palette=['#8ff4eb','#8dfbc3','#91caff','#ffc58a','#daa6ff'][bounded(chapter,1,5)-1];
+  ctx.save();
+  ctx.fillStyle='#051b31';ctx.beginPath();ctx.ellipse(x,y,u*.42,u*.13,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=gradient(ctx,x-u*.16,y-u*.12,u*.36,0,[[0,'#9fbec2'],[.45,'#18364d'],[1,'#6e91a1']]);
+  ctx.fillRect(x-u*.16,y-u*.16,u*.32,u*.20);
+  if(chapter===1||chapter===3){
+   // Full 3D lamp housing stays in the existing non-drivable scenery lane.
+   ctx.fillStyle=gradient(ctx,x-u*.09,y-u*2.9,u*.18,0,[[0,'#9ebfc8'],[.55,'#2c526c'],[1,'#071a30']]);
+   ctx.fillRect(x-u*.09,y-u*2.85,u*.18,u*2.73);
+   ctx.fillStyle='#a1bfca';ctx.beginPath();ctx.moveTo(x-u*.17,y-u*2.85);ctx.lineTo(x-side*u*.6,y-u*3.03);ctx.lineTo(x-side*u*.69,y-u*2.94);ctx.lineTo(x-u*.08,y-u*2.7);ctx.closePath();ctx.fill();
+   ctx.fillStyle=palette;ctx.fillRect(x-side*u*.70,y-u*3.0,u*.27,u*.08);
+   if(quality!=='low'){ctx.shadowColor=palette;ctx.shadowBlur=quality==='high'?u*.55:u*.25;ctx.fillRect(x-side*u*.69,y-u*2.9,u*.25,u*.055);}
+  }else{
+   // Chapter-themed field module in the place of additional road obstacles.
+   const height=chapter===2?u*.8:chapter===4?u*.7:u*1.3;
+   ctx.fillStyle=gradient(ctx,x-u*.11,y-height,u*.22,0,[[0,'#a0b2be'],[.45,'#27465d'],[1,'#0a1d35']]);
+   ctx.fillRect(x-u*.11,y-height,u*.22,height);
+   ctx.strokeStyle=palette;ctx.lineWidth=Math.max(.8,u*.075);
+   ctx.beginPath();ctx.ellipse(x,y-height,u*(chapter===5?.40:.23),u*.17,0,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.shadowBlur=0;ctx.restore();
+ }
+ function raceRail(ctx,a,b,chapter){
+  if(!a||!b||quality==='low')return;
+  const palette=['#65e2dc','#72c998','#84baff','#f0aa83','#c6a0ff'][bounded(chapter,1,5)-1];
+  ctx.save();ctx.strokeStyle=palette;ctx.lineWidth=quality==='high'?2:1.2;
+  if(quality==='high'){ctx.shadowColor=palette;ctx.shadowBlur=7;}
+  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  ctx.restore();
+ }
+ function raceRoadGrain(ctx,near,far,world){
+  if(quality==='low'||!near||!far)return;
+  const x=near.x,y=near.y,xx=far.x,yy=far.y;
+  if(![x,y,xx,yy].every(Number.isFinite))return;
+  ctx.save();ctx.strokeStyle=quality==='high'?'#b8e4ee36':'#b8e4ee20';ctx.lineWidth=1;
+  const spread=quality==='high'?7:4;
+  for(let i=0;i<spread;i++){
+   const f=(i+.5)/spread,shift=(Math.sin(world*.41+i*11.7)*.5+.5)*12;
+   ctx.beginPath();ctx.moveTo(x+(xx-x)*f-shift,y+(yy-y)*f);ctx.lineTo(x+(xx-x)*f+shift*.4,y+(yy-y)*f-2);ctx.stroke();
+  }
+  ctx.restore();
+ }
+ function raceSpeedLines(ctx,w,h,speed,slip,time){
+  if(![w,h,speed,time].every(Number.isFinite)||speed<26)return;
+  const ramp=bounded((speed-26)/78,0,1);
+  const count=quality==='low'?2:quality==='high'?16:8;
+  ctx.save();
+  ctx.lineWidth=quality==='low'?.7:quality==='high'?1.6:1;
+  ctx.strokeStyle=slip?'#b2ffdc78':'#bdeaff60';
+  ctx.globalAlpha=quality==='low'?.16:quality==='high'?.65:.38;
+  for(let i=0;i<count;i++){
+   const side=i%2?1:-1,phase=((time*(1.6+ramp*3)+i*.61803398)%1+1)%1;
+   const x=w*.5+side*w*(.24+phase*.29),y=h*(.36+phase*.60);
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+side*(.017+phase*.065)*w*ramp,y+(.025+phase*.13)*h*ramp);ctx.stroke();
+  }
+  ctx.restore();
+ }
+
  function reset(scope){if(scope===undefined){channels.clear();return;}channels.delete(String(scope));}
  function inspect(){return {quality,channels:channels.size,particleCap:MAX_PARTICLES,eventCap:MAX_SEEN,activeParticles:[...channels.values()].reduce((n,c)=>n+c.particles.filter(p=>p.alive&&now()-p.at<p.life).length,0)};}
- window.BioVisualV2=Object.freeze({version:'2.0-phase1a',levels,setQuality,getQuality,ambient,contactShadow,spriteLight,vehicleGlint,platform,bumper,target,launcher,pongSurface,paddle,volleyCourt,emit,trackImpact,holdFrame,shake,paint,reset,inspect});
+ window.BioVisualV2=Object.freeze({version:'2.0-phase1a',levels,setQuality,getQuality,ambient,contactShadow,spriteLight,vehicleGlint,raceSkyline,raceWheel,raceBody,raceExhaust,raceFixture,raceRail,raceRoadGrain,raceSpeedLines,platform,bumper,target,launcher,pongSurface,paddle,volleyCourt,emit,trackImpact,holdFrame,shake,paint,reset,inspect});
 })();
