@@ -70,3 +70,9 @@ Cloudflare Git Builds 必須由 `release/bio-city-v161-stun-beta` 觸發，先�
 本次只更新受測來源的七個程式／測試檔案：Room 新房間 `locationHint:'apac'`、授權 Relay 熱路徑的快取與休眠恢復、純本機 Relay 切換原因診斷及回歸測試。保留既有 32 KiB 一般幀及 128 KiB 控制保護、房間驗證與到期、速率限制，不涉及 G01～G06 Snapshot 結構或遊戲規則。
 本版第一父節點為既有 Beta `9879c093ed962b3ecd36e9aa563563388a72497d`（含原回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7`），第二父節點為已驗收 PR 來源 `e1386701037e43b5788067f15a56c3b5faa575d3`；發布樹相對來源僅有四個 Beta 專用設定檔差異，禁止合併至正式 `main`。
 Cloudflare Workers Build（`bio-city-v161-signaling`）需顯示 Success 並確認線上版號對應本版後才開始跨網路實測。保持 PR Draft。
+
+## 2026-11-21｜手機遊戲診斷單行與預設收合說明受控發布
+
+本次受測 PR #38 Draft HEAD `a83b9feb67e2c564e0380ddcd6ceb97895e30fc4`，六項品質 CI Run `44880734409` 與 RTC 專項 Run `44880734247` 均已完成且 8/8 Success。此版針對手機直式僅顯示精簡單行 P2P／Relay 診斷、保留 Relay 轉換原因、操作說明預設收合並可按鈕展開，桌機與品質詳情仍保存完整指標；含繁體中文／日文及觸控防遮擋回歸測試。
+保留既有 P2P、ICE Gathering、APAC 位置提示、Relay 記憶體快取及背壓安全門檻，未修改遊戲勝負、碰撞、得分、Snapshot 結構或配對安全規則。此次從 Beta `1e1692c3ee9669b8186ffea785473d99ef377f5c` 非破壞性接續，保留原回復點 `beefccf8dbf34158ae854a4436040f4ecc321ea7`，並以通過 CI 的來源 `a83b9feb67e2c564e0380ddcd6ceb97895e30fc4` 作為第二父節點；與來源相比僅允許四個 Beta 專用部署檔案差異。
+正式 `main`、36 個備份分支與 GTM／GA4 不修改，PR #38 維持 Draft。須等 Cloudflare 官方 Worker Build `bio-city-v161-signaling` Success 再進行新版實機驗收。
